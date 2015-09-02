@@ -1,0 +1,17 @@
+.gradle
+local.properties
+gradle.properties
+/.idea
+.DS_Store
+/build
+*.iml
+
+demo/*.iml
+demo/build
+demo/bin
+demo/gen
+
+uikit/build
+uikit/bin
+uikit/gen
+uikit/*.iml
