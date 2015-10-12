@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="app_name">网易云信</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_world">Hello world!</string>
@@ -17,36 +16,34 @@
     <string name="network_is_not_available">网络连接失败，请检查你的网络设置</string>
     <string name="login_hint_account">请输入帐号</string>
     <string name="login_hint_password">请输入密码</string>
-    <string name="input_account">请输入账号，限20位字母或者数字</string>
-    <string name="register_account_tip">账号限20位字母或者数字</string>
+    <string name="input_account">请输入帐号，限20位字母或者数字</string>
+    <string name="register_account_tip">帐号限20位字母或者数字</string>
     <string name="input_nickname">请输入昵称，限10位汉字、字母或者数字</string>
     <string name="register_nick_name_tip">昵称限10位汉字、字母或者数字</string>
     <string name="input_password">请输入密码，6~20位字母或者数字</string>
     <string name="register_password_tip">密码必须为6~20位字母或者数字</string>
     <string name="register_success">注册成功</string>
     <string name="register_failed">注册失败,错误码%1$s:%2$s</string>
-    <string name="login_has_account">已有账号？直接登录</string>
+    <string name="login_has_account">已有帐号？直接登录</string>
     <string name="done">完成</string>
     <string name="latest_message_draft_prefix">[草稿] </string>
     <string name="main_msg_unread_msg_count">[%d条]</string>
+    <string name="out_time">超时</string>
 
     <string name="readed">已读</string>
     <string name="about">关于</string>
     <string name="logout">注销</string>
     <string name="version">版本号:</string>
-    <string name="account">账号:</string>
+    <string name="account">帐号:</string>
     <string name="chat">聊天</string>
     <string name="add">添加</string>
     <string name="remove">移除</string>
-    <string name="search">搜索</string>
     <string name="contact_selector">联系人选择器</string>
     <string name="network_forbidden_login">你被服务器禁止登录，详询客服</string>
     <string name="menu">菜单</string>
     <string name="verify_reminder">验证提醒</string>
     <string name="without_content">暂无</string>
     <string name="create">新建</string>
-    <string name="no_permission">没有权限</string>
-    <string name="click_set">点击设置</string>
     <string name="delete_tip">删除提示</string>
     <string name="delete_system_message">删除该条系统消息？</string>
     <string name="delete_success">删除成功</string>
@@ -70,7 +67,8 @@
     <string name="copyright">Copyright ©1997-2015 网易公司版权所有</string>
     <string name="edit_nick">修改昵称</string>
     <string name="user_not_exsit">该用户不存在</string>
-    <string name="user_tips">请检查你输入的账号是否正确</string>
+    <string name="user_tips">请检查你输入的帐号是否正确</string>
+    <string name="edit">编辑</string>
 
     <!-- session -->
     <string name="input_panel_guess">猜 拳</string>
@@ -80,6 +78,7 @@
     <string name="input_panel_RTS">白 板</string>
     <string name="input_panel_snapchat">阅后即焚</string>
     <string name="message_history_query">历史消息</string>
+    <string name="message_search_title">查看聊天内容</string>
 
     <!-- 通讯录 -->
     <string name="add_friend">加为好友</string>
@@ -91,82 +90,16 @@
     <string name="add_friend_verify_tip">好友验证请求</string>
 
     <!-- 群 -->
-    <string name="advanced_team">高级群</string>
-    <string name="normal_team">普通群</string>
-    <string name="team_settings_show_more">全部成员</string>
-    <string name="team_not_exist">该群不存在</string>
-    <string name="team_settings_name">设置群名称</string>
-    <string name="team_settings_name_empty">请输入群名称</string>
-    <string name="modifying">正在修改\u2026</string>
-    <string name="team_settings_set_name">给群取个名字</string>
     <string name="add_buddy">添加好友</string>
-    <string name="create_team">创建群</string>
     <string name="create_normal_team">创建普通群</string>
-    <string name="create_advanced_team">创建高级群</string>
-    <string name="quit_team">退出群</string>
-    <string name="dismiss_team">解散本群</string>
-    <string name="create_team_success">创建成功</string>
-    <string name="create_team_failed">创建失败</string>
-    <string name="invite_member_success">邀请群成员成功</string>
-    <string name="invite_member_failed">邀请群成员失败</string>
-    <string name="remove_member_success">移除群成员成功</string>
-    <string name="remove_member_failed">移除群成员失败</string>
-    <string name="quit_team_success">您已退群</string>
-    <string name="quit_team_failed">退群失败</string>
-    <string name="update_success">保存成功</string>
-    <string name="update_failed">保存失败</string>
-    <string name="dismiss_team_success">群已解散</string>
-    <string name="dismiss_team_failed">解散群失败</string>
-    <string name="team_name_toast">群名称不能为空</string>
-    <string name="transfer_team">转让群</string>
-    <string name="team_nickname">群昵称</string>
-    <string name="team_nickname_none">未填写</string>
-    <string name="remove_member">移出本群</string>
-    <string name="set_team_admin">设为管理员</string>
-    <string name="cancel_team_admin">取消管理员</string>
-    <string name="my_team_card">我的群名片</string>
-    <string name="team_member">群成员</string>
-    <string name="team_name">群名称</string>
-    <string name="team_introduce">群介绍</string>
-    <string name="team_extension">扩展示例</string>
-    <string name="team_notification_config">群消息提醒</string>
-    <string name="team_annourcement">群公告</string>
-    <string name="team_authentication">身份验证</string>
-    <string name="team_announce_title">标题</string>
-    <string name="team_announce_content">公告内容</string>
-    <string name="team_announce_empty">暂无公告</string>
-    <string name="team_announce_tips">成员仅可看到最近5条</string>
-    <string name="team_invite_members_success">群成员邀请已发出</string>
-    <string name="team_invite_members_failed">群成员邀请失败</string>
-    <string name="team_transfer_success">群转移成功</string>
-    <string name="team_transfer_failed">群转移失败</string>
-    <string name="team_transfer_without_member">没有可转移的群成员</string>
-    <string name="team_member_info">成员信息</string>
-    <string name="team_identity">身份</string>
-    <string name="team_admin">管理员</string>
-    <string name="team_creator">群主</string>
+    <string name="team_apply_sending">发送中…</string>
+    <string name="no_team">您还没有群</string>
     <string name="team_search_hint">请输入群号进行搜索</string>
+    <string name="team_number_not_exist">群号不存在</string>
     <string name="team_join">加入群组</string>
-    <string name="team_apply_to_join">申请加入</string>
     <string name="team_join_success">成功加入群: %1$s</string>
     <string name="team_apply_to_join_send_success">申请已发出</string>
     <string name="has_exist_in_team">已经在群里</string>
-    <string name="team_member_remove_confirm">确定要将其移出群组么?</string>
-    <string name="my_team_nickname">我的群昵称</string>
-    <string name="not_allow_empty">不能为空</string>
-    <string name="team_introduce_hint">点击填写群介绍</string>
-    <string name="team_extension_hint">点击修改扩展内容</string>
-    <string name="team_announce_hint">点击填写群公告</string>
-    <string name="team_create_notice">请添加群成员</string>
-    <string name="team_announce_notice">请输入群公告标题</string>
-    <string name="team_apply_sending">发送中…</string>
-    <string name="invite_member">邀请群成员</string>
-    <string name="reach_team_member_capacity">群成员数量不能超过%1$d</string>
-    <string name="over_team_member_capacity">邀请失败，群成员人数上限为%1$d人</string>
-    <string name="team_property">群属性</string>
-    <string name="no_team">您还没有群</string>
-    <string name="team_number_not_exist">群号不存在</string>
-    <string name="chat_setting">聊天信息</string>
 
     <!-- 消息提醒 -->
     <string name="toolbar_mutli_new_msg_tips">个联系人发来新消息</string>
@@ -188,7 +121,6 @@
     <!-- 消息类型 -->
     <string name="msg_type_image">图片</string>
     <string name="msg_type_audio">语音</string>
-
     <string name="title_activity_add_buddy">添加好友</string>
 
     <!-- location -->
@@ -224,10 +156,6 @@
     <string name="nim_status_bar_unsupported_message">%1$s: 无法显示该内容</string>
     <string name="nim_status_bar_hidden_msg_content">你收到一条新消息</string>
 
-    <!-- 消息搜索 -->
-    <string name="message_search_no_result">无结果</string>
-    <string name="message_search_title">查看聊天内容</string>
-
     <!--RTS白板-->
     <string name="doodle">白板</string>
     <string name="start_session">正在邀请对方，请稍后</string>
@@ -243,6 +171,7 @@
     <string name="accept_session">接受</string>
     <string name="reject_session">拒绝</string>
     <string name="doodle_back">上一步</string>
+    <string name="doodle_clear">清屏</string>
 
     <!-- setting -->
     <string name="settings">设置</string>
@@ -264,10 +193,30 @@
     <string name="web_version">云信网页版</string>
     <string name="multiport_logging">正在使用</string>
     <string name="kickout_notify">下线通知</string>
-    <string name="kickout_content">你的账号被%1$s踢出下线，请确定帐号信息安全</string>
+    <string name="kickout_content">你的帐号被%1$s踢出下线，请确定帐号信息安全</string>
 
     <!-- 阅后即焚 -->
     <string name="snapchat_longclick_to_view">按住查看</string>
     <string name="snapchat_title">阅后即焚</string>
 
+    <!-- 个人名片 -->
+    <string name="birthday">生 日</string>
+    <string name="phone">手 机</string>
+    <string name="email">邮 箱</string>
+    <string name="signature">签 名</string>
+    <string name="head">头 像</string>
+    <string name="user_information">个人信息</string>
+    <string name="nickname">昵 称</string>
+    <string name="gender">性 别</string>
+    <string name="male">男</string>
+    <string name="female">女</string>
+    <string name="other">其他</string>
+    <string name="phone_number">手机号码</string>
+    <string name="set_head_image">设置头像</string>
+    <string name="user_info_update_success">设置成功</string>
+    <string name="user_info_update_cancel">取消更新</string>
+    <string name="user_info_update_failed">设置失败，请重试</string>
+    <string name="head_update_success">头像设置成功</string>
+    <string name="head_update_failed">头像设置失败，请重试</string>
+    <string name="nickname_empty">昵称不能为空</string>
 </resources>

@@ -2,6 +2,7 @@ package com.netease.nim.demo.main.activity;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,9 +10,11 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
+import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.setting.SettingTemplate;
 import com.netease.nim.demo.main.setting.SettingType;
@@ -49,6 +52,19 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
         initUI();
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // android2.3以下版本 布局混乱的问题
+        if (Build.VERSION.SDK_INT <= 10) {
+            adapter = null;
+            initAdapter();
+            adapter.notifyDataSetChanged();
+        } else {
+            adapter.notifyDataSetChanged();
+        }
+    }
+
     private void initData() {
         if(UserPreferences.getStatusConfig() == null || !UserPreferences.getStatusConfig().downTimeToggle) {
             noDisturbTime = getString(R.string.setting_close);
@@ -64,8 +80,7 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
         View footer = LayoutInflater.from(this).inflate(R.layout.settings_logout_footer, null);
         listView.addFooterView(footer);
 
-        adapter = new SettingsAdapter(this, this, items);
-        listView.setAdapter(adapter);
+        initAdapter();
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -80,6 +95,11 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
                 logout();
             }
         });
+    }
+
+    private void initAdapter() {
+        adapter = new SettingsAdapter(this, this, items);
+        listView.setAdapter(adapter);
     }
 
     private void initItems() {
@@ -103,7 +123,7 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
 
         switch (item.getId()) {
             case TAG_HEAD:
-//                EditNicknameActivity.startActivityForResult(this, EditNicknameActivity.RES_CODE); 本期不做
+                UserProfileSettingActivity.start(this, DemoCache.getAccount());
                 break;
             case TAG_NOTICE:
                 break;

@@ -6,12 +6,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.model.User;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.database.DatabaseManager;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.activity.MultiportActivity;
 import com.netease.nim.demo.main.model.MainTab;
@@ -23,6 +20,7 @@ import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nim.uikit.recent.RecentContactsCallback;
 import com.netease.nim.uikit.recent.RecentContactsFragment;
 import com.netease.nim.uikit.team.TeamDataCache;
@@ -34,6 +32,7 @@ import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.auth.OnlineClient;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.List;
 
@@ -102,7 +101,7 @@ public class SessionListFragment extends MainTabFragment {
      * 注册用户信息更新监听
      */
     private void registerBuddyUpdateObserver(boolean register) {
-        ContactDataCache.getInstance().registerUserDataChangedObserver(userDataChangedObserver, register);
+        NimUserInfoCache.getInstance().registerUserDataChangedObserver(userDataChangedObserver, register);
     }
 
     /**
@@ -153,9 +152,9 @@ public class SessionListFragment extends MainTabFragment {
         }
     };
 
-    ContactDataCache.UserDataChangedObserver userDataChangedObserver = new ContactDataCache.UserDataChangedObserver() {
+    NimUserInfoCache.UserDataChangedObserver userDataChangedObserver = new NimUserInfoCache.UserDataChangedObserver() {
         @Override
-        public void onUpdateUsers(List<User> users) {
+        public void onUpdateUsers(List<NimUserInfo> users) {
             if (contactsFragment != null) {
                 contactsFragment.notifyDataSetChanged();
             }
@@ -176,10 +175,9 @@ public class SessionListFragment extends MainTabFragment {
 
     // 注销
     private void onLogout() {
-        DatabaseManager.getInstance().close();
-        ContactDataCache.getInstance().clearUserCache();
+        FriendDataCache.getInstance().clear();
+        NimUserInfoCache.getInstance().clear();
         TeamDataCache.getInstance().clearTeamCache();
-        ContactHttpClient.getInstance().resetToken();
         DemoCache.clear();
         LoginActivity.start(getActivity(), true);
         getActivity().finish();
@@ -229,8 +227,7 @@ public class SessionListFragment extends MainTabFragment {
                     GuessAttachment guess = (GuessAttachment) attachment;
                     return guess.getValue().getDesc();
                 } else if (attachment instanceof RTSAttachment) {
-                    RTSAttachment rts = (RTSAttachment) attachment;
-                    return rts.getContent();
+                    return "[白板]";
                 } else if (attachment instanceof StickerAttachment) {
                     return "[贴图]";
                 } else if (attachment instanceof SnapChatAttachment) {

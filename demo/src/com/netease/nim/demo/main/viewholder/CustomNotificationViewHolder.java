@@ -4,13 +4,12 @@ import android.view.View;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSONObject;
-import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.main.helper.MessageHelper;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.demo.main.helper.MessageHelper;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.CustomNotification;
 
@@ -53,13 +52,19 @@ public class CustomNotificationViewHolder extends TViewHolder {
         if (notification.getSessionType() == SessionTypeEnum.P2P) {
             imgHead.loadBuddyAvatar(notification.getFromAccount());
         } else if (notification.getSessionType() == SessionTypeEnum.Team) {
-            imgHead.setImageResource(R.drawable.avatar_group);
+            imgHead.setImageResource(R.drawable.nim_avatar_group);
         }
     }
 
     private void updateMsgLabel() {
         JSONObject jsonObj = com.alibaba.fastjson.JSONObject.parseObject(notification.getContent());
-        String content = jsonObj.getString("content");
+        String id = jsonObj.getString("id");
+        String content;
+        if (id != null && id.equals("1")) {
+            content = "正在输入...";
+        } else {
+            content = jsonObj.getString("content");
+        }
         lblMessage.setText(content);
 
         String timeString = TimeUtil.getTimeShowString(notification.getTime(), true);
@@ -82,10 +87,10 @@ public class CustomNotificationViewHolder extends TViewHolder {
     }
 
     public void inflate() {
-        this.imgHead = (HeadImageView) view.findViewById(R.id.imgHead);
-        this.lblNickname = (TextView) view.findViewById(R.id.lblNickname);
-        this.lblMessage = (TextView) view.findViewById(R.id.lblMessage);
-        this.lblDatetime = (TextView) view.findViewById(R.id.lblDateTime);
+        this.imgHead = (HeadImageView) view.findViewById(R.id.img_head);
+        this.lblNickname = (TextView) view.findViewById(R.id.tv_nick_name);
+        this.lblMessage = (TextView) view.findViewById(R.id.tv_message);
+        this.lblDatetime = (TextView) view.findViewById(R.id.tv_date_time);
         this.topLine = view.findViewById(R.id.top_line);
         this.bottomLine = view.findViewById(R.id.bottom_line);
     }

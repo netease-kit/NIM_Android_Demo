@@ -2,7 +2,7 @@ package com.netease.nim.demo.main.helper;
 
 import android.text.TextUtils;
 
-import com.netease.nim.demo.contact.cache.ContactDataCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.uikit.team.TeamDataCache;
 import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
@@ -17,7 +17,7 @@ import com.netease.nimlib.sdk.team.model.Team;
 public class MessageHelper {
     public static String getName(String uid, SessionTypeEnum sessionType) {
         if (sessionType == SessionTypeEnum.P2P) {
-            return ContactDataCache.getInstance().getUserDisplayName(uid);
+            return NimUserInfoCache.getInstance().getUserDisplayName(uid);
         } else if (sessionType == SessionTypeEnum.Team) {
             return TeamDataCache.getInstance().getTeamName(uid);
         }
@@ -26,7 +26,7 @@ public class MessageHelper {
 
     public static String getVerifyNotificationText(SystemMessage message) {
         StringBuilder sb = new StringBuilder();
-        String fromAccount = ContactDataCache.getInstance().getUserDisplayNameYou(message.getFromAccount());
+        String fromAccount = NimUserInfoCache.getInstance().getUserDisplayNameYou(message.getFromAccount());
         Team team = TeamDataCache.getInstance().getTeamById(message.getTargetId());
         if (team == null && message.getAttachObject() instanceof Team) {
             team = (Team) message.getAttachObject();

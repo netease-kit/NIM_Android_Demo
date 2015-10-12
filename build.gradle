@@ -21,3 +21,4 @@ allprojects {
         }
     }
 }
+//apply from: 'pack/pack.gradle'

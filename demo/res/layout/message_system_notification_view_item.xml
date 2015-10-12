@@ -18,8 +18,8 @@
 
         <com.netease.nim.uikit.common.ui.imageview.HeadImageView
             android:id="@+id/from_account_head_image"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="@dimen/avatar_size_default"
+            android:layout_height="@dimen/avatar_size_default"
             android:layout_centerVertical="true"
             android:layout_alignParentLeft="true"
             android:layout_marginLeft="10dp"
@@ -37,7 +37,7 @@
                 android:id="@+id/agree"
                 android:layout_width="54dip"
                 android:layout_height="34dip"
-                android:background="@drawable/team_create_btn_selector"
+                android:background="@drawable/nim_team_create_btn_selector"
                 android:text="@string/agree"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_14" />

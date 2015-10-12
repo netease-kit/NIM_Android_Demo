@@ -6,7 +6,7 @@
     android:orientation="vertical" >
 
     <include
-        android:id="@+id/contactLoadingFrame"
-        layout="@layout/contact_loading_frame" />
+        android:id="@+id/contact_loading_frame"
+        layout="@layout/nim_contact_loading_frame" />
 
 </LinearLayout>

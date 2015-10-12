@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="@dimen/isetting_item_height"
-    android:background="@drawable/semitransparency_selector"
+    android:background="@drawable/nim_semitransparency_selector"
     android:paddingRight="@dimen/isetting_item_padding_right">
 
     <ImageView
@@ -16,8 +16,8 @@
 
     <com.netease.nim.uikit.common.ui.imageview.HeadImageView
         android:id="@+id/head_image"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="@dimen/avatar_size_default"
+        android:layout_height="@dimen/avatar_size_default"
         android:layout_centerVertical="true"
         android:layout_marginRight="15dp"
         android:layout_toRightOf="@id/settings_item_icon"
@@ -65,7 +65,7 @@
         android:layout_toRightOf="@+id/title_label"
         android:gravity="right">
 
-        <com.netease.nim.demo.common.ui.widget.SwitchButton
+        <com.netease.nim.uikit.common.ui.widget.SwitchButton
             android:id="@+id/setting_item_toggle"
             android:layout_width="58dip"
             android:layout_height="36.67dip"

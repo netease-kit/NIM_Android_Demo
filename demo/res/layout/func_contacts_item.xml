@@ -2,11 +2,11 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/contact_list_item_selecter"
+    android:background="@drawable/nim_contact_list_item_selecter"
     android:minHeight="55dip" >
 
     <ImageView
-        android:id="@+id/imgHead"
+        android:id="@+id/img_head"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -17,12 +17,12 @@
         android:src="@drawable/ic_secretary" />
 
     <TextView
-        android:id="@+id/lblfuncname"
+        android:id="@+id/tv_func_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_gravity="center_vertical"
-        android:layout_toRightOf="@+id/imgHead"
+        android:layout_toRightOf="@+id/img_head"
         android:ellipsize="end"
         android:singleLine="true"
         android:text="系统功能"
@@ -31,7 +31,7 @@
 
     <TextView
         android:id="@+id/tab_new_msg_label"
-        android:layout_toRightOf="@id/lblfuncname"
+        android:layout_toRightOf="@id/tv_func_name"
         android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -49,6 +49,6 @@
         style="@style/horizontal_light_thin_divider"
         android:layout_alignParentBottom="true"
         android:layout_marginRight="10dp"
-        android:layout_toRightOf="@id/imgHead" />
+        android:layout_toRightOf="@id/img_head" />
 
 </RelativeLayout>

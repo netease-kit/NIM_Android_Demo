@@ -17,9 +17,9 @@
         android:minHeight="71dip">
 
         <com.netease.nim.uikit.common.ui.imageview.HeadImageView
-            android:id="@+id/imgHead"
-            android:layout_width="50dip"
-            android:layout_height="50dip"
+            android:id="@+id/img_head"
+            android:layout_width="@dimen/avatar_size_default"
+            android:layout_height="@dimen/avatar_size_default"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:layout_gravity="center_vertical"
@@ -27,12 +27,12 @@
             android:layout_marginRight="12dp"/>
 
         <TextView
-            android:id="@+id/lblNickname"
+            android:id="@+id/tv_nick_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginRight="6dp"
             android:layout_marginTop="16dip"
-            android:layout_toRightOf="@id/imgHead"
+            android:layout_toRightOf="@id/img_head"
             android:ellipsize="end"
             android:includeFontPadding="false"
             android:singleLine="true"
@@ -40,11 +40,11 @@
             android:textSize="16sp"/>
 
         <TextView
-            android:id="@+id/lblMessage"
+            android:id="@+id/tv_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/lblNickname"
-            android:layout_toRightOf="@id/imgHead"
+            android:layout_below="@id/tv_nick_name"
+            android:layout_toRightOf="@id/img_head"
             android:layout_marginRight="10dip"
             android:layout_marginTop="5dp"
             android:autoLink="none"
@@ -55,7 +55,7 @@
             android:textSize="13sp"/>
 
         <TextView
-            android:id="@+id/lblDateTime"
+            android:id="@+id/tv_date_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"

@@ -185,7 +185,7 @@ public class AVChatSurfaceManager {
         findViews();
         /**
          * 获取视频SurfaceView，加入到自己的布局中，用于呈现视频图像
-         * account 要显示视频的用户账号
+         * account 要显示视频的用户帐号
          */
         SurfaceView surfaceView = AVChatManager.getInstance().getSurfaceRender(account);
         if (surfaceView != null) {
@@ -203,7 +203,7 @@ public class AVChatSurfaceManager {
         findViews();
         /**
          * 获取视频SurfaceView，加入到自己的布局中，用于呈现视频图像
-         * account 要显示视频的用户账号
+         * account 要显示视频的用户帐号
          */
         SurfaceView surfaceView = AVChatManager.getInstance().getSurfaceRender(account);
         if (surfaceView != null) {

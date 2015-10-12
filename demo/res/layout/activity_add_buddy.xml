@@ -12,7 +12,7 @@
         android:id="@+id/account_editor"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="输入账号"/>
+        android:hint="输入帐号"/>
 
     <EditText
         android:id="@+id/nick_editor"

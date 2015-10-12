@@ -8,15 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.main.helper.SystemMessageUnreadManager;
-import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
 import com.netease.nim.demo.main.adapter.MainTabPagerAdapter;
+import com.netease.nim.demo.main.helper.SystemMessageUnreadManager;
 import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderItem;
 import com.netease.nim.demo.main.reminder.ReminderManager;
+import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -103,8 +102,8 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
      * 查找页面控件
      */
     private void findViews() {
-        tabs = (PagerSlidingTabStrip) getView().findViewById(R.id.tabs);
-        pager = (ViewPager) getView().findViewById(R.id.main_tab_pager);
+        tabs = findView(R.id.tabs);
+        pager = findView(R.id.main_tab_pager);
     }
 
     @Override
@@ -176,7 +175,7 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
             /**
              * 设置最近联系人的消息为已读
              *
-             * @param account,    聊天对象账号，或者以下两个值：
+             * @param account,    聊天对象帐号，或者以下两个值：
              *                    {@link #MSG_CHATTING_ACCOUNT_ALL} 目前没有与任何人对话，但能看到消息提醒（比如在消息列表界面），不需要在状态栏做消息通知
              *                    {@link #MSG_CHATTING_ACCOUNT_NONE} 目前没有与任何人对话，需要状态栏消息通知
              */

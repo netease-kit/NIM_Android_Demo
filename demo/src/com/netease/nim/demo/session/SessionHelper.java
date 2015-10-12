@@ -4,13 +4,17 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.text.TextUtils;
+import android.view.View;
+import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.UserProfileActivity;
+import com.netease.nim.demo.main.helper.TeamCreateHelper;
 import com.netease.nim.demo.session.action.AVChatAction;
 import com.netease.nim.demo.session.action.FileAction;
 import com.netease.nim.demo.session.action.GuessAction;
+import com.netease.nim.demo.session.action.RTSAction;
 import com.netease.nim.demo.session.action.SnapChatAction;
 import com.netease.nim.demo.session.activity.MessageHistoryActivity;
 import com.netease.nim.demo.session.extension.CustomAttachParser;
@@ -19,21 +23,27 @@ import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
+import com.netease.nim.demo.session.search.SearchMessageActivity;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderAVChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderDefCustom;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderFile;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderGuess;
-import com.netease.nim.demo.session.viewholder.MsgViewHolderRTSNotification;
+import com.netease.nim.demo.session.viewholder.MsgViewHolderRTS;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
-import com.netease.nim.demo.team.activity.AdvancedTeamInfoActivity;
-import com.netease.nim.demo.team.activity.NormalTeamInfoActivity;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
+import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
+import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.session.SessionCustomization;
 import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
 import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.team.helper.TeamHelper;
+import com.netease.nim.uikit.team.model.TeamExtras;
+import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -41,19 +51,26 @@ import com.netease.nimlib.sdk.msg.attachment.FileAttachment;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
 import com.netease.nimlib.sdk.team.model.Team;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * UIKit自定义消息界面用法展示类
  */
 public class SessionHelper {
 
+    private static final int ACTION_HISTORY_QUERY = 0;
+    private static final int ACTION_SEARCH_MESSAGE = 1;
+    private static final int REQUEST_CODE_NORMAL = 3;
+
     private static SessionCustomization p2pCustomization;
     private static SessionCustomization teamCustomization;
     private static SessionCustomization myP2pCustomization;
+
+    private static NIMPopupMenu popupMenu;
+    private static List<PopupMenuItem> menuItemList;
 
     public static void init() {
         // 注册自定义消息附件解析器
@@ -84,20 +101,31 @@ public class SessionHelper {
              p2pCustomization = new SessionCustomization() {
                 // 由于需要Activity Result， 所以重载该函数。
                 @Override
-                public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-                    if (requestCode == NormalTeamInfoActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                        String result = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_REASON);
-                        if (result == null) {
-                            return;
-                        }
-                        if (result.equals(NormalTeamInfoActivity.RESULT_EXTRA_REASON_CREATE)) {
-                            String tid = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_DATA);
-                            if (TextUtils.isEmpty(tid)) {
-                                return;
-                            }
+                public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
+                    super.onActivityResult(activity, requestCode, resultCode, data);
+                    if (resultCode == Activity.RESULT_OK) {
+                        if (requestCode == REQUEST_CODE_NORMAL) {
+                            final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
+                            if (selected != null && !selected.isEmpty()) {
+                                TeamCreateHelper.createNormalTeam(activity, selected, 50, new RequestCallback<Void>() {
+                                    @Override
+                                    public void onSuccess(Void param) {
+                                        activity.finish();
+                                    }
 
-                            startTeamSession(activity, tid);
-                            activity.finish();
+                                    @Override
+                                    public void onFailed(int code) {
+
+                                    }
+
+                                    @Override
+                                    public void onException(Throwable exception) {
+
+                                    }
+                                });
+                            } else {
+                                Toast.makeText(DemoCache.getContext(), "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
+                            }
                         }
                     }
                 }
@@ -118,6 +146,7 @@ public class SessionHelper {
             ArrayList<BaseAction> actions = new ArrayList<>();
             actions.add(new AVChatAction(AVChatType.AUDIO));
             actions.add(new AVChatAction(AVChatType.VIDEO));
+            actions.add(new RTSAction());
             actions.add(new SnapChatAction());
             actions.add(new GuessAction());
             actions.add(new FileAction());
@@ -128,16 +157,19 @@ public class SessionHelper {
             ArrayList<SessionCustomization.OptionsButton> buttons = new ArrayList<>();
             SessionCustomization.OptionsButton cloudMsgButton = new SessionCustomization.OptionsButton() {
                 @Override
-                public void onClick(Context context, String sessionId) {
-                    MessageHistoryActivity.start(context, sessionId, SessionTypeEnum.P2P); // 漫游消息查询
+                public void onClick(Context context, View view, String sessionId) {
+                    initPopuptWindow(context, view, sessionId, SessionTypeEnum.P2P);
                 }
             };
             cloudMsgButton.iconId = R.drawable.nim_ic_messge_history;
 
             SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
                 @Override
-                public void onClick(Context context, String sessionId) {
-                    NormalTeamInfoActivity.startForCreateNormalTeam(context, sessionId); // 创建群
+                public void onClick(Context context, View view, String sessionId) {
+                    ArrayList<String> memberAccounts = new ArrayList<>();
+                    memberAccounts.add(sessionId);
+                    ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(memberAccounts, 50);
+                    NimUIKit.startContactSelect(context, option, REQUEST_CODE_NORMAL);// 创建群
                 }
             };
 
@@ -157,13 +189,13 @@ public class SessionHelper {
                 // 由于需要Activity Result， 所以重载该函数。
                 @Override
                 public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-                    if (requestCode == NormalTeamInfoActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-                        String result = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_REASON);
+                    if (requestCode == TeamRequestCode.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+                        String result = data.getStringExtra(TeamExtras.RESULT_EXTRA_REASON);
                         if (result == null) {
                             return;
                         }
-                        if (result.equals(NormalTeamInfoActivity.RESULT_EXTRA_REASON_CREATE)) {
-                            String tid = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_DATA);
+                        if (result.equals(TeamExtras.RESULT_EXTRA_REASON_CREATE)) {
+                            String tid = data.getStringExtra(TeamExtras.RESULT_EXTRA_DATA);
                             if (TextUtils.isEmpty(tid)) {
                                 return;
                             }
@@ -197,10 +229,11 @@ public class SessionHelper {
             ArrayList<SessionCustomization.OptionsButton> buttons = new ArrayList<>();
             SessionCustomization.OptionsButton cloudMsgButton = new SessionCustomization.OptionsButton() {
                 @Override
-                public void onClick(Context context, String sessionId) {
-                    MessageHistoryActivity.start(context, sessionId, SessionTypeEnum.P2P); // 漫游消息查询
+                public void onClick(Context context, View view, String sessionId) {
+                    initPopuptWindow(context, view, sessionId, SessionTypeEnum.P2P);
                 }
             };
+
             cloudMsgButton.iconId = R.drawable.nim_ic_messge_history;
 
             buttons.add(cloudMsgButton);
@@ -214,11 +247,11 @@ public class SessionHelper {
             teamCustomization = new SessionCustomization() {
                 @Override
                 public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
-                    if (requestCode == NormalTeamInfoActivity.REQUEST_CODE) {
+                    if (requestCode == TeamRequestCode.REQUEST_CODE) {
                         if (resultCode == Activity.RESULT_OK) {
-                            String reason = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_REASON);
-                            boolean finish = reason != null && (reason.equals(NormalTeamInfoActivity
-                                    .RESULT_EXTRA_REASON_DISMISS) || reason.equals(NormalTeamInfoActivity.RESULT_EXTRA_REASON_QUIT));
+                            String reason = data.getStringExtra(TeamExtras.RESULT_EXTRA_REASON);
+                            boolean finish = reason != null && (reason.equals(TeamExtras
+                                    .RESULT_EXTRA_REASON_DISMISS) || reason.equals(TeamExtras.RESULT_EXTRA_REASON_QUIT));
                             if (finish) {
                                 activity.finish(); // 退出or解散群直接退出多人会话
                             }
@@ -242,24 +275,20 @@ public class SessionHelper {
             ArrayList<SessionCustomization.OptionsButton> buttons = new ArrayList<>();
             SessionCustomization.OptionsButton cloudMsgButton = new SessionCustomization.OptionsButton() {
                 @Override
-                public void onClick(Context context, String sessionId) {
-                    MessageHistoryActivity.start(context, sessionId, SessionTypeEnum.Team); // 群漫游消息查询; // 漫游消息查询
+                public void onClick(Context context, View view, String sessionId) {
+                    initPopuptWindow(context, view, sessionId, SessionTypeEnum.Team);
                 }
             };
             cloudMsgButton.iconId = R.drawable.nim_ic_messge_history;
 
             SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
                 @Override
-                public void onClick(Context context, String sessionId) {
+                public void onClick(Context context, View view, String sessionId) {
                     Team team = TeamDataCache.getInstance().getTeamById(sessionId);
-                    if (team == null) {
-                        return;
-                    }
-
-                    if (team.getType() == TeamTypeEnum.Advanced) {
-                        AdvancedTeamInfoActivity.start(context, sessionId); // 启动固定群组资料页
+                    if (team != null && team.isMyTeam()) {
+                        NimUIKit.startTeamInfo(context, sessionId);
                     } else {
-                        NormalTeamInfoActivity.startForTeamInfo(context, sessionId); // 启动普通群组资料页
+                        Toast.makeText(context, R.string.team_invalid_tip, Toast.LENGTH_SHORT).show();
                     }
                 }
             };
@@ -281,7 +310,7 @@ public class SessionHelper {
         NimUIKit.registerMsgItemViewHolder(CustomAttachment.class, MsgViewHolderDefCustom.class);
         NimUIKit.registerMsgItemViewHolder(StickerAttachment.class, MsgViewHolderSticker.class);
         NimUIKit.registerMsgItemViewHolder(SnapChatAttachment.class, MsgViewHolderSnapChat.class);
-        NimUIKit.registerMsgItemViewHolder(RTSAttachment.class, MsgViewHolderRTSNotification.class);
+        NimUIKit.registerMsgItemViewHolder(RTSAttachment.class, MsgViewHolderRTS.class);
     }
 
     private static void setSessionListener() {
@@ -299,5 +328,39 @@ public class SessionHelper {
         };
 
         NimUIKit.setSessionListener(listener);
+    }
+
+    private static void initPopuptWindow(Context context, View view, String sessionId, SessionTypeEnum sessionTypeEnum) {
+        if (popupMenu == null) {
+            menuItemList = new ArrayList<>();
+            popupMenu = new NIMPopupMenu(context, menuItemList, listener);
+        }
+        menuItemList.clear();
+        menuItemList.addAll(getMoreMenuItems(context, sessionId, sessionTypeEnum));
+        popupMenu.notifyData();
+        popupMenu.show(view);
+    }
+
+    private static NIMPopupMenu.MenuItemClickListener listener = new NIMPopupMenu.MenuItemClickListener() {
+        @Override
+        public void onItemClick(PopupMenuItem item) {
+            switch (item.getTag()) {
+                case ACTION_HISTORY_QUERY:
+                    MessageHistoryActivity.start(item.getContext(), item.getSessionId(), item.getSessionTypeEnum()); // 漫游消息查询
+                    break;
+                case ACTION_SEARCH_MESSAGE:
+                    SearchMessageActivity.start(item.getContext(), item.getSessionId(), item.getSessionTypeEnum());
+                    break;
+            }
+        }
+    };
+
+    private static List<PopupMenuItem> getMoreMenuItems(Context context, String sessionId, SessionTypeEnum sessionTypeEnum) {
+        List<PopupMenuItem> moreMenuItems = new ArrayList<PopupMenuItem>();
+            moreMenuItems.add(new PopupMenuItem(context, ACTION_HISTORY_QUERY, sessionId,
+                    sessionTypeEnum, NimUIKit.getContext().getString(R.string.message_history_query)));
+            moreMenuItems.add(new PopupMenuItem(context, ACTION_SEARCH_MESSAGE, sessionId,
+                    sessionTypeEnum, NimUIKit.getContext().getString(R.string.message_search_title)));
+        return moreMenuItems;
     }
 }

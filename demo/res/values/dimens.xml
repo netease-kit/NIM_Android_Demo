@@ -34,7 +34,6 @@
     <dimen name="text_size_46">46sp</dimen>
     <dimen name="text_size_55">55sp</dimen>
     <dimen name="sns_content_text_size_15">15sp</dimen>
-    <dimen name="split_one_dip">1dip</dimen>
     <dimen name="split_one_pixels">1px</dimen>
     <dimen name="text_small_size_ten_sp">10sp</dimen>
     

@@ -13,7 +13,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.uikit.team.TeamDataCache;
 import com.netease.nim.uikit.session.emoji.MoonUtil;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
@@ -74,19 +74,19 @@ public class SearchMessageAdapter extends BaseAdapter {
 
     private class TextSearchResultViewHolder {
         private HeadImageView imgHead;
-        private TextView lblNickname;
-        private TextView lblMessage;
-        private TextView lblDatetime;
+        private TextView tvNickname;
+        private TextView tvMessage;
+        private TextView tvDatetime;
         private ImageView imgMsgStatus;
 
 
         public TextSearchResultViewHolder(View view) {
-            this.imgHead = (HeadImageView) view.findViewById(R.id.imgHead);
+            this.imgHead = (HeadImageView) view.findViewById(R.id.img_head);
 
-            this.lblNickname = (TextView) view.findViewById(R.id.lblNickname);
-            this.lblMessage = (TextView) view.findViewById(R.id.lblMessage);
-            this.lblDatetime = (TextView) view.findViewById(R.id.lblDateTime);
-            this.imgMsgStatus = (ImageView) view.findViewById(R.id.imgMsgStatus);
+            this.tvNickname = (TextView) view.findViewById(R.id.tv_nick_name);
+            this.tvMessage = (TextView) view.findViewById(R.id.tv_message);
+            this.tvDatetime = (TextView) view.findViewById(R.id.tv_date_time);
+            this.imgMsgStatus = (ImageView) view.findViewById(R.id.img_msg_status);
         }
 
         public void refresh(IMMessage message) {
@@ -101,17 +101,17 @@ public class SearchMessageAdapter extends BaseAdapter {
         	int labelWidth = ScreenUtil.screenWidth;
         	// 减去固定的头像和时间宽度
         	labelWidth -= ScreenUtil.dip2px(70 + 70);
-        	lblNickname.setMaxWidth(labelWidth);
+        	tvNickname.setMaxWidth(labelWidth);
             if (message.getSessionType() == SessionTypeEnum.Team) {
-                lblNickname.setText(TeamDataCache.getInstance().getTeamMemberDisplayName(message.getSessionId(), message.getFromAccount()));
+                tvNickname.setText(TeamDataCache.getInstance().getTeamMemberDisplayName(message.getSessionId(), message.getFromAccount()));
             } else {
-                lblNickname.setText(ContactDataCache.getInstance().getUserDisplayName(message.getFromAccount()));
+                tvNickname.setText(NimUserInfoCache.getInstance().getUserDisplayName(message.getFromAccount()));
             }
         }
 
         private void refreshContent(IMMessage message) {
-            MoonUtil.identifyFaceExpressionAndTags(context, lblMessage, message.getContent(), ImageSpan.ALIGN_BOTTOM, 0.45f);
-//            SpanUtil.makeKeywordSpan(context, lblMessage, keyword);
+            MoonUtil.identifyFaceExpressionAndTags(context, tvMessage, message.getContent(), ImageSpan.ALIGN_BOTTOM, 0.45f);
+//            SpanUtil.makeKeywordSpan(context, tvMessage, keyword);
             
             switch (message.getStatus()) {
             case fail:
@@ -126,7 +126,7 @@ public class SearchMessageAdapter extends BaseAdapter {
 
         private void refreshTime(IMMessage messageHistory) {
             String timeString = TimeUtil.getTimeShowString(messageHistory.getTime(), true);
-            lblDatetime.setText(timeString);
+            tvDatetime.setText(timeString);
         }
     }
 }

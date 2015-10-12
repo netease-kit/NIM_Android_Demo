@@ -9,28 +9,29 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.database.DatabaseManager;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.fragment.HomeFragment;
-import com.netease.nim.demo.main.model.Extras;
+import com.netease.nim.demo.main.helper.TeamCreateHelper;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.demo.team.activity.AdvancedTeamCreateActivity;
-import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
-import com.netease.nim.demo.team.activity.NormalTeamInfoActivity;
+import com.netease.nim.demo.team.AdvancedTeamSearchActivity;
+import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.cache.BitmapCache;
+import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.session.emoji.StickerManager;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+
+import java.util.ArrayList;
 
 /**
  * 主界面
@@ -40,9 +41,15 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
 public class MainActivity extends TActionBarActivity {
 
     private static final String EXTRA_APP_QUIT = "APP_QUIT";
-    private final String TAG = "MainActivity";
+    private static final int REQUEST_CODE_NORMAL = 1;
+    private static final int REQUEST_CODE_ADVANCED = 2;
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     private HomeFragment mainFragment;
+
+
+    private int teamCapacity = 50; // 群人数上限，暂定
+    private ArrayList<String> memberAccounts;
 
     public static void start(Context context) {
         start(context, null);
@@ -78,11 +85,7 @@ public class MainActivity extends TActionBarActivity {
         onParseIntent();
 
         // 准备必要的数据
-        prepareData();
-
-        // observers
-        ContactDataCache.getInstance().init();
-        TeamDataCache.getInstance().init();
+        initData();
 
         // 加载主页面
         new Handler(MainActivity.this.getMainLooper()).postDelayed(new Runnable() {
@@ -97,14 +100,6 @@ public class MainActivity extends TActionBarActivity {
     protected void onNewIntent(Intent intent) {
         setIntent(intent);
         onParseIntent();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        // observers
-        TeamDataCache.getInstance().release();
     }
 
     @Override
@@ -140,10 +135,14 @@ public class MainActivity extends TActionBarActivity {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.create_normal_team:
-                NormalTeamInfoActivity.startForCreateNormalTeam(MainActivity.this);
+                memberAccounts.clear();
+                ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(memberAccounts, teamCapacity);
+                NimUIKit.startContactSelect(MainActivity.this, option, REQUEST_CODE_NORMAL);
                 break;
             case R.id.create_regular_team:
-                startActivity(new Intent(MainActivity.this, AdvancedTeamCreateActivity.class));
+                memberAccounts.clear();
+                ContactSelectActivity.Option advancedOption = TeamHelper.getCreateContactSelectOption(memberAccounts, teamCapacity);
+                NimUIKit.startContactSelect(MainActivity.this, advancedOption, REQUEST_CODE_ADVANCED);
                 break;
             case R.id.search_advanced_team:
                 AdvancedTeamSearchActivity.start(MainActivity.this);
@@ -183,9 +182,9 @@ public class MainActivity extends TActionBarActivity {
                 localIntent.setClass(this, AVChatActivity.class);
                 startActivity(localIntent);
             }
-        } else if (intent.hasExtra(Extras.EXTRA_JUMP_P2P)) {
-            Intent data = intent.getParcelableExtra(Extras.EXTRA_DATA);
-            String account = data.getStringExtra(Extras.EXTRA_ACCOUNT);
+        } else if (intent.hasExtra(com.netease.nim.demo.main.model.Extras.EXTRA_JUMP_P2P)) {
+            Intent data = intent.getParcelableExtra(com.netease.nim.demo.main.model.Extras.EXTRA_DATA);
+            String account = data.getStringExtra(com.netease.nim.demo.main.model.Extras.EXTRA_ACCOUNT);
             if (!TextUtils.isEmpty(account)) {
                 SessionHelper.startP2PSession(this, account);
             }
@@ -199,62 +198,50 @@ public class MainActivity extends TActionBarActivity {
         }
     }
 
-    private void prepareData() {
-        prepareCacheData();
-        prepareRemoteData();
+    private void initData() {
         new Handler(getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                prepareLocalData();
+                StickerManager.getInstance().init(); // 加载本地贴图基本数据
+                BitmapCache.getInstance().init();
             }
         }, 2000);
-    }
 
-    private void prepareCacheData() {
-        ContactDataCache.getInstance().initUserCache(null);
-        TeamDataCache.getInstance().initTeamCache();
-    }
-
-    private void prepareRemoteData() {
-        ContactDataCache.getInstance().clearFriendCache();
-        ContactDataCache.getInstance().clearUserCache();
-        ContactDataCache.getInstance().getUsersOfMyFriend(null);
-    }
-
-    private void prepareLocalData() {
-        StickerManager.getInstance().init(); // 加载本地贴图基本数据
-        BitmapCache.getInstance().init();
+        memberAccounts = new ArrayList<>();
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == NormalTeamInfoActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
-            String result = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_REASON);
-            if (result == null) {
-                return;
-            }
-            if (result.equals(NormalTeamInfoActivity.RESULT_EXTRA_REASON_CREATE)) {
-                String tid = data.getStringExtra(NormalTeamInfoActivity.RESULT_EXTRA_DATA);
-                if (TextUtils.isEmpty(tid)) {
-                    return;
+        if (resultCode == Activity.RESULT_OK) {
+            if (requestCode == REQUEST_CODE_NORMAL) {
+                final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
+                if (selected != null && !selected.isEmpty()) {
+                    memberAccounts.clear();
+                    memberAccounts.addAll(selected);
+                    TeamCreateHelper.createNormalTeam(MainActivity.this, memberAccounts, teamCapacity, null);
+                } else {
+                    Toast.makeText(MainActivity.this, "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
                 }
-
-                SessionHelper.startTeamSession(MainActivity.this, tid); // 进入创建的群
+            } else if (requestCode == REQUEST_CODE_ADVANCED) {
+                final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
+                memberAccounts.clear();
+                memberAccounts.addAll(selected);
+                TeamCreateHelper.createAdvancedTeam(MainActivity.this, memberAccounts, teamCapacity);
             }
         }
+
     }
 
     // 注销
     private void onLogout() {
-        DatabaseManager.getInstance().close();
-        ContactDataCache.getInstance().clearFriendCache();
-        ContactDataCache.getInstance().clearUserCache();
-        TeamDataCache.getInstance().clearTeamCache();
-        ContactHttpClient.getInstance().resetToken();
+        // 清理缓存&注销监听
+        NimUserInfoCache.getInstance().clear();
+        BitmapCache.getInstance().clear();
+        NimUIKit.clearCache();
         DemoCache.clear();
-        BitmapCache.getInstance().clearCache();
+
+        // 启动登录
         LoginActivity.start(this);
         finish();
     }

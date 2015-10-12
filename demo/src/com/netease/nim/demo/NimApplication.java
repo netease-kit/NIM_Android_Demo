@@ -18,25 +18,36 @@ import com.netease.nim.demo.common.util.sys.SystemUtil;
 import com.netease.nim.demo.config.ExtraOptions;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.core.query.PinYin;
+import com.netease.nim.demo.contact.ContactHelper;
 import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.database.DatabaseManager;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
+import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.uikit.ImageLoaderKit;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.contact.ContactProvider;
+import com.netease.nim.uikit.contact.FriendDataCache;
+import com.netease.nim.uikit.contact.core.query.PinYin;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatRingerConfig;
+import com.netease.nimlib.sdk.rts.RTSManager;
+import com.netease.nimlib.sdk.rts.model.RTSData;
+import com.netease.nimlib.sdk.rts.model.RTSRingerConfig;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class NimApplication extends Application {
 
@@ -52,9 +63,6 @@ public class NimApplication extends Application {
         AppCrashHandler.getInstance(this);
 
         if (inMainProcess()) {
-            // fetch access token
-            ContactHttpClient.getInstance().getTokenOnLogin();
-
             // init pinyin
             PinYin.init(this);
             PinYin.validate();
@@ -65,8 +73,14 @@ public class NimApplication extends Application {
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
 
+            // 注册必要的观察者
+            initObservers();
+
             // 注册网络通话来电
             enableAVChat();
+
+            // 注册白板会话
+            enableRTS();
 
             // 注册语言变化监听
             registerLocaleReceiver(true);
@@ -79,8 +93,6 @@ public class NimApplication extends Application {
 
         if (!TextUtils.isEmpty(account) && !TextUtils.isEmpty(token)) {
             DemoCache.setAccount(account.toLowerCase());
-            // open db
-            DatabaseManager.getInstance().open(this);
             return new LoginInfo(account, token);
         } else {
             return null;
@@ -137,6 +149,13 @@ public class NimApplication extends Application {
         return packageName.equals(processName);
     }
 
+    private void initObservers() {
+        NimUserInfoCache.getInstance().registerObservers(true);
+    }
+
+    /**
+     * 音视频通话配置与监听
+     */
     private void enableAVChat() {
         setupAVChat();
         registerAVChatIncomingCallObserver(true);
@@ -153,13 +172,39 @@ public class NimApplication extends Application {
     }
 
     private void registerAVChatIncomingCallObserver(boolean register) {
-        // 注册/注销网络来电. true为注册，false为注销
         AVChatManager.getInstance().observeIncomingCall(new Observer<AVChatData>() {
             @Override
             public void onEvent(AVChatData data) {
                 // 有网络来电打开AVChatActivity
                 AVChatProfile.getInstance().setAVChatting(true);
                 AVChatActivity.launch(DemoCache.getContext(), data, AVChatActivity.FROM_BROADCASTRECEIVER);
+            }
+        }, register);
+    }
+
+    /**
+     * 白板实时时会话配置与监听
+     */
+    private void enableRTS() {
+        setupRTS();
+        registerRTSIncomingObserver(true);
+    }
+
+    private void setupRTS() {
+        RTSRingerConfig config = new RTSRingerConfig();
+        config.res_connecting = R.raw.avchat_connecting;
+        config.res_no_response = R.raw.avchat_no_response;
+        config.res_peer_busy = R.raw.avchat_peer_busy;
+        config.res_peer_reject = R.raw.avchat_peer_reject;
+        config.res_ring = R.raw.avchat_ring;
+        RTSManager.getInstance().setRingerConfig(config); // 设置铃声配置
+    }
+
+    private void registerRTSIncomingObserver(boolean register) {
+        RTSManager.getInstance().observeIncomingSession(new Observer<RTSData>() {
+            @Override
+            public void onEvent(RTSData rtsData) {
+                RTSActivity.incomingSession(DemoCache.getContext(), rtsData, RTSActivity.FROM_BROADCAST_RECEIVER);
             }
         }, register);
     }
@@ -201,24 +246,38 @@ public class NimApplication extends Application {
 
     private void initUiKit() {
         // 初始化，需要传入用户信息提供者
-        NimUIKit.init(this, infoProvider);
+        NimUIKit.init(this, infoProvider, contactProvider);
 
         // 设置地理位置提供者。如果需要发送地理位置消息，该参数必须提供。如果不需要，可以忽略。
         NimUIKit.setLocationProvider(new NimDemoLocationProvider());
 
         // 会话窗口的定制初始化。
         SessionHelper.init();
+
+        // 通讯录列表定制初始化
+        ContactHelper.init();
     }
 
     private UserInfoProvider infoProvider = new UserInfoProvider() {
         @Override
         public UserInfo getUserInfo(String account) {
-            UserInfo user = ContactDataCache.getInstance().getUser(account);
+            UserInfo user = NimUserInfoCache.getInstance().getUserInfo(account);
             if (user == null) {
-                ContactDataCache.getInstance().getUserFromRemote(account, null);
+                NimUserInfoCache.getInstance().getUserInfoFromRemote(account, null);
             }
 
             return user;
+        }
+
+        @Override
+        public Bitmap getAvatarForMessageNotifier(String account) {
+            UserInfo user = getUserInfo(account);
+            if (user != null && !TextUtils.isEmpty(user.getAvatar())) {
+                return ImageLoaderKit.getBitmapFromCache(user.getAvatar(), R.dimen.avatar_size_default, R.dimen
+                        .avatar_size_default);
+            }
+
+            return null;
         }
 
         @Override
@@ -227,13 +286,73 @@ public class NimApplication extends Application {
         }
 
         @Override
-        public Bitmap getTeamIcon(String tid) {
-            Drawable drawable = getResources().getDrawable(R.drawable.avatar_group);
+        public Bitmap getTeamIcon(String teamId) {
+            Drawable drawable = getResources().getDrawable(R.drawable.nim_avatar_group);
             if (drawable instanceof BitmapDrawable) {
                 return ((BitmapDrawable) drawable).getBitmap();
             }
 
             return null;
+        }
+    };
+
+    private ContactProvider contactProvider = new ContactProvider() {
+        @Override
+        public List<UserInfoProvider.UserInfo> getUserInfoOfMyFriends() {
+            List<NimUserInfo> nimUsers = NimUserInfoCache.getInstance().getUsersOfMyFriend();
+            List<UserInfoProvider.UserInfo> users = new ArrayList<>(nimUsers.size());
+            if (!nimUsers.isEmpty()) {
+                users.addAll(nimUsers);
+            }
+
+            return users;
+        }
+
+        @Override
+        public void getUserInfoOfMyFriends(final RequestCallback<List<UserInfoProvider.UserInfo>> callback) {
+            NimUserInfoCache.getInstance().getUsersOfMyFriendFromRemote(
+                    new RequestCallback<List<NimUserInfo>>() {
+                        @Override
+                        public void onSuccess(List<NimUserInfo> nimUsers) {
+                            if (callback != null) {
+                                if (nimUsers == null) {
+                                    callback.onSuccess(null);
+                                }
+
+                                List<UserInfoProvider.UserInfo> users = new ArrayList<>(nimUsers.size());
+                                if (!nimUsers.isEmpty()) {
+                                    users.addAll(nimUsers);
+                                }
+
+                                callback.onSuccess(users);
+                            }
+                        }
+
+                        @Override
+                        public void onFailed(int code) {
+                            if (callback != null) {
+                                callback.onFailed(code);
+                            }
+                        }
+
+                        @Override
+                        public void onException(Throwable exception) {
+                            if (callback != null) {
+                                callback.onException(exception);
+                            }
+                        }
+                    }
+            );
+        }
+
+        @Override
+        public int getMyFriendsCount() {
+            return FriendDataCache.getInstance().getMyFriendCounts();
+        }
+
+        @Override
+        public String getUserDisplayName(String account) {
+            return NimUserInfoCache.getInstance().getUserDisplayName(account);
         }
     };
 }

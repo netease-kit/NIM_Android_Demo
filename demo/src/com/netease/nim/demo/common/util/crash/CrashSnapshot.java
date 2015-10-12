@@ -13,7 +13,7 @@ import java.util.regex.Pattern;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.demo.common.util.sys.InstallUtil;
 import com.netease.nim.demo.common.util.sys.SysInfoUtil;
-import com.netease.nim.demo.common.util.sys.NetworkUtil;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 
 import android.annotation.SuppressLint;
 import android.app.ActivityManager;

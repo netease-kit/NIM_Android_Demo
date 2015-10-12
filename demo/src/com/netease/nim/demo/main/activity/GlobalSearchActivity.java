@@ -20,17 +20,15 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.demo.contact.core.item.AbsContactItem;
-import com.netease.nim.demo.contact.core.item.ContactItem;
-import com.netease.nim.demo.contact.core.item.ItemTypes;
-import com.netease.nim.demo.contact.core.model.ContactDataAdapter;
-import com.netease.nim.demo.contact.core.model.ContactGroupStrategy;
-import com.netease.nim.demo.contact.core.query.IContactDataProvider;
-import com.netease.nim.demo.contact.core.viewholder.LabelHolder;
-import com.netease.nim.demo.contact.query.ContactDataProvider;
-import com.netease.nim.demo.main.viewholder.ContactHolder;
-import com.netease.nim.uikit.session.activity.P2PMessageActivity;
-import com.netease.nim.uikit.session.activity.TeamMessageActivity;
+import com.netease.nim.uikit.contact.core.item.AbsContactItem;
+import com.netease.nim.uikit.contact.core.item.ContactItem;
+import com.netease.nim.uikit.contact.core.item.ItemTypes;
+import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
+import com.netease.nim.uikit.contact.core.model.ContactGroupStrategy;
+import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
+import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
+import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
+import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
 
 /**
  * 全局搜索页面(目前仅支持通讯录搜索)
@@ -108,11 +106,11 @@ public class GlobalSearchActivity extends TActionBarActivity implements OnItemCl
         lvContacts = (ListView) findViewById(R.id.searchResultList);
         lvContacts.setVisibility(View.GONE);
         SearchGroupStrategy searchGroupStrategy = new SearchGroupStrategy();
-        IContactDataProvider dataProvider = new ContactDataProvider(ItemTypes.BUDDY, ItemTypes.TEAM);
+        IContactDataProvider dataProvider = new ContactDataProvider(ItemTypes.FRIEND, ItemTypes.TEAM);
 
         adapter = new ContactDataAdapter(this, searchGroupStrategy, dataProvider);
         adapter.addViewHolder(ItemTypes.LABEL, LabelHolder.class);
-        adapter.addViewHolder(ItemTypes.BUDDY, ContactHolder.class);
+        adapter.addViewHolder(ItemTypes.FRIEND, ContactHolder.class);
         adapter.addViewHolder(ItemTypes.TEAM, ContactHolder.class);
 
         lvContacts.setAdapter(adapter);
@@ -150,20 +148,20 @@ public class GlobalSearchActivity extends TActionBarActivity implements OnItemCl
     }
 
     private static class SearchGroupStrategy extends ContactGroupStrategy {
-        public static final String GROUP_BUDDY = "BUDDY";
+        public static final String GROUP_FRIEND = "FRIEND";
         public static final String GROUP_TEAM = "TEAM";
 
         SearchGroupStrategy() {
             add(ContactGroupStrategy.GROUP_NULL, 0, "");
             add(GROUP_TEAM, 1, "群组");
-            add(GROUP_BUDDY, 2, "好友");
+            add(GROUP_FRIEND, 2, "好友");
         }
 
         @Override
         public String belongs(AbsContactItem item) {
             switch (item.getItemType()) {
-                case ItemTypes.BUDDY:
-                    return GROUP_BUDDY;
+                case ItemTypes.FRIEND:
+                    return GROUP_FRIEND;
                 case ItemTypes.TEAM:
                     return GROUP_TEAM;
                 default:
@@ -182,7 +180,7 @@ public class GlobalSearchActivity extends TActionBarActivity implements OnItemCl
                 break;
             }
 
-            case ItemTypes.BUDDY: {
+            case ItemTypes.FRIEND: {
                 SessionHelper.startP2PSession(this, ((ContactItem) item).getContact().getContactId());
                 finish();
                 break;

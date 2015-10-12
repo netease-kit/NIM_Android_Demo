@@ -13,16 +13,16 @@
         android:layout_centerVertical="true" >
 
         <com.netease.nim.uikit.common.ui.imageview.HeadImageView
-            android:id="@+id/imgHead"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:id="@+id/img_head"
+            android:layout_width="@dimen/avatar_size_in_session"
+            android:layout_height="@dimen/avatar_size_in_session"
             android:layout_gravity="center_vertical"
             android:layout_margin="12dp" />
 
     </FrameLayout>
 
     <TextView
-        android:id="@+id/lblNickname"
+        android:id="@+id/tv_nick_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginRight="6dp"
@@ -35,10 +35,10 @@
         android:textSize="16sp" />
 
     <ImageView
-        android:id="@+id/imgMsgStatus"
+        android:id="@+id/img_msg_status"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lblNickname"
+        android:layout_below="@id/tv_nick_name"
         android:layout_marginRight="6dp"
         android:layout_marginTop="6dp"
         android:layout_toRightOf="@id/portrait_panel"
@@ -46,20 +46,20 @@
         android:visibility="invisible" />
 
     <TextView
-        android:id="@+id/lblMessage"
+        android:id="@+id/tv_message"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/lblNickname"
+        android:layout_below="@id/tv_nick_name"
         android:layout_marginRight="10dip"
         android:layout_marginTop="5dp"
-        android:layout_toRightOf="@+id/imgMsgStatus"
+        android:layout_toRightOf="@+id/img_msg_status"
         android:ellipsize="end"
         android:singleLine="true"
         android:textColor="@color/color_aaaaaa_content_text"
         android:textSize="13sp" />
 
     <TextView
-        android:id="@+id/lblDateTime"
+        android:id="@+id/tv_date_time"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentRight="true"

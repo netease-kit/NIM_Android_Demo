@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.common.ui.widget.SwitchButton;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
 import com.netease.nim.demo.main.setting.SettingTemplate;
 import com.netease.nim.demo.main.setting.SettingType;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
+import com.netease.nim.uikit.common.ui.widget.SwitchButton;
+import com.netease.nim.demo.NimUserInfoCache;
 
 import java.util.List;
 
@@ -131,13 +131,13 @@ public class SettingsAdapter extends BaseAdapter {
         }
         viewHolder.headImageView.setVisibility(View.VISIBLE);
         viewHolder.headTitleView.setVisibility(View.VISIBLE);
-        viewHolder.headTitleView.setText(ContactDataCache.getInstance().getUserDisplayName(DemoCache.getAccount()));
+        viewHolder.headTitleView.setText(NimUserInfoCache.getInstance().getUserDisplayName(DemoCache.getAccount()));
         viewHolder.headDetailView.setVisibility(View.VISIBLE);
         viewHolder.headDetailView.setText(String.format("帐号:%s", DemoCache.getAccount()));
         viewHolder.titleView.setVisibility(View.GONE);
         viewHolder.headImageView.loadBuddyAvatar(DemoCache.getAccount());
-//        viewHolder.indicator.setImageResource(R.drawable.arrow_right); 等修改昵称时，再设置
-//        viewHolder.indicator.setVisibility(View.VISIBLE);
+        viewHolder.indicator.setImageResource(R.drawable.nim_arrow_right);
+        viewHolder.indicator.setVisibility(View.VISIBLE);
     }
 
     /**

@@ -7,14 +7,15 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.PrepareDataHelper;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
-import com.netease.nim.uikit.common.activity.TActivity;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.demo.common.util.sys.SysInfoUtil;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.model.Extras;
+import com.netease.nim.uikit.common.activity.TActivity;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -114,8 +115,7 @@ public class WelcomeActivity extends TActivity {
                 if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
                     parseNotifyIntent(intent);
                     return;
-                } else if (intent.hasExtra(Extras.EXTRA_JUMP_P2P) || intent.hasExtra(AVChatActivity
-                        .INTENT_ACTION_AVCHAT)) {
+                } else if (intent.hasExtra(Extras.EXTRA_JUMP_P2P) || intent.hasExtra(AVChatActivity.INTENT_ACTION_AVCHAT)) {
                     parseNormalIntent(intent);
                 }
             }
@@ -130,7 +130,6 @@ public class WelcomeActivity extends TActivity {
 
     /**
      * 已经登陆过，自动登陆
-     * @return
      */
     private boolean canAutoLogin() {
         String account = Preferences.getUserAccount();
@@ -166,6 +165,8 @@ public class WelcomeActivity extends TActivity {
     }
 
     private void showMainActivity(Intent intent) {
+        PrepareDataHelper.prepare();
+
         MainActivity.start(WelcomeActivity.this, intent);
         finish();
     }

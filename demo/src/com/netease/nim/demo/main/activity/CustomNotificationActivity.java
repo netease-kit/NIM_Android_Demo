@@ -16,6 +16,9 @@ import android.widget.Toast;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.main.helper.CustomNotificationCache;
+import com.netease.nim.demo.main.viewholder.CustomNotificationViewHolder;
+import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.adapter.TAdapter;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
@@ -23,9 +26,7 @@ import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.common.ui.listview.MessageListView;
-import com.netease.nim.demo.contact_selector.activity.ContactSelectActivity;
-import com.netease.nim.demo.main.helper.CustomNotificationCache;
-import com.netease.nim.demo.main.viewholder.CustomNotificationViewHolder;
+import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -43,6 +44,8 @@ import java.util.List;
  * Created by huangjun on 2015/5/28
  */
 public class CustomNotificationActivity extends TActionBarActivity implements TAdapterDelegate {
+
+    private static final int CONTACT_SELECT_REQUEST_CODE = 0x01;
 
     // view
     private MessageListView listView;
@@ -184,14 +187,14 @@ public class CustomNotificationActivity extends TActionBarActivity implements TA
 
         sendTarget = team ? 1 : 0;
 
-        ContactSelectActivity.startActivityForResult(this, option);
+        NimUIKit.startContactSelect(CustomNotificationActivity.this, option, CONTACT_SELECT_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
-        if (requestCode == ContactSelectActivity.REQUEST_CODE && resultCode == Activity.RESULT_OK) {
+        if (requestCode == CONTACT_SELECT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
             if (selected != null && !selected.isEmpty()) {
                 final EasyEditDialog requestDialog = new EasyEditDialog(this);

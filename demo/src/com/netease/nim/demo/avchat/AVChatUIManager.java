@@ -116,7 +116,7 @@ public class AVChatUIManager implements AVChatUIListener {
         }
         /**
          * 发起通话
-         * account 对方账号
+         * account 对方帐号
          * callTypeEnum 通话类型：语音、视频
          * videoParam 发起视频通话时传入，发起音频通话传null
          * AVChatCallback 回调函数，返回AVChatInfo
@@ -532,7 +532,7 @@ public class AVChatUIManager implements AVChatUIListener {
 
     /**
      * 初始化大小图像
-     * @param largeAccount 对方的账号
+     * @param largeAccount 对方的帐号
      */
     public void initSurfaceView(String largeAccount) {
         aVChatSurfaceManager.initLargeSurfaceView(largeAccount);

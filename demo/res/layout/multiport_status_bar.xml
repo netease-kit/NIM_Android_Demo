@@ -20,7 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:textColor="@color/color_grey_888888"
-        android:drawableRight="@drawable/arrow_right"
+        android:drawableRight="@drawable/nim_arrow_right"
         android:paddingRight="10dp"
         android:textSize="@dimen/text_size_14" />
 

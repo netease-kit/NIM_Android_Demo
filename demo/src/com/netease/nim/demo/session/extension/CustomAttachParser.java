@@ -25,8 +25,7 @@ public class CustomAttachParser implements MsgAttachmentParser {
                     attachment = new GuessAttachment();
                     break;
                 case CustomAttachmentType.SnapChat:
-                    SnapChatAttachment snapchat = new SnapChatAttachment(data);
-                    return snapchat;
+                    return new SnapChatAttachment(data);
                 case CustomAttachmentType.Sticker:
                     attachment = new StickerAttachment();
                     break;

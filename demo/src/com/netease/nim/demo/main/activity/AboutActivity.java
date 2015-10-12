@@ -34,7 +34,7 @@ public class AboutActivity extends TActionBarActivity{
 
 	private void initViewData() {
         // 如果使用的IDE是Eclipse， 将该函数体注释掉。这里使用了Android Studio编译期添加BuildConfig字段的特性
-        versionGit.setText("Git Version: " + BuildConfig.GIT_REVISION);
-		versionDate.setText("Build Date:" + BuildConfig.BUILD_DATE);
+//        versionGit.setText("Git Version: " + BuildConfig.GIT_REVISION);
+//		versionDate.setText("Build Date:" + BuildConfig.BUILD_DATE);
 	}
 }

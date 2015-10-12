@@ -18,7 +18,7 @@ import com.netease.nim.demo.avchat.AVChatUIManager;
 import com.netease.nim.demo.avchat.AVChatVideoManager;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.uikit.common.activity.TActivity;
-import com.netease.nim.demo.common.util.sys.NetworkUtil;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.avchat.AVChatManager;

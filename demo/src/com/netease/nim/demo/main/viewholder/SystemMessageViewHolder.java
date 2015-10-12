@@ -5,7 +5,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.main.helper.MessageHelper;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
@@ -69,7 +69,7 @@ public class SystemMessageViewHolder extends TViewHolder {
             }
         });
         headImageView.loadBuddyAvatar(message.getFromAccount());
-        fromAccountText.setText(ContactDataCache.getInstance().getUserDisplayNameEx(message.getFromAccount()));
+        fromAccountText.setText(NimUserInfoCache.getInstance().getUserDisplayNameEx(message.getFromAccount()));
         contentText.setText(MessageHelper.getVerifyNotificationText(message));
         timeText.setText(TimeUtil.getTimeShowString(message.getTime(), false));
         if (!MessageHelper.isVerifyMessageNeedDeal(message)) {

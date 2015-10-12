@@ -1,7 +1,10 @@
 package com.netease.nim.demo.session.action;
 
+import android.widget.Toast;
+
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.session.actions.BaseAction;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 
@@ -19,7 +22,11 @@ public class AVChatAction extends BaseAction {
 
     @Override
     public void onClick() {
-        startAudioVideoCall(avChatType);
+        if (NetworkUtil.isNetAvailable(getActivity())) {
+            startAudioVideoCall(avChatType);
+        } else {
+            Toast.makeText(getActivity(), R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+        }
     }
 
     /************************ 音视频通话 ***********************/

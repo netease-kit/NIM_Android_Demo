@@ -11,9 +11,7 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.model.User;
-import com.netease.nim.demo.contact.protocol.IContactHttpCallback;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
@@ -26,6 +24,8 @@ import com.netease.nim.uikit.common.ui.listview.MessageListView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
 import com.netease.nimlib.sdk.msg.SystemMessageService;
@@ -33,6 +33,7 @@ import com.netease.nimlib.sdk.msg.constant.SystemMessageStatus;
 import com.netease.nimlib.sdk.msg.constant.SystemMessageType;
 import com.netease.nimlib.sdk.msg.model.SystemMessage;
 import com.netease.nimlib.sdk.team.TeamService;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -244,13 +245,13 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
             items.add(msg);
             itemIds.add(msg.getMessageId());
 
-            if (!ContactDataCache.getInstance().hasUser(msg.getFromAccount())) {
+            if (!NimUserInfoCache.getInstance().hasUser(msg.getFromAccount())) {
                 unknowAccounts.add(msg.getFromAccount());
             }
         }
 
         if (!unknowAccounts.isEmpty()) {
-            requestUnknowUser(unknowAccounts);
+            requestUnknownUser(unknowAccounts);
         }
 
         refresh();
@@ -382,10 +383,10 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
                     items.add(0, message);
                 }
 
-                if (!ContactDataCache.getInstance().hasUser(message.getFromAccount())) {
+                if (!NimUserInfoCache.getInstance().hasUser(message.getFromAccount())) {
                     List<String> accounts = new ArrayList<>();
                     accounts.add(message.getFromAccount());
-                    requestUnknowUser(accounts);
+                    requestUnknownUser(accounts);
                 }
 
                 refresh();
@@ -393,18 +394,15 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         }, register);
     }
 
-    private void requestUnknowUser(List<String> accounts) {
-        ContactDataCache.getInstance().getUsersFromRemote(accounts, new IContactHttpCallback<List<User>>() {
+    private void requestUnknownUser(List<String> accounts) {
+        NimUserInfoCache.getInstance().getUserInfoFromRemote(accounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
             @Override
-            public void onSuccess(List<User> users) {
-                if (users != null && !users.isEmpty()) {
-                    refresh();
+            public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
+                if (code == ResponseCode.RES_SUCCESS) {
+                    if (users != null && !users.isEmpty()) {
+                        refresh();
+                    }
                 }
-            }
-
-            @Override
-            public void onFailed(int code, String errorMsg) {
-
             }
         });
     }

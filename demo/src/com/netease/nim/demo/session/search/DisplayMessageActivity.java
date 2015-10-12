@@ -6,10 +6,8 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.team.TeamDataCache;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
 import com.netease.nim.uikit.session.module.list.MessageListPanel;
@@ -38,7 +36,7 @@ public class DisplayMessageActivity extends TActionBarActivity implements Module
 
     // context
     private SessionTypeEnum sessionType;
-    private String account; // 对方账号
+    private String account; // 对方帐号
     private IMMessage anchor;
 
     private MessageListPanel messageListPanel;
@@ -73,8 +71,8 @@ public class DisplayMessageActivity extends TActionBarActivity implements Module
     }
 
     @Override
-    public void sendMessage(IMMessage msg) {
-
+    public boolean sendMessage(IMMessage msg) {
+        return false;
     }
 
     @Override

@@ -26,7 +26,7 @@ public class MessageHistoryActivity extends TActionBarActivity implements Module
 
     // context
     private SessionTypeEnum sessionType;
-    private String account; // 对方账号
+    private String account; // 对方帐号
 
     private MessageListPanel messageListPanel;
 
@@ -70,8 +70,8 @@ public class MessageHistoryActivity extends TActionBarActivity implements Module
     }
 
     @Override
-    public void sendMessage(IMMessage msg) {
-
+    public boolean sendMessage(IMMessage msg) {
+        return false;
     }
 
     @Override

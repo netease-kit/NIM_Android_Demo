@@ -12,8 +12,8 @@ import com.netease.nim.demo.avchat.widgets.ToggleListener;
 import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.demo.common.util.sys.NetworkUtil;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
+import com.netease.nim.demo.NimUserInfoCache;
 
 /**
  * 音频管理器， 音频界面初始化和管理
@@ -149,7 +149,7 @@ public class AVChatAudioManager implements View.OnClickListener, ToggleListener{
     private void showProfile(){
         String uid = manager.getUid();
         headImg.loadBuddyAvatar(uid);
-        nickNameTV.setText(ContactDataCache.getInstance().getUserDisplayName(uid));
+        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(uid));
     }
 
     /**

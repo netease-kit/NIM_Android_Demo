@@ -11,12 +11,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.imageview.BaseZoomableImageView;
 import com.netease.nim.uikit.common.util.media.BitmapDecoder;
 import com.netease.nim.uikit.common.util.media.ImageUtil;
-import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -59,7 +59,7 @@ public class WatchSnapChatPictureActivity extends TActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onParseIntent();
-        setContentView(R.layout.watch_picture_activity);
+        setContentView(R.layout.nim_watch_picture_activity);
         findViews();
 
         handler = new Handler();

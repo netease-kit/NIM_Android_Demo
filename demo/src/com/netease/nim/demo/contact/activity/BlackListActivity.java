@@ -3,25 +3,29 @@ package com.netease.nim.demo.contact.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.core.item.ContactIdFilter;
-import com.netease.nim.demo.contact.model.User;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.contact.protocol.IContactHttpCallback;
-import com.netease.nim.demo.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
+import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
+import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
+import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.contact.core.item.ContactIdFilter;
+import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +34,12 @@ import java.util.List;
  * 黑名单
  * Created by huangjun on 2015/8/12.
  */
-public class BlackListActivity extends TActionBarActivity {
+public class BlackListActivity extends TActionBarActivity implements TAdapterDelegate {
     private static final String TAG = "BlackListActivity";
     private static final int REQUEST_CODE_BLACK = 1;
 
-    private RecyclerView recyclerView;
-    private List<User> data = new ArrayList<>();
+    private ListView listView;
+    private List<UserInfoProvider.UserInfo> data = new ArrayList<>();
     private BlackListAdapter adapter;
 
     public static void start(Context context) {
@@ -56,18 +60,30 @@ public class BlackListActivity extends TActionBarActivity {
         initActionbar();
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return 1;
+    }
+
+    @Override
+    public Class<? extends TViewHolder> viewHolderAtPosition(int position) {
+        return BlackListViewHolder.class;
+    }
+
+    @Override
+    public boolean enabled(int position) {
+        return false;
+    }
+
     private void initData() {
         final List<String> accounts = NIMClient.getService(FriendService.class).getBlackList();
-        ContactDataCache.getInstance().getUsersFromRemote(accounts, new IContactHttpCallback<List<User>>() {
+        NimUserInfoCache.getInstance().getUserInfoFromRemote(accounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
             @Override
-            public void onSuccess(List<User> users) {
-                data.addAll(users);
-                adapter.notifyDataSetChanged();
-            }
-
-            @Override
-            public void onFailed(int code, String errorMsg) {
-
+            public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
+                if (code == ResponseCode.RES_SUCCESS) {
+                    data.addAll(users);
+                    adapter.notifyDataSetChanged();
+                }
             }
         });
     }
@@ -79,27 +95,25 @@ public class BlackListActivity extends TActionBarActivity {
             public void onClick(View v) {
                 ContactSelectActivity.Option option = new ContactSelectActivity.Option();
                 option.title = "选择黑名单";
-                ArrayList<String> excludeUids = new ArrayList<>();
-                for (User user : data) {
-                    excludeUids.add(user.getAccount());
+                ArrayList<String> excludeAccounts = new ArrayList<>();
+                for (UserInfoProvider.UserInfo user : data) {
+                    excludeAccounts.add(user.getAccount());
                 }
-                option.itemFilter = new ContactIdFilter(excludeUids, true);
-                ContactSelectActivity.startActivityForResult(BlackListActivity.this, option, REQUEST_CODE_BLACK);
+                option.itemFilter = new ContactIdFilter(excludeAccounts, true);
+                NimUIKit.startContactSelect(BlackListActivity.this, option, REQUEST_CODE_BLACK);
             }
         });
     }
 
     private void initRecyclerView() {
-        recyclerView = findView(R.id.black_list_view);
-        recyclerView.setHasFixedSize(true);
-        recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new BlackListAdapter(data, viewListener);
-        recyclerView.setAdapter(adapter);
+        listView = findView(R.id.black_list_view);
+        adapter = new BlackListAdapter(this, data, this, viewHolderEventListener);
+        listView.setAdapter(adapter);
     }
 
-    private BlackListAdapter.ViewListener viewListener = new BlackListAdapter.ViewListener() {
+    private BlackListAdapter.ViewHolderEventListener viewHolderEventListener = new BlackListAdapter.ViewHolderEventListener() {
         @Override
-        public void onRemove(final User user) {
+        public void onRemove(final UserInfoProvider.UserInfo user) {
             NIMClient.getService(FriendService.class).removeFromBlackList(user.getAccount()).setCallback(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void param) {
@@ -121,15 +135,15 @@ public class BlackListActivity extends TActionBarActivity {
         }
 
         @Override
-        public void onItemClick(int position) {
-            Log.i(TAG, "onItemClick " + position);
+        public void onItemClick(UserInfoProvider.UserInfo userInfo) {
+            Log.i(TAG, "onItemClick, user account=" + userInfo.getAccount());
         }
     };
 
     private void addBuddysToBlackList(ArrayList<String> selected) {
         for (String account : selected) {
             NIMClient.getService(FriendService.class).addToBlackList(account);
-            data.add(ContactDataCache.getInstance().getUser(account));
+            data.add(NimUserInfoCache.getInstance().getUserInfo(account));
         }
         adapter.notifyDataSetChanged();
     }

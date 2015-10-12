@@ -9,14 +9,14 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.demo.contact.model.User;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.contact.protocol.IContactHttpCallback;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
+import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
+import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 /**
  * 添加好友页面
@@ -43,7 +43,7 @@ public class AddFriendActivity extends TActionBarActivity {
 
     private void findViews() {
         searchEdit = findView(R.id.search_friend_edit);
-        searchEdit.setDeleteImage(R.drawable.grey_delete_icon);
+        searchEdit.setDeleteImage(R.drawable.nim_grey_delete_icon);
     }
 
     private void initActionbar() {
@@ -64,9 +64,9 @@ public class AddFriendActivity extends TActionBarActivity {
     private void query() {
         DialogMaker.showProgressDialog(this, null, false);
         final String account = searchEdit.getText().toString().toLowerCase();
-        ContactHttpClient.getInstance().getUserInfo(account, new IContactHttpCallback<User>() {
+        NimUserInfoCache.getInstance().getUserInfoFromRemote(account, new RequestCallback<NimUserInfo>() {
             @Override
-            public void onSuccess(User user) {
+            public void onSuccess(NimUserInfo user) {
                 DialogMaker.dismissProgressDialog();
                 if (user == null) {
                     EasyAlertDialogHelper.showOneButtonDiolag(AddFriendActivity.this, R.string.user_not_exsit,
@@ -77,13 +77,18 @@ public class AddFriendActivity extends TActionBarActivity {
             }
 
             @Override
-            public void onFailed(int code, String errorMsg) {
+            public void onFailed(int code) {
                 DialogMaker.dismissProgressDialog();
                 if (code == 408) {
                     Toast.makeText(AddFriendActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(AddFriendActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
                 }
+            }
+
+            @Override
+            public void onException(Throwable exception) {
+                DialogMaker.dismissProgressDialog();
             }
         });
     }

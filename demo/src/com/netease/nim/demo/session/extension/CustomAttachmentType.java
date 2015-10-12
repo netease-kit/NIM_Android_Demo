@@ -8,6 +8,5 @@ public interface CustomAttachmentType {
     int Guess = 1;
     int SnapChat = 2;
     int Sticker = 3;
-
-    int RTS = 100;
+    int RTS = 4;
 }

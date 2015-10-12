@@ -4,20 +4,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.common.ui.widget.SwitchButton;
-import com.netease.nim.demo.common.util.sys.NetworkUtil;
-import com.netease.nim.demo.contact.cache.ContactDataCache;
-import com.netease.nim.demo.contact.model.User;
-import com.netease.nim.demo.contact.protocol.IContactHttpCallback;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
@@ -26,11 +25,19 @@ import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
+import com.netease.nim.uikit.common.ui.widget.SwitchButton;
+import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
+import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.constant.VerifyType;
 import com.netease.nimlib.sdk.friend.model.AddFriendData;
+import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -44,21 +51,32 @@ public class UserProfileActivity extends TActionBarActivity {
     private static final String TAG = UserProfileActivity.class.getSimpleName();
 
     private final String KEY_BLACK_LIST = "black_list";
-
     private final String KEY_MSG_NOTICE = "msg_notice";
 
     private String account;
 
+    // 基本信息
     private HeadImageView headImageView;
     private TextView nickNameText;
+    private ImageView genderImage;
     private TextView accountText;
+    private TextView birthdayText;
+    private TextView mobileText;
+    private TextView emailText;
+    private TextView signatureText;
+    private RelativeLayout birthdayLayout;
+    private RelativeLayout phoneLayout;
+    private RelativeLayout emailLayout;
+    private RelativeLayout signatureLayout;
+
+    // 开关
     private ViewGroup toggleLayout;
     private Button addFriendBtn;
     private Button removeFriendBtn;
     private Button chatBtn;
-    private Map<String, Boolean> toggleStateMap;
     private SwitchButton blackSwitch;
     private SwitchButton noticeSwitch;
+    private Map<String, Boolean> toggleStateMap;
 
     public static void start(Context context, String account) {
         Intent intent = new Intent();
@@ -72,18 +90,20 @@ public class UserProfileActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_activity);
-        setTitle(R.string.user_profile);
         account = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
+        setTitle(R.string.user_profile);
+        initActionbar();
 
         findViews();
-        fetchUserInfo();
         registerObserver(true);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        initLayout();
+
+        updateUserInfo();
+        updateToggleView();
     }
 
     @Override
@@ -93,23 +113,18 @@ public class UserProfileActivity extends TActionBarActivity {
     }
 
     private void registerObserver(boolean register) {
-        ContactDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
+        FriendDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
     }
 
-    ContactDataCache.FriendDataChangedObserver friendDataChangedObserver = new ContactDataCache.FriendDataChangedObserver() {
+    FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
         @Override
         public void onAddFriend(String account) {
-            fetchUserProfile();
+            updateUserOperatorView();
         }
 
         @Override
         public void onDeleteFriend(String account) {
-            fetchUserProfile();
-        }
-
-        @Override
-        public void onUpdateFriend(String account) {
-
+            updateUserOperatorView();
         }
 
         @Override
@@ -121,35 +136,43 @@ public class UserProfileActivity extends TActionBarActivity {
         }
     };
 
-    private void initLayout() {
-        if (!DemoCache.getAccount().equals(account)) {
-            boolean black = NIMClient.getService(FriendService.class).isInBlackList(account);
-            boolean notice = NIMClient.getService(FriendService.class).isNeedMessageNotify(account);
-            if (blackSwitch == null || noticeSwitch == null) {
-                addToggleBtn(black, notice);
-            } else {
-                setToggleBtn(blackSwitch, black);
-                setToggleBtn(noticeSwitch, notice);
-            }
-            Log.i(TAG, "black=" + black + ", notice=" + notice);
-            fetchUserProfile();
-        }
-    }
-
     private void findViews() {
         headImageView = findView(R.id.user_head_image);
         nickNameText = findView(R.id.user_nickname);
+        genderImage = findView(R.id.gender_img);
         accountText = findView(R.id.user_account);
         toggleLayout = findView(R.id.toggle_layout);
         addFriendBtn = findView(R.id.add_buddy);
         chatBtn = findView(R.id.begin_chat);
         removeFriendBtn = findView(R.id.remove_buddy);
+        birthdayLayout = findView(R.id.birthday);
+        birthdayText = (TextView) birthdayLayout.findViewById(R.id.value);
+        phoneLayout = findView(R.id.phone);
+        mobileText = (TextView) phoneLayout.findViewById(R.id.value);
+        emailLayout = findView(R.id.email);
+        emailText = (TextView) emailLayout.findViewById(R.id.value);
+        signatureLayout = findView(R.id.signature);
+        signatureText = (TextView) signatureLayout.findViewById(R.id.value);
+        ((TextView) birthdayLayout.findViewById(R.id.attribute)).setText(R.string.birthday);
+        ((TextView) phoneLayout.findViewById(R.id.attribute)).setText(R.string.phone);
+        ((TextView) emailLayout.findViewById(R.id.attribute)).setText(R.string.email);
+        ((TextView) signatureLayout.findViewById(R.id.attribute)).setText(R.string.signature);
 
         addFriendBtn.setOnClickListener(onClickListener);
         chatBtn.setOnClickListener(onClickListener);
         removeFriendBtn.setOnClickListener(onClickListener);
+    }
 
-        refreshUserInfoView();
+    private void initActionbar() {
+        if (!DemoCache.getAccount().equals(account)) {
+            return;
+        }
+        ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.edit, new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserProfileSettingActivity.start(UserProfileActivity.this, account);
+            }
+        });
     }
 
     private void addToggleBtn(boolean black, boolean notice) {
@@ -161,7 +184,72 @@ public class UserProfileActivity extends TActionBarActivity {
         btn.setCheck(isChecked);
     }
 
-    private void fetchUserProfile() {
+    private void updateUserInfo() {
+        if (NimUserInfoCache.getInstance().hasUser(account)) {
+            updateUserInfoView();
+            return;
+        }
+
+        NimUserInfoCache.getInstance().getUserInfoFromRemote(account, new RequestCallbackWrapper<NimUserInfo>() {
+            @Override
+            public void onResult(int code, NimUserInfo result, Throwable exception) {
+                updateUserInfoView();
+            }
+        });
+    }
+
+    private void updateUserInfoView() {
+        accountText.setText("帐号：" + account);
+        nickNameText.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
+        headImageView.loadBuddyAvatar(account);
+
+        final NimUserInfo userInfo = NimUserInfoCache.getInstance().getUserInfo(account);
+        if (userInfo == null) {
+            LogUtil.e(TAG, "userInfo is null when updateUserInfoView");
+            return;
+        }
+
+        if (userInfo.getGenderEnum() == GenderEnum.MALE) {
+            genderImage.setVisibility(View.VISIBLE);
+            genderImage.setBackgroundResource(R.drawable.nim_male);
+        } else if (userInfo.getGenderEnum() == GenderEnum.FEMALE) {
+            genderImage.setVisibility(View.VISIBLE);
+            genderImage.setBackgroundResource(R.drawable.nim_female);
+        } else {
+            genderImage.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(userInfo.getBirthday())) {
+            birthdayLayout.setVisibility(View.VISIBLE);
+            birthdayText.setText(userInfo.getBirthday());
+        } else {
+            birthdayLayout.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(userInfo.getMobile())) {
+            phoneLayout.setVisibility(View.VISIBLE);
+            mobileText.setText(userInfo.getMobile());
+        } else {
+            phoneLayout.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(userInfo.getEmail())) {
+            emailLayout.setVisibility(View.VISIBLE);
+            emailText.setText(userInfo.getEmail());
+        } else {
+            emailLayout.setVisibility(View.GONE);
+        }
+
+        if (!TextUtils.isEmpty(userInfo.getSignature())) {
+            signatureLayout.setVisibility(View.VISIBLE);
+            signatureText.setText(userInfo.getSignature());
+        } else {
+            signatureLayout.setVisibility(View.GONE);
+        }
+
+    }
+
+    private void updateUserOperatorView() {
         chatBtn.setVisibility(View.VISIBLE);
         if (NIMClient.getService(FriendService.class).isMyFriend(account)) {
             removeFriendBtn.setVisibility(View.VISIBLE);
@@ -172,32 +260,23 @@ public class UserProfileActivity extends TActionBarActivity {
         }
     }
 
-    private void fetchUserInfo() {
-        if (ContactDataCache.getInstance().hasUser(account)) {
-            return;
+    private void updateToggleView() {
+        if (!DemoCache.getAccount().equals(account)) {
+            boolean black = NIMClient.getService(FriendService.class).isInBlackList(account);
+            boolean notice = NIMClient.getService(FriendService.class).isNeedMessageNotify(account);
+            if (blackSwitch == null || noticeSwitch == null) {
+                addToggleBtn(black, notice);
+            } else {
+                setToggleBtn(blackSwitch, black);
+                setToggleBtn(noticeSwitch, notice);
+            }
+            Log.i(TAG, "black=" + black + ", notice=" + notice);
+            updateUserOperatorView();
         }
-
-        ContactDataCache.getInstance().getUserFromRemote(account, new IContactHttpCallback<User>() {
-            @Override
-            public void onSuccess(User user) {
-                refreshUserInfoView();
-            }
-
-            @Override
-            public void onFailed(int code, String errorMsg) {
-
-            }
-        });
-    }
-
-    private void refreshUserInfoView() {
-        accountText.setText("账号：" + account);
-        nickNameText.setText(ContactDataCache.getInstance().getUserDisplayName(account));
-        headImageView.loadBuddyAvatar(account);
     }
 
     private SwitchButton addToggleItemView(String key, int titleResId, boolean initState) {
-        ViewGroup vp = (ViewGroup) getLayoutInflater().inflate(R.layout.user_profile_toggle_item, null);
+        ViewGroup vp = (ViewGroup) getLayoutInflater().inflate(R.layout.nim_user_profile_toggle_item, null);
         ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.isetting_item_height));
         vp.setLayoutParams(vlp);
@@ -377,7 +456,7 @@ public class UserProfileActivity extends TActionBarActivity {
                     @Override
                     public void onSuccess(Void param) {
                         DialogMaker.dismissProgressDialog();
-                        fetchUserProfile();
+                        updateUserOperatorView();
                         if (VerifyType.DIRECT_ADD == verifyType) {
                             Toast.makeText(UserProfileActivity.this, "添加好友成功", Toast.LENGTH_SHORT).show();
                         } else {

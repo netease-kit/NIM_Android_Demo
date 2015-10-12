@@ -9,8 +9,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 
 /**
@@ -37,7 +37,7 @@ public class EditNicknameActivity extends TActionBarActivity {
 
     private void findViews() {
         nickEdit = findView(R.id.nick_edit);
-        nickEdit.setDeleteImage(R.drawable.grey_delete_icon);
+        nickEdit.setDeleteImage(R.drawable.nim_grey_delete_icon);
     }
 
     private void initActionbar() {

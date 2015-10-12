@@ -17,20 +17,20 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.PrepareDataHelper;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.demo.common.util.sys.NetworkUtil;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
+import com.netease.nim.demo.contact.protocol.ContactHttpCallback;
 import com.netease.nim.demo.contact.protocol.ContactHttpClient;
-import com.netease.nim.demo.contact.protocol.IContactHttpCallback;
-import com.netease.nim.demo.database.DatabaseManager;
 import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
+import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.string.MD5;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
@@ -221,8 +221,8 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
             }
         }).setCanceledOnTouchOutside(false);
 
-        // 云信只提供消息通道，并不包含用户资料逻辑。开发者需要在管理后台或通过服务器接口将用户账号和token同步到云信服务器。
-        // 在这里直接使用同步到云信服务器的账号和token登录。
+        // 云信只提供消息通道，并不包含用户资料逻辑。开发者需要在管理后台或通过服务器接口将用户帐号和token同步到云信服务器。
+        // 在这里直接使用同步到云信服务器的帐号和token登录。
         // 这里为了简便起见，demo就直接使用了密码的md5作为token。
         // 如果开发者直接使用这个demo，只更改appkey，然后就登入自己的账户体系的话，需要传入同步到云信服务器的token，而不是用户密码。
         final String account = loginAccountEdit.getEditableText().toString().toLowerCase();
@@ -235,16 +235,16 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                 onLoginDone();
                 DemoCache.setAccount(account);
                 saveLoginInfo(account, token);
-                DatabaseManager.getInstance().open(LoginActivity.this);  // open db
-                // fetch access token
-                ContactHttpClient.getInstance().getTokenOnLogin();
-
                 // 初始化消息提醒
                 NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
                 // 初始化免打扰
                 NIMClient.updateStatusBarNotificationConfig(UserPreferences.getStatusConfig());
 
-                Toast.makeText(LoginActivity.this, "login success", Toast.LENGTH_SHORT).show();
+                // 准备数据
+                PrepareDataHelper.prepare();
+
+                // 进入主界面
+                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 MainActivity.start(LoginActivity.this, null);
                 finish();
             }
@@ -255,7 +255,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                 if (code == 302 || code == 404) {
                     Toast.makeText(LoginActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
                 } else {
-                    Toast.makeText(LoginActivity.this, "login error: " + code, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(LoginActivity.this, "登录失败: " + code, Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -324,7 +324,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
         final String nickName = registerNickNameEdit.getText().toString();
         final String password = registerPasswordEdit.getText().toString();
 
-        ContactHttpClient.getInstance().register(account, nickName, password, new IContactHttpCallback<Void>() {
+        ContactHttpClient.getInstance().register(account, nickName, password, new ContactHttpCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(LoginActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();
@@ -354,7 +354,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
             return false;
         }
 
-        // 账号检查
+        // 帐号检查
         if (registerAccountEdit.length() <= 0 || registerAccountEdit.length() > 20) {
             if (tipError) {
                 Toast.makeText(this, R.string.register_account_tip, Toast.LENGTH_SHORT).show();
