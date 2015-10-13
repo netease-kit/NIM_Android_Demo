@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * 用户资料(包含非好友）数据缓存
@@ -44,12 +45,11 @@ public class NimUserInfoCache {
 
     private Handler uiHandler;
 
-    private Map<String, NimUserInfo> account2UserMap = new HashMap<>();
+    private Map<String, NimUserInfo> account2UserMap = new ConcurrentHashMap<>();
 
     private List<UserDataChangedObserver> userObservers = new ArrayList<>();
 
     private Map<String, List<RequestCallback<NimUserInfo>>> requestUserInfoMap = new HashMap<>();
-
 
     /**
      * 构建缓存

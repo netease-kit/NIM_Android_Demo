@@ -9,6 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
 import com.netease.nim.uikit.NimUIKit;
@@ -16,7 +17,6 @@ import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
-import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.uikit.contact.core.item.ContactIdFilter;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nimlib.sdk.NIMClient;
@@ -106,6 +106,7 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
     }
 
     private void initRecyclerView() {
+        ((TextView)findView(R.id.notify_bar).findViewById(R.id.status_desc_label)).setText(R.string.black_list_tip);
         listView = findView(R.id.black_list_view);
         adapter = new BlackListAdapter(this, data, this, viewHolderEventListener);
         listView.setAdapter(adapter);

@@ -108,11 +108,11 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         context.startActivity(intent);
     }
 
-    public static void startSession(Context context, String uid, int source) {
+    public static void startSession(Context context, String account, int source) {
         needFinish = false;
         Intent intent = new Intent();
         intent.setClass(context, RTSActivity.class);
-        intent.putExtra(KEY_UID, uid);
+        intent.putExtra(KEY_UID, account);
         intent.putExtra(KEY_INCOMING, false);
         intent.putExtra(KEY_SOURCE, source);
         context.startActivity(intent);

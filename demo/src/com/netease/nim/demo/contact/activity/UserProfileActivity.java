@@ -40,6 +40,7 @@ import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -118,12 +119,12 @@ public class UserProfileActivity extends TActionBarActivity {
 
     FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
         @Override
-        public void onAddFriend(String account) {
+        public void onAddedOrUpdatedFriends(List<String> account) {
             updateUserOperatorView();
         }
 
         @Override
-        public void onDeleteFriend(String account) {
+        public void onDeletedFriends(List<String> account) {
             updateUserOperatorView();
         }
 
@@ -404,8 +405,8 @@ public class UserProfileActivity extends TActionBarActivity {
         @Override
         public void onClick(View v) {
             if (v == addFriendBtn) {
-                doAddFriend(null, true);  // 直接加为好友
-                //onAddFriendByVerify();
+                //doAddFriend(null, true);  // 直接加为好友
+                onAddFriendByVerify();
             } else if (v == removeFriendBtn) {
                 onRemoveFriend();
             } else if (v == chatBtn) {

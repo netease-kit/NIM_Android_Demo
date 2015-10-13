@@ -579,7 +579,7 @@ public class AVChatUIManager implements AVChatUIListener {
         this.videoAccount = videoAccount;
     }
 
-    public String getUid() {
+    public String getAccount() {
         if (receiverId != null)
             return receiverId;
         return null;

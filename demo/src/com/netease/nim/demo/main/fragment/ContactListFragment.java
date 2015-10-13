@@ -205,18 +205,13 @@ public class ContactListFragment extends MainTabFragment {
     }
 
     @Override
-    public void onCurrent() {
-        super.onCurrent();
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
         if (!inited()) {
             return;
         }
 
-        reloadChange(false);
+        refresh(false);
     }
 
     @Override
@@ -225,6 +220,10 @@ public class ContactListFragment extends MainTabFragment {
         registerObserver(false);
     }
 
+    /**
+     * 用户资料、好友关系变更观察者
+     * @param register
+     */
     private void registerObserver(boolean register) {
         NimUserInfoCache.getInstance().registerUserDataChangedObserver(userDataChangedObserver, register);
         FriendDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
@@ -232,23 +231,23 @@ public class ContactListFragment extends MainTabFragment {
 
     FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
         @Override
-        public void onAddFriend(String account) {
-            refresh();
+        public void onAddedOrUpdatedFriends(List<String> account) {
+            refresh(true);
         }
 
         @Override
-        public void onDeleteFriend(String account) {
-            refresh();
+        public void onDeletedFriends(List<String> account) {
+            refresh(true);
         }
 
         @Override
         public void onAddUserToBlackList(String account) {
-            refresh();
+            refresh(true);
         }
 
         @Override
         public void onRemoveUserFromBlackList(String account) {
-            refresh();
+            refresh(true);
         }
     };
 
@@ -256,27 +255,18 @@ public class ContactListFragment extends MainTabFragment {
         @Override
         public void onUpdateUsers(List<NimUserInfo> users) {
             if (users != null && !users.isEmpty()) {
-                refresh();
+                refresh(true);
             }
         }
     };
 
-    private void refresh() {
-        if (fragment != null) {
-            fragment.refresh();
-        }
-    }
-
     /**
-     * 加载本地数据（已从服务器下载到本地），切换到当前tab时触发
+     * 数据源变更，重新加载数据
+     * @param reload
      */
-    private void reloadChange(boolean rebuild) {
-        if (!inited()) {
-            return;
-        }
-
+    private void refresh(boolean reload) {
         if (fragment != null) {
-            fragment.reloadChange(rebuild);
+            fragment.refresh(reload);
         }
     }
 

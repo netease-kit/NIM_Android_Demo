@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.PrepareDataHelper;
+import com.netease.nim.demo.PrepareDataCacheHelper;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
@@ -28,6 +28,7 @@ import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.MD5;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
@@ -45,6 +46,8 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
  * Created by huangjun on 2015/2/1.
  */
 public class LoginActivity extends TActionBarActivity implements OnKeyListener {
+
+    private static final String TAG = LoginActivity.class.getSimpleName();
     private static final String KICK_OUT = "KICK_OUT";
 
     private TextView rightTopBtn;  // ActionBar完成按钮
@@ -232,19 +235,22 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
         loginRequest.setCallback(new RequestCallback<LoginInfo>() {
             @Override
             public void onSuccess(LoginInfo param) {
+                LogUtil.i(TAG, "login success");
+
                 onLoginDone();
                 DemoCache.setAccount(account);
                 saveLoginInfo(account, token);
+
                 // 初始化消息提醒
                 NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
+
                 // 初始化免打扰
                 NIMClient.updateStatusBarNotificationConfig(UserPreferences.getStatusConfig());
 
-                // 准备数据
-                PrepareDataHelper.prepare();
+                // 构建缓存
+                PrepareDataCacheHelper.buildDataCache();
 
                 // 进入主界面
-                Toast.makeText(LoginActivity.this, "登录成功", Toast.LENGTH_SHORT).show();
                 MainActivity.start(LoginActivity.this, null);
                 finish();
             }

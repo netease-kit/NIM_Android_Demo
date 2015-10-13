@@ -19,6 +19,9 @@ import com.netease.nimlib.sdk.nos.util.NosThumbImageUtil;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
+import com.nostra13.universalimageloader.core.assist.ImageSize;
+import com.nostra13.universalimageloader.core.assist.ViewScaleType;
+import com.nostra13.universalimageloader.core.imageaware.NonViewAware;
 import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListener;
 
 /**
@@ -77,11 +80,13 @@ public class HeadImageView extends ImageView {
     }
 
     private static final DisplayImageOptions createImageOptions() {
+        int defaultIcon = NimUIKit.getUserInfoProvider().getDefaultIconResId();
         return new DisplayImageOptions.Builder()
-                .showImageOnLoading(NimUIKit.getUserInfoProvider().getDefaultIconResId())
-                .showImageOnFail(NimUIKit.getUserInfoProvider().getDefaultIconResId())
+                .showImageOnLoading(defaultIcon)
+                .showImageOnFail(defaultIcon)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
+                        //.delayBeforeLoading(50) // 载入图片前稍做延时可以提高整体滑动的流畅度
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
     }
@@ -90,35 +95,66 @@ public class HeadImageView extends ImageView {
         mask = getResources().getDrawable(maskResId);
     }
 
+    /**
+     * 加载用户头像（默认大小的缩略图）
+     *
+     * @param account
+     */
     public void loadBuddyAvatar(String account) {
         loadBuddyAvatar(account, DEFAULT_THUMB_SIZE);
     }
 
     /**
-     * 加载头像
+     * 加载用户头像（原图）
+     *
+     * @param account
+     */
+    public void loadBuddyOriginalAvatar(String account) {
+        loadBuddyAvatar(account, 0);
+    }
+
+    /**
+     * 加载用户头像（指定缩略大小）
      *
      * @param account
      * @param thumbSize 缩略图的宽、高
      */
-    public void loadBuddyAvatar(String account, int thumbSize) {
-        setMask(R.drawable.nim_portrait_mask_round);
-        UserInfoProvider.UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
+    public void loadBuddyAvatar(final String account, final int thumbSize) {
+        final UserInfoProvider.UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
         if (userInfo != null && ImageLoaderKit.isImageUriValid(userInfo.getAvatar())) {
             /**
              * 若使用网易云信云存储，这里可以设置下载图片的压缩尺寸，生成下载URL
              * 如果图片来源是非网易云信云存储，请不要使用NosThumbImageUtil
              */
-            String thumbUrl = NosThumbImageUtil.makeImageThumbUrl(userInfo.getAvatar(), NosThumbParam.ThumbType.Crop,
-                    thumbSize, thumbSize);
-            ImageLoader.getInstance().displayImage(thumbUrl, this, options, new SimpleImageLoadingListener() {
+            final String thumbUrl = thumbSize > 0 ? NosThumbImageUtil.makeImageThumbUrl(userInfo.getAvatar(),
+                    NosThumbParam.ThumbType.Crop, thumbSize, thumbSize) : userInfo.getAvatar();
+
+            // 先显示默认头像
+            loadDefaultIcon(account);
+
+            // 异步从cache or NOS加载图片
+            ImageLoader.getInstance().displayImage(thumbUrl, new NonViewAware(new ImageSize(thumbSize, thumbSize),
+                    ViewScaleType.CROP), options, new SimpleImageLoadingListener() {
                 @Override
                 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
-                    setImageBitmap(loadedImage);
+                    if (getTag() != null && getTag().equals(account)) {
+                        setMask(R.drawable.nim_portrait_mask_round);
+                        setImageBitmap(loadedImage);
+                    } else {
+                        loadDefaultIcon(null);
+                    }
                 }
             });
         } else {
-            setImageResource(NimUIKit.getUserInfoProvider().getDefaultIconResId());
+            // 没有头像，设置默认头像
+            loadDefaultIcon(null);
         }
+    }
+
+    private void loadDefaultIcon(String tag) {
+        setTag(tag); // 解决VH复用导致的错位问题
+        setMask(R.drawable.nim_portrait_mask_round);
+        setImageResource(NimUIKit.getUserInfoProvider().getDefaultIconResId());
     }
 
     public void loadTeamIcon(String tid) {

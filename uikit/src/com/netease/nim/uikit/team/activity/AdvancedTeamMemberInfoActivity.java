@@ -62,9 +62,9 @@ public class AdvancedTeamMemberInfoActivity extends TActionBarActivity implement
     private boolean isSelfCreator = false;
     private boolean isSelfManager = false;
 
-    public static void startActivityForResult(Activity activity, String uid, String tid) {
+    public static void startActivityForResult(Activity activity, String account, String tid) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_ID, uid);
+        intent.putExtra(EXTRA_ID, account);
         intent.putExtra(EXTRA_TID, tid);
         intent.setClass(activity, AdvancedTeamMemberInfoActivity.class);
         activity.startActivityForResult(intent, REQ_CODE_REMOVE_MEMBER);
@@ -460,19 +460,19 @@ public class AdvancedTeamMemberInfoActivity extends TActionBarActivity implement
 
     /**
      * 设置返回的Intent
-     * @param uid 帐号
+     * @param account 帐号
      * @param isSetAdmin 是否设置为管理员
      * @param value 是否移除群成员
      */
-    private void makeIntent(String uid, boolean isSetAdmin, boolean value) {
+    private void makeIntent(String account, boolean isSetAdmin, boolean value) {
         Intent intent = new Intent();
-        intent.putExtra(EXTRA_ID, uid);
+        intent.putExtra(EXTRA_ID, account);
         intent.putExtra(EXTRA_ISADMIN, isSetAdmin);
         intent.putExtra(EXTRA_ISREMOVE, value);
         setResult(RESULT_OK, intent);
     }
 
-    private boolean isSelf(String uid) {
-        return NimUIKit.getAccount().equals(uid);
+    private boolean isSelf(String account) {
+        return NimUIKit.getAccount().equals(account);
     }
 }

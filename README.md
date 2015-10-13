@@ -8,7 +8,7 @@
 
 总体环境需求：
 
-- 我们的部分代码会针对不同系统版本做优化，在新的平台上使用新的 API。编译运行该 demo 的 build tools最低版本要求为18。
+- 我们的部分代码会针对不同系统版本做优化，在新的平台上使用新的 API。编译运行该 demo 的 build tools最低版本要求为19。
 - 由于 demo 中使用到了部分 java7 以上的特性，因此 JDK 请使用 JDK7 或以上版本。
 
 如果你使用的 IDE 是 Android Studio，可直接在 IDE 中打开 demo 工程，然后将工程目录下 gradle.properties文件按照注释修改，就可以直接编译运行。

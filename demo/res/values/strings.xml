@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">网易云信</string>
+    <string name="app_name">云信 Demo</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="hello_world">Hello world!</string>
     <string name="empty"></string>
@@ -29,6 +29,7 @@
     <string name="latest_message_draft_prefix">[草稿] </string>
     <string name="main_msg_unread_msg_count">[%d条]</string>
     <string name="out_time">超时</string>
+    <string name="prepare_data">正在准备数据...</string>
 
     <string name="readed">已读</string>
     <string name="about">关于</string>
@@ -38,7 +39,6 @@
     <string name="chat">聊天</string>
     <string name="add">添加</string>
     <string name="remove">移除</string>
-    <string name="contact_selector">联系人选择器</string>
     <string name="network_forbidden_login">你被服务器禁止登录，详询客服</string>
     <string name="menu">菜单</string>
     <string name="verify_reminder">验证提醒</string>
@@ -88,6 +88,7 @@
     <string name="remove_friend_success">删除好友成功</string>
     <string name="add_friend_self_tip">不能添加自己为好友</string>
     <string name="add_friend_verify_tip">好友验证请求</string>
+    <string name="black_list_tip">你不会接收到列表中联系人的任何消息</string>
 
     <!-- 群 -->
     <string name="add_buddy">添加好友</string>

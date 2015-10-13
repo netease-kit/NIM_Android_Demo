@@ -8,14 +8,16 @@ import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.FriendServiceObserve;
 import com.netease.nimlib.sdk.friend.model.BlackListChangedNotify;
+import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.friend.model.FriendChangedNotify;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CopyOnWriteArraySet;
+
 
 /**
  * 好友关系缓存
@@ -34,7 +36,7 @@ public class FriendDataCache {
     /**
      * 属性
      */
-    private Set<String> friendSet = new HashSet<>();
+    private Set<String> friendAccountList = new CopyOnWriteArraySet<>();
 
     private List<FriendDataChangedObserver> friendObservers = new ArrayList<>();
 
@@ -61,15 +63,15 @@ public class FriendDataCache {
         accounts.remove(NimUIKit.getAccount());
 
         // 确定缓存
-        friendSet.clear();
-        friendSet.addAll(accounts);
+        friendAccountList.clear();
+        friendAccountList.addAll(accounts);
 
-        Log.i(TAG, "build friend data cache completed, friends count = " + friendSet.size());
+        Log.i(TAG, "build friend data cache completed, friends count = " + friendAccountList.size());
     }
 
 
     private void clearFriendCache() {
-        friendSet.clear();
+        friendAccountList.clear();
     }
 
     /**
@@ -77,22 +79,14 @@ public class FriendDataCache {
      */
 
     public List<String> getMyFriendAccounts() {
-        if (friendSet.isEmpty()) {
-            buildCache();
-        }
-
-        List<String> accounts = new ArrayList<>(friendSet.size());
-        accounts.addAll(friendSet);
+        List<String> accounts = new ArrayList<>(friendAccountList.size());
+        accounts.addAll(friendAccountList);
 
         return accounts;
     }
 
     public int getMyFriendCounts() {
-        if (friendSet.isEmpty()) {
-            buildCache();
-        }
-
-        return friendSet.size();
+        return friendAccountList.size();
     }
 
     /**
@@ -125,9 +119,9 @@ public class FriendDataCache {
     }
 
     public interface FriendDataChangedObserver {
-        void onAddFriend(String account);
+        void onAddedOrUpdatedFriends(List<String> accounts);
 
-        void onDeleteFriend(String account);
+        void onDeletedFriends(List<String> accounts);
 
         void onAddUserToBlackList(String account);
 
@@ -140,33 +134,45 @@ public class FriendDataCache {
     private Observer<FriendChangedNotify> friendChangedNotifyObserver = new Observer<FriendChangedNotify>() {
         @Override
         public void onEvent(FriendChangedNotify friendChangedNotify) {
-            final String account = friendChangedNotify.getAccount();
-            if (friendChangedNotify.getChangeType() == FriendChangedNotify.ChangeType.ADD) {
+            List<Friend> addedOrUpdatedFriends = friendChangedNotify.getAddedOrUpdatedFriends();
+            List<String> addedOrUpdatedFriendAccounts = new ArrayList<>(addedOrUpdatedFriends.size());
+            List<String> deletedFriendAccounts = friendChangedNotify.getDeletedFriends();
+
+            // 处理添加or发生修改的好友关系
+            String account;
+            for (Friend f : addedOrUpdatedFriends) {
+                account = f.getAccount();
                 // 新增好友
                 if (NIMClient.getService(FriendService.class).isInBlackList(account)) {
-                    // 如果在黑名单中，那么不加到好友列表中
-                    return;
+                    continue; // 如果在黑名单中，那么不加到好友列表中
                 }
 
                 // 添加好友
-                friendSet.add(account);
+                addedOrUpdatedFriendAccounts.add(account);
+                Log.i(TAG, "add friend " + account);
+            }
+
+            if (!addedOrUpdatedFriendAccounts.isEmpty()) {
+                friendAccountList.addAll(addedOrUpdatedFriendAccounts);
 
                 // 通知观察者
                 for (FriendDataChangedObserver o : friendObservers) {
-                    o.onAddFriend(account);
+                    o.onAddedOrUpdatedFriends(addedOrUpdatedFriendAccounts);
                 }
 
-                Log.i(TAG, "on add friend " + account);
-            } else if (friendChangedNotify.getChangeType() == FriendChangedNotify.ChangeType.DELETE) {
-                // 删除好友
-                friendSet.remove(account);
+                Log.i(TAG, "notify add friend, size =" + addedOrUpdatedFriendAccounts.size());
+            }
+
+            // 处理被删除的好友关系
+            if (!deletedFriendAccounts.isEmpty()) {
+                friendAccountList.removeAll(deletedFriendAccounts);
 
                 // 通知观察者
                 for (FriendDataChangedObserver o : friendObservers) {
-                    o.onDeleteFriend(account);
+                    o.onDeletedFriends(deletedFriendAccounts);
                 }
 
-                Log.i(TAG, "on delete friend " + account);
+                Log.i(TAG, "notify delete friend, size =" + deletedFriendAccounts.size());
             }
         }
     };
@@ -180,7 +186,7 @@ public class FriendDataCache {
             String account = blackListChangedNotify.getAccount();
             if (blackListChangedNotify.getChangeType() == BlackListChangedNotify.ChangeType.ADD) {
                 // 拉黑，即从好友名单中移除
-                friendSet.remove(account);
+                friendAccountList.remove(account);
 
                 // 拉黑，要从最近联系人列表中删除该好友
                 NIMClient.getService(MsgService.class).deleteRecentContact2(account, SessionTypeEnum.P2P);
@@ -192,7 +198,7 @@ public class FriendDataCache {
             } else if (blackListChangedNotify.getChangeType() == BlackListChangedNotify.ChangeType.REMOVE) {
                 // 移出黑名单，判断是否加入好友名单
                 if (NIMClient.getService(FriendService.class).isMyFriend(account)) {
-                    friendSet.add(account);
+                    friendAccountList.add(account);
                 }
 
                 // 通知观察者

@@ -69,8 +69,7 @@ public final class NimUIKit {
         NimUIKit.context = context.getApplicationContext();
         NimUIKit.userInfoProvider = userInfoProvider;
         NimUIKit.contactProvider = contactProvider;
-        NimUIKit.imageLoaderKit = new ImageLoaderKit(context);
-        NimUIKit.imageLoaderKit.init(null);
+        NimUIKit.imageLoaderKit = new ImageLoaderKit(context, null);
 
         FriendDataCache.getInstance().registerObservers(true);
         TeamDataCache.getInstance().registerObservers(true);

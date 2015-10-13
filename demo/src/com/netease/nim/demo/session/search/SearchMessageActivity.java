@@ -19,7 +19,6 @@ import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.team.TeamDataCache;
 import com.netease.nim.uikit.uinfo.UserInfoHelper;
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -211,7 +210,7 @@ public class SearchMessageActivity extends TActionBarActivity {
         String query = keyword.toLowerCase();
         IMMessage anchor = (append ? searchResultList.get(searchResultList.size() - 1) : emptyMsg);
 
-        NIMClient.getService(MsgService.class).searchMessageHistory(keyword, filterUids(query), anchor, SEARCH_COUNT)
+        NIMClient.getService(MsgService.class).searchMessageHistory(keyword, filterAccounts(query), anchor, SEARCH_COUNT)
                 .setCallback(new RequestCallbackWrapper<List<IMMessage>>() {
                     @Override
                     public void onResult(int code, List<IMMessage> result, Throwable exception) {
@@ -269,7 +268,7 @@ public class SearchMessageActivity extends TActionBarActivity {
         return reset;
     }
 
-    private ArrayList<String> filterUids(String query) {
+    private ArrayList<String> filterAccounts(String query) {
         ArrayList<String> filter = new ArrayList<String>();
         if (sessionType == SessionTypeEnum.Team) {
             if (members == null) {

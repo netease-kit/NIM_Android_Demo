@@ -8,13 +8,13 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
 import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 
 /**
@@ -150,9 +150,9 @@ public class AVChatVideoManager implements View.OnClickListener, ToggleListener{
      * 显示个人信息
      */
     private void showProfile(){
-        String uid = manager.getUid();
-        headImg.loadBuddyAvatar(uid);
-        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(uid));
+        String account = manager.getAccount();
+        headImg.loadBuddyAvatar(account);
+        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
     }
 
     /**

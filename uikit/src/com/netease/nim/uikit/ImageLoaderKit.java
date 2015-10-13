@@ -36,11 +36,12 @@ public class ImageLoaderKit {
 
     private static List<String> uriSchemes;
 
-    public ImageLoaderKit(Context context) {
+    public ImageLoaderKit(Context context, ImageLoaderConfiguration config) {
         this.context = context;
+        init(config);
     }
 
-    public void init(ImageLoaderConfiguration config) {
+    private void init(ImageLoaderConfiguration config) {
         try {
             ImageLoader.getInstance().init(config == null ? getDefaultConfig() : config);
         } catch (IOException e) {
@@ -63,7 +64,8 @@ public class ImageLoaderKit {
 
         ImageLoaderConfiguration config = new ImageLoaderConfiguration
                 .Builder(context)
-                .threadPoolSize(3) //线程池内加载的数量
+                .threadPoolSize(3) // 线程池内加载的数量
+                .threadPriority(Thread.NORM_PRIORITY - 2) // 降低线程的优先级，减小对UI主线程的影响
                 .denyCacheImageMultipleSizesInMemory()
                 .memoryCache(new LruMemoryCache(MAX_CACHE_MEMORY_SIZE))
                 .discCache(new LruDiskCache(cacheDir, new Md5FileNameGenerator(), 0))
@@ -101,6 +103,14 @@ public class ImageLoaderKit {
         return null;
     }
 
+    /**
+     * 判断图片地址是否合法，合法地址如下：
+     * String uri = "http://site.com/image.png"; // from Web
+     * String uri = "file:///mnt/sdcard/image.png"; // from SD card
+     * String uri = "content://media/external/audio/albumart/13"; // from content provider
+     * String uri = "assets://image.png"; // from assets
+     * String uri = "drawable://" + R.drawable.image; // from drawables (only images, non-9patch)
+     */
     public static boolean isImageUriValid(String uri) {
         if (TextUtils.isEmpty(uri)) {
             return false;

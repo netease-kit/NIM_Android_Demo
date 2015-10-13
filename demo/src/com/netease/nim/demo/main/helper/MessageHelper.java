@@ -15,13 +15,13 @@ import com.netease.nimlib.sdk.team.model.Team;
  * Created by huangjun on 2015/4/9.
  */
 public class MessageHelper {
-    public static String getName(String uid, SessionTypeEnum sessionType) {
+    public static String getName(String account, SessionTypeEnum sessionType) {
         if (sessionType == SessionTypeEnum.P2P) {
-            return NimUserInfoCache.getInstance().getUserDisplayName(uid);
+            return NimUserInfoCache.getInstance().getUserDisplayName(account);
         } else if (sessionType == SessionTypeEnum.Team) {
-            return TeamDataCache.getInstance().getTeamName(uid);
+            return TeamDataCache.getInstance().getTeamName(account);
         }
-        return uid;
+        return account;
     }
 
     public static String getVerifyNotificationText(SystemMessage message) {

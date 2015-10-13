@@ -24,11 +24,12 @@ import java.util.List;
  */
 public class TeamCreateHelper {
     private static final String TAG = TeamCreateHelper.class.getSimpleName();
+    private static final int DEFAULT_TEAM_CAPACITY = 50;
 
     /**
      * 创建普通群
      */
-    public static void createNormalTeam(final Context context, List<String> memberAccounts, final int teamCapacity, final RequestCallback<Void> callback) {
+    public static void createNormalTeam(final Context context, List<String> memberAccounts, final RequestCallback<Void> callback) {
 
         String teamName = "普通群";
 
@@ -55,7 +56,7 @@ public class TeamCreateHelper {
                     public void onFailed(int code) {
                         DialogMaker.dismissProgressDialog();
                         if (code == 801) {
-                            String tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity, teamCapacity);
+                            String tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity, DEFAULT_TEAM_CAPACITY);
                             Toast.makeText(DemoCache.getContext(), tip,
                                     Toast.LENGTH_SHORT).show();
                         } else {
@@ -77,7 +78,7 @@ public class TeamCreateHelper {
     /**
      * 创建高级群
      */
-    public static void createAdvancedTeam(final Context context, List<String> memberAccounts, final int teamCapacity) {
+    public static void createAdvancedTeam(final Context context, List<String> memberAccounts) {
 
         String teamName = "高级群";
 
@@ -99,7 +100,7 @@ public class TeamCreateHelper {
                     public void onFailed(int code) {
                         DialogMaker.dismissProgressDialog();
                         if (code == 801) {
-                            String tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity, teamCapacity);
+                            String tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity, DEFAULT_TEAM_CAPACITY);
                             Toast.makeText(context, tip,
                                     Toast.LENGTH_SHORT).show();
                         } else {

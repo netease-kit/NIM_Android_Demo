@@ -4,31 +4,31 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.demo.LoginSyncDataStatusObserver;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.fragment.HomeFragment;
+import com.netease.nim.demo.main.helper.LogoutHelper;
 import com.netease.nim.demo.main.helper.TeamCreateHelper;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.demo.team.AdvancedTeamSearchActivity;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.common.cache.BitmapCache;
+import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
-import com.netease.nim.uikit.session.emoji.StickerManager;
 import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NimIntent;
+import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
 import java.util.ArrayList;
@@ -46,10 +46,6 @@ public class MainActivity extends TActionBarActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
 
     private HomeFragment mainFragment;
-
-
-    private int teamCapacity = 50; // 群人数上限，暂定
-    private ArrayList<String> memberAccounts;
 
     public static void start(Context context) {
         start(context, null);
@@ -84,16 +80,25 @@ public class MainActivity extends TActionBarActivity {
         setTitle(R.string.app_name);
         onParseIntent();
 
-        // 准备必要的数据
-        initData();
-
-        // 加载主页面
-        new Handler(MainActivity.this.getMainLooper()).postDelayed(new Runnable() {
+        // 等待同步数据完成
+        boolean syncCompleted = LoginSyncDataStatusObserver.getInstance().observeSyncDataCompletedEvent(new Observer<Void>() {
             @Override
-            public void run() {
-                showMainFragment();
+            public void onEvent(Void v) {
+                DialogMaker.dismissProgressDialog();
             }
-        }, 100);
+        });
+
+        Log.i(TAG, "sync completed = " + syncCompleted);
+        if (!syncCompleted) {
+            DialogMaker.showProgressDialog(MainActivity.this, getString(R.string.prepare_data)).setCanceledOnTouchOutside(false);
+        }
+
+        onInit();
+    }
+
+    private void onInit() {
+        // 加载主页面
+        showMainFragment();
     }
 
     @Override
@@ -135,13 +140,11 @@ public class MainActivity extends TActionBarActivity {
                 startActivity(new Intent(MainActivity.this, SettingsActivity.class));
                 break;
             case R.id.create_normal_team:
-                memberAccounts.clear();
-                ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(memberAccounts, teamCapacity);
+                ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(null, 50);
                 NimUIKit.startContactSelect(MainActivity.this, option, REQUEST_CODE_NORMAL);
                 break;
             case R.id.create_regular_team:
-                memberAccounts.clear();
-                ContactSelectActivity.Option advancedOption = TeamHelper.getCreateContactSelectOption(memberAccounts, teamCapacity);
+                ContactSelectActivity.Option advancedOption = TeamHelper.getCreateContactSelectOption(null, 50);
                 NimUIKit.startContactSelect(MainActivity.this, advancedOption, REQUEST_CODE_ADVANCED);
                 break;
             case R.id.search_advanced_team:
@@ -192,22 +195,10 @@ public class MainActivity extends TActionBarActivity {
     }
 
     private void showMainFragment() {
-        if (mainFragment == null) {
+        if (mainFragment == null && !isDestroyedCompatible()) {
             mainFragment = new HomeFragment();
             switchFragmentContent(mainFragment);
         }
-    }
-
-    private void initData() {
-        new Handler(getMainLooper()).postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                StickerManager.getInstance().init(); // 加载本地贴图基本数据
-                BitmapCache.getInstance().init();
-            }
-        }, 2000);
-
-        memberAccounts = new ArrayList<>();
     }
 
     @Override
@@ -217,17 +208,13 @@ public class MainActivity extends TActionBarActivity {
             if (requestCode == REQUEST_CODE_NORMAL) {
                 final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
                 if (selected != null && !selected.isEmpty()) {
-                    memberAccounts.clear();
-                    memberAccounts.addAll(selected);
-                    TeamCreateHelper.createNormalTeam(MainActivity.this, memberAccounts, teamCapacity, null);
+                    TeamCreateHelper.createNormalTeam(MainActivity.this, selected, null);
                 } else {
                     Toast.makeText(MainActivity.this, "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
                 }
             } else if (requestCode == REQUEST_CODE_ADVANCED) {
                 final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
-                memberAccounts.clear();
-                memberAccounts.addAll(selected);
-                TeamCreateHelper.createAdvancedTeam(MainActivity.this, memberAccounts, teamCapacity);
+                TeamCreateHelper.createAdvancedTeam(MainActivity.this, selected);
             }
         }
 
@@ -236,10 +223,7 @@ public class MainActivity extends TActionBarActivity {
     // 注销
     private void onLogout() {
         // 清理缓存&注销监听
-        NimUserInfoCache.getInstance().clear();
-        BitmapCache.getInstance().clear();
-        NimUIKit.clearCache();
-        DemoCache.clear();
+        LogoutHelper.logout();
 
         // 启动登录
         LoginActivity.start(this);

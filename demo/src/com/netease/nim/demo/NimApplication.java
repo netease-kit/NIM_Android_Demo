@@ -19,7 +19,6 @@ import com.netease.nim.demo.config.ExtraOptions;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
@@ -57,6 +56,7 @@ public class NimApplication extends Application {
         DemoCache.setContext(this);
 
         NIMClient.init(this, getLoginInfo(), getOptions());
+
         ExtraOptions.provide();
 
         // crash handler
@@ -68,7 +68,7 @@ public class NimApplication extends Application {
             PinYin.validate();
 
             // 初始化UIKit模块
-            initUiKit();
+            initUIKit();
 
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
@@ -84,6 +84,9 @@ public class NimApplication extends Application {
 
             // 注册语言变化监听
             registerLocaleReceiver(true);
+
+            // 自动登录的情况，构建缓存
+            buildDataCache();
         }
     }
 
@@ -150,6 +153,9 @@ public class NimApplication extends Application {
     }
 
     private void initObservers() {
+        // 监听登录同步数据完成通知
+        LoginSyncDataStatusObserver.getInstance().registerLoginSyncDataStatus(true);
+        // 监听用户资料变更
         NimUserInfoCache.getInstance().registerObservers(true);
     }
 
@@ -244,7 +250,7 @@ public class NimApplication extends Application {
         NIMClient.updateStrings(strings);
     }
 
-    private void initUiKit() {
+    private void initUIKit() {
         // 初始化，需要传入用户信息提供者
         NimUIKit.init(this, infoProvider, contactProvider);
 
@@ -256,6 +262,13 @@ public class NimApplication extends Application {
 
         // 通讯录列表定制初始化
         ContactHelper.init();
+    }
+
+    private void buildDataCache() {
+        // 自动登录的情况，构建缓存
+        if (!TextUtils.isEmpty(DemoCache.getAccount())) {
+            PrepareDataCacheHelper.buildDataCache();
+        }
     }
 
     private UserInfoProvider infoProvider = new UserInfoProvider() {

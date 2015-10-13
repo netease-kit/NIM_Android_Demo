@@ -177,9 +177,10 @@ public class TeamDataCache {
     }
 
     public Team getTeamById(String id) {
-        if (id2TeamMap.isEmpty()) {
-            buildCache();
-        }
+        // 登录变成同步处理，数据加载完后才可以打开。暂时注释掉
+//        if (id2TeamMap.isEmpty()) {
+//            buildCache();
+//        }
 
         Team team;
         lock.readLock().lock();

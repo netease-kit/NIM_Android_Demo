@@ -232,13 +232,13 @@ public class NormalTeamInfoActivity extends TActionBarActivity implements OnClic
             if (selected != null && !selected.isEmpty()) {
                 if (target == TARGET_TEAM_INFO) {
                     addMembersToTeam(selected);
-                    // 修复VH复用bug by xuwen
-                    getHandler().postDelayed(new Runnable() {
-                        @Override
-                        public void run() {
-                            adapter.notifyDataSetChanged();
-                        }
-                    }, 300);
+                    // 修复VH复用bug by xuwen （huangjun改过头像的加载，暂时注释掉这个解决方案）
+//                    getHandler().postDelayed(new Runnable() {
+//                        @Override
+//                        public void run() {
+//                            adapter.notifyDataSetChanged();
+//                        }
+//                    }, 300);
                 } else if (target == TARGET_CREATE_NORMAL_TEAM) {
                     addMember(selected, false);
                 }
@@ -858,8 +858,8 @@ public class NormalTeamInfoActivity extends TActionBarActivity implements OnClic
     }
 
     @Override
-    public void onHeadImageViewClick(String uid) {
-        NimUIKit.getContactEventListener().onAvatarClick(this, uid);
+    public void onHeadImageViewClick(String account) {
+        NimUIKit.getContactEventListener().onAvatarClick(this, account);
     }
 
     private void registerUserInfoChangedObserver(boolean register) {

@@ -34,37 +34,14 @@
         <item name="actionButtonStyle">@style/ActionBlueButtonStyle</item>
         <item name="android:actionButtonStyle">@style/ActionBlueButtonStyle</item>
         <item name="actionBarStyle">@style/GreenActionBarStyle</item>
-        <item name="homeAsUpIndicator">@drawable/actionbar_white_back_icon</item>
+        <item name="homeAsUpIndicator">@drawable/nim_actionbar_white_back_icon</item>
         <item name="android:actionBarStyle">@style/GreenActionBarStyle</item>
-        <item name="android:homeAsUpIndicator">@drawable/actionbar_white_back_icon</item>
-    </style>
-
-    <!-- Dark ActionBar -->
-    <style name="DarkBaseActionBarTheme" parent="@style/Theme.AppCompat.Light.DarkActionBar">
-        <item name="actionBarStyle">@style/DarkBaseActionBarStyle</item>
-        <item name="popupMenuStyle">@style/PopMenuStyle</item>
-        <item name="dropDownListViewStyle">@style/DropDownStyle</item>
-        <item name="homeAsUpIndicator">@drawable/actionbar_white_back_icon</item>
-        <item name="searchViewTextField">@drawable/actionbar_search_view_bg</item>
-        <item name="searchViewSearchIcon">@drawable/action_bar_search_view_icon</item>
-        <item name="android:actionBarStyle">@style/DarkBaseActionBarStyle</item>
-        <item name="android:popupMenuStyle">@style/PopMenuStyle</item>
-        <item name="android:dropDownListViewStyle">@style/DropDownStyle</item>
-        <item name="android:homeAsUpIndicator">@drawable/actionbar_white_back_icon</item>
-        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:homeAsUpIndicator">@drawable/nim_actionbar_white_back_icon</item>
     </style>
 
     <!-- Overlay Light ActionBar -->
     <style name="OverlayBaseActionBarTheme" parent="@style/LightBaseActionBarTheme">
         <!-- ActionBar 是否悬浮在内容页面上，true：悬浮，false：不悬浮 -->
-        <item name="windowActionBarOverlay">true</item>
-        <item name="android:windowActionBarOverlay">true</item>
-    </style>
-
-    <!-- Overlay Dark ActionBar -->
-    <style name="DarkOverlayActionBarTheme" parent="@style/DarkBaseActionBarTheme">
-        <item name="actionButtonStyle">@style/ActionDarkButtonStyle</item>
-        <item name="android:actionButtonStyle">@style/ActionDarkButtonStyle</item>
         <item name="windowActionBarOverlay">true</item>
         <item name="android:windowActionBarOverlay">true</item>
     </style>
@@ -99,23 +76,8 @@
         <item name="android:subtitleTextStyle">@style/LightSubTitleTextStyle</item>
     </style>
 
-    <style name="ActionDarkButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
-        <item name="android:background">@drawable/actionbar_item_black_background_selector</item>
-    </style>
-
     <style name="ActionBlueButtonStyle" parent="@style/Widget.AppCompat.ActionButton">
         <item name="android:background">@drawable/actionbar_item_blue_background_selector</item>
-    </style>
-
-    <style name="DarkBaseActionBarStyle" parent="@style/Widget.AppCompat.ActionBar">
-        <item name="android:background">@drawable/actionbar_black_bg</item>
-        <item name="background">@drawable/actionbar_black_bg</item>
-        <item name="height">@dimen/action_bar_height</item>
-        <item name="icon">@drawable/actionbar_white_logo_icon</item>
-        <item name="titleTextStyle">@style/DarkActionBarTitleTextStyle</item>
-        <item name="android:height">@dimen/action_bar_height</item>
-        <item name="android:icon">@drawable/actionbar_white_logo_icon</item>
-        <item name="android:titleTextStyle">@style/DarkActionBarTitleTextStyle</item>
     </style>
 
     <style name="GreenActionBarStyle" parent="@style/LightBaseActionBarStyle">
@@ -125,11 +87,6 @@
         <item name="android:titleTextStyle">@style/DarkActionBarTitleTextStyle</item>
         <item name="android:icon">@drawable/actionbar_white_logo_space</item>
         <item name="android:background">@drawable/actionbar_blue_bg</item>
-    </style>
-
-    <style name="DarkActionBarTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">
-        <item name="android:textSize">@dimen/actionbar_title_size</item>
-        <item name="android:textColor">@color/white</item>
     </style>
 
     <style name="LightActionBarTitleTextStyle" parent="@style/TextAppearance.AppCompat.Widget.ActionBar.Title">

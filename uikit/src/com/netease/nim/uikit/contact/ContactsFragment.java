@@ -44,8 +44,6 @@ import java.util.List;
  */
 public class ContactsFragment extends TFragment {
 
-    private static final String TAG = ContactsFragment.class.getSimpleName();
-
     private ContactDataAdapter adapter;
 
     private PullToRefreshListView listView;
@@ -80,7 +78,7 @@ public class ContactsFragment extends TFragment {
         buildLitterIdx(getView());
 
         // 加载本地数据
-        reloadChange(true);
+        refresh(true);
     }
 
     private void findViews() {
@@ -160,23 +158,13 @@ public class ContactsFragment extends TFragment {
         NimUIKit.getContactProvider().getUserInfoOfMyFriends(new RequestCallback<List<UserInfoProvider.UserInfo>>() {
             @Override
             public void onSuccess(List<UserInfoProvider.UserInfo> users) {
-                if (!users.isEmpty()) {
-                    refresh();
-                }
-
                 listView.onRefreshComplete();
             }
 
             @Override
             public void onFailed(int code) {
-                if (code == 400 || code == 401) {
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "access_token无效,请重试。code=" + code, Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    if (getActivity() != null) {
-                        Toast.makeText(getActivity(), "request failed, code=" + code, Toast.LENGTH_SHORT).show();
-                    }
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "request failed, code=" + code, Toast.LENGTH_SHORT).show();
                 }
 
                 listView.onRefreshComplete();
@@ -189,8 +177,12 @@ public class ContactsFragment extends TFragment {
         });
     }
 
-    public void refresh() {
-        reloadChange(true);
+    /**
+     * 加载数据并刷新
+     * @param reload 是否重新加载数据
+     */
+    public void refresh(boolean reload) {
+        reloadData(reload);
 
         if (adapter != null) {
             adapter.notifyDataSetChanged();
@@ -198,9 +190,11 @@ public class ContactsFragment extends TFragment {
     }
 
     /**
-     * 加载本地数据（已从服务器下载到本地），切换到当前tab时触发
+     * 重新载入数据
+     *
+     * @param reload true则重新加载数据；false则判断当前数据源是否空，若空则重新加载，不空则不加载
      */
-    public void reloadChange(boolean rebuild) {
+    private void reloadData(boolean reload) {
         if (adapter == null) {
             if (getActivity() == null) {
                 return;
@@ -209,7 +203,7 @@ public class ContactsFragment extends TFragment {
             initAdapter();
         }
 
-        adapter.load(rebuild);
+        adapter.load(reload);
     }
 
     public void scrollToTop() {

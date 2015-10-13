@@ -107,7 +107,7 @@ public class SessionHelper {
                         if (requestCode == REQUEST_CODE_NORMAL) {
                             final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
                             if (selected != null && !selected.isEmpty()) {
-                                TeamCreateHelper.createNormalTeam(activity, selected, 50, new RequestCallback<Void>() {
+                                TeamCreateHelper.createNormalTeam(activity, selected, new RequestCallback<Void>() {
                                     @Override
                                     public void onSuccess(Void param) {
                                         activity.finish();

@@ -14,7 +14,7 @@ import com.netease.nim.uikit.team.adapter.TeamMemberAdapter;
 public class TeamMemberHolder extends TViewHolder {
 
     public interface TeamMemberHolderEventListener {
-        void onHeadImageViewClick(String uid);
+        void onHeadImageViewClick(String account);
     }
 
     protected TeamMemberHolderEventListener teamMemberHolderEventListener;

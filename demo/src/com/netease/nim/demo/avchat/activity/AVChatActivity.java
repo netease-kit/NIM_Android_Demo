@@ -40,7 +40,7 @@ public class AVChatActivity extends TActivity implements AVChatUIManager.AVChatL
     // constant
     private static final String TAG = "AVChatActivity";
     private static final String KEY_IN_CALLING = "KEY_IN_CALLING";
-    private static final String KEY_UID = "KEY_UID";
+    private static final String KEY_ACCOUNT = "KEY_ACCOUNT";
     private static final String KEY_CALL_TYPE = "KEY_CALL_TYPE";
     private static final String KEY_SOURCE = "source";
     private static final String KEY_CALL_CONFIG = "KEY_CALL_CONFIG";
@@ -82,11 +82,11 @@ public class AVChatActivity extends TActivity implements AVChatUIManager.AVChatL
     // notification
     private AVChatNotification notifier;
 
-    public static void start(Context context, String uid, int callType, int source) {
+    public static void start(Context context, String account, int callType, int source) {
         needFinish = false;
         Intent intent = new Intent();
         intent.setClass(context, AVChatActivity.class);
-        intent.putExtra(KEY_UID, uid);
+        intent.putExtra(KEY_ACCOUNT, account);
         intent.putExtra(KEY_IN_CALLING, false);
         intent.putExtra(KEY_CALL_TYPE, callType);
         intent.putExtra(KEY_SOURCE, source);
@@ -210,7 +210,7 @@ public class AVChatActivity extends TActivity implements AVChatUIManager.AVChatL
      * 去电参数解析
      */
     private void parseOutgoingIntent() {
-        receiverId = getIntent().getStringExtra(KEY_UID);
+        receiverId = getIntent().getStringExtra(KEY_ACCOUNT);
         state = getIntent().getIntExtra(KEY_CALL_TYPE, -1);
     }
 

@@ -265,7 +265,7 @@ public class AdvancedTeamAnnounceActivity extends TActionBarActivity implements 
             uiHandler.postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ListViewUtil.scrollToPostion(announceListView, position, 0);
+                    ListViewUtil.scrollToPosition(announceListView, position, 0);
                 }
             }, 200);
         }

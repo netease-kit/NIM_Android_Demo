@@ -20,4 +20,3 @@
     <item
          android:drawable="@drawable/abc_ic_clear_normal" />
 </selector>
-<!-- From: file:/usr/local/google/buildbot/repo_clients/https___googleplex-android.googlesource.com_a_platform_manifest.git/klp-ub-dev/frameworks/support/v7/appcompat/res/drawable/abc_ic_clear.xml -->

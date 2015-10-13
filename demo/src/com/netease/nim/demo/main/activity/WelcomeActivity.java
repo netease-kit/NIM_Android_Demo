@@ -7,7 +7,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.PrepareDataHelper;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.common.util.sys.SysInfoUtil;
@@ -165,8 +164,6 @@ public class WelcomeActivity extends TActivity {
     }
 
     private void showMainActivity(Intent intent) {
-        PrepareDataHelper.prepare();
-
         MainActivity.start(WelcomeActivity.this, intent);
         finish();
     }

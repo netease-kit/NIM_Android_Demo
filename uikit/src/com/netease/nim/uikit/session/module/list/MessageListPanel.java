@@ -187,7 +187,7 @@ public class MessageListPanel implements TAdapterDelegate {
         uiHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                ListViewUtil.scrollToPostion(messageListView, position, 0);
+                ListViewUtil.scrollToPosition(messageListView, position, 0);
             }
         }, 200);
     }

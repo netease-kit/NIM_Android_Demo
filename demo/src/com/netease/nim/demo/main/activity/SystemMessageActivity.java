@@ -10,8 +10,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.netease.nim.demo.R;
 import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
@@ -27,6 +27,7 @@ import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
 import com.netease.nimlib.sdk.msg.SystemMessageService;
 import com.netease.nimlib.sdk.msg.constant.SystemMessageStatus;
@@ -49,7 +50,6 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         AutoRefreshListView.OnRefreshListener, SystemMessageViewHolder.SystemMessageListener {
 
     private static final int LOAD_MESSAGE_COUNT = 10;
-    private static final int LOAD_SYSTEM_MESSAGE_COUNT = 10;
 
     // view
     private MessageListView listView;
@@ -101,7 +101,7 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
 
     @Override
     public void onRefreshFromEnd() {
-        loadMessageFromDB(LOAD_MESSAGE_COUNT, true); // load old data
+        loadMessages(); // load old data
     }
 
     @Override
@@ -114,7 +114,7 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         initAdapter();
         initListView();
 
-        loadMessageFromDB(LOAD_MESSAGE_COUNT, true); // load old data
+        loadMessages(); // load old data
         registerSystemObserver(true);
     }
 
@@ -176,50 +176,120 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         listView.setOnRefreshListener(this);
     }
 
+
+    private int loadOffset = 0;
+    private Set<String> addFriendVerifyRequestAccounts = new HashSet<>(); // 发送过好友申请的账号（好友申请合并用）
+
     /**
      * 加载历史消息
-     *
-     * @param maxResultsCount 最多加载多少条
-     * @param needOffset      是否ListView自动偏移
      */
-    protected void loadMessageFromDB(final int maxResultsCount, final boolean needOffset) {
-        NIMClient.getService(SystemMessageService.class).querySystemMessages(items.size(), maxResultsCount)
-                .setCallback(new RequestCallback<List<SystemMessage>>() {
-                    @Override
-                    public void onSuccess(List<SystemMessage> msgList) {
-                        boolean first = firstLoad;
-                        firstLoad = false;
-                        if (msgList != null) {
-                            onMessageLoaded(msgList, first, LOAD_SYSTEM_MESSAGE_COUNT, needOffset);
-                        }
-                    }
+    public void loadMessages() {
+        listView.onRefreshStart(AutoRefreshListView.Mode.END);
+        boolean loadCompleted; // 是否已经加载完成，后续没有数据了or已经满足本次请求数量
+        int validMessageCount = 0; // 实际加载的数量（排除被过滤被合并的条目）
+        List<String> messageFromAccounts = new ArrayList<>(LOAD_MESSAGE_COUNT);
 
-                    @Override
-                    public void onFailed(int code) {
+        while (true) {
+            List<SystemMessage> temps = NIMClient.getService(SystemMessageService.class)
+                    .querySystemMessagesBlock(loadOffset, LOAD_MESSAGE_COUNT);
 
-                    }
+            loadOffset += temps.size();
+            loadCompleted = temps.size() < LOAD_MESSAGE_COUNT;
 
-                    @Override
-                    public void onException(Throwable exception) {
+            int tempValidCount = 0;
 
-                    }
-                });
-    }
+            for (SystemMessage m : temps) {
+                // 去重
+                if (duplicateFilter(m)) {
+                    continue;
+                }
 
-    private void onMessageLoaded(List<SystemMessage> loadedMsgList, boolean first, int requestCount,
-                                 boolean needOffset) {
-        int count = 0;
-        if (loadedMsgList != null && loadedMsgList.size() > 0) {
-            count = addOldMessages(loadedMsgList);
+                // 收到被删除好友的通知，不要提醒
+                if (deleteFriendFilter(m)) {
+                    continue;
+                }
+
+                // 同一个账号的好友申请仅保留最近一条
+                if (addFriendVerifyFilter(m)) {
+                    continue;
+                }
+
+                // 保存有效消息
+                items.add(m);
+                tempValidCount++;
+                if (!messageFromAccounts.contains(m.getFromAccount())) {
+                    messageFromAccounts.add(m.getFromAccount());
+                }
+
+                // 判断是否达到请求数
+                if (++validMessageCount >= LOAD_MESSAGE_COUNT) {
+                    loadCompleted = true;
+                    // 已经满足要求，此时需要修正loadOffset
+                    loadOffset -= temps.size();
+                    loadOffset += tempValidCount;
+
+                    break;
+                }
+            }
+
+            if (loadCompleted) {
+                break;
+            }
         }
 
-        // 第一次加载后显示顶部
+        // 更新数据源，刷新界面
+        refresh();
+
+        boolean first = firstLoad;
+        firstLoad = false;
         if (first) {
-            ListViewUtil.scrollToPostion(listView, 0, 0);
+            ListViewUtil.scrollToPosition(listView, 0, 0); // 第一次加载后显示顶部
         }
 
-        listView.onRefreshComplete(count, requestCount, needOffset);
+        listView.onRefreshComplete(validMessageCount, LOAD_MESSAGE_COUNT, true);
+
+        // 收集未知用户资料的账号集合并从远程获取
+        collectAndRequestUnknownUserInfo(messageFromAccounts);
     }
+
+    /**
+     * 新消息到来
+     */
+    private void onIncomingMessage(final SystemMessage message) {
+        // 收到被删除好友的通知，不要提醒
+        if (deleteFriendFilter(message)) {
+            return;
+        }
+
+        // 同一个账号的好友申请仅保留最近一条
+        if (addFriendVerifyFilter(message)) {
+            SystemMessage del = null;
+            for (SystemMessage m : items) {
+                if (m.getFromAccount().equals(message.getFromAccount()) && m.getType() == SystemMessageType.AddFriend) {
+                    AddFriendNotify attachData = (AddFriendNotify) m.getAttachObject();
+                    if (attachData != null && attachData.getEvent() == AddFriendNotify.Event.RECV_ADD_FRIEND_VERIFY_REQUEST) {
+                        del = m;
+                        break;
+                    }
+                }
+            }
+
+            if (del != null) {
+                items.remove(del);
+            }
+        }
+
+        loadOffset++;
+        items.add(0, message);
+
+        refresh();
+
+        // 收集未知用户资料的账号集合并从远程获取
+        List<String> messageFromAccounts = new ArrayList<>(1);
+        messageFromAccounts.add(message.getFromAccount());
+        collectAndRequestUnknownUserInfo(messageFromAccounts);
+    }
+
 
     // 去重
     private boolean duplicateFilter(final SystemMessage msg) {
@@ -227,35 +297,53 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
             return true;
         }
 
+        itemIds.add(msg.getMessageId());
         return false;
     }
 
-    private int addOldMessages(List<SystemMessage> messages) {
-        List<String> unknowAccounts = new ArrayList<>();
-        for (SystemMessage msg : messages) {
-            if (duplicateFilter(msg)) {
-                continue;
-            }
+    // 同一个账号的好友申请仅保留最近一条
+    private boolean addFriendVerifyFilter(final SystemMessage msg) {
+        if (msg.getType() != SystemMessageType.AddFriend) {
+            return false; // 不过滤
+        }
 
-            // 收到被删除好友的通知，不要提醒
-            if (msg.getType() == SystemMessageType.DeleteFriend) {
-                continue;
-            }
+        AddFriendNotify attachData = (AddFriendNotify) msg.getAttachObject();
+        if (attachData == null) {
+            return true; // 过滤
+        }
 
-            items.add(msg);
-            itemIds.add(msg.getMessageId());
+        if (attachData.getEvent() != AddFriendNotify.Event.RECV_ADD_FRIEND_VERIFY_REQUEST) {
+            return false; // 不过滤
+        }
 
-            if (!NimUserInfoCache.getInstance().hasUser(msg.getFromAccount())) {
-                unknowAccounts.add(msg.getFromAccount());
+        if (addFriendVerifyRequestAccounts.contains(msg.getFromAccount())) {
+            return true; // 过滤
+        }
+
+        addFriendVerifyRequestAccounts.add(msg.getFromAccount());
+        return false; // 不过滤
+    }
+
+    private boolean deleteFriendFilter(final SystemMessage msg) {
+        if (msg.getType() == SystemMessageType.DeleteFriend) {
+            return true; // 过滤
+        }
+
+        return false;
+    }
+
+    // 请求未知的用户资料
+    private void collectAndRequestUnknownUserInfo(List<String> messageFromAccounts) {
+        List<String> unknownAccounts = new ArrayList<>();
+        for (String account : messageFromAccounts) {
+            if (!NimUserInfoCache.getInstance().hasUser(account)) {
+                unknownAccounts.add(account);
             }
         }
 
-        if (!unknowAccounts.isEmpty()) {
-            requestUnknownUser(unknowAccounts);
+        if (!unknownAccounts.isEmpty()) {
+            requestUnknownUser(unknownAccounts);
         }
-
-        refresh();
-        return items.size();
     }
 
     @Override
@@ -374,22 +462,7 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         NIMClient.getService(SystemMessageObserver.class).observeReceiveSystemMsg(new Observer<SystemMessage>() {
             @Override
             public void onEvent(SystemMessage message) {
-                // 收到被删除好友的通知，不要提醒
-                if (message.getType() == SystemMessageType.DeleteFriend) {
-                    return;
-                }
-
-                if (!items.contains(message)) {
-                    items.add(0, message);
-                }
-
-                if (!NimUserInfoCache.getInstance().hasUser(message.getFromAccount())) {
-                    List<String> accounts = new ArrayList<>();
-                    accounts.add(message.getFromAccount());
-                    requestUnknownUser(accounts);
-                }
-
-                refresh();
+                onIncomingMessage(message);
             }
         }, register);
     }

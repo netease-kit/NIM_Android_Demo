@@ -5,12 +5,12 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.activity.MultiportActivity;
+import com.netease.nim.demo.main.helper.LogoutHelper;
 import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
@@ -20,10 +20,8 @@ import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nim.uikit.recent.RecentContactsCallback;
 import com.netease.nim.uikit.recent.RecentContactsFragment;
-import com.netease.nim.uikit.team.TeamDataCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.StatusCode;
@@ -175,10 +173,9 @@ public class SessionListFragment extends MainTabFragment {
 
     // 注销
     private void onLogout() {
-        FriendDataCache.getInstance().clear();
-        NimUserInfoCache.getInstance().clear();
-        TeamDataCache.getInstance().clearTeamCache();
-        DemoCache.clear();
+        // 清理缓存&注销监听&清除状态
+        LogoutHelper.logout();
+
         LoginActivity.start(getActivity(), true);
         getActivity().finish();
     }

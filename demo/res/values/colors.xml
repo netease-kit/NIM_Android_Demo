@@ -39,9 +39,6 @@
     <color name="color_grey_eaeaea">#eaeaea</color>
     <color name="color_green_4bbda2">#4bbda2</color>
 
-    <color name="color_black_333333_90_transparent">#e5333333</color>
-    <color name="color_black_000000_88_transparent">#e0000000</color>
-
     <!-- main bg color -->
     <color name="g_child_page_bg_color">#FFFFFF</color>
     <color name="list_bg_color">#FFFFFF</color>

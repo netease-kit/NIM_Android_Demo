@@ -5,7 +5,7 @@ UI组件工程提供了较为简洁的接口，开发者可基于组件快速的
 
 ## 初始化 UI 组件
 
-首先将官网的 UIKit 解压后作为库工程导入项目中，
+- Android Studio
 在 Android Studio 将 UIKit 作为 Module 导入到 Project 中，并修改 build.gradle 文件中的 buildToolsVer 为自己的版本号，如"21.1.1"，并在你 APP 的 build.gradle 的 dependencies下加入：
 ```
 dependencies {
@@ -13,6 +13,12 @@ dependencies {
     compile project(path: ':uikit')
 }
 ```
+
+- Eclipse
+1. 将 UIKit 工程导入，并设置为 APP 工程的依赖工程。
+2. 设置 UIKit 工程和 APP 工程都依赖于 appcompat_v7 工程。
+3. 云信 demo 源码中的 appcompat 包版本为 19，因此如果你使用该 appcompat 包，项目依赖的 Android API 以及 build tools 需要 19 或以上版本。
+
 并在 Application 中初始化：
 
 ```
@@ -51,145 +57,10 @@ public class NimApplication extends Application {
     }
 ```
 
-需要在 AndroidManifest.xml 中导入下面 Activity 声明，这些 Activity 使用的 theme 可在 demo 源码包中values/styles.xml 中找到。
+UIKit 中用到的 Activity 已经在 uikit 工程的 AndroidManifest.xml 文件中注册好，上层 APP 的AndroidManifest 文件无需再去添加注册。除观看视频的 WatchVideoActivity 需要用到黑色主题，因此单独写了 style 外，其他 Activity 均使用项目默认主题。
 
-```
-    <!-- 聊天窗口 -->
-    <!-- UI组件中包含了语音选文字功能，该界面是全屏显示，为了视觉上的美观，该界面主题ActionBar使用Overlay模式。
-         如果开发者不需要该功能或效果，使用普通主题即可。 同时，还需要将message_activity.xml这个layout中的根节点的paddingTop去掉。 -->
-    <activity
-        android:name="com.netease.nim.uikit.session.activity.P2PMessageActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:theme="@style/OverlayBaseActionBarTheme"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
+同只使用 nimlib SDK 一样，需要参考接入云信 SDK 指南文档，在 AndroidManifest 文件中声明云信 SDK 所用到的 service 和 BroadcastReceiver 组件。
 
-    <activity
-        android:name="com.netease.nim.uikit.session.activity.TeamMessageActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:theme="@style/OverlayBaseActionBarTheme"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <!-- 联系人选择器 -->
-    <activity
-        android:name="com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:label="@string/contact_selector"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustPan"/>
-
-    <!-- 群名片 -->
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.NormalTeamInfoActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamInfoActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamMemberActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamAnnounceActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamMemberInfoActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name=".team.AdvancedTeamSearchActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamNicknameActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name=".team.AdvancedTeamJoinActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamCreateActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.AdvancedTeamCreateAnnounceActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.team.activity.TeamPropertySettingActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <!-- 照片选择 -->
-    <activity
-        android:name="com.netease.nim.uikit.common.media.picker.activity.PickImageActivity"
-        android:screenOrientation="portrait"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.common.media.picker.activity.PickerAlbumActivity"
-        android:screenOrientation="portrait"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.common.media.picker.activity.PickerAlbumPreviewActivity"
-        android:screenOrientation="portrait"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.common.media.picker.activity.PreviewImageFromLocalActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.common.media.picker.activity.PreviewImageFromCameraActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:label="@string/input_panel_take"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <!-- 视频 -->
-    <activity
-        android:name="com.netease.nim.uikit.session.activity.CaptureVideoActivity"
-        android:configChanges="keyboardHidden|orientation"
-        android:screenOrientation="portrait"
-        android:windowSoftInputMode="stateHidden|adjustResize"/>
-
-    <activity
-        android:name="com.netease.nim.uikit.session.activity.WatchVideoActivity"
-        android:configChanges="keyboardHidden|orientation|screenSize"
-        android:theme="@style/DarkOverlayActionBarTheme"
-        android:label="@string/video_play"/>
-
-    <!-- 查看大图 -->
-    <activity
-        android:name="com.netease.nim.uikit.session.activity.WatchMessagePictureActivity"
-        android:configChanges="keyboardHidden"/>
-```
 
 `NimUIKit` 是 UIKit 的接口，提供了 UI 组件的所有能力，上述初始化代码中的注册、设置等函数中均在 `NimUIKit` 中，下文将逐一介绍。
 
@@ -503,7 +374,7 @@ private static SessionCustomization getMyP2pCustomization() {
         p2pCustomization.backgroundUri = "file:///sdcard/Pictures/bk.png";
         p2pCustomization.backgroundUri = "android.resource://com.netease.nim.demo/drawable/bk"
 
-        // 定制加号点开后可以包含的操作，默认已经有图片，视频等消息了
+        // 定制加号点开后可以包含的操作，默认已经有图片，视频等消息了，如果要去掉默认的操作，请修改MessageFragment的getActionList函数
         ArrayList<BaseAction> actions = new ArrayList<>();
         actions.add(new AVChatAction(AVChatType.AUDIO));
         actions.add(new AVChatAction(AVChatType.VIDEO));

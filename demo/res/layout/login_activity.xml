@@ -46,6 +46,7 @@
                         android:paddingRight="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
                         android:textSize="15sp"/>
 
                     <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
@@ -61,6 +62,7 @@
                         android:paddingRight="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
                         android:textSize="15sp"/>
                 </LinearLayout>
 
@@ -84,6 +86,7 @@
                         android:paddingRight="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
                         android:textSize="15sp"/>
 
                     <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
@@ -98,6 +101,7 @@
                         android:paddingRight="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
                         android:textSize="15sp"/>
 
                     <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
@@ -113,6 +117,7 @@
                         android:paddingRight="15dp"
                         android:textColor="@color/white"
                         android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
                         android:textSize="15sp"/>
                 </LinearLayout>
             </FrameLayout>

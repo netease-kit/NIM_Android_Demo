@@ -6,6 +6,7 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
@@ -13,7 +14,6 @@ import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nim.demo.NimUserInfoCache;
 
 /**
  * 音频管理器， 音频界面初始化和管理
@@ -147,9 +147,9 @@ public class AVChatAudioManager implements View.OnClickListener, ToggleListener{
      * 个人信息设置
      */
     private void showProfile(){
-        String uid = manager.getUid();
-        headImg.loadBuddyAvatar(uid);
-        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(uid));
+        String account = manager.getAccount();
+        headImg.loadBuddyAvatar(account);
+        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
     }
 
     /**
