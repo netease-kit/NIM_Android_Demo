@@ -13,11 +13,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dip"
-            android:layout_marginTop="30dip"
-            android:background="@color/white"
-            android:paddingBottom="10dp"
-            android:paddingTop="10dp">
+            android:paddingBottom="13dp"
+            android:paddingTop="13dp">
 
             <com.netease.nim.uikit.common.ui.imageview.HeadImageView
                 android:id="@+id/user_head_image"

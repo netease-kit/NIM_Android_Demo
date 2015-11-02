@@ -77,6 +77,11 @@ public class WelcomeActivity extends TActivity {
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
+
+        /**
+         * 如果Activity在，不会走到onCreate，而是onNewIntent，这时候需要setIntent
+         * 场景：点击通知栏跳转到此，会收到Intent
+         */
         setIntent(intent);
         onIntent();
     }

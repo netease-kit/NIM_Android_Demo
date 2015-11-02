@@ -12,11 +12,11 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.main.setting.SettingTemplate;
-import com.netease.nim.demo.main.setting.SettingType;
+import com.netease.nim.demo.main.model.SettingTemplate;
+import com.netease.nim.demo.main.model.SettingType;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
-import com.netease.nim.demo.NimUserInfoCache;
 
 import java.util.List;
 
@@ -193,7 +193,6 @@ public class SettingsAdapter extends BaseAdapter {
     }
 
     private void createSwitchListener(final SettingTemplate item) {
-        if(onchangeListener != null) return;
         onchangeListener = new SwitchButton.OnChangedListener() {
             @Override
             public void OnChanged(View v, boolean checkState) {

@@ -9,7 +9,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
 import com.netease.nim.uikit.NimUIKit;
@@ -55,8 +55,8 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
         setTitle(R.string.black_list);
         setContentView(R.layout.black_list_activity);
 
-        initRecyclerView();
         initData();
+        findViews();
         initActionbar();
     }
 
@@ -77,15 +77,27 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
 
     private void initData() {
         final List<String> accounts = NIMClient.getService(FriendService.class).getBlackList();
-        NimUserInfoCache.getInstance().getUserInfoFromRemote(accounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
-            @Override
-            public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
-                if (code == ResponseCode.RES_SUCCESS) {
-                    data.addAll(users);
-                    adapter.notifyDataSetChanged();
-                }
+        List<String> unknownAccounts = new ArrayList<>();
+
+        for (String account : accounts) {
+            if (!NimUserInfoCache.getInstance().hasUser(account)) {
+                unknownAccounts.add(account);
+            } else {
+                data.add(NimUserInfoCache.getInstance().getUserInfo(account));
             }
-        });
+        }
+
+        if (!unknownAccounts.isEmpty()) {
+            NimUserInfoCache.getInstance().getUserInfoFromRemote(unknownAccounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
+                @Override
+                public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
+                    if (code == ResponseCode.RES_SUCCESS) {
+                        data.addAll(users);
+                        adapter.notifyDataSetChanged();
+                    }
+                }
+            });
+        }
     }
 
     private void initActionbar() {
@@ -97,7 +109,9 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
                 option.title = "选择黑名单";
                 ArrayList<String> excludeAccounts = new ArrayList<>();
                 for (UserInfoProvider.UserInfo user : data) {
-                    excludeAccounts.add(user.getAccount());
+                    if (user != null) {
+                        excludeAccounts.add(user.getAccount());
+                    }
                 }
                 option.itemFilter = new ContactIdFilter(excludeAccounts, true);
                 NimUIKit.startContactSelect(BlackListActivity.this, option, REQUEST_CODE_BLACK);
@@ -105,8 +119,11 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
         });
     }
 
-    private void initRecyclerView() {
-        ((TextView)findView(R.id.notify_bar).findViewById(R.id.status_desc_label)).setText(R.string.black_list_tip);
+    private void findViews() {
+        TextView notifyText = ((TextView) findView(R.id.notify_bar).findViewById(R.id.status_desc_label));
+        notifyText.setText(R.string.black_list_tip);
+        notifyText.setBackgroundColor(getResources().getColor(R.color.color_yellow_fcf3cd));
+        notifyText.setTextColor(getResources().getColor(R.color.color_yellow_796413));
         listView = findView(R.id.black_list_view);
         adapter = new BlackListAdapter(this, data, this, viewHolderEventListener);
         listView.setAdapter(adapter);
@@ -141,7 +158,7 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
         }
     };
 
-    private void addBuddysToBlackList(ArrayList<String> selected) {
+    private void addUserToBlackList(ArrayList<String> selected) {
         for (String account : selected) {
             NIMClient.getService(FriendService.class).addToBlackList(account);
             data.add(NimUserInfoCache.getInstance().getUserInfo(account));
@@ -157,7 +174,7 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
                 case REQUEST_CODE_BLACK:
                     final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
                     if (selected != null && !selected.isEmpty()) {
-                        addBuddysToBlackList(selected);
+                        addUserToBlackList(selected);
                     }
                     break;
             }

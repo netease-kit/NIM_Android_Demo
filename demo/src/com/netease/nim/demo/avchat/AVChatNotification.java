@@ -9,7 +9,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.uikit.session.activity.P2PMessageActivity;

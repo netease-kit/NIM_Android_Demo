@@ -16,9 +16,10 @@ import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
-import com.netease.nim.demo.main.setting.SettingTemplate;
-import com.netease.nim.demo.main.setting.SettingType;
+import com.netease.nim.demo.main.model.SettingTemplate;
+import com.netease.nim.demo.main.model.SettingType;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.session.audio.MessageAudioControl;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.AuthService;
@@ -37,6 +38,7 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
     private static final int TAG_CLEAR = 4;
     private static final int TAG_CUSTOM_NOTIFY = 5;
     private static final int TAG_ABOUT = 6;
+    private static final int TAG_SPEAKER = 7;
     ListView listView;
     SettingsAdapter adapter;
     private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
@@ -106,7 +108,11 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
         items.clear();
 
         items.add(new SettingTemplate(TAG_HEAD, SettingType.TYPE_HEAD));
-        items.add(new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice), SettingType.TYPE_TOGGLE, UserPreferences.getNotificationToggle()));
+        items.add(new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice), SettingType.TYPE_TOGGLE,
+                UserPreferences.getNotificationToggle()));
+        items.add(SettingTemplate.addLine());
+        items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
+                com.netease.nim.uikit.UserPreferences.isEarPhoneModeEnable()));
         items.add(SettingTemplate.makeSeperator());
         disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
         items.add(disturbItem);
@@ -124,8 +130,6 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
         switch (item.getId()) {
             case TAG_HEAD:
                 UserProfileSettingActivity.start(this, DemoCache.getAccount());
-                break;
-            case TAG_NOTICE:
                 break;
             case TAG_NO_DISTURBE:
                 startNoDisturb();
@@ -173,6 +177,10 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                break;
+            case TAG_SPEAKER:
+                com.netease.nim.uikit.UserPreferences.setEarPhoneModeEnable(checkState);
+                MessageAudioControl.getInstance(SettingsActivity.this).setEarPhoneModeEnable(checkState);
                 break;
             default:
                 break;

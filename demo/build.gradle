@@ -55,6 +55,7 @@ android {
             jniLibs.srcDirs = ['libs', 'libs-sdk']
 
         }
+
     }
 
     lintOptions {

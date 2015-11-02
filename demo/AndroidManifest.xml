@@ -2,8 +2,8 @@
 <manifest
     package="com.netease.nim.demo"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="16"
-    android:versionName="1.5.0">
+    android:versionCode="17"
+    android:versionName="1.6.0">
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -195,15 +195,21 @@
             android:screenOrientation="portrait"
             android:theme="@style/OverlayBaseActionBarTheme"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
+        <activity
+            android:name=".session.activity.MessageInfoActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/LightBaseActionBarTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
-            android:name=".team.AdvancedTeamSearchActivity"
+            android:name=".team.activity.AdvancedTeamSearchActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <activity
-            android:name=".team.AdvancedTeamJoinActivity"
+            android:name=".team.activity.AdvancedTeamJoinActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
@@ -274,6 +280,7 @@
             android:name="com.netease.nimlib.service.NimService"
             android:process=":core"/>
 
+        <!-- 运行后台辅助服务 -->
         <service
             android:name="com.netease.nimlib.service.NimService$Aux"
             android:process=":core"/>

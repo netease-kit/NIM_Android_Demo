@@ -9,10 +9,8 @@ import android.widget.ImageView.ScaleType;
 import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.BlackListActivity;
-import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nim.demo.main.activity.SystemMessageActivity;
 import com.netease.nim.demo.main.activity.TeamListActivity;
 import com.netease.nim.demo.main.helper.SystemMessageUnreadManager;
@@ -28,7 +26,6 @@ import com.netease.nim.uikit.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.contact.core.item.ItemTypes;
 import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
 import com.netease.nim.uikit.contact.core.viewholder.AbsContactViewHolder;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -157,6 +154,7 @@ public class ContactListFragment extends MainTabFragment {
         }
     }
 
+
     /**
      * ******************************** 生命周期 ***********************************
      */
@@ -164,15 +162,13 @@ public class ContactListFragment extends MainTabFragment {
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        onCurrent();
+
+        onCurrent(); // 触发onInit，提前加载
     }
 
     @Override
     protected void onInit() {
-        registerObserver(true);
-
-        // 集成通讯录页面
-        addContactFragment();
+        addContactFragment();  // 集成通讯录页面
     }
 
     // 将通讯录列表fragment动态集成进来。 开发者也可以使用在xml中配置的方式静态集成。
@@ -205,73 +201,8 @@ public class ContactListFragment extends MainTabFragment {
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        if (!inited()) {
-            return;
-        }
-
-        refresh(false);
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        registerObserver(false);
-    }
-
-    /**
-     * 用户资料、好友关系变更观察者
-     * @param register
-     */
-    private void registerObserver(boolean register) {
-        NimUserInfoCache.getInstance().registerUserDataChangedObserver(userDataChangedObserver, register);
-        FriendDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
-    }
-
-    FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
-        @Override
-        public void onAddedOrUpdatedFriends(List<String> account) {
-            refresh(true);
-        }
-
-        @Override
-        public void onDeletedFriends(List<String> account) {
-            refresh(true);
-        }
-
-        @Override
-        public void onAddUserToBlackList(String account) {
-            refresh(true);
-        }
-
-        @Override
-        public void onRemoveUserFromBlackList(String account) {
-            refresh(true);
-        }
-    };
-
-    NimUserInfoCache.UserDataChangedObserver userDataChangedObserver = new NimUserInfoCache.UserDataChangedObserver() {
-        @Override
-        public void onUpdateUsers(List<NimUserInfo> users) {
-            if (users != null && !users.isEmpty()) {
-                refresh(true);
-            }
-        }
-    };
-
-    /**
-     * 数据源变更，重新加载数据
-     * @param reload
-     */
-    private void refresh(boolean reload) {
-        if (fragment != null) {
-            fragment.refresh(reload);
-        }
-    }
-
-    @Override
     public void onCurrentTabClicked() {
+        // 点击切换到当前TAB
         if (fragment != null) {
             fragment.scrollToTop();
         }

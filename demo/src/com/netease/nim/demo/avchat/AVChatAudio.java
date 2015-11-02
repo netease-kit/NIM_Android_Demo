@@ -6,7 +6,7 @@ import android.widget.Chronometer;
 import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
@@ -19,7 +19,7 @@ import com.netease.nim.uikit.common.util.sys.NetworkUtil;
  * 音频管理器， 音频界面初始化和管理
  * Created by hzxuwen on 2015/4/24.
  */
-public class AVChatAudioManager implements View.OnClickListener, ToggleListener{
+public class AVChatAudio implements View.OnClickListener, ToggleListener{
     // constant
     private static final int[] NETWORK_GRADE_DRAWABLE = new int[]{R.drawable.network_grade_0,R.drawable.network_grade_1,R.drawable.network_grade_2,R.drawable.network_grade_3};
     private static final int[] NETWORK_GRADE_LABEL = new int[]{R.string.avchat_network_grade_0,R.string.avchat_network_grade_1,R.string.avchat_network_grade_2,R.string.avchat_network_grade_3};
@@ -44,13 +44,13 @@ public class AVChatAudioManager implements View.OnClickListener, ToggleListener{
     private TextView receiveTV;
 
     // data
-    private AVChatUIManager manager;
+    private AVChatUI manager;
     private AVChatUIListener listener;
 
     // state
     private boolean init = false;
 
-    public AVChatAudioManager(View root, AVChatUIListener listener, AVChatUIManager manager) {
+    public AVChatAudio(View root, AVChatUIListener listener, AVChatUI manager) {
         this.rootView = root;
         this.listener = listener;
         this.manager = manager;

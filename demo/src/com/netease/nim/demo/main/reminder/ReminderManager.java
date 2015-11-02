@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class ReminderManager {
     // callback
-    public static interface UnreadNumChangedCallback {
-        public void onUnreadNumChanged(ReminderItem item);
+    public interface UnreadNumChangedCallback {
+        void onUnreadNumChanged(ReminderItem item);
     }
 
     // singleton

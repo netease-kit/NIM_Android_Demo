@@ -10,21 +10,23 @@ import android.widget.Toast;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.UserProfileActivity;
-import com.netease.nim.demo.main.helper.TeamCreateHelper;
 import com.netease.nim.demo.session.action.AVChatAction;
 import com.netease.nim.demo.session.action.FileAction;
 import com.netease.nim.demo.session.action.GuessAction;
 import com.netease.nim.demo.session.action.RTSAction;
 import com.netease.nim.demo.session.action.SnapChatAction;
 import com.netease.nim.demo.session.activity.MessageHistoryActivity;
+import com.netease.nim.demo.session.activity.MessageInfoActivity;
 import com.netease.nim.demo.session.extension.CustomAttachParser;
 import com.netease.nim.demo.session.extension.CustomAttachment;
+import com.netease.nim.demo.session.extension.CustomNotificationAttachment;
 import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
 import com.netease.nim.demo.session.search.SearchMessageActivity;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderAVChat;
+import com.netease.nim.demo.session.viewholder.MsgViewHolderCustomNotification;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderDefCustom;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderFile;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderGuess;
@@ -32,18 +34,17 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderRTS;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
 import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
-import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.session.SessionCustomization;
 import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
-import com.netease.nim.uikit.team.TeamDataCache;
-import com.netease.nim.uikit.team.helper.TeamHelper;
+import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.team.model.TeamExtras;
 import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -63,7 +64,7 @@ public class SessionHelper {
 
     private static final int ACTION_HISTORY_QUERY = 0;
     private static final int ACTION_SEARCH_MESSAGE = 1;
-    private static final int REQUEST_CODE_NORMAL = 3;
+    private static final int ACTION_CLEAR_MESSAGE = 2;
 
     private static SessionCustomization p2pCustomization;
     private static SessionCustomization teamCustomization;
@@ -95,39 +96,20 @@ public class SessionHelper {
         NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization());
     }
 
+    // 打开群聊界面(用于 UIKIT 中部分界面跳转回到指定的页面)
+    public static void startTeamSession(Context context, String tid, Class<? extends Activity> backToClass) {
+        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization(), backToClass);
+    }
+
     // 定制化单聊界面。如果使用默认界面，返回null即可
     private static SessionCustomization getP2pCustomization() {
         if (p2pCustomization == null) {
-             p2pCustomization = new SessionCustomization() {
+            p2pCustomization = new SessionCustomization() {
                 // 由于需要Activity Result， 所以重载该函数。
                 @Override
                 public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
                     super.onActivityResult(activity, requestCode, resultCode, data);
-                    if (resultCode == Activity.RESULT_OK) {
-                        if (requestCode == REQUEST_CODE_NORMAL) {
-                            final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
-                            if (selected != null && !selected.isEmpty()) {
-                                TeamCreateHelper.createNormalTeam(activity, selected, new RequestCallback<Void>() {
-                                    @Override
-                                    public void onSuccess(Void param) {
-                                        activity.finish();
-                                    }
 
-                                    @Override
-                                    public void onFailed(int code) {
-
-                                    }
-
-                                    @Override
-                                    public void onException(Throwable exception) {
-
-                                    }
-                                });
-                            } else {
-                                Toast.makeText(DemoCache.getContext(), "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
-                            }
-                        }
-                    }
                 }
 
                 @Override
@@ -166,10 +148,7 @@ public class SessionHelper {
             SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
                 @Override
                 public void onClick(Context context, View view, String sessionId) {
-                    ArrayList<String> memberAccounts = new ArrayList<>();
-                    memberAccounts.add(sessionId);
-                    ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(memberAccounts, 50);
-                    NimUIKit.startContactSelect(context, option, REQUEST_CODE_NORMAL);// 创建群
+                    MessageInfoActivity.startActivity(context, sessionId); //打开聊天信息
                 }
             };
 
@@ -311,6 +290,7 @@ public class SessionHelper {
         NimUIKit.registerMsgItemViewHolder(StickerAttachment.class, MsgViewHolderSticker.class);
         NimUIKit.registerMsgItemViewHolder(SnapChatAttachment.class, MsgViewHolderSnapChat.class);
         NimUIKit.registerMsgItemViewHolder(RTSAttachment.class, MsgViewHolderRTS.class);
+        NimUIKit.registerMsgItemViewHolder(CustomNotificationAttachment.class, MsgViewHolderCustomNotification.class);
     }
 
     private static void setSessionListener() {
@@ -343,7 +323,7 @@ public class SessionHelper {
 
     private static NIMPopupMenu.MenuItemClickListener listener = new NIMPopupMenu.MenuItemClickListener() {
         @Override
-        public void onItemClick(PopupMenuItem item) {
+        public void onItemClick(final PopupMenuItem item) {
             switch (item.getTag()) {
                 case ACTION_HISTORY_QUERY:
                     MessageHistoryActivity.start(item.getContext(), item.getSessionId(), item.getSessionTypeEnum()); // 漫游消息查询
@@ -351,16 +331,32 @@ public class SessionHelper {
                 case ACTION_SEARCH_MESSAGE:
                     SearchMessageActivity.start(item.getContext(), item.getSessionId(), item.getSessionTypeEnum());
                     break;
+                case ACTION_CLEAR_MESSAGE:
+                    EasyAlertDialogHelper.createOkCancelDiolag(item.getContext(), null, "确定要清空吗？", true, new EasyAlertDialogHelper.OnDialogActionListener() {
+                        @Override
+                        public void doCancelAction() {
+
+                        }
+
+                        @Override
+                        public void doOkAction() {
+                            NIMClient.getService(MsgService.class).clearChattingHistory(item.getSessionId(), item.getSessionTypeEnum());
+                            MessageListPanelHelper.getInstance().notifyClearMessages(item.getSessionId());
+                        }
+                    }).show();
+                    break;
             }
         }
     };
 
     private static List<PopupMenuItem> getMoreMenuItems(Context context, String sessionId, SessionTypeEnum sessionTypeEnum) {
         List<PopupMenuItem> moreMenuItems = new ArrayList<PopupMenuItem>();
-            moreMenuItems.add(new PopupMenuItem(context, ACTION_HISTORY_QUERY, sessionId,
-                    sessionTypeEnum, NimUIKit.getContext().getString(R.string.message_history_query)));
-            moreMenuItems.add(new PopupMenuItem(context, ACTION_SEARCH_MESSAGE, sessionId,
-                    sessionTypeEnum, NimUIKit.getContext().getString(R.string.message_search_title)));
+        moreMenuItems.add(new PopupMenuItem(context, ACTION_HISTORY_QUERY, sessionId,
+                sessionTypeEnum, DemoCache.getContext().getString(R.string.message_history_query)));
+        moreMenuItems.add(new PopupMenuItem(context, ACTION_SEARCH_MESSAGE, sessionId,
+                sessionTypeEnum, DemoCache.getContext().getString(R.string.message_search_title)));
+        moreMenuItems.add(new PopupMenuItem(context, ACTION_CLEAR_MESSAGE, sessionId,
+                sessionTypeEnum, DemoCache.getContext().getString(R.string.message_clear)));
         return moreMenuItems;
     }
 }

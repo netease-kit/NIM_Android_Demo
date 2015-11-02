@@ -58,6 +58,12 @@ public class MessageHistoryActivity extends TActionBarActivity implements Module
     }
 
     @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        messageListPanel.onBackPressed();
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
 

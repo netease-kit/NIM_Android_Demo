@@ -13,6 +13,4 @@ public interface AVChatUIListener {
     void audioSwitchVideo();
     void switchCamera();
     void closeCamera();
-    boolean inAudioMode();
-    boolean inVideoMode();
 }

@@ -35,7 +35,7 @@ import com.nostra13.universalimageloader.core.listener.SimpleImageLoadingListene
  */
 public class HeadImageView extends ImageView {
 
-    private static final int DEFAULT_THUMB_SIZE = 100;
+    public static final int DEFAULT_THUMB_SIZE = 100;
 
     private Drawable mask;
 
@@ -86,7 +86,6 @@ public class HeadImageView extends ImageView {
                 .showImageOnFail(defaultIcon)
                 .cacheInMemory(true)
                 .cacheOnDisk(true)
-                        //.delayBeforeLoading(50) // 载入图片前稍做延时可以提高整体滑动的流畅度
                 .bitmapConfig(Bitmap.Config.RGB_565)
                 .build();
     }
@@ -120,8 +119,17 @@ public class HeadImageView extends ImageView {
      * @param thumbSize 缩略图的宽、高
      */
     public void loadBuddyAvatar(final String account, final int thumbSize) {
+        // 先显示默认头像
+        setMask(R.drawable.nim_portrait_mask_round);
+        setImageResource(NimUIKit.getUserInfoProvider().getDefaultIconResId());
+
+        // 判断是否需要ImageLoader加载
         final UserInfoProvider.UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
-        if (userInfo != null && ImageLoaderKit.isImageUriValid(userInfo.getAvatar())) {
+        boolean needLoad = userInfo != null && ImageLoaderKit.isImageUriValid(userInfo.getAvatar());
+
+        // ImageLoader异步加载
+        if (needLoad) {
+            setTag(account); // 解决ViewHolder复用问题
             /**
              * 若使用网易云信云存储，这里可以设置下载图片的压缩尺寸，生成下载URL
              * 如果图片来源是非网易云信云存储，请不要使用NosThumbImageUtil
@@ -129,32 +137,19 @@ public class HeadImageView extends ImageView {
             final String thumbUrl = thumbSize > 0 ? NosThumbImageUtil.makeImageThumbUrl(userInfo.getAvatar(),
                     NosThumbParam.ThumbType.Crop, thumbSize, thumbSize) : userInfo.getAvatar();
 
-            // 先显示默认头像
-            loadDefaultIcon(account);
-
             // 异步从cache or NOS加载图片
             ImageLoader.getInstance().displayImage(thumbUrl, new NonViewAware(new ImageSize(thumbSize, thumbSize),
                     ViewScaleType.CROP), options, new SimpleImageLoadingListener() {
                 @Override
                 public void onLoadingComplete(String imageUri, View view, Bitmap loadedImage) {
                     if (getTag() != null && getTag().equals(account)) {
-                        setMask(R.drawable.nim_portrait_mask_round);
                         setImageBitmap(loadedImage);
-                    } else {
-                        loadDefaultIcon(null);
                     }
                 }
             });
         } else {
-            // 没有头像，设置默认头像
-            loadDefaultIcon(null);
+            setTag(null);
         }
-    }
-
-    private void loadDefaultIcon(String tag) {
-        setTag(tag); // 解决VH复用导致的错位问题
-        setMask(R.drawable.nim_portrait_mask_round);
-        setImageResource(NimUIKit.getUserInfoProvider().getDefaultIconResId());
     }
 
     public void loadTeamIcon(String tid) {

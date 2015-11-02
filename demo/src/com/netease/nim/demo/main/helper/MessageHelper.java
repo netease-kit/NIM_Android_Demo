@@ -2,8 +2,8 @@ package com.netease.nim.demo.main.helper;
 
 import android.text.TextUtils;
 
-import com.netease.nim.demo.NimUserInfoCache;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SystemMessageStatus;

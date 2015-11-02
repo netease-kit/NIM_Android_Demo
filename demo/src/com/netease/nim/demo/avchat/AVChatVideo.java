@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
@@ -21,12 +21,12 @@ import com.netease.nimlib.sdk.avchat.AVChatManager;
  * 视频管理器， 视频界面初始化和相关管理
  * Created by hzxuwen on 2015/5/5.
  */
-public class AVChatVideoManager implements View.OnClickListener, ToggleListener{
+public class AVChatVideo implements View.OnClickListener, ToggleListener{
 
     // data
     private Context context;
     private View root;
-    private AVChatUIManager manager;
+    private AVChatUI manager;
     //顶部控制按钮
     private View topRoot;
     private View switchAudio;
@@ -57,7 +57,7 @@ public class AVChatVideoManager implements View.OnClickListener, ToggleListener{
     private boolean shouldEnableToggle = false;
     private boolean isInSwitch = false;
 
-    public AVChatVideoManager(Context context, View root, AVChatUIListener listener, AVChatUIManager manager) {
+    public AVChatVideo(Context context, View root, AVChatUIListener listener, AVChatUI manager) {
         this.context = context;
         this.root = root;
         this.listener = listener;

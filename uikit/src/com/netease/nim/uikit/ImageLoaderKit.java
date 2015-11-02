@@ -4,7 +4,11 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.text.TextUtils;
 
+import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nimlib.sdk.nos.model.NosThumbParam;
+import com.netease.nimlib.sdk.nos.util.NosThumbImageUtil;
+import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.nostra13.universalimageloader.cache.disc.impl.ext.LruDiskCache;
 import com.nostra13.universalimageloader.cache.disc.naming.Md5FileNameGenerator;
 import com.nostra13.universalimageloader.cache.memory.impl.LruMemoryCache;
@@ -130,5 +134,38 @@ public class ImageLoaderKit {
         }
 
         return false;
+    }
+
+    /**
+     * 构建头像缓存
+     */
+    public static void buildAvatarCache(List<String> accounts) {
+        if (accounts == null || accounts.isEmpty()) {
+            return;
+        }
+
+        int thumbSize = HeadImageView.DEFAULT_THUMB_SIZE;
+        for (String account : accounts) {
+            final UserInfoProvider.UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
+            boolean needLoad = userInfo != null && ImageLoaderKit.isImageUriValid(userInfo.getAvatar());
+            if (needLoad) {
+                final String thumbUrl = thumbSize > 0 ? NosThumbImageUtil.makeImageThumbUrl(userInfo.getAvatar(),
+                        NosThumbParam.ThumbType.Crop, thumbSize, thumbSize) : userInfo.getAvatar();
+                ImageLoader.getInstance().loadImage(thumbUrl, new ImageSize(thumbSize, thumbSize), headImageOption,
+                        null);
+            }
+        }
+
+        LogUtil.i(TAG, "build avatar cache completed, avatar count =" + accounts.size());
+    }
+
+    private static DisplayImageOptions headImageOption = createImageOptions();
+
+    private static final DisplayImageOptions createImageOptions() {
+        return new DisplayImageOptions.Builder()
+                .cacheInMemory(true)
+                .cacheOnDisk(true)
+                .bitmapConfig(Bitmap.Config.RGB_565)
+                .build();
     }
 }

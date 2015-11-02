@@ -23,10 +23,10 @@ import com.netease.nimlib.sdk.avchat.AVChatManager;
  * 视频绘制管理
  * Created by hzxuwen on 2015/5/6.
  */
-public class AVChatSurfaceManager {
+public class AVChatSurface {
 
     private Context context;
-    private AVChatUIManager manager;
+    private AVChatUI manager;
     private View surfaceRoot;
     private Handler uiHandler;
 
@@ -60,7 +60,7 @@ public class AVChatSurfaceManager {
     private String largeAccount; // 显示在大图像的用户id
     private String smallAccount; // 显示在小图像的用户id
 
-    public AVChatSurfaceManager(Context context, AVChatUIManager manager, View surfaceRoot) {
+    public AVChatSurface(Context context, AVChatUI manager, View surfaceRoot) {
         this.context = context;
         this.manager = manager;
         this.surfaceRoot = surfaceRoot;

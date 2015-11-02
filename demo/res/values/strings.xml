@@ -77,8 +77,10 @@
     <string name="input_panel_file">发送文件</string>
     <string name="input_panel_RTS">白 板</string>
     <string name="input_panel_snapchat">阅后即焚</string>
-    <string name="message_history_query">历史消息</string>
-    <string name="message_search_title">查看聊天内容</string>
+    <string name="message_history_query">云消息记录</string>
+    <string name="message_search_title">搜索本地消息记录</string>
+    <string name="message_clear">清空本地消息记录</string>
+    <string name="message_info">聊天信息</string>
 
     <!-- 通讯录 -->
     <string name="add_friend">加为好友</string>
@@ -91,6 +93,7 @@
     <string name="black_list_tip">你不会接收到列表中联系人的任何消息</string>
 
     <!-- 群 -->
+    <string name="create_team_activity">创建群聊</string>
     <string name="add_buddy">添加好友</string>
     <string name="create_normal_team">创建普通群</string>
     <string name="team_apply_sending">发送中…</string>
@@ -186,6 +189,7 @@
     <string name="time_from_default">22:00</string>
     <string name="time_to_default">08:00</string>
     <string name="black_list">黑名单</string>
+    <string name="msg_speaker">听筒模式</string>
 
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>

@@ -17,12 +17,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.PrepareDataCacheHelper;
+import com.netease.nim.uikit.cache.DataCacheManager;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
-import com.netease.nim.demo.contact.protocol.ContactHttpCallback;
-import com.netease.nim.demo.contact.protocol.ContactHttpClient;
+import com.netease.nim.demo.contact.ContactHttpClient;
 import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
@@ -248,7 +247,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                 NIMClient.updateStatusBarNotificationConfig(UserPreferences.getStatusConfig());
 
                 // 构建缓存
-                PrepareDataCacheHelper.buildDataCache();
+                DataCacheManager.buildDataCacheAsync();
 
                 // 进入主界面
                 MainActivity.start(LoginActivity.this, null);
@@ -330,7 +329,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
         final String nickName = registerNickNameEdit.getText().toString();
         final String password = registerPasswordEdit.getText().toString();
 
-        ContactHttpClient.getInstance().register(account, nickName, password, new ContactHttpCallback<Void>() {
+        ContactHttpClient.getInstance().register(account, nickName, password, new ContactHttpClient.ContactHttpCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 Toast.makeText(LoginActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();

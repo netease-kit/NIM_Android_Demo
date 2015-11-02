@@ -15,10 +15,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.uikit.cache.FriendDataCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
@@ -29,7 +30,6 @@ import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -51,6 +51,7 @@ public class UserProfileActivity extends TActionBarActivity {
 
     private static final String TAG = UserProfileActivity.class.getSimpleName();
 
+    private final boolean FLAG_ADD_FRIEND_DIRECTLY = true; // 是否直接加为好友开关，false为需要好友申请
     private final String KEY_BLACK_LIST = "black_list";
     private final String KEY_MSG_NOTICE = "msg_notice";
 
@@ -129,11 +130,11 @@ public class UserProfileActivity extends TActionBarActivity {
         }
 
         @Override
-        public void onAddUserToBlackList(String account) {
+        public void onAddUserToBlackList(List<String> account) {
         }
 
         @Override
-        public void onRemoveUserFromBlackList(String account) {
+        public void onRemoveUserFromBlackList(List<String> account) {
         }
     };
 
@@ -262,7 +263,7 @@ public class UserProfileActivity extends TActionBarActivity {
     }
 
     private void updateToggleView() {
-        if (!DemoCache.getAccount().equals(account)) {
+        if (DemoCache.getAccount() != null && !DemoCache.getAccount().equals(account)) {
             boolean black = NIMClient.getService(FriendService.class).isInBlackList(account);
             boolean notice = NIMClient.getService(FriendService.class).isNeedMessageNotify(account);
             if (blackSwitch == null || noticeSwitch == null) {
@@ -405,8 +406,11 @@ public class UserProfileActivity extends TActionBarActivity {
         @Override
         public void onClick(View v) {
             if (v == addFriendBtn) {
-                //doAddFriend(null, true);  // 直接加为好友
-                onAddFriendByVerify();
+                if(FLAG_ADD_FRIEND_DIRECTLY) {
+                    doAddFriend(null, true);  // 直接加为好友
+                } else {
+                    onAddFriendByVerify(); // 发起好友验证请求
+                }
             } else if (v == removeFriendBtn) {
                 onRemoveFriend();
             } else if (v == chatBtn) {

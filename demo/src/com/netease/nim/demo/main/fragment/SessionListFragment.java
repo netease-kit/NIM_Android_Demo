@@ -5,15 +5,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.demo.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.activity.MultiportActivity;
-import com.netease.nim.demo.main.helper.LogoutHelper;
+import com.netease.nim.demo.login.LogoutHelper;
 import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.demo.session.extension.CustomNotificationAttachment;
 import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
@@ -30,7 +30,6 @@ import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.auth.OnlineClient;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.List;
 
@@ -48,7 +47,7 @@ public class SessionListFragment extends MainTabFragment {
 
     private View multiportBar;
 
-    private RecentContactsFragment contactsFragment;
+    private RecentContactsFragment fragment;
 
     public SessionListFragment() {
         this.setContainerId(MainTab.RECENT_CONTACTS.fragmentId);
@@ -77,7 +76,6 @@ public class SessionListFragment extends MainTabFragment {
     private void registerObservers(boolean register) {
         NIMClient.getService(AuthServiceObserver.class).observeOtherClients(clientsObserver, register);
         NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, register);
-        registerBuddyUpdateObserver(register);
     }
 
     private void findViews() {
@@ -93,13 +91,6 @@ public class SessionListFragment extends MainTabFragment {
                 MultiportActivity.startActivity(getActivity(), onlineClients);
             }
         });
-    }
-
-    /**
-     * 注册用户信息更新监听
-     */
-    private void registerBuddyUpdateObserver(boolean register) {
-        NimUserInfoCache.getInstance().registerUserDataChangedObserver(userDataChangedObserver, register);
     }
 
     /**
@@ -150,15 +141,6 @@ public class SessionListFragment extends MainTabFragment {
         }
     };
 
-    NimUserInfoCache.UserDataChangedObserver userDataChangedObserver = new NimUserInfoCache.UserDataChangedObserver() {
-        @Override
-        public void onUpdateUsers(List<NimUserInfo> users) {
-            if (contactsFragment != null) {
-                contactsFragment.notifyDataSetChanged();
-            }
-        }
-    };
-
     private void kickOut(StatusCode code) {
         Preferences.saveUserToken("");
 
@@ -182,15 +164,15 @@ public class SessionListFragment extends MainTabFragment {
 
     // 将最近联系人列表fragment动态集成进来。 开发者也可以使用在xml中配置的方式静态集成。
     private void addRecentContactsFragment() {
-        contactsFragment = new RecentContactsFragment();
-        contactsFragment.setContainerId(R.id.messages_fragment);
+        fragment = new RecentContactsFragment();
+        fragment.setContainerId(R.id.messages_fragment);
 
-        TActionBarActivity activity = (TActionBarActivity) getActivity();
+        final TActionBarActivity activity = (TActionBarActivity) getActivity();
 
         // 如果是activity从堆栈恢复，FM中已经存在恢复而来的fragment，此时会使用恢复来的，而new出来这个会被丢弃掉
-        contactsFragment = (RecentContactsFragment) activity.addFragment(contactsFragment);
+        fragment = (RecentContactsFragment) activity.addFragment(fragment);
 
-        contactsFragment.setCallback(new RecentContactsCallback() {
+        fragment.setCallback(new RecentContactsCallback() {
             @Override
             public void onRecentContactsLoaded() {
                 // 最近联系人列表加载完毕
@@ -229,7 +211,11 @@ public class SessionListFragment extends MainTabFragment {
                     return "[贴图]";
                 } else if (attachment instanceof SnapChatAttachment) {
                     return "[阅后即焚]";
+                } else if (attachment instanceof CustomNotificationAttachment) {
+                    CustomNotificationAttachment notification = (CustomNotificationAttachment) attachment;
+                    return notification.getNotificationText();
                 }
+
                 return null;
             }
         });

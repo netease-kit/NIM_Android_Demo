@@ -11,17 +11,17 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.netease.nim.demo.LoginSyncDataStatusObserver;
+import com.netease.nim.uikit.LoginSyncDataStatusObserver;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.fragment.HomeFragment;
-import com.netease.nim.demo.main.helper.LogoutHelper;
-import com.netease.nim.demo.main.helper.TeamCreateHelper;
+import com.netease.nim.demo.login.LogoutHelper;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.demo.team.AdvancedTeamSearchActivity;
+import com.netease.nim.demo.team.TeamCreateHelper;
+import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
@@ -208,7 +208,7 @@ public class MainActivity extends TActionBarActivity {
             if (requestCode == REQUEST_CODE_NORMAL) {
                 final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
                 if (selected != null && !selected.isEmpty()) {
-                    TeamCreateHelper.createNormalTeam(MainActivity.this, selected, null);
+                    TeamCreateHelper.createNormalTeam(MainActivity.this, selected, false, null);
                 } else {
                     Toast.makeText(MainActivity.this, "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
                 }

@@ -5,7 +5,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.main.helper.MessageHelper;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;

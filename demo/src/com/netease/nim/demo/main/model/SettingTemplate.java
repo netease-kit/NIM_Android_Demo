@@ -1,4 +1,4 @@
-package com.netease.nim.demo.main.setting;
+package com.netease.nim.demo.main.model;
 
 /**
  * Created by hzxuwen on 2015/6/29.

@@ -1,13 +1,14 @@
 package com.netease.nim.demo.session.viewholder;
 
-import android.graphics.Bitmap;
 import android.widget.ImageView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.session.emoji.StickerManager;
 import com.netease.nim.demo.session.extension.StickerAttachment;
+import com.netease.nim.uikit.common.util.sys.ScreenUtil;
+import com.netease.nim.uikit.session.emoji.StickerManager;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
+import com.nostra13.universalimageloader.core.ImageLoader;
 
 /**
  * Created by zhoujianghua on 2015/8/7.
@@ -34,13 +35,9 @@ public class MsgViewHolderSticker extends MsgViewHolderBase {
             return;
         }
 
-        Bitmap bm = StickerManager.getInstance().getStickerBitmap(context, attachment.getCatalog(), attachment
-                .getChartlet());
-        if (bm != null) {
-            baseView.setImageBitmap(bm);
-        } else {
-            baseView.setImageResource(R.drawable.default_img_failed);
-        }
+        ImageLoader.getInstance().displayImage(StickerManager.getInstance().getStickerBitmapUri(attachment.getCatalog
+                (), attachment.getChartlet()), baseView, StickerManager.getInstance().getStickerImageOptions
+                (ScreenUtil.dip2px(R.dimen.mask_sticker_bubble_width)));
     }
 
     @Override

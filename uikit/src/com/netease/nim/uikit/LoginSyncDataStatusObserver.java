@@ -1,4 +1,4 @@
-package com.netease.nim.demo;
+package com.netease.nim.uikit;
 
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;

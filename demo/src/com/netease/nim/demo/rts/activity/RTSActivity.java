@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.rts.ActionTypeEnum;
 import com.netease.nim.demo.rts.doodle.DoodleView;
@@ -29,7 +29,7 @@ import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
-import com.netease.nim.uikit.session.helper.LocalMessageTransfer;
+import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.auth.ClientType;
@@ -179,25 +179,11 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
     }
 
     @Override
-    protected void onResume() {
-        super.onResume();
-        NIMClient.getService(MsgService.class).setChattingAccount(account, SessionTypeEnum.P2P);
-    }
-
-    @Override
     protected void onPostResume() {
         super.onPostResume();
 
         // 这里需要重绘
         doodleView.onResume();
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-
-        NIMClient.getService(MsgService.class).setChattingAccount(MsgService.MSG_CHATTING_ACCOUNT_NONE,
-                SessionTypeEnum.None);
     }
 
     @Override
@@ -468,7 +454,7 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
             public void onSuccess(RTSData rtsData) {
                 RTSAttachment attachment = new RTSAttachment((byte) 0);
                 IMMessage msg = MessageBuilder.createCustomMessage(account, SessionTypeEnum.P2P, attachment.getContent(), attachment);
-                LocalMessageTransfer.getInstance().notify(msg); // 界面上add一条
+                MessageListPanelHelper.getInstance().notifyAddMessage(msg); // 界面上add一条
                 NIMClient.getService(MsgService.class).sendMessage(msg, false); // 发送给对方
             }
 
@@ -556,6 +542,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         startSessionLayout.setVisibility(View.GONE);
         sessionLayout.setVisibility(View.VISIBLE);
         initDoodleView();
+
+
     }
 
     private void endSession() {

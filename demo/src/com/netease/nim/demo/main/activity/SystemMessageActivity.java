@@ -10,7 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.netease.nim.demo.NimUserInfoCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
@@ -48,6 +48,8 @@ import java.util.Set;
  */
 public class SystemMessageActivity extends TActionBarActivity implements TAdapterDelegate,
         AutoRefreshListView.OnRefreshListener, SystemMessageViewHolder.SystemMessageListener {
+
+    private static final boolean MERGE_ADD_FRIEND_VERIFY = false; // 是否要合并好友申请，同一个用户仅保留最近一条申请内容（默认不合并）
 
     private static final int LOAD_MESSAGE_COUNT = 10;
 
@@ -303,6 +305,10 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
 
     // 同一个账号的好友申请仅保留最近一条
     private boolean addFriendVerifyFilter(final SystemMessage msg) {
+        if (!MERGE_ADD_FRIEND_VERIFY) {
+            return false; // 不需要MERGE，不过滤
+        }
+
         if (msg.getType() != SystemMessageType.AddFriend) {
             return false; // 不过滤
         }

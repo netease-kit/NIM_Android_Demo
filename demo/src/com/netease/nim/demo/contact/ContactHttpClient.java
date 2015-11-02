@@ -1,8 +1,7 @@
-package com.netease.nim.demo.contact.protocol;
+package com.netease.nim.demo.contact;
 
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -22,8 +21,35 @@ import java.util.Map;
  * <p/>
  * Created by huangjun on 2015/3/6.
  */
-public class ContactHttpClient implements IContactHttpProtocol {
+public class ContactHttpClient {
     private static final String TAG = "ContactHttpClient";
+
+    // code
+    private static final int RESULT_CODE_SUCCESS = 200;
+
+    // api
+    private static final String API_NAME_REGISTER = "createDemoUser";
+
+    // header
+    private static final String HEADER_KEY_APP_KEY = "appkey";
+    private static final String HEADER_CONTENT_TYPE = "Content-Type";
+    private static final String HEADER_USER_AGENT = "User-Agent";
+
+    // request
+    private static final String REQUEST_USER_NAME = "username";
+    private static final String REQUEST_NICK_NAME = "nickname";
+    private static final String REQUEST_PASSWORD = "password";
+
+    // result
+    private static final String RESULT_KEY_RES = "res";
+    private static final String RESULT_KEY_ERROR_MSG = "errmsg";
+
+
+    public interface ContactHttpCallback<T> {
+        void onSuccess(T t);
+
+        void onFailed(int code, String errorMsg);
+    }
 
     private static ContactHttpClient instance;
 
@@ -39,11 +65,11 @@ public class ContactHttpClient implements IContactHttpProtocol {
         NimHttpClient.getInstance().init();
     }
 
-    /**
-     * *********************************** IContactHttpProtocol ******************************************
-     */
 
-    @Override
+    /**
+     * 向应用服务器创建账号（注册账号）
+     * 由应用服务器调用WEB SDK接口将新注册的用户数据同步到云信服务器
+     */
     public void register(String account, String nickName, String password, final ContactHttpCallback<Void> callback) {
         String url = DemoServers.apiServer() + API_NAME_REGISTER;
         password = MD5.getStringMD5(password);
@@ -56,6 +82,7 @@ public class ContactHttpClient implements IContactHttpProtocol {
         Map<String, String> headers = new HashMap<>(1);
         String appKey = readAppKey();
         headers.put(HEADER_CONTENT_TYPE, "application/x-www-form-urlencoded; charset=utf-8");
+        headers.put(HEADER_USER_AGENT, "nim_demo_android");
         headers.put(HEADER_KEY_APP_KEY, appKey);
 
         StringBuilder body = new StringBuilder();
@@ -63,11 +90,6 @@ public class ContactHttpClient implements IContactHttpProtocol {
                 .append(REQUEST_NICK_NAME).append("=").append(nickName).append("&")
                 .append(REQUEST_PASSWORD).append("=").append(password);
         String bodyString = body.toString();
-
-        StringBuilder log = new StringBuilder();
-        log.append("register request, url = ").append(url).append(", header = ").append(appKey).append("; body = ")
-                .append(bodyString);
-        Log.i(TAG, log.toString());
 
         NimHttpClient.getInstance().execute(url, headers, bodyString, new NimHttpClient.NimHttpCallback() {
             @Override

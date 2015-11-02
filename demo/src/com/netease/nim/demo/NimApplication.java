@@ -25,14 +25,14 @@ import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.ImageLoaderKit;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.cache.FriendDataCache;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.contact.ContactProvider;
-import com.netease.nim.uikit.contact.FriendDataCache;
 import com.netease.nim.uikit.contact.core.query.PinYin;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
@@ -73,9 +73,6 @@ public class NimApplication extends Application {
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
 
-            // 注册必要的观察者
-            initObservers();
-
             // 注册网络通话来电
             enableAVChat();
 
@@ -84,9 +81,6 @@ public class NimApplication extends Application {
 
             // 注册语言变化监听
             registerLocaleReceiver(true);
-
-            // 自动登录的情况，构建缓存
-            buildDataCache();
         }
     }
 
@@ -110,8 +104,10 @@ public class NimApplication extends Application {
         if (config == null) {
             config = new StatusBarNotificationConfig();
         }
+        // 点击通知需要跳转到的界面
         config.notificationEntrance = WelcomeActivity.class;
         config.notificationSmallIconId = R.drawable.ic_stat_notify_msg;
+
         // 通知铃声的uri字符串
         config.notificationSound = "android.resource://com.netease.nim.demo/raw/msg";
         options.statusBarNotificationConfig = config;
@@ -150,13 +146,6 @@ public class NimApplication extends Application {
         String packageName = getPackageName();
         String processName = SystemUtil.getProcessName(this);
         return packageName.equals(processName);
-    }
-
-    private void initObservers() {
-        // 监听登录同步数据完成通知
-        LoginSyncDataStatusObserver.getInstance().registerLoginSyncDataStatus(true);
-        // 监听用户资料变更
-        NimUserInfoCache.getInstance().registerObservers(true);
     }
 
     /**
@@ -264,13 +253,6 @@ public class NimApplication extends Application {
         ContactHelper.init();
     }
 
-    private void buildDataCache() {
-        // 自动登录的情况，构建缓存
-        if (!TextUtils.isEmpty(DemoCache.getAccount())) {
-            PrepareDataCacheHelper.buildDataCache();
-        }
-    }
-
     private UserInfoProvider infoProvider = new UserInfoProvider() {
         @Override
         public UserInfo getUserInfo(String account) {
@@ -312,50 +294,13 @@ public class NimApplication extends Application {
     private ContactProvider contactProvider = new ContactProvider() {
         @Override
         public List<UserInfoProvider.UserInfo> getUserInfoOfMyFriends() {
-            List<NimUserInfo> nimUsers = NimUserInfoCache.getInstance().getUsersOfMyFriend();
+            List<NimUserInfo> nimUsers = NimUserInfoCache.getInstance().getAllUsersOfMyFriend();
             List<UserInfoProvider.UserInfo> users = new ArrayList<>(nimUsers.size());
             if (!nimUsers.isEmpty()) {
                 users.addAll(nimUsers);
             }
 
             return users;
-        }
-
-        @Override
-        public void getUserInfoOfMyFriends(final RequestCallback<List<UserInfoProvider.UserInfo>> callback) {
-            NimUserInfoCache.getInstance().getUsersOfMyFriendFromRemote(
-                    new RequestCallback<List<NimUserInfo>>() {
-                        @Override
-                        public void onSuccess(List<NimUserInfo> nimUsers) {
-                            if (callback != null) {
-                                if (nimUsers == null) {
-                                    callback.onSuccess(null);
-                                }
-
-                                List<UserInfoProvider.UserInfo> users = new ArrayList<>(nimUsers.size());
-                                if (!nimUsers.isEmpty()) {
-                                    users.addAll(nimUsers);
-                                }
-
-                                callback.onSuccess(users);
-                            }
-                        }
-
-                        @Override
-                        public void onFailed(int code) {
-                            if (callback != null) {
-                                callback.onFailed(code);
-                            }
-                        }
-
-                        @Override
-                        public void onException(Throwable exception) {
-                            if (callback != null) {
-                                callback.onException(exception);
-                            }
-                        }
-                    }
-            );
         }
 
         @Override

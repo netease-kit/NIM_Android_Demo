@@ -19,7 +19,7 @@
           <task>generateCommonDebugSources</task>
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
-        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res;file://$MODULE_DIR$/res-avchat" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res-avchat;file://$MODULE_DIR$/res" />
       </configuration>
     </facet>
   </component>
@@ -33,7 +33,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/common/debug" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/common/debug" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/generated/common/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/assets" type="java-resource" />
@@ -46,7 +46,7 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/common/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/common/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/common/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/common/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/generated/androidTest/common/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/assets" type="java-resource" />
@@ -112,6 +112,5 @@
     <orderEntry type="library" exported="" name="Android_2DMap_V2.4.0" level="project" />
     <orderEntry type="library" exported="" name="Android_Location_V1.3.1" level="project" />
     <orderEntry type="module" module-name="uikit" exported="" />
-    <orderEntry type="library" exported="" name="android-android-21" level="project" />
   </component>
 </module>

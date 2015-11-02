@@ -20,7 +20,7 @@ import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.listview.ListViewUtil;
 import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.team.helper.AnnouncementHelper;
 import com.netease.nim.uikit.team.model.Announcement;
 import com.netease.nim.uikit.team.viewholder.TeamAnnounceHolder;

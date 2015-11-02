@@ -3,7 +3,7 @@ package com.netease.nim.uikit.recent.viewholder;
 import android.text.TextUtils;
 
 import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nimlib.sdk.msg.attachment.NotificationAttachment;
 
 public class TeamRecentViewHolder extends CommonRecentViewHolder {

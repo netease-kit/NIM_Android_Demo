@@ -11,6 +11,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatExitCode;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
@@ -23,22 +24,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * 音视频管理器, 音视频相关功能管理
  * Created by hzxuwen on 2015/4/23.
  */
-public class AVChatUIManager implements AVChatUIListener {
+public class AVChatUI implements AVChatUIListener {
     // constant
-    private static final String TAG = "AVChatUIManager";
+    private static final String TAG = "AVChatUI";
 
     // data
     private Context context;
     private AVChatData avChatData;
     private final AVChatListener aVChatListener;
     private String receiverId;
-    private AVChatAudioManager aVChatAudioManager;
-    private AVChatVideoManager aVChatVideoManager;
-    private AVChatSurfaceManager aVChatSurfaceManager;
+    private AVChatAudio avChatAudio;
+    private AVChatVideo avChatVideo;
+    private AVChatSurface avChatSurface;
     private VideoChatParam videoParam; // 视频采集参数
     private String videoAccount; // 发送视频请求，onUserJoin回调的user account
 
-    private int mPendingExitCode = -1; // 挂起的closesession操作
     private CallStateEnum callingState = CallStateEnum.INVALID;
 
     private long timeBase = 0;
@@ -55,7 +55,7 @@ public class AVChatUIManager implements AVChatUIListener {
         void uiExit();
     }
 
-    public AVChatUIManager(Context context, View root, AVChatListener listener) {
+    public AVChatUI(Context context, View root, AVChatListener listener) {
         this.context = context;
         this.root = root;
         this.aVChatListener = listener;
@@ -66,15 +66,15 @@ public class AVChatUIManager implements AVChatUIListener {
      */
 
     /**
-     * 初始化
+     * 初始化，包含初始化音频管理器， 视频管理器和视频界面绘制管理器。
      *
      * @return boolean
      */
     public boolean initiation() {
         AVChatProfile.getInstance().setAVChatting(true);
-        aVChatAudioManager = new AVChatAudioManager(root.findViewById(R.id.avchat_audio_layout), this, this);
-        aVChatVideoManager = new AVChatVideoManager(context, root.findViewById(R.id.avchat_video_layout), this, this);
-        aVChatSurfaceManager = new AVChatSurfaceManager(context, this, root.findViewById(R.id.avchat_surface_layout));
+        avChatAudio = new AVChatAudio(root.findViewById(R.id.avchat_audio_layout), this, this);
+        avChatVideo = new AVChatVideo(context, root.findViewById(R.id.avchat_video_layout), this, this);
+        avChatSurface = new AVChatSurface(context, this, root.findViewById(R.id.avchat_surface_layout));
 
         return true;
     }
@@ -85,7 +85,6 @@ public class AVChatUIManager implements AVChatUIListener {
 
     /**
      * 来电
-     *
      */
     public void inComingCalling(AVChatData avChatData) {
         this.avChatData = avChatData;
@@ -99,7 +98,6 @@ public class AVChatUIManager implements AVChatUIListener {
 
     /**
      * 拨打音视频
-     *
      */
     public void outGoingCalling(String account, AVChatType callTypeEnum) {
         DialogMaker.showProgressDialog(context, null);
@@ -110,7 +108,7 @@ public class AVChatUIManager implements AVChatUIListener {
         } else {
             onCallStateChange(CallStateEnum.OUTGOING_VIDEO_CALLING);
             if (videoParam == null) {
-                videoParam = new VideoChatParam(aVChatSurfaceManager.mCapturePreview,
+                videoParam = new VideoChatParam(avChatSurface.mCapturePreview,
                         ((Activity) context).getWindowManager().getDefaultDisplay().getRotation());
             }
         }
@@ -152,9 +150,9 @@ public class AVChatUIManager implements AVChatUIListener {
      */
     public void onCallStateChange(CallStateEnum stateEnum) {
         callingState = stateEnum;
-        aVChatSurfaceManager.onCallStateChange(stateEnum);
-        aVChatAudioManager.onCallStateChange(stateEnum);
-        aVChatVideoManager.onCallStateChange(stateEnum);
+        avChatSurface.onCallStateChange(stateEnum);
+        avChatAudio.onCallStateChange(stateEnum);
+        avChatVideo.onCallStateChange(stateEnum);
     }
 
     /**
@@ -181,7 +179,6 @@ public class AVChatUIManager implements AVChatUIListener {
                 }
             });
         }
-
         closeSessions(type);
     }
 
@@ -192,13 +189,11 @@ public class AVChatUIManager implements AVChatUIListener {
      */
     public void closeSessions(int exitCode) {
         //not  user  hang up active  and warning tone is playing,so wait its end
-        exitCode = mPendingExitCode == -1 ? exitCode : mPendingExitCode;
-        mPendingExitCode = -1;
         Log.i(TAG, "close session -> " + AVChatExitCode.getExitString(exitCode));
-        if (aVChatAudioManager != null)
-            aVChatAudioManager.closeSession(exitCode);
-        if(aVChatVideoManager != null)
-            aVChatVideoManager.closeSession(exitCode);
+        if (avChatAudio != null)
+            avChatAudio.closeSession(exitCode);
+        if (avChatVideo != null)
+            avChatVideo.closeSession(exitCode);
         showQuitToast(exitCode);
         isCallEstablish.set(false);
         canSwitchCamera = false;
@@ -227,10 +222,6 @@ public class AVChatUIManager implements AVChatUIListener {
             case AVChatExitCode.PEER_BUSY:
                 Toast.makeText(context, R.string.avchat_peer_busy, Toast.LENGTH_SHORT).show();
                 break;
-            case AVChatExitCode.PEER_REJECT:
-//                if (callConfig.getChatType() == NetCallTypeEnum.VIDEO)
-//                    Toast.makeText(context, R.string.avchat_peer_reject, Toast.LENGTH_SHORT).show();
-//                break;
             case AVChatExitCode.PROTOCOL_INCOMPATIBLE_PEER_LOWER:
                 Toast.makeText(context, R.string.avchat_peer_protocol_low_version, Toast.LENGTH_SHORT).show();
                 break;
@@ -298,7 +289,7 @@ public class AVChatUIManager implements AVChatUIListener {
             onCallStateChange(CallStateEnum.AUDIO_CONNECTING);
         } else {
             onCallStateChange(CallStateEnum.VIDEO_CONNECTING);
-            videoParam = new VideoChatParam(aVChatSurfaceManager.mCapturePreview,
+            videoParam = new VideoChatParam(avChatSurface.mCapturePreview,
                     ((Activity) context).getWindowManager().getDefaultDisplay().getRotation());
         }
 
@@ -307,20 +298,23 @@ public class AVChatUIManager implements AVChatUIListener {
          * videoParam 接听视频通话时传入，接听音频通话传null
          * AVChatCallback 回调函数。成功则连接建立，不成功则关闭activity。
          */
-        AVChatManager.getInstance().accept(videoParam, new AVChatCallback<Boolean>() {
+        AVChatManager.getInstance().accept(videoParam, new AVChatCallback<Void>() {
             @Override
-            public void onSuccess(Boolean success) {
-                Log.d(TAG, "accept sucess");
+            public void onSuccess(Void v) {
+                LogUtil.i(TAG, "accept success");
 
-                if (success) {
-                    isCallEstablish.set(true);
-                    canSwitchCamera = true;
-                }
+                isCallEstablish.set(true);
+                canSwitchCamera = true;
             }
 
             @Override
             public void onFailed(int code) {
-                Log.d(TAG, "accept onFailed->" + code);
+                if (code == -1) {
+                    Toast.makeText(context, "本地音视频启动失败", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(context, "建立连接失败", Toast.LENGTH_SHORT).show();
+                }
+                LogUtil.e(TAG, "accept onFailed->" + code);
                 closeSessions(AVChatExitCode.CANCEL);
             }
 
@@ -397,7 +391,7 @@ public class AVChatUIManager implements AVChatUIListener {
         if (!isCallEstablish.get()) { // 连接未建立，在这里记录静音状态
             return;
         } else { // 连接已经建立
-            if(!AVChatManager.getInstance().isMute()) { // isMute是否处于静音状态
+            if (!AVChatManager.getInstance().isMute()) { // isMute是否处于静音状态
                 // 关闭音频
                 AVChatManager.getInstance().setMute(true);
             } else {
@@ -422,8 +416,7 @@ public class AVChatUIManager implements AVChatUIListener {
             public void onSuccess(Void aVoid) {
                 // 界面布局切换。
                 onCallStateChange(CallStateEnum.AUDIO);
-                // 判断是否静音，扬声器是否开启，对界面相应控件进行显隐处理。
-                aVChatAudioManager.onVideoToAudio(AVChatManager.getInstance().isMute(), AVChatManager.getInstance().speakerEnabled());
+                onVideoToAudio();
             }
 
             @Override
@@ -441,7 +434,7 @@ public class AVChatUIManager implements AVChatUIListener {
     @Override
     public void audioSwitchVideo() {
         onCallStateChange(CallStateEnum.OUTGOING_AUDIO_TO_VIDEO);
-        videoParam = new VideoChatParam(aVChatSurfaceManager.mCapturePreview,
+        videoParam = new VideoChatParam(avChatSurface.mCapturePreview,
                 ((Activity) context).getWindowManager().getDefaultDisplay().getRotation());
         /**
          * 请求音频切换到视频
@@ -475,24 +468,14 @@ public class AVChatUIManager implements AVChatUIListener {
             // 关闭摄像头
             AVChatManager.getInstance().toggleLocalVideo(false, null);
             isClosedCamera = true;
-            aVChatSurfaceManager.localVideoOff();
+            avChatSurface.localVideoOff();
         } else {
             // 打开摄像头
             AVChatManager.getInstance().toggleLocalVideo(true, null);
             isClosedCamera = false;
-            aVChatSurfaceManager.localVideoOn();
+            avChatSurface.localVideoOn();
         }
 
-    }
-
-    @Override
-    public boolean inAudioMode() {
-        return CallStateEnum.isAudioMode(callingState);
-    }
-
-    @Override
-    public boolean inVideoMode() {
-        return CallStateEnum.isVideoMode(callingState);
     }
 
     /**
@@ -501,7 +484,7 @@ public class AVChatUIManager implements AVChatUIListener {
     public void incomingAudioToVideo() {
         onCallStateChange(CallStateEnum.INCOMING_AUDIO_TO_VIDEO);
         if (videoParam == null) {
-            videoParam = new VideoChatParam(aVChatSurfaceManager.mCapturePreview,
+            videoParam = new VideoChatParam(avChatSurface.mCapturePreview,
                     ((Activity) context).getWindowManager().getDefaultDisplay().getRotation());
         }
     }
@@ -532,39 +515,52 @@ public class AVChatUIManager implements AVChatUIListener {
 
     /**
      * 初始化大小图像
+     *
      * @param largeAccount 对方的帐号
      */
     public void initSurfaceView(String largeAccount) {
-        aVChatSurfaceManager.initLargeSurfaceView(largeAccount);
-        aVChatSurfaceManager.initSmallSurfaceView(DemoCache.getAccount());
+        avChatSurface.initLargeSurfaceView(largeAccount);
+        avChatSurface.initSmallSurfaceView(DemoCache.getAccount());
     }
 
     /**
      * 音频切换为视频
      */
-    private void onAudioToVideo() {
+    public void onAudioToVideo() {
         onCallStateChange(CallStateEnum.VIDEO);
-        aVChatVideoManager.onAudioToVideo(AVChatManager.getInstance().isMute()); // isMute是否处于静音状态
-        if(!AVChatManager.getInstance().isVideoSend()) { // 是否在发送视频 即摄像头是否开启
+        avChatVideo.onAudioToVideo(AVChatManager.getInstance().isMute()); // isMute是否处于静音状态
+        if (!AVChatManager.getInstance().isVideoSend()) { // 是否在发送视频 即摄像头是否开启
             AVChatManager.getInstance().toggleLocalVideo(true, null);
-            aVChatSurfaceManager.localVideoOn();
+            avChatSurface.localVideoOn();
+            isClosedCamera = false;
         }
+    }
+
+    /**
+     * 视频切换为音频
+     */
+    public void onVideoToAudio() {
+        // 判断是否静音，扬声器是否开启，对界面相应控件进行显隐处理。
+        avChatAudio.onVideoToAudio(AVChatManager.getInstance().isMute(), AVChatManager.getInstance().speakerEnabled());
+    }
+
+    public void peerVideoOff() {
+        avChatSurface.peerVideoOff();
+    }
+
+    public void peerVideoOn() {
+        avChatSurface.peerVideoOn();
+    }
+
+    /**
+     * // 恢复视频聊天（用于视频聊天退到后台后，从后台恢复时调用）
+     */
+    public void resumeVideo() {
+        AVChatManager.getInstance().resumeVideo(avChatSurface.isLocalPreviewInSmallSize());
     }
 
     public boolean canSwitchCamera() {
         return canSwitchCamera;
-    }
-
-    public AVChatSurfaceManager getAVChatSurfaceManager() {
-        return aVChatSurfaceManager;
-    }
-
-    public AVChatVideoManager getAVChatVideoManager() {
-        return aVChatVideoManager;
-    }
-
-    public AVChatAudioManager getAVChatAudioManager() {
-        return aVChatAudioManager;
     }
 
     public CallStateEnum getCallingState() {

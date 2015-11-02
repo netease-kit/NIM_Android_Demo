@@ -1,4 +1,4 @@
-package com.netease.nim.demo.team;
+package com.netease.nim.demo.team.activity;
 
 import android.content.Context;
 import android.content.Intent;
@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;

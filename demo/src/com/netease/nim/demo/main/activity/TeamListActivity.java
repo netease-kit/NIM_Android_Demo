@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.team.TeamDataCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.contact.core.item.ContactItem;
 import com.netease.nim.uikit.contact.core.item.ItemTypes;
