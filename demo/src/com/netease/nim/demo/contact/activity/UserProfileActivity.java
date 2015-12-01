@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.cache.FriendDataCache;
@@ -36,6 +37,7 @@ import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.constant.VerifyType;
 import com.netease.nimlib.sdk.friend.model.AddFriendData;
+import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
@@ -59,7 +61,7 @@ public class UserProfileActivity extends TActionBarActivity {
 
     // 基本信息
     private HeadImageView headImageView;
-    private TextView nickNameText;
+    private TextView nameText;
     private ImageView genderImage;
     private TextView accountText;
     private TextView birthdayText;
@@ -70,6 +72,8 @@ public class UserProfileActivity extends TActionBarActivity {
     private RelativeLayout phoneLayout;
     private RelativeLayout emailLayout;
     private RelativeLayout signatureLayout;
+    private RelativeLayout aliasLayout;
+    private TextView nickText;
 
     // 开关
     private ViewGroup toggleLayout;
@@ -131,16 +135,18 @@ public class UserProfileActivity extends TActionBarActivity {
 
         @Override
         public void onAddUserToBlackList(List<String> account) {
+            updateUserOperatorView();
         }
 
         @Override
         public void onRemoveUserFromBlackList(List<String> account) {
+            updateUserOperatorView();
         }
     };
 
     private void findViews() {
         headImageView = findView(R.id.user_head_image);
-        nickNameText = findView(R.id.user_nickname);
+        nameText = findView(R.id.user_name);
         genderImage = findView(R.id.gender_img);
         accountText = findView(R.id.user_account);
         toggleLayout = findView(R.id.toggle_layout);
@@ -148,6 +154,7 @@ public class UserProfileActivity extends TActionBarActivity {
         chatBtn = findView(R.id.begin_chat);
         removeFriendBtn = findView(R.id.remove_buddy);
         birthdayLayout = findView(R.id.birthday);
+        nickText = findView(R.id.user_nick);
         birthdayText = (TextView) birthdayLayout.findViewById(R.id.value);
         phoneLayout = findView(R.id.phone);
         mobileText = (TextView) phoneLayout.findViewById(R.id.value);
@@ -155,14 +162,22 @@ public class UserProfileActivity extends TActionBarActivity {
         emailText = (TextView) emailLayout.findViewById(R.id.value);
         signatureLayout = findView(R.id.signature);
         signatureText = (TextView) signatureLayout.findViewById(R.id.value);
+        aliasLayout = findView(R.id.alias);
         ((TextView) birthdayLayout.findViewById(R.id.attribute)).setText(R.string.birthday);
         ((TextView) phoneLayout.findViewById(R.id.attribute)).setText(R.string.phone);
         ((TextView) emailLayout.findViewById(R.id.attribute)).setText(R.string.email);
         ((TextView) signatureLayout.findViewById(R.id.attribute)).setText(R.string.signature);
+        ((TextView) aliasLayout.findViewById(R.id.attribute)).setText(R.string.alias);
 
         addFriendBtn.setOnClickListener(onClickListener);
         chatBtn.setOnClickListener(onClickListener);
         removeFriendBtn.setOnClickListener(onClickListener);
+        aliasLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                UserProfileEditItemActivity.startActivity(UserProfileActivity.this, UserConstant.KEY_ALIAS, account);
+            }
+        });
     }
 
     private void initActionbar() {
@@ -202,8 +217,11 @@ public class UserProfileActivity extends TActionBarActivity {
 
     private void updateUserInfoView() {
         accountText.setText("帐号：" + account);
-        nickNameText.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
         headImageView.loadBuddyAvatar(account);
+
+        if (DemoCache.getAccount().equals(account)) {
+            nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+        }
 
         final NimUserInfo userInfo = NimUserInfoCache.getInstance().getUserInfo(account);
         if (userInfo == null) {
@@ -256,9 +274,11 @@ public class UserProfileActivity extends TActionBarActivity {
         if (NIMClient.getService(FriendService.class).isMyFriend(account)) {
             removeFriendBtn.setVisibility(View.VISIBLE);
             addFriendBtn.setVisibility(View.GONE);
+            updateAlias(true);
         } else {
             addFriendBtn.setVisibility(View.VISIBLE);
             removeFriendBtn.setVisibility(View.GONE);
+            updateAlias(false);
         }
     }
 
@@ -298,6 +318,27 @@ public class UserProfileActivity extends TActionBarActivity {
         }
         toggleStateMap.put(key, initState);
         return switchButton;
+    }
+
+    private void updateAlias(boolean isFriend) {
+        if (isFriend) {
+            aliasLayout.setVisibility(View.VISIBLE);
+            aliasLayout.findViewById(R.id.arrow_right).setVisibility(View.VISIBLE);
+            Friend friend = FriendDataCache.getInstance().getFriendByAccount(account);
+            if (friend != null && !TextUtils.isEmpty(friend.getAlias())) {
+                nickText.setVisibility(View.VISIBLE);
+                nameText.setText(friend.getAlias());
+                nickText.setText("昵称：" + NimUserInfoCache.getInstance().getUserName(account));
+            } else {
+                nickText.setVisibility(View.GONE);
+                nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+            }
+        } else {
+            aliasLayout.setVisibility(View.GONE);
+            aliasLayout.findViewById(R.id.arrow_right).setVisibility(View.GONE);
+            nickText.setVisibility(View.GONE);
+            nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+        }
     }
 
     private SwitchButton.OnChangedListener onChangedListener = new SwitchButton.OnChangedListener() {

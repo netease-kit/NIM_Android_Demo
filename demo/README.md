@@ -2,6 +2,13 @@
 
 网易云信 Demo 工程基于网易云信 SDK，演示了 SDK 聊天、群组、白板、实时音视频等功能接口的使用方法。Demo 工程依赖于 UIKit 工程，UIKit 实现了基本的消息收发，群组服务以及通讯录等功能，包含有完整的界面显示。开发者可以直接调用UIKit 中的接口，来进行功能开发，加快开发速度。用户可参照该 Demo，将网易云信 SDK 接入自己的 APP。
 
+## <span id="导入 Demo 工程示例"> 导入 Demo 工程示例</span>
+- [Eclipse导入Demo](http://note.youdao.com/share/?id=0bb0b773bb427938d96928ec31bf2b2d&type=note  "target=_blank")
+- [Android Studio导入Demo](http://note.youdao.com/share/?id=fb2ddcd1f5b15cc725a4a6df05f6317a&type=note  "target=_blank")
+- [Eclipse导入UIKit](http://note.youdao.com/share/?id=a8e904df99e1a114c5b565568a19906d&type=note  "target=_blank")
+- [Android Studio导入UIKit](http://note.youdao.com/share/?id=66d12a2aa10b37928b869feaef54ec3e&type=note  "target=_blank")
+- [Android视频教程源码及说明](http://note.youdao.com/groupshare/?token=72C14A95D15144259B5E5C01D583D639&gid=14302436  "target=_blank")
+
 ## <span id="下载编译 Demo"> 下载编译 Demo</span>
 
 用户可在[网易云信官网](http://netease.im/?page=download  "target=_blank")下载 Demo 源码工程。
@@ -24,15 +31,11 @@
 
 >由于 google 已经将 Android Studio 作为官方开发工具，不再提供 ADT Bundle 下载，继续使用 Eclipse 开发会让你错过很多新特性，因此我们强烈建议你使用 Android Studio 开发基于网易云信 SDK 的 APP，该 Demo的很多自动化特性也将只有 Android Studio 才能体验到。
 
-## <span id="导入 Demo 工程示例"> 导入 Demo 工程示例</span>
-- [Eclipse导入Demo](http://note.youdao.com/share/?id=0bb0b773bb427938d96928ec31bf2b2d&type=note  "target=_blank")
-- [Android Studio导入Demo](http://note.youdao.com/share/?id=fb2ddcd1f5b15cc725a4a6df05f6317a&type=note  "target=_blank")
-- [Eclipse导入UIKit](http://note.youdao.com/share/?id=a8e904df99e1a114c5b565568a19906d&type=note  "target=_blank")
-- [Android Studio导入UIKit](http://note.youdao.com/share/?id=66d12a2aa10b37928b869feaef54ec3e&type=note  "target=_blank")
-
 ## <span id="源码结构"> 源码结构</span>
 
 由于 Demo 依赖于 UIKit 进行开发。分为 Demo 工程和 UIKit 工程。分别介绍这两个工程的源码结构。
+
+- Demo日志地址：**/{外卡根目录}/{app\_package\_name}/log/**
 
 ### <span id="Demo源码结构"> Demo源码结构</span>
 
@@ -40,7 +43,7 @@
 - 登录相关：login 包，包含一个比较典型的从第三方 APP 授权，然后登录到网易云信服务器的例子。
 - 主界面：main 包，包含最近联系人列表和好友/群组列表。该包作为各个功能的入口点，内含获取和管理最近联系人，获取群组列表，收发自定义通知等 SDK 接口使用示例。
 - 消息相关：session 包，包含消息历史，聊天信息和搜索消息界面。消息的具体展示和收发都在 UIKit 中。可以使用 NimUIKit 直接展示和使用。也可以使用 SessionHelper 进行消息界面的定制。
-- 群组相关：team 包，包含搜索群组和加入群组界面。包含创建高级群和普通群的接口使用示例。
+- 群组相关：team 包，包含搜索群组和加入群组界面。包含创建高级群和讨论组的接口使用示例。
 - 音视频通话相关：avchat 包，包含音视频通话界面。内含网络通话功能的 SDK 接口使用示例，以及一个完整的网络通话流程示例，开发者可直接参考开发音视频通话功能。
 - 实时会话（白版）：rts 包，包含白板教学的示例，支持实时音频、白板数据收发。
 

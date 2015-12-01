@@ -9,12 +9,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.cache.SimpleCallback;
 import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
-import com.netease.nimlib.sdk.RequestCallbackWrapper;
-import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
 import com.netease.nimlib.sdk.team.model.Team;
@@ -71,12 +70,11 @@ public class AdvancedTeamJoinActivity extends TActionBarActivity implements View
         if (t != null) {
             updateTeamInfo(t);
         } else {
-            NIMClient.getService(TeamService.class).queryTeam(teamId).setCallback(new RequestCallbackWrapper<Team>() {
+            TeamDataCache.getInstance().fetchTeamById(teamId, new SimpleCallback<Team>() {
                 @Override
-                public void onResult(int code, Team t, Throwable exception) {
-                    if (code == ResponseCode.RES_SUCCESS && t != null) {
-                        TeamDataCache.getInstance().addOrUpdateTeam(t);
-                        updateTeamInfo(t);
+                public void onResult(boolean success, Team result) {
+                    if (success && result != null) {
+                        updateTeamInfo(result);
                     }
                 }
             });
@@ -85,6 +83,7 @@ public class AdvancedTeamJoinActivity extends TActionBarActivity implements View
 
     /**
      * 更新群信息
+     *
      * @param t 群
      */
     private void updateTeamInfo(final Team t) {
@@ -95,7 +94,7 @@ public class AdvancedTeamJoinActivity extends TActionBarActivity implements View
             team = t;
             teamNameText.setText(team.getName());
             memberCountText.setText(team.getMemberCount() + "人");
-            if(team.getType() == TeamTypeEnum.Advanced) {
+            if (team.getType() == TeamTypeEnum.Advanced) {
                 teamTypeText.setText(R.string.advanced_team);
             } else {
                 teamTypeText.setText(R.string.normal_team);
@@ -120,7 +119,7 @@ public class AdvancedTeamJoinActivity extends TActionBarActivity implements View
                         applyJoinButton.setEnabled(false);
                         Toast.makeText(AdvancedTeamJoinActivity.this, R.string.team_apply_to_join_send_success,
                                 Toast.LENGTH_SHORT).show();
-                    } else if(code == 809) {
+                    } else if (code == 809) {
                         applyJoinButton.setEnabled(false);
                         Toast.makeText(AdvancedTeamJoinActivity.this, R.string.has_exist_in_team,
                                 Toast.LENGTH_SHORT).show();

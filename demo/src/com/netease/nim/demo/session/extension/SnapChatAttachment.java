@@ -10,6 +10,7 @@ import com.netease.nimlib.sdk.msg.attachment.FileAttachment;
  */
 public class SnapChatAttachment extends FileAttachment {
 
+    private static final String KEY_PATH = "path";
     private static final String KEY_SIZE = "size";
     private static final String KEY_MD5 = "md5";
     private static final String KEY_URL = "url";
@@ -26,6 +27,10 @@ public class SnapChatAttachment extends FileAttachment {
     public String toJson(boolean send) {
         JSONObject data = new JSONObject();
         try {
+            if (!send && !TextUtils.isEmpty(path)) {
+                data.put(KEY_PATH, path);
+            }
+
             if (!TextUtils.isEmpty(md5)) {
                 data.put(KEY_MD5, md5);
             }
@@ -40,7 +45,9 @@ public class SnapChatAttachment extends FileAttachment {
     }
 
     private void load(JSONObject data) {
+        path = data.getString(KEY_PATH);
         md5 = data.getString(KEY_MD5);
         url = data.getString(KEY_URL);
+        size = data.getLong(KEY_SIZE);
     }
 }

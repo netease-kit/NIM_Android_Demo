@@ -30,8 +30,18 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="2px"
-        android:layout_marginTop="10dp"
         android:layout_below="@id/value"
+        android:layout_marginTop="10dp"
         android:background="@color/color_split_line_d9d9d9" />
+
+    <ImageView
+        android:id="@+id/arrow_right"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/nim_arrow_right"
+        android:visibility="gone" />
 
 </RelativeLayout>

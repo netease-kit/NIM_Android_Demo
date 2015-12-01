@@ -13,7 +13,6 @@ import com.netease.nim.demo.login.LogoutHelper;
 import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.demo.session.extension.CustomNotificationAttachment;
 import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
@@ -28,10 +27,14 @@ import com.netease.nimlib.sdk.StatusCode;
 import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.auth.OnlineClient;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
+import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by zhoujianghua on 2015/8/17.
@@ -211,9 +214,23 @@ public class SessionListFragment extends MainTabFragment {
                     return "[贴图]";
                 } else if (attachment instanceof SnapChatAttachment) {
                     return "[阅后即焚]";
-                } else if (attachment instanceof CustomNotificationAttachment) {
-                    CustomNotificationAttachment notification = (CustomNotificationAttachment) attachment;
-                    return notification.getNotificationText();
+                }
+
+                return null;
+            }
+
+            @Override
+            public String getDigestOfTipMsg(RecentContact recent) {
+                String msgId = recent.getRecentMessageId();
+                List<String> uuids = new ArrayList<>(1);
+                uuids.add(msgId);
+                List<IMMessage> msgs = NIMClient.getService(MsgService.class).queryMessageListByUuidBlock(uuids);
+                if (msgs != null && !msgs.isEmpty()) {
+                    IMMessage msg = msgs.get(0);
+                    Map<String, Object> content = msg.getRemoteExtension();
+                    if (content != null && !content.isEmpty()) {
+                        return (String) content.get("content");
+                    }
                 }
 
                 return null;

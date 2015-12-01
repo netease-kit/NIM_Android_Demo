@@ -14,10 +14,10 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
-import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.uinfo.UserInfoHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
@@ -272,7 +272,7 @@ public class SearchMessageActivity extends TActionBarActivity {
         ArrayList<String> filter = new ArrayList<String>();
         if (sessionType == SessionTypeEnum.Team) {
             if (members == null) {
-                members = TeamDataCache.getInstance().getTeamMemberListById(sessionId);
+                members = TeamDataCache.getInstance().getTeamMemberList(sessionId);
             }
 
             if (members != null) {
@@ -285,7 +285,7 @@ public class SearchMessageActivity extends TActionBarActivity {
                         filter.add(account);
                         continue;
                     }
-                    if (match(UserInfoHelper.getUserName(account), query)) {
+                    if (match(NimUserInfoCache.getInstance().getUserName(account), query)) {
                         filter.add(account);
                         continue;
                     }

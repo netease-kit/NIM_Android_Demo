@@ -32,9 +32,6 @@ public class CustomAttachParser implements MsgAttachmentParser {
                 case CustomAttachmentType.RTS:
                     attachment = new RTSAttachment();
                     break;
-                case CustomAttachmentType.Notification:
-                    attachment = new CustomNotificationAttachment();
-                    break;
                 default:
                     attachment = new DefaultCustomAttachment();
                     break;

@@ -95,9 +95,10 @@
     <!-- 群 -->
     <string name="create_team_activity">创建群聊</string>
     <string name="add_buddy">添加好友</string>
-    <string name="create_normal_team">创建普通群</string>
+    <string name="create_normal_team">创建讨论组</string>
     <string name="team_apply_sending">发送中…</string>
     <string name="no_team">您还没有群</string>
+    <string name="no_normal_team">您还没有讨论组</string>
     <string name="team_search_hint">请输入群号进行搜索</string>
     <string name="team_number_not_exist">群号不存在</string>
     <string name="team_join">加入群组</string>
@@ -212,6 +213,7 @@
     <string name="head">头 像</string>
     <string name="user_information">个人信息</string>
     <string name="nickname">昵 称</string>
+    <string name="alias">备注名</string>
     <string name="gender">性 别</string>
     <string name="male">男</string>
     <string name="female">女</string>

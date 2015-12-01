@@ -52,10 +52,11 @@ public class NimDemoLocationProvider implements LocationProvider {
     }
 
     @Override
-    public void openMap(Context context, double longitude, double latitude) {
+    public void openMap(Context context, double longitude, double latitude, String address) {
         Intent intent = new Intent(context, NavigationAmapActivity.class);
         intent.putExtra(LocationExtras.LONGITUDE, longitude);
         intent.putExtra(LocationExtras.LATITUDE, latitude);
+        intent.putExtra(LocationExtras.ADDRESS, address);
         context.startActivity(intent);
     }
 }

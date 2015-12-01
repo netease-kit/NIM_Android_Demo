@@ -98,7 +98,7 @@ public class ContactListFragment extends MainTabFragment {
                         }
                     });
                 } else if (item == NORMAL_TEAM) {
-                    funcName.setText("普通群");
+                    funcName.setText("讨论组");
                     image.setImageResource(R.drawable.ic_secretary);
                 } else if (item == ADVANCED_TEAM) {
                     funcName.setText("高级群");

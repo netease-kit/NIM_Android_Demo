@@ -10,4 +10,5 @@ public class UserConstant {
     public static final int KEY_PHONE= 4;
     public static final int KEY_EMAIL= 5;
     public static final int KEY_SIGNATURE = 6;
+    public static final int KEY_ALIAS = 7;
 }

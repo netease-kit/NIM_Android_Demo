@@ -11,17 +11,20 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.contact.core.item.ContactItem;
 import com.netease.nim.uikit.contact.core.item.ItemTypes;
 import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
 import com.netease.nim.uikit.contact.core.model.ContactGroupStrategy;
-import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
-import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
 import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
+import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
 import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
+import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.team.TeamService;
+import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
 import com.netease.nimlib.sdk.team.model.Team;
 
 import java.util.List;
@@ -95,10 +98,16 @@ public class TeamListActivity extends TActionBarActivity implements AdapterView.
         });
 
         // load data
-        List<Team> teams = TeamDataCache.getInstance().queryTeamList();
-        if (teams.isEmpty()) {
-            Toast.makeText(TeamListActivity.this, R.string.no_team, Toast.LENGTH_SHORT).show();
+        int count = NIMClient.getService(TeamService.class).queryTeamCountByTypeBlock(itemType == ItemTypes.TEAMS
+                .ADVANCED_TEAM ? TeamTypeEnum.Advanced : TeamTypeEnum.Normal);
+        if (count == 0) {
+            if (itemType == ItemTypes.TEAMS.ADVANCED_TEAM) {
+                Toast.makeText(TeamListActivity.this, R.string.no_team, Toast.LENGTH_SHORT).show();
+            } else if (itemType == ItemTypes.TEAMS.NORMAL_TEAM) {
+                Toast.makeText(TeamListActivity.this, R.string.no_normal_team, Toast.LENGTH_SHORT).show();
+            }
         }
+
         adapter.load(true);
 
         registerTeamUpdateObserver(true);

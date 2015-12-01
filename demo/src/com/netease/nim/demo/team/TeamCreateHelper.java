@@ -8,8 +8,6 @@ import android.widget.Toast;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.demo.session.extension.CustomNotificationAttachment;
-import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -26,6 +24,7 @@ import com.netease.nimlib.sdk.team.model.Team;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by hzxuwen on 2015/9/25.
@@ -34,15 +33,12 @@ public class TeamCreateHelper {
     private static final String TAG = TeamCreateHelper.class.getSimpleName();
     private static final int DEFAULT_TEAM_CAPACITY = 50;
 
-    // 是否演示创建高级群成功后，立即往群中插入一条自定义消息，使得该群聊能立即进入最近联系人列表（会话列表）中
-    private static boolean SEND_CUSTOM_MESSAGE_AFTER_CREATE_ADVANCED_TEAM = false;
-
     /**
-     * 创建普通群
+     * 创建讨论组
      */
     public static void createNormalTeam(final Context context, List<String> memberAccounts, final boolean isNeedBack, final RequestCallback<Void> callback) {
 
-        String teamName = "普通群";
+        String teamName = "讨论组";
 
         DialogMaker.showProgressDialog(context, context.getString(com.netease.nim.uikit.R.string.empty), true);
         // 创建群
@@ -54,7 +50,6 @@ public class TeamCreateHelper {
                     @Override
                     public void onSuccess(Team team) {
                         DialogMaker.dismissProgressDialog();
-                        TeamDataCache.getInstance().addOrUpdateTeam(team);
                         Toast.makeText(DemoCache.getContext(), com.netease.nim.uikit.R.string.create_team_success,
                                 Toast.LENGTH_SHORT).show();
                         if (isNeedBack) {
@@ -114,14 +109,18 @@ public class TeamCreateHelper {
                     @Override
                     public void onFailed(int code) {
                         DialogMaker.dismissProgressDialog();
+                        String tip;
                         if (code == 801) {
-                            String tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity, DEFAULT_TEAM_CAPACITY);
-                            Toast.makeText(context, tip,
-                                    Toast.LENGTH_SHORT).show();
+                            tip = context.getString(com.netease.nim.uikit.R.string.over_team_member_capacity,
+                                    DEFAULT_TEAM_CAPACITY);
+                        } else if (code == 806) {
+                            tip = context.getString(com.netease.nim.uikit.R.string.over_team_capacity);
                         } else {
-                            Toast.makeText(context, com.netease.nim.uikit.R.string.create_team_failed,
-                                    Toast.LENGTH_SHORT).show();
+                            tip = context.getString(com.netease.nim.uikit.R.string.create_team_failed) + ", code=" +
+                                    code;
                         }
+
+                        Toast.makeText(context, tip, Toast.LENGTH_SHORT).show();
 
                         Log.e(TAG, "create team error: " + code);
                     }
@@ -144,28 +143,22 @@ public class TeamCreateHelper {
         }
         Log.i(TAG, "create and update team success");
 
-        TeamDataCache.getInstance().addOrUpdateTeam(team);
-
         DialogMaker.dismissProgressDialog();
         Toast.makeText(DemoCache.getContext(), com.netease.nim.uikit.R.string.create_team_success, Toast.LENGTH_SHORT).show();
 
-        if (SEND_CUSTOM_MESSAGE_AFTER_CREATE_ADVANCED_TEAM) {
-            // 演示：向群里插入一条消息，使得该群能立即出现在最近联系人列表（会话列表）中，满足部分开发者需求
-            CustomNotificationAttachment attachment = new CustomNotificationAttachment("成功创建高级群");
-            IMMessage msg = MessageBuilder.createCustomMessage(team.getId(), SessionTypeEnum.Team, attachment);
-            msg.setStatus(MsgStatusEnum.success);
-            NIMClient.getService(MsgService.class).saveMessageToLocal(msg, true);
+        // 演示：向群里插入一条Tip消息，使得该群能立即出现在最近联系人列表（会话列表）中，满足部分开发者需求
+        Map<String, Object> content = new HashMap<>(1);
+        content.put("content", "成功创建高级群");
+        IMMessage msg = MessageBuilder.createTipMessage(team.getId(), SessionTypeEnum.Team, content);
+        msg.setStatus(MsgStatusEnum.success);
+        NIMClient.getService(MsgService.class).saveMessageToLocal(msg, true);
 
-            // 发送后，稍作延时后跳转
-            new Handler(context.getMainLooper()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    SessionHelper.startTeamSession(context, team.getId()); // 进入创建的群
-                }
-            }, 50);
-        } else {
-            // 直接进入创建的群
-            SessionHelper.startTeamSession(context, team.getId());
-        }
+        // 发送后，稍作延时后跳转
+        new Handler(context.getMainLooper()).postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                SessionHelper.startTeamSession(context, team.getId()); // 进入创建的群
+            }
+        }, 50);
     }
 }

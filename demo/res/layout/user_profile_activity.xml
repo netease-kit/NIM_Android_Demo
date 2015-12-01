@@ -18,46 +18,60 @@
 
             <com.netease.nim.uikit.common.ui.imageview.HeadImageView
                 android:id="@+id/user_head_image"
-                android:layout_width="@dimen/avatar_size_default"
-                android:layout_height="@dimen/avatar_size_default"
+                android:layout_width="@dimen/avatar_size_in_profile"
+                android:layout_height="@dimen/avatar_size_in_profile"
                 android:layout_alignParentLeft="true"
-                android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="15dp" />
 
             <LinearLayout
-                android:id="@+id/nick_layout"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignBaseline="@id/user_head_image"
+                android:layout_height="65dp"
                 android:layout_marginLeft="20dip"
                 android:layout_toRightOf="@id/user_head_image"
-                android:orientation="horizontal">
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:id="@+id/nick_layout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/user_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/black"
+                        android:textSize="17sp" />
+
+                    <ImageView
+                        android:id="@+id/gender_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginLeft="5dp"
+                        android:background="@drawable/nim_male" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/user_nickname"
+                    android:id="@+id/user_account"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="@color/black"
-                    android:textSize="17sp" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/color_black_ff666666"
+                    android:textSize="15sp" />
 
-                <ImageView
-                    android:id="@+id/gender_img"
+                <TextView
+                    android:id="@+id/user_nick"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:layout_marginLeft="5dp"
-                    android:background="@drawable/nim_male" />
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:textColor="@color/color_black_ff666666"
+                    android:textSize="15sp"
+                    android:visibility="gone" />
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/user_account"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignLeft="@id/nick_layout"
-                android:layout_below="@id/nick_layout"
-                android:layout_marginTop="7dip"
-                android:textColor="@color/color_black_ff666666"
-                android:textSize="15sp" />
+
         </RelativeLayout>
 
         <View
@@ -65,6 +79,11 @@
             android:layout_height="2px"
             android:layout_below="@+id/attribute"
             android:background="@color/color_split_line_d9d9d9" />
+
+        <include
+            android:id="@+id/alias"
+            layout="@layout/user_profile_item"
+            android:visibility="gone" />
 
         <include
             android:id="@+id/birthday"

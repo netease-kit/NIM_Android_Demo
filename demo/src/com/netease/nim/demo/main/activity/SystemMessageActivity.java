@@ -206,11 +206,6 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
                     continue;
                 }
 
-                // 收到被删除好友的通知，不要提醒
-                if (deleteFriendFilter(m)) {
-                    continue;
-                }
-
                 // 同一个账号的好友申请仅保留最近一条
                 if (addFriendVerifyFilter(m)) {
                     continue;
@@ -258,11 +253,6 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
      * 新消息到来
      */
     private void onIncomingMessage(final SystemMessage message) {
-        // 收到被删除好友的通知，不要提醒
-        if (deleteFriendFilter(message)) {
-            return;
-        }
-
         // 同一个账号的好友申请仅保留最近一条
         if (addFriendVerifyFilter(message)) {
             SystemMessage del = null;
@@ -328,14 +318,6 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
 
         addFriendVerifyRequestAccounts.add(msg.getFromAccount());
         return false; // 不过滤
-    }
-
-    private boolean deleteFriendFilter(final SystemMessage msg) {
-        if (msg.getType() == SystemMessageType.DeleteFriend) {
-            return true; // 过滤
-        }
-
-        return false;
     }
 
     // 请求未知的用户资料

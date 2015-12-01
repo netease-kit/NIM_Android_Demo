@@ -12,11 +12,11 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
 import com.netease.nim.demo.main.model.Extras;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.media.picker.PickImageHelper;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
@@ -188,27 +188,27 @@ public class UserProfileSettingActivity extends TActionBarActivity implements Vi
                 PickImageHelper.pickImage(UserProfileSettingActivity.this, PICK_AVATAR_REQUEST, option);
                 break;
             case R.id.nick_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_NICKNAME,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_NICKNAME,
                         nickText.getText().toString());
                 break;
             case R.id.gender_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_GENDER,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_GENDER,
                         String.valueOf(userInfo.getGenderEnum().getValue()));
                 break;
             case R.id.birth_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_BIRTH,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_BIRTH,
                         birthText.getText().toString());
                 break;
             case R.id.phone_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_PHONE,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_PHONE,
                         phoneText.getText().toString());
                 break;
             case R.id.email_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_EMAIL,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_EMAIL,
                         emailText.getText().toString());
                 break;
             case R.id.signature_layout:
-                UserProfileEditActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_SIGNATURE,
+                UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_SIGNATURE,
                         signatureText.getText().toString());
                 break;
         }

@@ -27,6 +27,7 @@ import com.netease.nim.uikit.ImageLoaderKit;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.cache.FriendDataCache;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.contact.ContactProvider;
 import com.netease.nim.uikit.contact.core.query.PinYin;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
@@ -39,6 +40,7 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatRingerConfig;
+import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.model.RTSData;
 import com.netease.nimlib.sdk.rts.model.RTSRingerConfig;
@@ -265,17 +267,6 @@ public class NimApplication extends Application {
         }
 
         @Override
-        public Bitmap getAvatarForMessageNotifier(String account) {
-            UserInfo user = getUserInfo(account);
-            if (user != null && !TextUtils.isEmpty(user.getAvatar())) {
-                return ImageLoaderKit.getBitmapFromCache(user.getAvatar(), R.dimen.avatar_size_default, R.dimen
-                        .avatar_size_default);
-            }
-
-            return null;
-        }
-
-        @Override
         public int getDefaultIconResId() {
             return R.drawable.avatar_def;
         }
@@ -288,6 +279,26 @@ public class NimApplication extends Application {
             }
 
             return null;
+        }
+
+        @Override
+        public Bitmap getAvatarForMessageNotifier(String account) {
+            UserInfo user = getUserInfo(account);
+            if (user != null && !TextUtils.isEmpty(user.getAvatar())) {
+                return ImageLoaderKit.getBitmapFromCache(user.getAvatar(), R.dimen.avatar_size_default, R.dimen
+                        .avatar_size_default);
+            }
+
+            return null;
+        }
+
+        @Override
+        public String getDisplayNameForMessageNotifier(String account, String sessionId, SessionTypeEnum sessionType) {
+            if (sessionType == SessionTypeEnum.P2P) {
+                return NimUserInfoCache.getInstance().getUserDisplayName(account);
+            } else {
+                return TeamDataCache.getInstance().getDisplayNameWithoutMe(sessionId, account);
+            }
         }
     };
 

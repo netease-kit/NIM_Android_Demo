@@ -2,8 +2,9 @@
 <manifest
     package="com.netease.nim.demo"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="17"
-    android:versionName="1.6.0">
+    android:versionCode="18"
+    android:versionName="1.7.0"
+    android:installLocation="auto">
 
     <uses-sdk
         android:minSdkVersion="8"
@@ -152,7 +153,7 @@
             android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
 
         <activity
-            android:name=".contact.activity.UserProfileEditActivity"
+            android:name=".contact.activity.UserProfileEditItemActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"/>

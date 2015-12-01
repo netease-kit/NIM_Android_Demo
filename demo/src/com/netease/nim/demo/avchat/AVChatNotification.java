@@ -9,9 +9,9 @@ import android.support.v4.app.NotificationCompat;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.main.model.Extras;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.session.activity.P2PMessageActivity;
 
 /**
@@ -72,7 +72,7 @@ public class AVChatNotification {
                     .FLAG_UPDATE_CURRENT);
 
             String title = context.getString(R.string.avchat_no_pickup_call);
-            String tickerText = account + ": 【网络通话】";
+            String tickerText = NimUserInfoCache.getInstance().getUserDisplayName(account) + ": 【网络通话】";
             int iconId = R.drawable.avchat_no_pickup;
 
             missCallNotification = makeNotification(pendingIntent, title, tickerText, tickerText, iconId, true, true);

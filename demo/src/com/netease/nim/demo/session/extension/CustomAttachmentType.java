@@ -9,7 +9,4 @@ public interface CustomAttachmentType {
     int SnapChat = 2;
     int Sticker = 3;
     int RTS = 4;
-
-    // 本地用
-    int Notification = 1000;
 }
