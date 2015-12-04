@@ -28,6 +28,7 @@
 - 注释掉 AboutActivity 中 initViewData() 函数的函数体。这行使用 Android Studio 编译期添加 BuildConfig 字段的特性，在 Eclipse 上无法完成，直接注释掉即可。
 - 如果你需要试验发送地理位置功能，请将 AndroidManifest 中的 {AMAP\_KEY} 替换为 demo/build.gradle 文件中 buildTypes 内对应的值。在 Android Studio 上会在编译器自动替换。
 - 由于需要使用 JDK7 编译，旧版本的 ADT 插件仅支持到1.6，因此你需要使用最新的 ADT 版本（23.0及以上）才能正确编译 Demo。
+- 将 UIKit 下 AndoridManifeset 文件下所有 Activity 声明复制到 APP 工程的 AndoridManifeset 文件中。
 
 >由于 google 已经将 Android Studio 作为官方开发工具，不再提供 ADT Bundle 下载，继续使用 Eclipse 开发会让你错过很多新特性，因此我们强烈建议你使用 Android Studio 开发基于网易云信 SDK 的 APP，该 Demo的很多自动化特性也将只有 Android Studio 才能体验到。
 

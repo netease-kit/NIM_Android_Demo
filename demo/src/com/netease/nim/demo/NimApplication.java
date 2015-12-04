@@ -294,11 +294,21 @@ public class NimApplication extends Application {
 
         @Override
         public String getDisplayNameForMessageNotifier(String account, String sessionId, SessionTypeEnum sessionType) {
+            String nick = null;
             if (sessionType == SessionTypeEnum.P2P) {
-                return NimUserInfoCache.getInstance().getUserDisplayName(account);
-            } else {
-                return TeamDataCache.getInstance().getDisplayNameWithoutMe(sessionId, account);
+                nick = NimUserInfoCache.getInstance().getAlias(account);
+            } else if (sessionType == SessionTypeEnum.Team){
+                nick = TeamDataCache.getInstance().getTeamNick(sessionId, account);
+                if (TextUtils.isEmpty(nick)) {
+                    nick = NimUserInfoCache.getInstance().getAlias(account);
+                }
             }
+            // 返回null，交给sdk处理。如果对方有设置nick，sdk会显示nick
+            if (TextUtils.isEmpty(nick)) {
+                return null;
+            }
+
+            return nick;
         }
     };
 

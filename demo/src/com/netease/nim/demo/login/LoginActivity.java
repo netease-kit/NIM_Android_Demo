@@ -17,12 +17,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.cache.DataCacheManager;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHttpClient;
 import com.netease.nim.demo.main.activity.MainActivity;
+import com.netease.nim.uikit.cache.DataCacheManager;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
@@ -208,11 +208,6 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
      */
 
     private void login() {
-        if (!NetworkUtil.isNetAvailable(this)) {
-            Toast.makeText(this, R.string.network_is_not_available, Toast.LENGTH_LONG).show();
-            return;
-        }
-
         DialogMaker.showProgressDialog(this, null, getString(R.string.logining), true, new DialogInterface.OnCancelListener() {
             @Override
             public void onCancel(DialogInterface dialog) {
