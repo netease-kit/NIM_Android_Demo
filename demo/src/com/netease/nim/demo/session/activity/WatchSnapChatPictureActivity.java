@@ -59,7 +59,7 @@ public class WatchSnapChatPictureActivity extends TActionBarActivity {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         onParseIntent();
-        setContentView(R.layout.nim_watch_picture_activity);
+        setContentView(R.layout.nim_watch_snapchat_activity);
         findViews();
 
         handler = new Handler();

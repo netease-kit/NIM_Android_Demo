@@ -1,11 +1,14 @@
 package com.netease.nim.demo.avchat;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimApplication;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
@@ -37,11 +40,17 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     private View mute_speaker_hangup;
     private ToggleView muteToggle;
     private ToggleView speakerToggle;
+    private ToggleView recordToggle;
     private View hangup;
 
     private View refuse_receive;
     private TextView refuseTV;
     private TextView receiveTV;
+
+    //record
+    private View recordView;
+    private View recordTip;
+    private View recordWarning;
 
     // data
     private AVChatUI manager;
@@ -49,6 +58,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     // state
     private boolean init = false;
+
 
     public AVChatAudio(View root, AVChatUIListener listener, AVChatUI manager) {
         this.rootView = root;
@@ -89,6 +99,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 hideNotify();
                 setMuteSpeakerHangupControl(true);
                 setRefuseReceive(false);
+                enableToggle();
                 break;
             case AUDIO_CONNECTING:
                 showNotify(R.string.avchat_connecting);
@@ -103,6 +114,15 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 break;
         }
         setRoot(CallStateEnum.isAudioMode(state));
+    }
+
+    private boolean isEnabled = false;
+
+    private void enableToggle() {
+        if(!isEnabled) {
+            recordToggle.enable();
+        }
+        isEnabled = true;
     }
 
     /**
@@ -127,14 +147,22 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
         muteToggle = new ToggleView(mute, ToggleState.OFF, this);
         View speaker = mute_speaker_hangup.findViewById(R.id.avchat_audio_speaker);
         speakerToggle = new ToggleView(speaker, ToggleState.OFF, this);
+        View record = mute_speaker_hangup.findViewById(R.id.avchat_audio_record);
+        recordToggle = new ToggleView(record, ToggleState.OFF, this);
         hangup = mute_speaker_hangup.findViewById(R.id.avchat_audio_hangup);
         hangup.setOnClickListener(this);
+
+        recordToggle.disable(false);
 
         refuse_receive = rootView.findViewById(R.id.avchat_audio_refuse_receive);
         refuseTV = (TextView) refuse_receive.findViewById(R.id.refuse);
         receiveTV = (TextView) refuse_receive.findViewById(R.id.receive);
         refuseTV.setOnClickListener(this);
         receiveTV.setOnClickListener(this);
+
+        recordView = rootView.findViewById(R.id.avchat_record_layout);
+        recordTip = rootView.findViewById(R.id.avchat_record_tip);
+        recordWarning = rootView.findViewById(R.id.avchat_record_warning);
 
         init = true;
     }
@@ -166,6 +194,22 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
      */
     private void hideNotify(){
         notifyTV.setVisibility(View.GONE);
+    }
+
+    public void showRecordView(boolean show, boolean warning) {
+        if(show) {
+            recordView.setVisibility(View.VISIBLE);
+            recordTip.setVisibility(View.VISIBLE);
+            if(warning) {
+                recordWarning.setVisibility(View.VISIBLE);
+            } else {
+                recordWarning.setVisibility(View.GONE);
+            }
+        } else {
+            recordView.setVisibility(View.INVISIBLE);
+            recordTip.setVisibility(View.INVISIBLE);
+            recordWarning.setVisibility(View.GONE);
+        }
     }
 
     /**
@@ -245,9 +289,13 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
      * @param muteOn
      * @param speakerOn
      */
-    public void onVideoToAudio(boolean muteOn , boolean speakerOn){
+    public void onVideoToAudio(boolean muteOn , boolean speakerOn, boolean recordOn, boolean recordWarning) {
+
         muteToggle.toggle(muteOn ? ToggleState.ON : ToggleState.OFF);
         speakerToggle.toggle(speakerOn ? ToggleState.ON : ToggleState.OFF);
+        recordToggle.toggle(recordOn ? ToggleState.ON : ToggleState.OFF);
+
+        showRecordView(recordOn, recordWarning);
     }
 
     @Override
@@ -271,6 +319,9 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
             case R.id.avchat_audio_switch_video:
                 listener.audioSwitchVideo();
                 break;
+            case R.id.avchat_audio_record:
+                listener.toggleRecord();
+                break;
             default:
                 break;
         }
@@ -281,6 +332,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
             time.stop();
             muteToggle.disable(false);
             speakerToggle.disable(false);
+            recordToggle.disable(false);
             refuseTV.setEnabled(false);
             receiveTV.setEnabled(false);
             hangup.setEnabled(false);

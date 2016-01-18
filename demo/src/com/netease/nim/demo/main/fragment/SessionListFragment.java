@@ -8,8 +8,8 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
-import com.netease.nim.demo.main.activity.MultiportActivity;
 import com.netease.nim.demo.login.LogoutHelper;
+import com.netease.nim.demo.main.activity.MultiportActivity;
 import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
@@ -135,6 +135,10 @@ public class SessionListFragment extends MainTabFragment {
                         break;
                     case ClientType.Web:
                         status.setText(getString(R.string.multiport_logging) + getString(R.string.web_version));
+                        break;
+                    case ClientType.iOS:
+                    case ClientType.Android:
+                        status.setText(getString(R.string.multiport_logging) + getString(R.string.mobile_version));
                         break;
                     default:
                         multiportBar.setVisibility(View.GONE);

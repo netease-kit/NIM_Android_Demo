@@ -9,6 +9,7 @@ public interface AVChatUIListener {
     void onReceive();
     void toggleMute();
     void toggleSpeaker();
+    void toggleRecord();
     void videoSwitchAudio();
     void audioSwitchVideo();
     void switchCamera();

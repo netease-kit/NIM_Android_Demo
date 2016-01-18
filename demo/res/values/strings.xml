@@ -64,7 +64,7 @@
     <string name="search_advanced_team">搜索高级群</string>
     <string name="net_broken">当前网络不可用</string>
     <string name="nim_status_unlogin">未登录</string>
-    <string name="copyright">Copyright ©1997-2015 网易公司版权所有</string>
+    <string name="copyright">Copyright ©1997-2016 网易公司版权所有</string>
     <string name="edit_nick">修改昵称</string>
     <string name="user_not_exsit">该用户不存在</string>
     <string name="user_tips">请检查你输入的帐号是否正确</string>
@@ -197,6 +197,7 @@
     <string name="multiport_logout">下线</string>
     <string name="computer_version">云信电脑版</string>
     <string name="web_version">云信网页版</string>
+    <string name="mobile_version">云信移动版</string>
     <string name="multiport_logging">正在使用</string>
     <string name="kickout_notify">下线通知</string>
     <string name="kickout_content">你的帐号被%1$s踢出下线，请确定帐号信息安全</string>

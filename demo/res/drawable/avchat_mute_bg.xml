@@ -2,8 +2,8 @@
 
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:drawable="@drawable/avchat_mute_disable" android:state_enabled="false" />
-    <item android:drawable="@drawable/avchat_mute_pressed" android:state_selected="true" />
-    <item android:drawable="@drawable/avchat_mute_normal" />
+    <item android:drawable="@drawable/avchat_video_mute_disable" android:state_enabled="false" />
+    <item android:drawable="@drawable/avchat_video_mute_pressed" android:state_selected="true" />
+    <item android:drawable="@drawable/avchat_video_mute_normal" />
 
 </selector>

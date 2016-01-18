@@ -2,11 +2,12 @@
 
 网易云信 Demo 工程基于网易云信 SDK，演示了 SDK 聊天、群组、白板、实时音视频等功能接口的使用方法。Demo 工程依赖于 UIKit 工程，UIKit 实现了基本的消息收发，群组服务以及通讯录等功能，包含有完整的界面显示。开发者可以直接调用UIKit 中的接口，来进行功能开发，加快开发速度。用户可参照该 Demo，将网易云信 SDK 接入自己的 APP。
 
-## <span id="导入 Demo 工程示例"> 导入 Demo 工程示例</span>
+## <span id="工程导入指引"> 工程导入指引</span>
 - [Eclipse导入Demo](http://note.youdao.com/share/?id=0bb0b773bb427938d96928ec31bf2b2d&type=note  "target=_blank")
-- [Android Studio导入Demo](http://note.youdao.com/share/?id=fb2ddcd1f5b15cc725a4a6df05f6317a&type=note  "target=_blank")
 - [Eclipse导入UIKit](http://note.youdao.com/share/?id=a8e904df99e1a114c5b565568a19906d&type=note  "target=_blank")
+- [Android Studio导入Demo](http://note.youdao.com/share/?id=fb2ddcd1f5b15cc725a4a6df05f6317a&type=note  "target=_blank")
 - [Android Studio导入UIKit](http://note.youdao.com/share/?id=66d12a2aa10b37928b869feaef54ec3e&type=note  "target=_blank")
+- [UIKit集成示例](http://note.youdao.com/groupshare/?token=F0EF37ECED6541E58634EF0AFBB451CF&gid=14302436  "target=_blank")
 - [Android视频教程源码及说明](http://note.youdao.com/groupshare/?token=72C14A95D15144259B5E5C01D583D639&gid=14302436  "target=_blank")
 
 ## <span id="下载编译 Demo"> 下载编译 Demo</span>
@@ -29,7 +30,7 @@
 - 如果你需要试验发送地理位置功能，请将 AndroidManifest 中的 {AMAP\_KEY} 替换为 demo/build.gradle 文件中 buildTypes 内对应的值。在 Android Studio 上会在编译器自动替换。
 - 由于需要使用 JDK7 编译，旧版本的 ADT 插件仅支持到1.6，因此你需要使用最新的 ADT 版本（23.0及以上）才能正确编译 Demo。
 - 将 UIKit 下 AndoridManifeset 文件下所有 Activity 声明复制到 APP 工程的 AndoridManifeset 文件中。
-
+- 将 UIKit 下 assets 目录下所有资源复制到 APP工程的 assets 目录下。
 >由于 google 已经将 Android Studio 作为官方开发工具，不再提供 ADT Bundle 下载，继续使用 Eclipse 开发会让你错过很多新特性，因此我们强烈建议你使用 Android Studio 开发基于网易云信 SDK 的 APP，该 Demo的很多自动化特性也将只有 Android Studio 才能体验到。
 
 ## <span id="源码结构"> 源码结构</span>
@@ -62,6 +63,21 @@
 网易云信 Demo 实现了一个 IM 软件的所有基础功能，开发者可直接以 Demo 为基础开发自己的 IM 软件，也可以稍作修改，用于前期流程验证，也可以作为 SDK 开发的参考和指南。
 
 - 如果你已经在网易云信官网上注册了 APP，你需要修改 AndroidManifest 中的 “com.netease.nim.appKey” 为你自己的 appkey，否则登录会失败。
+
+## <span id="聊天界面代码说明"> 聊天界面代码说明</span>
+
+### 结构说明
+
+- BaseMessageActivity:：聊天界面基类。封装了 MessageFragment 和 actionbar 相关操作。
+- MessageFragment：聊天界面基类 Fragment。
+- MessageListPanel：消息收发模块。包括收发消息的显示，消息列表相关操作。
+- InputPanel：底部文本编辑，语音等模块。包括文本，语音的消息发送和更多中的 action 操作。
+- ActionsPanel：更多操作模块。
+- P2PMessageActivity：点对点聊天界面。
+- TeamMessageActivity： 群聊界面。
+- SessionCustomization：聊天界面定制化参数。
+- MessageLoader：MessageListPanel 中的内部类，用于加载消息。
+- MsgItemEventListener： MessageListPanel 中的内部类，用于重发消息，长按消息相关操作等。
 
 ## <span id="音视频代码说明"> 音视频代码说明</span>
 

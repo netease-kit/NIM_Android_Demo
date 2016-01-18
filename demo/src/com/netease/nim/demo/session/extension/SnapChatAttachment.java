@@ -48,6 +48,6 @@ public class SnapChatAttachment extends FileAttachment {
         path = data.getString(KEY_PATH);
         md5 = data.getString(KEY_MD5);
         url = data.getString(KEY_URL);
-        size = data.getLong(KEY_SIZE);
+        size = data.containsKey(KEY_SIZE) ? data.getLong(KEY_SIZE) : 0;
     }
 }

@@ -222,6 +222,7 @@ public class AVChatSurface {
         if (surfaceView.getParent() != null)
             ((ViewGroup)surfaceView.getParent()).removeView(surfaceView);
         largeSizePreviewLayout.addView(surfaceView);
+        surfaceView.setZOrderMediaOverlay(false);
         if(manager.getCallingState() == CallStateEnum.VIDEO)
             largeSizePreviewCoverLayout.setVisibility(View.GONE);
     }

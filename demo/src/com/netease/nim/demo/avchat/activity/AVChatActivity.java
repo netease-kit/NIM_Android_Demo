@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.SystemClock;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,6 +30,8 @@ import com.netease.nimlib.sdk.avchat.model.AVChatCommonEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatOnlineAckEvent;
+
+import java.io.File;
 
 /**
  * 音视频界面
@@ -361,6 +364,8 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     public void onUserJoin(String account) {
         Log.d(TAG, "onUserJoin");
         avChatUI.setVideoAccount(account);
+
+        avChatUI.initRemoteSurfaceView(avChatUI.getVideoAccount());
     }
 
     @Override
@@ -392,7 +397,7 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
         if (state == AVChatType.AUDIO.getValue()) {
             avChatUI.onCallStateChange(CallStateEnum.AUDIO);
         } else {
-            avChatUI.initSurfaceView(avChatUI.getVideoAccount());
+            avChatUI.initLocalSurfaceView();
             avChatUI.onCallStateChange(CallStateEnum.VIDEO);
         }
         isCallEstablished = true;
@@ -401,6 +406,38 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     @Override
     public void onOpenDeviceError(int code) {
 
+    }
+
+    @Override
+    public void onRecordEnd(String[] files, int event) {
+        if(files != null && files.length > 0) {
+            String file = files[0];
+            String parent = new File(file).getParent();
+            String msg;
+            if(event == 0) {
+                msg = "录制已结束";
+            } else {
+                msg = "你的手机内存不足, 录制已结束";
+            }
+
+            if(!TextUtils.isEmpty(parent)) {
+                msg += ", 录制文件已保存至：" + parent;
+            }
+
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        } else {
+            if(event == 1) {
+                Toast.makeText(this, "你的手机内存不足, 录制已结束.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "录制已结束.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(event == 1) {
+            if(avChatUI != null) {
+                avChatUI.resetRecordTip();
+            }
+        }
     }
 
     /****************************** 连接建立处理 ********************/
@@ -453,6 +490,12 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
             case NOTIFY_VIDEO_ON:
                 avChatUI.peerVideoOn();
                 break;
+            case NOTIFY_RECORD_START:
+                Toast.makeText(this, "对方开始了通话录制", Toast.LENGTH_SHORT).show();
+                break;
+            case NOTIFY_RECORD_STOP:
+                Toast.makeText(this, "对方结束了通话录制", Toast.LENGTH_SHORT).show();
+                break;
             default:
                 break;
         }
@@ -463,7 +506,7 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
      */
     private void onAudioToVideo() {
         avChatUI.onAudioToVideo();
-        avChatUI.initSurfaceView(avChatUI.getVideoAccount());
+        avChatUI.initAllSurfaceView(avChatUI.getVideoAccount());
     }
 
     /**

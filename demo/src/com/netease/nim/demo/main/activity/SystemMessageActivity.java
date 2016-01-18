@@ -10,10 +10,10 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
@@ -395,6 +395,9 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
     private void onProcessFailed(final int code, SystemMessage message) {
         Toast.makeText(SystemMessageActivity.this, "failed, error code=" + code,
                 Toast.LENGTH_LONG).show();
+        if (code == 408) {
+            return;
+        }
 
         SystemMessageStatus status = SystemMessageStatus.expired;
         NIMClient.getService(SystemMessageService.class).setSystemMessageStatus(message.getMessageId(),

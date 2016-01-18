@@ -4,6 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/avchat_call_bg" >
+
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
@@ -123,11 +125,12 @@
             android:drawableRight="@drawable/network_grade_1"
             />
 
-        <RelativeLayout android:layout_width="match_parent"
+        <RelativeLayout
+            android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
-            android:paddingBottom="45dp"
-            >
+            android:paddingBottom="45dp">
+
 
             <include
                 android:id="@+id/avchat_audio_mute_speaker_huangup"
@@ -135,8 +138,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:visibility="visible"
-                />
+                android:visibility="visible" />
 
             <include
                 android:id="@+id/avchat_audio_refuse_receive"
@@ -144,8 +146,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_alignParentBottom="true"
-                android:visibility="gone"
-                />
+                android:visibility="gone" />
+
+            <include
+                android:id="@+id/avchat_record_layout"
+                layout="@layout/avchat_record_layout"
+                android:layout_above="@+id/avchat_audio_mute_speaker_huangup"
+                android:layout_marginBottom="15dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:visibility="invisible" />
 
         </RelativeLayout>
 

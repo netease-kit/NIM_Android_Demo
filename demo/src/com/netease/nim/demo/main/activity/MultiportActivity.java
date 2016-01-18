@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
@@ -20,22 +21,19 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/7/8.
  */
-public class MultiportActivity extends TActionBarActivity implements View.OnClickListener{
+public class MultiportActivity extends TActionBarActivity {
     private final static String EXTRA_DATA = "EXTRA_DATA";
 
-    private View computerLayout;
-    private TextView computerLogout;
-    private View webLayout;
-    private TextView webLogout;
-    private View line1;
-    private View line2;
+    private LinearLayout versionLayout;
 
     private List<OnlineClient> onlineClients;
+
+    private int count = 0;
 
     public static void startActivity(Context context, List<OnlineClient> onlineClients) {
         Intent intent = new Intent();
         intent.setClass(context, MultiportActivity.class);
-        intent.putExtra(EXTRA_DATA, (Serializable)onlineClients);
+        intent.putExtra(EXTRA_DATA, (Serializable) onlineClients);
         context.startActivity(intent);
     }
 
@@ -46,39 +44,33 @@ public class MultiportActivity extends TActionBarActivity implements View.OnClic
         setTitle(R.string.multiport_manager);
 
         findViews();
-        setListener();
         parseIntent();
+        updateView();
     }
 
     private void findViews() {
-        computerLayout = findViewById(R.id.computer_version_layout);
-        computerLogout = (TextView) findViewById(R.id.computer_logout);
-        webLayout = findViewById(R.id.web_version_layout);
-        webLogout = (TextView) findViewById(R.id.web_logout);
-        line1 = findViewById(R.id.line1);
-        line2 = findViewById(R.id.line2);
+        versionLayout = findView(R.id.versions);
     }
 
-    private void setListener() {
-        computerLogout.setOnClickListener(this);
-        webLogout.setOnClickListener(this);
-    }
 
     private void parseIntent() {
         onlineClients = (List<OnlineClient>)getIntent().getSerializableExtra(EXTRA_DATA);
-        updateView();
+        count = onlineClients.size();
     }
 
     private void updateView() {
         for(OnlineClient client : onlineClients) {
+            TextView clientName = initVersionView(client);
             switch (client.getClientType()) {
                 case ClientType.Windows:
-                    computerLayout.setVisibility(View.VISIBLE);
-                    line1.setVisibility(View.VISIBLE);
+                    clientName.setText(R.string.computer_version);
                     break;
                 case ClientType.Web:
-                    webLayout.setVisibility(View.VISIBLE);
-                    line2.setVisibility(View.VISIBLE);
+                    clientName.setText(R.string.web_version);
+                    break;
+                case ClientType.Android:
+                case ClientType.iOS:
+                    clientName.setText(R.string.mobile_version);
                     break;
                 default:
                     break;
@@ -86,37 +78,26 @@ public class MultiportActivity extends TActionBarActivity implements View.OnClic
         }
     }
 
-    @Override
-    public void onClick(View v) {
-        OnlineClient client = null;
-        final boolean finished = onlineClients.size() == 1;
-        switch (v.getId()) {
-            case R.id.computer_logout:
-                for (OnlineClient c : onlineClients) {
-                    if (c.getClientType() == ClientType.Windows) {
-                        client = c;
-                    }
-                }
-                kickOtherOut(client, computerLayout, line1, finished);
-                break;
-            case R.id.web_logout:
-                for (OnlineClient c : onlineClients) {
-                    if (c.getClientType() == ClientType.Web) {
-                        client = c;
-                    }
-                }
-                kickOtherOut(client, webLayout, line2, finished);
-                break;
-            default:
-                break;
-        }
+    private TextView initVersionView(OnlineClient client) {
+        final OnlineClient c = client;
+        final View view = getLayoutInflater().inflate(R.layout.multiport_item, null);
+        versionLayout.addView(view);
+        TextView clientName = (TextView) view.findViewById(R.id.client_name);
+        TextView clientLogout = (TextView) view.findViewById(R.id.client_logout);
+        clientLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                kickOtherOut(c, view, count--);
+            }
+        });
+        return clientName;
     }
 
-    private void kickOtherOut(OnlineClient client, final View layout, final View line, final boolean finished) {
+    private void kickOtherOut(OnlineClient client, final View layout, final int finished) {
         NIMClient.getService(AuthService.class).kickOtherClient(client).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
-                hideLayout(layout, line, finished);
+                hideLayout(layout, finished);
             }
 
             @Override
@@ -131,10 +112,9 @@ public class MultiportActivity extends TActionBarActivity implements View.OnClic
         });
     }
 
-    private void hideLayout(View layout, View line, boolean finished) {
+    private void hideLayout(View layout, int finished) {
         layout.setVisibility(View.GONE);
-        line.setVisibility(View.GONE);
-        if(finished) {
+        if(finished == 1) {
             finish();
         }
     }

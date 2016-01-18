@@ -9,10 +9,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
@@ -107,6 +107,7 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
             public void onClick(View v) {
                 ContactSelectActivity.Option option = new ContactSelectActivity.Option();
                 option.title = "选择黑名单";
+                option.maxSelectNum = 1;
                 ArrayList<String> excludeAccounts = new ArrayList<>();
                 for (UserInfoProvider.UserInfo user : data) {
                     if (user != null) {
@@ -159,11 +160,27 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
     };
 
     private void addUserToBlackList(ArrayList<String> selected) {
-        for (String account : selected) {
-            NIMClient.getService(FriendService.class).addToBlackList(account);
-            data.add(NimUserInfoCache.getInstance().getUserInfo(account));
+        for (final String account : selected) {
+            NIMClient.getService(FriendService.class).addToBlackList(account).setCallback(new RequestCallback<Void>() {
+                @Override
+                public void onSuccess(Void param) {
+                    data.add(NimUserInfoCache.getInstance().getUserInfo(account));
+                    adapter.notifyDataSetChanged();
+                }
+
+                @Override
+                public void onFailed(int code) {
+                    Toast.makeText(BlackListActivity.this, "加入黑名单失败,code:" + code, Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onException(Throwable exception) {
+
+                }
+            });
+
         }
-        adapter.notifyDataSetChanged();
+
     }
 
     @Override

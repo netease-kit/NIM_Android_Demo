@@ -40,7 +40,9 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatRingerConfig;
+import com.netease.nimlib.sdk.msg.MessageNotifierCustomization;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.model.RTSData;
 import com.netease.nimlib.sdk.rts.model.RTSRingerConfig;
@@ -130,6 +132,9 @@ public class NimApplication extends Application {
 
         // 用户信息提供者
         options.userInfoProvider = infoProvider;
+
+        // 定制通知栏提醒文案（可选，如果不定制将采用SDK默认文案）
+        options.messageNotifierCustomization = messageNotifierCustomization;
 
         return options;
     }
@@ -297,7 +302,7 @@ public class NimApplication extends Application {
             String nick = null;
             if (sessionType == SessionTypeEnum.P2P) {
                 nick = NimUserInfoCache.getInstance().getAlias(account);
-            } else if (sessionType == SessionTypeEnum.Team){
+            } else if (sessionType == SessionTypeEnum.Team) {
                 nick = TeamDataCache.getInstance().getTeamNick(sessionId, account);
                 if (TextUtils.isEmpty(nick)) {
                     nick = NimUserInfoCache.getInstance().getAlias(account);
@@ -332,6 +337,18 @@ public class NimApplication extends Application {
         @Override
         public String getUserDisplayName(String account) {
             return NimUserInfoCache.getInstance().getUserDisplayName(account);
+        }
+    };
+
+    private MessageNotifierCustomization messageNotifierCustomization = new MessageNotifierCustomization() {
+        @Override
+        public String makeNotifyContent(String nick, IMMessage message) {
+            return null; // 采用SDK默认文案
+        }
+
+        @Override
+        public String makeTicker(String nick, IMMessage message) {
+            return null; // 采用SDK默认文案
         }
     };
 }

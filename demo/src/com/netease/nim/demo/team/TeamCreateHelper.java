@@ -15,6 +15,7 @@ import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.CustomMessageConfig;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.constant.TeamFieldEnum;
@@ -150,6 +151,9 @@ public class TeamCreateHelper {
         Map<String, Object> content = new HashMap<>(1);
         content.put("content", "成功创建高级群");
         IMMessage msg = MessageBuilder.createTipMessage(team.getId(), SessionTypeEnum.Team, content);
+        CustomMessageConfig config = new CustomMessageConfig();
+        config.enableUnreadCount = false;
+        msg.setConfig(config);
         msg.setStatus(MsgStatusEnum.success);
         NIMClient.getService(MsgService.class).saveMessageToLocal(msg, true);
 
