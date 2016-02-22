@@ -1,23 +1,13 @@
 // Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
-    repositories {
-        maven {
-            url = mavenRep
-        }
-    }
-    dependencies {
-        classpath gradlePath
-
-        // NOTE: Do not place your application dependencies here; they belong
-        // in the individual module build.gradle files
-    }
+    apply from: 'script.gradle', to: buildscript
 }
 
 allprojects {
     repositories {
         maven {
-            url = mavenRep
+            url 'http://maven.oschina.net/content/groups/public/'
         }
     }
 }

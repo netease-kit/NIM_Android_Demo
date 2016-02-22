@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rlRoot"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ptr="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bussiness_card_gridview_bg">
+
+    <include
+        android:id="@+id/contact_loading_frame"
+        layout="@layout/nim_contact_loading_frame"
+        android:visibility="gone"/>
+
+    <com.netease.nim.uikit.common.ui.ptr.PullToRefreshGridView
+        android:id="@+id/chat_room_grid_view"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:cacheColorHint="@color/transparent"
+        android:divider="@color/transparent"
+        android:horizontalSpacing="10dp"
+        android:listSelector="@color/transparent"
+        android:numColumns="2"
+        android:scrollbars="none"
+        ptr:ptrMode="pullUpFromBottom"/>
+
+</RelativeLayout>

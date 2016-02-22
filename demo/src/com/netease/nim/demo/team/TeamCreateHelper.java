@@ -32,7 +32,7 @@ import java.util.Map;
  */
 public class TeamCreateHelper {
     private static final String TAG = TeamCreateHelper.class.getSimpleName();
-    private static final int DEFAULT_TEAM_CAPACITY = 50;
+    private static final int DEFAULT_TEAM_CAPACITY = 200;
 
     /**
      * 创建讨论组

@@ -11,4 +11,8 @@ public class DemoServers {
     public static final String apiServer() {
         return ServerConfig.testServer() ? API_SERVER_TEST : API_SERVER;
     }
+
+    public static final String chatRoomAPIServer() {
+        return apiServer() + "chatroom/";
+    }
 }

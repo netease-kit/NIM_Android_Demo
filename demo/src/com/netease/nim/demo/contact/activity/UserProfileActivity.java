@@ -495,6 +495,10 @@ public class UserProfileActivity extends TActionBarActivity {
             Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
             return;
         }
+        if (!TextUtils.isEmpty(account) && account.equals(DemoCache.getAccount())) {
+            Toast.makeText(UserProfileActivity.this, "不能加自己为好友", Toast.LENGTH_SHORT).show();
+            return;
+        }
         final VerifyType verifyType = addDirectly ? VerifyType.DIRECT_ADD : VerifyType.VERIFY_REQUEST;
         DialogMaker.showProgressDialog(this, "", true);
         NIMClient.getService(FriendService.class).addFriend(new AddFriendData(account, verifyType, msg))

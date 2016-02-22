@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:ptr="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/no_online_people"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="150dp"
+        android:text="@string/no_data"
+        android:textSize="17sp"/>
+
+    <com.netease.nim.uikit.common.ui.ptr.PullToRefreshListView
+        android:id="@+id/chat_room_online_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:cacheColorHint="@color/transparent"
+        android:divider="@color/transparent"
+        android:horizontalSpacing="10dp"
+        android:listSelector="@drawable/list_item_bg_selecter"
+        android:numColumns="1"
+        android:scrollbars="none"
+        ptr:ptrMode="pullFromEnd" />
+
+</LinearLayout>

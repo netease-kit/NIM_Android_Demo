@@ -2,8 +2,8 @@
 <manifest
     package="com.netease.nim.demo"
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:versionCode="19"
-    android:versionName="1.8.0"
+    android:versionCode="20"
+    android:versionName="2.0.0"
     android:installLocation="auto">
 
     <uses-sdk
@@ -274,6 +274,13 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/OverlayBaseActionBarTheme"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+
+        <!-- 聊天室 -->
+        <activity
+            android:name=".chatroom.activity.ChatRoomActivity"
+            android:screenOrientation="portrait"
+            android:theme="@android:style/Theme.Light.NoTitleBar"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
 
         <!-- 声明云信后台服务 -->

@@ -11,6 +11,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
 import com.netease.nim.uikit.LoginSyncDataStatusObserver;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
@@ -99,6 +100,9 @@ public class MainActivity extends TActionBarActivity {
     private void onInit() {
         // 加载主页面
         showMainFragment();
+
+        // 聊天室初始化
+        ChatRoomHelper.init();
     }
 
     @Override

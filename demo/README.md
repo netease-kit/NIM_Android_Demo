@@ -3,10 +3,10 @@
 网易云信 Demo 工程基于网易云信 SDK，演示了 SDK 聊天、群组、白板、实时音视频等功能接口的使用方法。Demo 工程依赖于 UIKit 工程，UIKit 实现了基本的消息收发，群组服务以及通讯录等功能，包含有完整的界面显示。开发者可以直接调用UIKit 中的接口，来进行功能开发，加快开发速度。用户可参照该 Demo，将网易云信 SDK 接入自己的 APP。
 
 ## <span id="工程导入指引"> 工程导入指引</span>
-- [Eclipse导入Demo](http://note.youdao.com/share/?id=0bb0b773bb427938d96928ec31bf2b2d&type=note  "target=_blank")
-- [Eclipse导入UIKit](http://note.youdao.com/share/?id=a8e904df99e1a114c5b565568a19906d&type=note  "target=_blank")
-- [Android Studio导入Demo](http://note.youdao.com/share/?id=fb2ddcd1f5b15cc725a4a6df05f6317a&type=note  "target=_blank")
-- [Android Studio导入UIKit](http://note.youdao.com/share/?id=66d12a2aa10b37928b869feaef54ec3e&type=note  "target=_blank")
+- [Eclipse导入Demo](http://note.youdao.com/groupshare/?token=7565E66468734B5C89D114AFD7AAB493&gid=14302436  "target=_blank")
+- [Eclipse导入UIKit](http://note.youdao.com/groupshare/?token=8F876090BE4E4D55B88A9ED04E8513F2&gid=14302436  "target=_blank")
+- [Android Studio导入Demo](http://note.youdao.com/groupshare/?token=94E0368010384F5FB2D6E1E2C5855AA8&gid=14302436  "target=_blank")
+- [Android Studio导入UIKit](http://note.youdao.com/groupshare/?token=9C35BEC0231C4E80B1DBF76FBDC54161&gid=14302436  "target=_blank")
 - [UIKit集成示例](http://note.youdao.com/groupshare/?token=F0EF37ECED6541E58634EF0AFBB451CF&gid=14302436  "target=_blank")
 - [Android视频教程源码及说明](http://note.youdao.com/groupshare/?token=72C14A95D15144259B5E5C01D583D639&gid=14302436  "target=_blank")
 
@@ -68,7 +68,7 @@
 
 ### 结构说明
 
-- BaseMessageActivity:：聊天界面基类。封装了 MessageFragment 和 actionbar 相关操作。
+- BaseMessageActivity：聊天界面基类。封装了 MessageFragment 和 actionbar 相关操作。
 - MessageFragment：聊天界面基类 Fragment。
 - MessageListPanel：消息收发模块。包括收发消息的显示，消息列表相关操作。
 - InputPanel：底部文本编辑，语音等模块。包括文本，语音的消息发送和更多中的 action 操作。
@@ -235,3 +235,31 @@ public void onHangUp() {
 	}
 }
 ```
+
+## <span id="聊天室代码说明"> 聊天室代码说明</span>
+
+### 结构说明
+
+- activity包：界面相关
+- adapter包：适配器相关
+- constant包：常量定义
+- fragment包：界面相关。其中包括 tab 包，定义了聊天室框架中的 tab fragment。
+- helper包：缓存管理，通知类消息字段管理等辅助功能。
+- module包：模块化相关。包括聊天室收发消息模块。
+- thirdparty包：第三方实现相关。包括网易云信 demo 聊天室 http 客户端。
+- viewholder包：界面相关 viewholder 展示。
+- widget包：聊天室相关控件
+
+### 重点类说明
+
+- ChatRoomsFragment：直播间列表 fragment。包含向网易云信Demo应用服务器请求聊天室列表操作。
+- ChatRoomActivity：聊天室界面。封装了 ChatRoomFragment。包括聊天室的进入/离开的操作，监听聊天室在线状态和监听聊天室被踢出状态。
+- ChatRoomTabFragment：聊天室内 tab fragment 的基类。
+- ChatRoomFragment：聊天室 Activity 包含的顶层 Fragment。包括界面上方界面和下方的 viewpager。viewpager 包含3个 tab fragment，分别是：MessageTabFragment （直播互动 tab）， MasterTabFragment （主播 tab）， OnlinePeopleTabFragment （在线成员 tab）。
+- MessageTabFragment：直播互动基类 fragment。内嵌 ChatRoomMessageFragment （直播互动 fragment）。
+- MasterTabFragment：主播基类 fragment。内嵌 MasterFragment（主播 fragment ）。
+- OnlinePeopleTabFragment：在线成员基类 fragment。内嵌 OnlinePeopleFragment （在线成员 fragment）
+- ChatRoomMessageFragment：聊天室直播互动 fragment。包括消息的收发相关操作。
+- MasterFragment： 聊天室主播 fragment。包括获取聊天室资料等操作。
+- OnlinePeopleFragment：聊天室在线人数 fragment。包括获取聊天室成员信息等操作。
+- ChatRoomMsgViewHolderFactory:  聊天室消息项展示ViewHolder工厂类。包括消息展示 viewholder 的注册操作。

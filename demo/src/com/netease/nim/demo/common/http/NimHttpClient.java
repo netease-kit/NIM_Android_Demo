@@ -10,6 +10,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.params.ConnManagerParams;
@@ -51,12 +52,18 @@ public class NimHttpClient {
         private Map<String, String> headers;
         private String jsonBody;
         private NimHttpCallback callback;
+        private boolean post;
 
         public NimHttpTask(String url, Map<String, String> headers, String jsonBody, NimHttpCallback callback) {
+            this(url, headers, jsonBody, callback, true);
+        }
+
+        public NimHttpTask(String url, Map<String, String> headers, String jsonBody, NimHttpCallback callback, boolean post) {
             this.url = url;
             this.headers = headers;
             this.jsonBody = jsonBody;
             this.callback = callback;
+            this.post = post;
         }
 
         @Override
@@ -64,7 +71,7 @@ public class NimHttpClient {
             String response = null;
             int errorCode = 0;
             try {
-                response = post(url, headers, jsonBody);
+                response = post ? post(url, headers, jsonBody) : get(url, headers);
             } catch (NimHttpException e) {
                 errorCode = e.getHttpCode();
             } finally {
@@ -177,11 +184,15 @@ public class NimHttpClient {
     }
 
     public void execute(String url, Map<String, String> headers, String body, NimHttpCallback callback) {
+        execute(url, headers, body, true, callback);
+    }
+
+    public void execute(String url, Map<String, String> headers, String body, boolean post, NimHttpCallback callback) {
         if (!inited) {
             return;
         }
 
-        executor.execute(new NimHttpTask(url, headers, body, callback));
+        executor.execute(new NimHttpTask(url, headers, body, callback, post));
     }
 
     /**
@@ -231,6 +242,46 @@ public class NimHttpClient {
                 throw (NimHttpException) e;
             }
             Log.e(TAG, "Post data error", e);
+            if (e instanceof UnknownHostException) {
+                throw new NimHttpException(408);
+            }
+            throw new NimHttpException(e);
+        }
+    }
+
+    private String get(String url, Map<String, String> headers) {
+        HttpResponse response;
+        HttpGet request;
+        try {
+            request = new HttpGet(url);
+
+            // add request headers
+            request.addHeader("charset", "utf-8");
+            if (headers != null) {
+                for (Map.Entry<String, String> header : headers.entrySet()) {
+                    request.addHeader(header.getKey(), header.getValue());
+                }
+            }
+
+            // execute
+            response = client.execute(request);
+
+            // response
+            StatusLine statusLine = response.getStatusLine();
+            if (statusLine == null) {
+                Log.e(TAG, "StatusLine is null");
+                throw new NimHttpException();
+            }
+            int statusCode = statusLine.getStatusCode();
+            if (statusCode < 200 || statusCode > 299) {
+                throw new NimHttpException(statusCode);
+            }
+            return EntityUtils.toString(response.getEntity(), "utf-8");
+        } catch (Exception e) {
+            if (e instanceof NimHttpException) {
+                throw (NimHttpException) e;
+            }
+            Log.e(TAG, "Get data error", e);
             if (e instanceof UnknownHostException) {
                 throw new NimHttpException(408);
             }
