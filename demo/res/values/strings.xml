@@ -77,6 +77,7 @@
     <string name="input_panel_file">发送文件</string>
     <string name="input_panel_RTS">白 板</string>
     <string name="input_panel_snapchat">阅后即焚</string>
+    <string name="input_panel_tip">Tip</string>
     <string name="message_history_query">云消息记录</string>
     <string name="message_search_title">搜索本地消息记录</string>
     <string name="message_clear">清空本地消息记录</string>

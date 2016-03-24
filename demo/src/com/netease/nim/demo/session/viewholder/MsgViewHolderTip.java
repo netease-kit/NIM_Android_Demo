@@ -1,5 +1,6 @@
 package com.netease.nim.demo.session.viewholder;
 
+import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
 import android.view.View;
@@ -31,9 +32,13 @@ public class MsgViewHolderTip extends MsgViewHolderBase {
     @Override
     protected void bindContentView() {
         String text = "未知通知提醒";
-        Map<String, Object> content = message.getRemoteExtension();
-        if (content != null && !content.isEmpty()) {
-            text = (String) content.get("content");
+        if(TextUtils.isEmpty(message.getContent())) {
+            Map<String, Object> content = message.getRemoteExtension();
+            if (content != null && !content.isEmpty()) {
+                text = (String) content.get("content");
+            }
+        } else {
+            text = message.getContent();
         }
 
         handleTextNotification(text);

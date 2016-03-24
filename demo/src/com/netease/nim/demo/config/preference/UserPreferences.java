@@ -3,7 +3,6 @@ package com.netease.nim.demo.config.preference;
 import android.content.Context;
 import android.content.SharedPreferences;
 
-import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
@@ -54,13 +53,18 @@ public class UserPreferences {
         String jsonString = getSharedPreferences().getString(key, "");
         try {
             JSONObject jsonObject = JSONObject.parseObject(jsonString);
-            if (jsonObject == null || config == null) {
+            if (jsonObject == null) {
                 return null;
             }
             config.downTimeBegin = jsonObject.getString("downTimeBegin");
             config.downTimeEnd = jsonObject.getString("downTimeEnd");
             config.downTimeToggle = jsonObject.getBoolean("downTimeToggle");
-        } catch (JSONException e) {
+            config.ring = jsonObject.getBoolean("ring");
+            config.vibrate = jsonObject.getBoolean("vibrate");
+            config.notificationSmallIconId = jsonObject.getIntValue("notificationSmallIconId");
+            config.notificationSound = jsonObject.getString("notificationSound");
+            config.hideContent = jsonObject.getBoolean("hideContent");
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -74,7 +78,12 @@ public class UserPreferences {
             jsonObject.put("downTimeBegin", config.downTimeBegin);
             jsonObject.put("downTimeEnd", config.downTimeEnd);
             jsonObject.put("downTimeToggle", config.downTimeToggle);
-        } catch (JSONException e) {
+            jsonObject.put("ring", config.ring);
+            jsonObject.put("vibrate", config.vibrate);
+            jsonObject.put("notificationSmallIconId", config.notificationSmallIconId);
+            jsonObject.put("notificationSound", config.notificationSound);
+            jsonObject.put("hideContent", config.hideContent);
+        } catch (Exception e) {
             e.printStackTrace();
         }
         editor.putString(key, jsonObject.toString());

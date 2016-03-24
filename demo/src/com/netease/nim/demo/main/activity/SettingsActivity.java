@@ -216,7 +216,7 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
     private void setNoDisturbTime(Intent data) {
         boolean isChecked = data.getBooleanExtra(NoDisturbActivity.EXTRA_ISCHECKED, false);
         noDisturbTime = getString(R.string.setting_close);
-        StatusBarNotificationConfig config = new StatusBarNotificationConfig();
+        StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
         if(isChecked) {
             config.downTimeBegin = data.getStringExtra(NoDisturbActivity.EXTRA_START_TIME);
             config.downTimeEnd = data.getStringExtra(NoDisturbActivity.EXTRA_END_TIME);

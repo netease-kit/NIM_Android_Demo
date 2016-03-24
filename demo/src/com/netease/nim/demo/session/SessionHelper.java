@@ -15,6 +15,7 @@ import com.netease.nim.demo.session.action.FileAction;
 import com.netease.nim.demo.session.action.GuessAction;
 import com.netease.nim.demo.session.action.RTSAction;
 import com.netease.nim.demo.session.action.SnapChatAction;
+import com.netease.nim.demo.session.action.TipAction;
 import com.netease.nim.demo.session.activity.MessageHistoryActivity;
 import com.netease.nim.demo.session.activity.MessageInfoActivity;
 import com.netease.nim.demo.session.extension.CustomAttachParser;
@@ -131,6 +132,7 @@ public class SessionHelper {
             actions.add(new SnapChatAction());
             actions.add(new GuessAction());
             actions.add(new FileAction());
+            actions.add(new TipAction());
             p2pCustomization.actions = actions;
             p2pCustomization.withSticker = true;
 
@@ -247,6 +249,7 @@ public class SessionHelper {
             ArrayList<BaseAction> actions = new ArrayList<>();
             actions.add(new GuessAction());
             actions.add(new FileAction());
+            actions.add(new TipAction());
             teamCustomization.actions = actions;
 
             // 定制ActionBar右边的按钮，可以加多个

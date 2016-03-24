@@ -150,7 +150,8 @@ public class TeamCreateHelper {
         // 演示：向群里插入一条Tip消息，使得该群能立即出现在最近联系人列表（会话列表）中，满足部分开发者需求
         Map<String, Object> content = new HashMap<>(1);
         content.put("content", "成功创建高级群");
-        IMMessage msg = MessageBuilder.createTipMessage(team.getId(), SessionTypeEnum.Team, content);
+        IMMessage msg = MessageBuilder.createTipMessage(team.getId(), SessionTypeEnum.Team);
+        msg.setRemoteExtension(content);
         CustomMessageConfig config = new CustomMessageConfig();
         config.enableUnreadCount = false;
         msg.setConfig(config);

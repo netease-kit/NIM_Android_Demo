@@ -49,6 +49,7 @@ import com.netease.nimlib.sdk.rts.model.RTSCalleeAckEvent;
 import com.netease.nimlib.sdk.rts.model.RTSCommonEvent;
 import com.netease.nimlib.sdk.rts.model.RTSControlEvent;
 import com.netease.nimlib.sdk.rts.model.RTSData;
+import com.netease.nimlib.sdk.rts.model.RTSNotifyOption;
 import com.netease.nimlib.sdk.rts.model.RTSOnlineAckEvent;
 import com.netease.nimlib.sdk.rts.model.RTSOptions;
 import com.netease.nimlib.sdk.rts.model.RTSTunData;
@@ -80,6 +81,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
     private boolean finishFlag = false; // 结束标记，避免多次回调onFinish
     private static boolean needFinish = true; // Activity销毁后，从最近任务列表恢复，则finish
 
+    private static boolean isBusy = false;
+
     // 发起会话布局
     private View startSessionLayout;
     private TextView sessionStepText;
@@ -98,6 +101,13 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
     private Button clearBtn;
 
     public static void incomingSession(Context context, RTSData data, int source) {
+
+        if(isBusy) {
+            RTSManager.getInstance().close(data.getSessionId(), null);
+            Toast.makeText(context, "close session", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         needFinish = false;
         Intent intent = new Intent();
         intent.setClass(context, RTSActivity.class);
@@ -125,6 +135,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
             finish();
             return;
         }
+
+        isBusy = true;
 
         setContentView(R.layout.rts_activity);
         isIncoming = getIntent().getBooleanExtra(KEY_INCOMING, false);
@@ -198,6 +210,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         registerCommonObserver(false);
 
         needFinish = true;
+
+        isBusy = false;
     }
 
     private void findViews() {
@@ -235,7 +249,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         account = sessionInfo.getAccount();
         sessionId = sessionInfo.getSessionId();
 
-        Toast.makeText(RTSActivity.this, "incoming session, extra=" + sessionInfo.getExtra(), Toast.LENGTH_SHORT)
+        Toast.makeText(RTSActivity.this, "incoming session, extra=" + sessionInfo.getExtra(),
+                Toast.LENGTH_SHORT)
                 .show();
         initIncomingSessionViews();
     }
@@ -446,10 +461,13 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
 
         String pushContent = account + "发起一个会话";
         String extra = "extra_data";
-        RTSOptions options = new RTSOptions().setPushContent(pushContent).setExtra(extra).setRecordAudioTun(true)
+        RTSOptions options = new RTSOptions().setRecordAudioTun(true)
                 .setRecordTCPTun(true);
+        RTSNotifyOption notifyOption = new RTSNotifyOption();
+        notifyOption.apnsContent = pushContent;
+        notifyOption.extendMessage = extra;
 
-        sessionId = RTSManager.getInstance().start(account, types, options, new RTSCallback<RTSData>() {
+        sessionId = RTSManager.getInstance().start(account, types, options, notifyOption, new RTSCallback<RTSData>() {
             @Override
             public void onSuccess(RTSData rtsData) {
                 RTSAttachment attachment = new RTSAttachment((byte) 0);

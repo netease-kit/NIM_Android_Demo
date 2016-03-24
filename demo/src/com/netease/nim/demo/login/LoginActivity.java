@@ -239,6 +239,9 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                 NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
 
                 // 初始化免打扰
+                if (UserPreferences.getStatusConfig() == null) {
+                    UserPreferences.setStatusConfig(DemoCache.getNotificationConfig());
+                }
                 NIMClient.updateStatusBarNotificationConfig(UserPreferences.getStatusConfig());
 
                 // 构建缓存

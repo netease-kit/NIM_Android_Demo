@@ -10,6 +10,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
@@ -45,7 +46,6 @@ import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.model.RTSData;
-import com.netease.nimlib.sdk.rts.model.RTSRingerConfig;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
@@ -115,6 +115,7 @@ public class NimApplication extends Application {
         // 通知铃声的uri字符串
         config.notificationSound = "android.resource://com.netease.nim.demo/raw/msg";
         options.statusBarNotificationConfig = config;
+        DemoCache.setNotificationConfig(config);
         UserPreferences.setStatusConfig(config);
 
         // 配置保存图片，文件，log等数据的目录
@@ -177,6 +178,8 @@ public class NimApplication extends Application {
         AVChatManager.getInstance().observeIncomingCall(new Observer<AVChatData>() {
             @Override
             public void onEvent(AVChatData data) {
+                String extra = data.getExtra();
+                Log.e("Extra", "Extra Message->" + extra);
                 // 有网络来电打开AVChatActivity
                 AVChatProfile.getInstance().setAVChatting(true);
                 AVChatActivity.launch(DemoCache.getContext(), data, AVChatActivity.FROM_BROADCASTRECEIVER);
@@ -188,19 +191,19 @@ public class NimApplication extends Application {
      * 白板实时时会话配置与监听
      */
     private void enableRTS() {
-        setupRTS();
+        //setupRTS();
         registerRTSIncomingObserver(true);
     }
 
-    private void setupRTS() {
-        RTSRingerConfig config = new RTSRingerConfig();
-        config.res_connecting = R.raw.avchat_connecting;
-        config.res_no_response = R.raw.avchat_no_response;
-        config.res_peer_busy = R.raw.avchat_peer_busy;
-        config.res_peer_reject = R.raw.avchat_peer_reject;
-        config.res_ring = R.raw.avchat_ring;
-        RTSManager.getInstance().setRingerConfig(config); // 设置铃声配置
-    }
+//    private void setupRTS() {
+//        RTSRingerConfig config = new RTSRingerConfig();
+//        config.res_connecting = R.raw.avchat_connecting;
+//        config.res_no_response = R.raw.avchat_no_response;
+//        config.res_peer_busy = R.raw.avchat_peer_busy;
+//        config.res_peer_reject = R.raw.avchat_peer_reject;
+//        config.res_ring = R.raw.avchat_ring;
+//        RTSManager.getInstance().setRingerConfig(config); // 设置铃声配置
+//    }
 
     private void registerRTSIncomingObserver(boolean register) {
         RTSManager.getInstance().observeIncomingSession(new Observer<RTSData>() {
@@ -288,13 +291,11 @@ public class NimApplication extends Application {
 
         @Override
         public Bitmap getAvatarForMessageNotifier(String account) {
+            /**
+             * 注意：这里最好从缓存里拿，如果读取本地头像可能导致UI进程阻塞，导致通知栏提醒延时弹出。
+             */
             UserInfo user = getUserInfo(account);
-            if (user != null && !TextUtils.isEmpty(user.getAvatar())) {
-                return ImageLoaderKit.getBitmapFromCache(user.getAvatar(), R.dimen.avatar_size_default, R.dimen
-                        .avatar_size_default);
-            }
-
-            return null;
+            return (user != null) ? ImageLoaderKit.getNotificationBitmapFromCache(user) : null;
         }
 
         @Override

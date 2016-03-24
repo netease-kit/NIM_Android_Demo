@@ -83,7 +83,7 @@ public class ChatRoomActivity extends TActivity {
             super.onBackPressed();
         }
 
-        logOutChatRoom();
+        logoutChatRoom();
     }
 
     private void enterRoom() {
@@ -136,7 +136,7 @@ public class ChatRoomActivity extends TActivity {
         NIMClient.getService(ChatRoomServiceObserver.class).observeKickOutEvent(kickOutObserver, register);
     }
 
-    private void logOutChatRoom() {
+    private void logoutChatRoom() {
         NIMClient.getService(ChatRoomService.class).exitChatRoom(roomId);
         clearChatRoom();
     }

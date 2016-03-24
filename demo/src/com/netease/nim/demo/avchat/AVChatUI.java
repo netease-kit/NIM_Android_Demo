@@ -22,6 +22,7 @@ import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
+import com.netease.nimlib.sdk.avchat.model.AVChatNotifyOption;
 import com.netease.nimlib.sdk.avchat.model.VideoChatParam;
 
 import java.io.BufferedInputStream;
@@ -189,6 +190,10 @@ public class AVChatUI implements AVChatUIListener {
                 videoParam = new VideoChatParam(avChatSurface.mCapturePreview, 0, getVideoDimens());
             }
         }
+
+        AVChatNotifyOption notifyOption = new AVChatNotifyOption();
+        notifyOption.extendMessage = "extra_data";
+
         /**
          * 发起通话
          * account 对方帐号
@@ -196,7 +201,7 @@ public class AVChatUI implements AVChatUIListener {
          * videoParam 发起视频通话时传入，发起音频通话传null
          * AVChatCallback 回调函数，返回AVChatInfo
          */
-        AVChatManager.getInstance().call(account, callTypeEnum, videoParam, new AVChatCallback<AVChatData>() {
+        AVChatManager.getInstance().call(account, callTypeEnum, videoParam, notifyOption, new AVChatCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData data) {
                 avChatData = data;

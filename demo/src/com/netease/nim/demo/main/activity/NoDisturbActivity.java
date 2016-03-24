@@ -120,9 +120,6 @@ public class NoDisturbActivity extends TActionBarActivity implements SettingsAda
                     ischecked = checkState;
                     UserPreferences.setDownTimeToggle(checkState);
                     StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
-                    if (config == null) {
-                        config = new StatusBarNotificationConfig();
-                    }
                     config.downTimeToggle = checkState;
                     UserPreferences.setStatusConfig(config);
                     NIMClient.updateStatusBarNotificationConfig(config);
