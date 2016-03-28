@@ -3,7 +3,7 @@
     package="com.netease.nim.demo"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:versionCode="21"
-    android:versionName="2.1.0"
+    android:versionName="2.1.1"
     android:installLocation="auto">
 
     <uses-sdk
