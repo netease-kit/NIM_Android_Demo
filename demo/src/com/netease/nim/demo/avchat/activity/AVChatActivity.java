@@ -356,7 +356,7 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
      */
 
     @Override
-    public void onConnectedServer(int res) {
+    public void onConnectedServer(int res, String serverRecordFilePath, String serverRecordFileName) {
         handleWithConnectServerResult(res);
     }
 

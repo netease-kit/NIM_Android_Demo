@@ -113,9 +113,15 @@ public class ChatRoomActivity extends TActivity {
 
             @Override
             public void onFailed(int code) {
+                // test
+                LogUtil.ui("enter chat room failed, callback code=" + code + ", getErrorCode=" + NIMClient.getService
+                        (ChatRoomService.class).getEnterErrorCode(roomId));
+
                 onLoginDone();
                 if (code == ResponseCode.RES_CHATROOM_BLACKLIST) {
                     Toast.makeText(ChatRoomActivity.this, "你已被拉入黑名单，不能再进入", Toast.LENGTH_SHORT).show();
+                } else if (code == ResponseCode.RES_ENONEXIST) {
+                    Toast.makeText(ChatRoomActivity.this, "聊天室不存在", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(ChatRoomActivity.this, "enter chat room failed, code=" + code, Toast.LENGTH_SHORT).show();
                 }
@@ -151,22 +157,28 @@ public class ChatRoomActivity extends TActivity {
         public void onEvent(ChatRoomStatusChangeData chatRoomStatusChangeData) {
             if (chatRoomStatusChangeData.status == StatusCode.CONNECTING) {
                 DialogMaker.updateLoadingMessage("连接中...");
-            } else if (chatRoomStatusChangeData.status == StatusCode.UNLOGIN) {
-                Toast.makeText(ChatRoomActivity.this, R.string.nim_status_unlogin, Toast.LENGTH_SHORT).show();
             } else if (chatRoomStatusChangeData.status == StatusCode.LOGINING) {
                 DialogMaker.updateLoadingMessage("登录中...");
             } else if (chatRoomStatusChangeData.status == StatusCode.LOGINED) {
                 if (fragment != null) {
                     fragment.updateOnlineStatus(true);
                 }
-            } else if (chatRoomStatusChangeData.status.wontAutoLogin()) {
+            } else if (chatRoomStatusChangeData.status == StatusCode.UNLOGIN) {
+                if (fragment != null) {
+                    fragment.updateOnlineStatus(false);
+                }
+                int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
+                if (code != ResponseCode.RES_ECONNECTION) {
+                    Toast.makeText(ChatRoomActivity.this, "未登录,code=" + code, Toast.LENGTH_LONG).show();
+                }
             } else if (chatRoomStatusChangeData.status == StatusCode.NET_BROKEN) {
                 if (fragment != null) {
                     fragment.updateOnlineStatus(false);
                 }
                 Toast.makeText(ChatRoomActivity.this, R.string.net_broken, Toast.LENGTH_SHORT).show();
             }
-            LogUtil.i(TAG, "Chat Room Online Status:" + chatRoomStatusChangeData.status.name());
+
+            LogUtil.i(TAG, "chat room online status changed to " + chatRoomStatusChangeData.status.name());
         }
     };
 

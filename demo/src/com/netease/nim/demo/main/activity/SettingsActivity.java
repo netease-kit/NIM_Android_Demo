@@ -39,6 +39,10 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
     private static final int TAG_CUSTOM_NOTIFY = 5;
     private static final int TAG_ABOUT = 6;
     private static final int TAG_SPEAKER = 7;
+
+    private static final int TAG_AVCHAT_SERVER_AUDIO_RECORD = 8;
+    private static final int TAG_AVCHAT_SERVER_VIDEO_RECORD = 9;
+
     ListView listView;
     SettingsAdapter adapter;
     private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
@@ -117,6 +121,14 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
         disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
         items.add(disturbItem);
         items.add(SettingTemplate.makeSeperator());
+
+        items.add(new SettingTemplate(TAG_AVCHAT_SERVER_AUDIO_RECORD, "网络通话服务器录制音频",
+                SettingType.TYPE_TOGGLE, UserPreferences.getAVChatServerAudioRecord()));
+        items.add(new SettingTemplate(TAG_AVCHAT_SERVER_VIDEO_RECORD, "网络通话服务器录制视频",
+                SettingType.TYPE_TOGGLE, UserPreferences.getAVChatServerVideoRecord()));
+
+        items.add(SettingTemplate.makeSeperator());
+
         items.add(new SettingTemplate(TAG_CLEAR, getString(R.string.about_clear_msg_history)));
         items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_CUSTOM_NOTIFY, getString(R.string.custom_notification)));
@@ -181,6 +193,12 @@ public class SettingsActivity extends TActionBarActivity implements SettingsAdap
             case TAG_SPEAKER:
                 com.netease.nim.uikit.UserPreferences.setEarPhoneModeEnable(checkState);
                 MessageAudioControl.getInstance(SettingsActivity.this).setEarPhoneModeEnable(checkState);
+                break;
+            case TAG_AVCHAT_SERVER_AUDIO_RECORD:
+                UserPreferences.setAVChatServerAudioRecord(checkState);
+                break;
+            case TAG_AVCHAT_SERVER_VIDEO_RECORD:
+                UserPreferences.setAVChatServerVideoRecord(checkState);
                 break;
             default:
                 break;

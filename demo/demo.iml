@@ -19,7 +19,7 @@
           <task>generateCommonDebugSources</task>
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
-        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res-chatroom;file://$MODULE_DIR$/res;file://$MODULE_DIR$/res-avchat" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res;file://$MODULE_DIR$/res-chatroom;file://$MODULE_DIR$/res-avchat" />
       </configuration>
     </facet>
   </component>

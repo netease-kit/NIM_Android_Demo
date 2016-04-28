@@ -26,8 +26,10 @@ import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.TActionBarActivity;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.team.helper.TeamHelper;
+import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -103,6 +105,8 @@ public class MainActivity extends TActionBarActivity {
 
         // 聊天室初始化
         ChatRoomHelper.init();
+
+        LogUtil.ui("NIM SDK cache path=" + NIMClient.getSdkStorageDirPath());
     }
 
     @Override

@@ -15,6 +15,7 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatExitCode;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
+import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.ResponseCode;
@@ -201,7 +202,9 @@ public class AVChatUI implements AVChatUIListener {
          * videoParam 发起视频通话时传入，发起音频通话传null
          * AVChatCallback 回调函数，返回AVChatInfo
          */
-        AVChatManager.getInstance().call(account, callTypeEnum, videoParam, notifyOption, new AVChatCallback<AVChatData>() {
+        AVChatManager.getInstance().call(account, callTypeEnum, videoParam,
+                UserPreferences.getAVChatServerAudioRecord(), UserPreferences.getAVChatServerVideoRecord(),
+                notifyOption, new AVChatCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData data) {
                 avChatData = data;
@@ -382,7 +385,10 @@ public class AVChatUI implements AVChatUIListener {
          * videoParam 接听视频通话时传入，接听音频通话传null
          * AVChatCallback 回调函数。成功则连接建立，不成功则关闭activity。
          */
-        AVChatManager.getInstance().accept(videoParam, new AVChatCallback<Void>() {
+        AVChatManager.getInstance().accept(videoParam,
+                UserPreferences.getAVChatServerAudioRecord(),
+                UserPreferences.getAVChatServerVideoRecord(),
+                new AVChatCallback<Void>() {
             @Override
             public void onSuccess(Void v) {
                 LogUtil.i(TAG, "accept success");

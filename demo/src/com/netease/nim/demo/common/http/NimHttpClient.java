@@ -31,6 +31,8 @@ import org.apache.http.util.EntityUtils;
 import java.net.UnknownHostException;
 import java.util.Map;
 
+import javax.net.ssl.SSLPeerUnverifiedException;
+
 
 /**
  * Created by huangjun on 2015/3/6.
@@ -283,6 +285,8 @@ public class NimHttpClient {
             }
             Log.e(TAG, "Get data error", e);
             if (e instanceof UnknownHostException) {
+                throw new NimHttpException(408);
+            } else if(e instanceof SSLPeerUnverifiedException) {
                 throw new NimHttpException(408);
             }
             throw new NimHttpException(e);

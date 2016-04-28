@@ -16,6 +16,26 @@ public class UserPreferences {
     private final static String KEY_TEAM_ANNOUNCE_CLOSED = "team_announce_closed";
     private final static String KEY_STATUS_BAR_NOTIFICATION_CONFIG = "KEY_STATUS_BAR_NOTIFICATION_CONFIG";
 
+    private final static String KEY_AVCHAT_SERVER_AUDIO_RECORD = "KEY_AVCHAT_SERVER_AUDIO_RECORD";
+    private final static String KEY_AVCHAT_SERVER_VIDEO_RECORD = "KEY_AVCHAT_SERVER_VIDEO_RECORD";
+
+
+    public static void setAVChatServerAudioRecord(boolean enable) {
+        saveBoolean(KEY_AVCHAT_SERVER_AUDIO_RECORD, enable);
+    }
+
+    public static boolean getAVChatServerAudioRecord() {
+        return getBoolean(KEY_AVCHAT_SERVER_AUDIO_RECORD, false);
+    }
+
+    public static void setAVChatServerVideoRecord(boolean enable) {
+        saveBoolean(KEY_AVCHAT_SERVER_VIDEO_RECORD, enable);
+    }
+
+    public static boolean getAVChatServerVideoRecord() {
+        return getBoolean(KEY_AVCHAT_SERVER_VIDEO_RECORD, false);
+    }
+
     public static void setNotificationToggle(boolean on) {
         saveBoolean(KEY_SB_NOTIFY_TOGGLE, on);
     }
