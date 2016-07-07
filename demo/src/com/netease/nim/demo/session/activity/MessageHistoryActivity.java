@@ -7,7 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
 import com.netease.nim.uikit.session.module.list.MessageListPanel;
@@ -19,7 +20,7 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
  * <p/>
  * Created by huangjun on 2015/4/17.
  */
-public class MessageHistoryActivity extends TActionBarActivity implements ModuleProxy {
+public class MessageHistoryActivity extends UI implements ModuleProxy {
 
     private static final String EXTRA_DATA_ACCOUNT = "EXTRA_DATA_ACCOUNT";
     private static final String EXTRA_DATA_SESSION_TYPE = "EXTRA_DATA_SESSION_TYPE";
@@ -49,7 +50,9 @@ public class MessageHistoryActivity extends TActionBarActivity implements Module
         View rootView = LayoutInflater.from(this).inflate(R.layout.message_history_activity, null);
         setContentView(rootView);
 
-        setTitle(R.string.message_history_query);
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.message_history_query;
+        setToolBar(R.id.toolbar, options);
 
         onParseIntent();
 
@@ -93,5 +96,14 @@ public class MessageHistoryActivity extends TActionBarActivity implements Module
     @Override
     public boolean isLongClickEnabled() {
         return true;
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (messageListPanel != null) {
+            messageListPanel.onActivityResult(requestCode, resultCode, data);
+        }
     }
 }

@@ -81,4 +81,8 @@ public class SettingTemplate {
     public boolean getChekced() {
         return checked;
     }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
+    }
 }

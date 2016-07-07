@@ -58,6 +58,12 @@ public class ChatRoomNotificationHelper {
             case ChatRoomMemberKicked:
                 text = buildText(targets, "被踢出直播间");
                 break;
+            case ChatRoomMemberTempMuteAdd:
+                text = buildText(targets, "被临时禁言");
+                break;
+            case ChatRoomMemberTempMuteRemove:
+                text = buildText(targets, "被解除临时禁言");
+                break;
             default:
                 text = attachment.toString();
                 break;

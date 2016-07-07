@@ -263,3 +263,45 @@ public void onHangUp() {
 - MasterFragment： 聊天室主播 fragment。包括获取聊天室资料等操作。
 - OnlinePeopleFragment：聊天室在线人数 fragment。包括获取聊天室成员信息等操作。
 - ChatRoomMsgViewHolderFactory:  聊天室消息项展示ViewHolder工厂类。包括消息展示 viewholder 的注册操作。
+
+## <span id="新老版本兼容问题"> 新老版本兼容问题</span>
+
+### 群通知相关
+
+问题：群通知新增的通知消息类型，可能会造成老版本崩溃。
+原因：TeamNotificationHelper#buildUpdateTeamNotification 的 a.getUpdatedFields() 的 size 为0，造成 sb 的 length为0，会抛出 StringIndexOutOfBoundsException 错误。
+解决方案：判断 sb 的length，参考demo。
+
+## <span id=" Android 6.0 权限管理"> Android 6.0 权限管理 </span>
+
+云信 demo 提供 Android 6.0 权限管理示例。相关方法的实现，在 uikit 的 permission 包中。
+
+在需要相关权限的地方，发起申请并等待用户操作后的返回结果。具体实现方法：
+
+```
+private void requestBasicPermission() {
+	MPermission.with(MainActivity.this)             
+		.addRequestCode(BASIC_PERMISSION_REQUEST_CODE)
+		.permissions(
+			Manifest.permission.WRITE_EXTERNAL_STORAGE,
+			Manifest.permission.READ_EXTERNAL_STORAGE,
+			// ……
+		)
+		.request();
+}
+
+@Override
+public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+	MPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+}
+
+@OnMPermissionGranted(BASIC_PERMISSION_REQUEST_CODE)
+public void onBasicPermissionSuccess(){
+	Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+}
+
+@OnMPermissionDenied(BASIC_PERMISSION_REQUEST_CODE)
+public void onBasicPermissionFailed(){
+	Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
+}
+```

@@ -14,13 +14,14 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.common.ui.listview.ListViewUtil;
 import com.netease.nim.uikit.common.ui.listview.MessageListView;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -46,7 +47,7 @@ import java.util.Set;
  * <p/>
  * Created by huangjun on 2015/3/18.
  */
-public class SystemMessageActivity extends TActionBarActivity implements TAdapterDelegate,
+public class SystemMessageActivity extends UI implements TAdapterDelegate,
         AutoRefreshListView.OnRefreshListener, SystemMessageViewHolder.SystemMessageListener {
 
     private static final boolean MERGE_ADD_FRIEND_VERIFY = false; // 是否要合并好友申请，同一个用户仅保留最近一条申请内容（默认不合并）
@@ -111,7 +112,10 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.system_notification_message_activity);
-        setTitle(R.string.verify_reminder);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.verify_reminder;
+        setToolBar(R.id.toolbar, options);
 
         initAdapter();
         initListView();
@@ -450,13 +454,15 @@ public class SystemMessageActivity extends TActionBarActivity implements TAdapte
     }
 
     private void registerSystemObserver(boolean register) {
-        NIMClient.getService(SystemMessageObserver.class).observeReceiveSystemMsg(new Observer<SystemMessage>() {
-            @Override
-            public void onEvent(SystemMessage message) {
-                onIncomingMessage(message);
-            }
-        }, register);
+        NIMClient.getService(SystemMessageObserver.class).observeReceiveSystemMsg(systemMessageObserver, register);
     }
+
+    Observer<SystemMessage> systemMessageObserver = new Observer<SystemMessage>() {
+        @Override
+        public void onEvent(SystemMessage systemMessage) {
+            onIncomingMessage(systemMessage);
+        }
+    };
 
     private void requestUnknownUser(List<String> accounts) {
         NimUserInfoCache.getInstance().getUserInfoFromRemote(accounts, new RequestCallbackWrapper<List<NimUserInfo>>() {

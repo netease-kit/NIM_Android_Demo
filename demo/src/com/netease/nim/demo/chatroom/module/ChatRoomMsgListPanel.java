@@ -137,6 +137,7 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         boolean needRefresh = false;
         List<IMMessage> addedListItems = new ArrayList<>(messages.size());
         for (IMMessage message : messages) {
+            // 保证显示到界面上的消息，来自同一个聊天室
             if (isMyMessage(message)) {
                 saveMessage(message, false);
                 addedListItems.add(message);

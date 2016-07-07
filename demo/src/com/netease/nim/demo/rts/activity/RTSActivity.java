@@ -14,7 +14,6 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.rts.ActionTypeEnum;
 import com.netease.nim.demo.rts.doodle.DoodleView;
@@ -22,13 +21,14 @@ import com.netease.nim.demo.rts.doodle.SupportActionType;
 import com.netease.nim.demo.rts.doodle.TransactionCenter;
 import com.netease.nim.demo.rts.doodle.action.MyPath;
 import com.netease.nim.demo.session.extension.RTSAttachment;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -63,7 +63,7 @@ import java.util.List;
  * <p/>
  * Created by huangjun on 2015/7/27.
  */
-public class RTSActivity extends TActionBarActivity implements View.OnClickListener {
+public class RTSActivity extends UI implements View.OnClickListener {
 
     public static final int FROM_BROADCAST_RECEIVER = 0; // 来自广播
     public static final int FROM_INTERNAL = 1; // 来自发起方
@@ -139,6 +139,11 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         isBusy = true;
 
         setContentView(R.layout.rts_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.isNeedNavigate = false;
+        setToolBar(R.id.toolbar, options);
+
         isIncoming = getIntent().getBooleanExtra(KEY_INCOMING, false);
         findViews();
         initActionBarButton();
@@ -156,7 +161,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
     }
 
     private void initActionBarButton() {
-        TextView closeSessionBtn = ActionBarUtil.addRightClickableTextViewOnActionBar(this, getString(R.string.close));
+        TextView closeSessionBtn = findView(R.id.action_bar_right_clickable_textview);
+        closeSessionBtn.setText(R.string.close);
         closeSessionBtn.setBackgroundResource(R.drawable.nim_message_button_bottom_send_selector);
         closeSessionBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -399,8 +405,8 @@ public class RTSActivity extends TActionBarActivity implements View.OnClickListe
         }
 
         @Override
-        public void onRecordInfo(RTSTunType tunType, String url, String name) {
-            String tip = "onRecordInfo, tunType=" + tunType.toString() + ", url=" + url + ", file name=" + name;
+        public void onRecordInfo(RTSTunType tunType, String file) {
+            String tip = "onRecordInfo, tunType=" + tunType.toString() + ", file=" + file ;
             Toast.makeText(RTSActivity.this, tip, Toast.LENGTH_SHORT).show();
             LogUtil.i("RTS", tip);
         }

@@ -10,7 +10,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.fragment.ChatRoomFragment;
 import com.netease.nim.demo.chatroom.fragment.ChatRoomMessageFragment;
 import com.netease.nim.demo.chatroom.helper.ChatRoomMemberCache;
-import com.netease.nim.uikit.common.activity.TActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.AbortableFuture;
@@ -32,7 +32,7 @@ import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomResultData;
  * 聊天室
  * Created by hzxuwen on 2015/12/14.
  */
-public class ChatRoomActivity extends TActivity {
+public class ChatRoomActivity extends UI {
     private final static String EXTRA_ROOM_ID = "ROOM_ID";
     private static final String TAG = ChatRoomActivity.class.getSimpleName();
 

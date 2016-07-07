@@ -5,8 +5,8 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.main.helper.MessageHelper;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
@@ -78,6 +78,7 @@ public class SystemMessageViewHolder extends TViewHolder {
             if (message.getStatus() == SystemMessageStatus.init) {
                 // 未处理
                 operatorResultText.setVisibility(View.GONE);
+                operatorLayout.setVisibility(View.VISIBLE);
                 agreeButton.setVisibility(View.VISIBLE);
                 rejectButton.setVisibility(View.VISIBLE);
             } else {

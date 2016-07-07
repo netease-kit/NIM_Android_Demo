@@ -13,12 +13,12 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.contact.core.item.ContactIdFilter;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -34,7 +34,7 @@ import java.util.List;
  * 黑名单
  * Created by huangjun on 2015/8/12.
  */
-public class BlackListActivity extends TActionBarActivity implements TAdapterDelegate {
+public class BlackListActivity extends UI implements TAdapterDelegate {
     private static final String TAG = "BlackListActivity";
     private static final int REQUEST_CODE_BLACK = 1;
 
@@ -52,8 +52,11 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setTitle(R.string.black_list);
         setContentView(R.layout.black_list_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.black_list;
+        setToolBar(R.id.toolbar, options);
 
         initData();
         findViews();
@@ -101,8 +104,9 @@ public class BlackListActivity extends TActionBarActivity implements TAdapterDel
     }
 
     private void initActionbar() {
-        TextView textView = ActionBarUtil.addRightClickableBlueTextViewOnActionBar(this, R.string.add);
-        textView.setOnClickListener(new View.OnClickListener() {
+        TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
+        toolbarView.setText(R.string.add);
+        toolbarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ContactSelectActivity.Option option = new ContactSelectActivity.Option();

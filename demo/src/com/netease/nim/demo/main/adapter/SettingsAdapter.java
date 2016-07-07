@@ -71,6 +71,17 @@ public class SettingsAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
         }
 
+        viewHolder.root.setBackgroundResource(R.drawable.nim_semitransparency_selector);
+        viewHolder.headImageView.setVisibility(View.GONE);
+        viewHolder.titleView.setVisibility(View.GONE);
+        viewHolder.detailView.setVisibility(View.GONE);
+        viewHolder.switchButton.setVisibility(View.GONE);
+        viewHolder.line.setVisibility(View.GONE);
+        viewHolder.indicator.setVisibility(View.GONE);
+        viewHolder.headTitleView.setVisibility(View.GONE);
+        viewHolder.headDetailView.setVisibility(View.GONE);
+
+
         SettingTemplate item = items.get(position);
         if(item.getType() == SettingType.TYPE_TOGGLE) {
             updateToggleItem(viewHolder, item, position);

@@ -15,7 +15,6 @@ import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.session.actions.BaseAction;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
-import com.netease.nim.uikit.session.module.input.InputPanel;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -39,7 +38,7 @@ import java.util.Map;
 public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
     private View rootView;
     // modules
-    protected InputPanel inputPanel;
+    protected ChatRoomInputPanel inputPanel;
     protected ChatRoomMsgListPanel messageListPanel;
 
     private String roomId;
@@ -114,7 +113,7 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
         }
 
         if (inputPanel == null) {
-            inputPanel = new InputPanel(container, rootView, getActionList(), false);
+            inputPanel = new ChatRoomInputPanel(container, rootView, getActionList(), false);
         } else {
             inputPanel.reload(container, null);
         }

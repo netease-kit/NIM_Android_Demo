@@ -8,7 +8,8 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.auth.AuthService;
@@ -21,7 +22,7 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/7/8.
  */
-public class MultiportActivity extends TActionBarActivity {
+public class MultiportActivity extends UI {
     private final static String EXTRA_DATA = "EXTRA_DATA";
 
     private LinearLayout versionLayout;
@@ -41,7 +42,10 @@ public class MultiportActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.multiport_activity);
-        setTitle(R.string.multiport_manager);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.multiport_manager;
+        setToolBar(R.id.toolbar, options);
 
         findViews();
         parseIntent();

@@ -22,15 +22,15 @@ import com.amap.api.maps2d.UiSettings;
 import com.amap.api.maps2d.model.CameraPosition;
 import com.amap.api.maps2d.model.LatLng;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.LocationProvider;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.demo.location.helper.NimGeocoder;
 import com.netease.nim.demo.location.helper.NimLocationManager;
 import com.netease.nim.demo.location.helper.NimLocationManager.NimLocationListener;
 import com.netease.nim.demo.location.model.NimLocation;
+import com.netease.nim.uikit.LocationProvider;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 
-public class LocationAmapActivity extends TActionBarActivity implements  OnCameraChangeListener, OnClickListener
+public class LocationAmapActivity extends UI implements  OnCameraChangeListener, OnClickListener
 	, NimLocationListener {
 
 //	private static final String TAG = "LocationAmapActivity";
@@ -70,6 +70,10 @@ public class LocationAmapActivity extends TActionBarActivity implements  OnCamer
         setContentView(R.layout.map_view_amap_layout);
         mapView = (MapView) findViewById(R.id.autonavi_mapView);
     	mapView.onCreate(savedInstanceState);// 此方法必须重写
+
+		ToolBarOptions options = new ToolBarOptions();
+		setToolBar(R.id.toolbar, options);
+
     	initView();
         initAmap();
         initLocation();
@@ -77,7 +81,9 @@ public class LocationAmapActivity extends TActionBarActivity implements  OnCamer
     }
 
     private void initView() {
-    	sendButton = ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.send, this);
+    	sendButton = findView(R.id.action_bar_right_clickable_textview);
+		sendButton.setText(R.string.send);
+		sendButton.setOnClickListener(this);
     	sendButton.setVisibility(View.INVISIBLE);
     	
     	pinView = (ImageView) findViewById(R.id.location_pin);

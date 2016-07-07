@@ -16,6 +16,9 @@
     <string name="cancel_admin">取消管理员</string>
     <string name="set_normal_member">设为普通成员</string>
     <string name="cancel_normal_member">移出普通成员</string>
+    <string name="set_temp_mute_notify">设置临时禁言(含通知)</string>
+    <string name="set_temp_mute_not_notify">设置临时禁言(不通知)</string>
+    <string name="mute_duration">禁言时间，单位s</string>
     <string name="chatroom_fetch_member_failed">获取用户资料失败</string>
     <string name="cancel_muted">取消禁言</string>
     <string name="set_success">设置成功</string>

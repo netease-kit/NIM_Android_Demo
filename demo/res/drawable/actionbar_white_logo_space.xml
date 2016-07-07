@@ -4,5 +4,5 @@
     <item
         android:drawable="@drawable/actionbar_white_logo_icon"
         android:left="3dp"
-        android:right="3dp"/>
+        android:right="15dp"/>
 </layer-list>

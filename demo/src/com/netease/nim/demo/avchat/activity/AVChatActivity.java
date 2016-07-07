@@ -14,8 +14,9 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatNotification;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.AVChatUI;
+import com.netease.nim.demo.avchat.SoundPlayer;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
-import com.netease.nim.uikit.common.activity.TActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nimlib.sdk.Observer;
@@ -37,7 +38,7 @@ import java.io.File;
  * 音视频界面
  * Created by hzxuwen on 2015/4/21.
  */
-public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener, AVChatStateObserver {
+public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVChatStateObserver {
     // constant
     private static final String TAG = "AVChatActivity";
     private static final String KEY_IN_CALLING = "KEY_IN_CALLING";
@@ -138,7 +139,7 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     @Override
     protected void onPause() {
         super.onPause();
-        AVChatManager.getInstance().pauseVideo(); // 暂停视频聊天（用于在视频聊天过程中，APP退到后台时必须调用）
+        avChatUI.pauseVideo(); // 暂停视频聊天（用于在视频聊天过程中，APP退到后台时必须调用）
         hasOnpause = true;
     }
 
@@ -229,7 +230,13 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     Observer<AVChatCalleeAckEvent> callAckObserver = new Observer<AVChatCalleeAckEvent>() {
         @Override
         public void onEvent(AVChatCalleeAckEvent ackInfo) {
+
+            SoundPlayer.instance(AVChatActivity.this).stop();
+
             if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_BUSY) {
+
+                SoundPlayer.instance(AVChatActivity.this).play(SoundPlayer.RingerTypeEnum.PEER_BUSY);
+
                 avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
             } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_REJECT) {
                 avChatUI.closeSessions(AVChatExitCode.REJECT);
@@ -259,12 +266,17 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
             if (event == AVChatTimeOutEvent.INCOMING_TIMEOUT) {
                 activeMissCallNotifier();
             }
+
+            SoundPlayer.instance(AVChatActivity.this).stop();
         }
     };
 
     Observer<Integer> autoHangUpForLocalPhoneObserver = new Observer<Integer>() {
         @Override
         public void onEvent(Integer integer) {
+
+            SoundPlayer.instance(AVChatActivity.this).stop();
+
             avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
         }
     };
@@ -285,6 +297,9 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     Observer<AVChatCommonEvent> callHangupObserver = new Observer<AVChatCommonEvent>() {
         @Override
         public void onEvent(AVChatCommonEvent avChatHangUpInfo) {
+
+            SoundPlayer.instance(AVChatActivity.this).stop();
+
             avChatUI.closeSessions(AVChatExitCode.HANGUP);
             cancelCallingNotifier();
             // 如果是incoming call主叫方挂断，那么通知栏有通知
@@ -300,6 +315,9 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     Observer<AVChatOnlineAckEvent> onlineAckObserver = new Observer<AVChatOnlineAckEvent>() {
         @Override
         public void onEvent(AVChatOnlineAckEvent ackInfo) {
+
+            SoundPlayer.instance(AVChatActivity.this).stop();
+
             if (ackInfo.getClientType() != ClientType.Android) {
                 String client = null;
                 switch (ackInfo.getClientType()) {
@@ -351,94 +369,6 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     }
 
 
-    /**
-     * ************************ AVChatStateObserver ****************************
-     */
-
-    @Override
-    public void onConnectedServer(int res, String serverRecordFilePath, String serverRecordFileName) {
-        handleWithConnectServerResult(res);
-    }
-
-    @Override
-    public void onUserJoin(String account) {
-        Log.d(TAG, "onUserJoin");
-        avChatUI.setVideoAccount(account);
-
-        avChatUI.initRemoteSurfaceView(avChatUI.getVideoAccount());
-    }
-
-    @Override
-    public void onUserLeave(String account, int event) {
-
-    }
-
-    @Override
-    public void onProtocolIncompatible(int status) {
-
-    }
-
-    @Override
-    public void onDisconnectServer() {
-
-    }
-
-    @Override
-    public void onNetworkStatusChange(int value) {
-
-    }
-
-    @Override
-    public void onCallEstablished() {
-        Log.d(TAG, "onCallEstablished");
-        if (avChatUI.getTimeBase() == 0)
-            avChatUI.setTimeBase(SystemClock.elapsedRealtime());
-
-        if (state == AVChatType.AUDIO.getValue()) {
-            avChatUI.onCallStateChange(CallStateEnum.AUDIO);
-        } else {
-            avChatUI.initLocalSurfaceView();
-            avChatUI.onCallStateChange(CallStateEnum.VIDEO);
-        }
-        isCallEstablished = true;
-    }
-
-    @Override
-    public void onOpenDeviceError(int code) {
-
-    }
-
-    @Override
-    public void onRecordEnd(String[] files, int event) {
-        if(files != null && files.length > 0) {
-            String file = files[0];
-            String parent = new File(file).getParent();
-            String msg;
-            if(event == 0) {
-                msg = "录制已结束";
-            } else {
-                msg = "你的手机内存不足, 录制已结束";
-            }
-
-            if(!TextUtils.isEmpty(parent)) {
-                msg += ", 录制文件已保存至：" + parent;
-            }
-
-            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
-        } else {
-            if(event == 1) {
-                Toast.makeText(this, "你的手机内存不足, 录制已结束.", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(this, "录制已结束.", Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        if(event == 1) {
-            if(avChatUI != null) {
-                avChatUI.resetRecordTip();
-            }
-        }
-    }
 
     /****************************** 连接建立处理 ********************/
 
@@ -542,6 +472,122 @@ public class AVChatActivity extends TActivity implements AVChatUI.AVChatListener
     public void finish() {
         isUserFinish = true;
         super.finish();
+    }
+
+
+
+    /**
+     * ************************ AVChatStateObserver ****************************
+     */
+
+    @Override
+    public void onTakeSnapshotResult(String account, boolean success, String file) {
+
+    }
+
+    @Override
+    public void onConnectionTypeChanged(int current, int old) {
+
+    }
+
+    @Override
+    public void onLocalRecordEnd(String[] files, int event) {
+        if(files != null && files.length > 0) {
+            String file = files[0];
+            String parent = new File(file).getParent();
+            String msg;
+            if(event == 0) {
+                msg = "录制已结束";
+            } else {
+                msg = "你的手机内存不足, 录制已结束";
+            }
+
+            if(!TextUtils.isEmpty(parent)) {
+                msg += ", 录制文件已保存至：" + parent;
+            }
+
+            Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
+        } else {
+            if(event == 1) {
+                Toast.makeText(this, "你的手机内存不足, 录制已结束.", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "录制已结束.", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+        if(event == 1) {
+            if(avChatUI != null) {
+                avChatUI.resetRecordTip();
+            }
+        }
+    }
+
+    @Override
+    public void onFirstVideoFrameAvailable(String account) {
+
+    }
+
+    @Override
+    public void onVideoFpsReported(String account, int fps) {
+
+    }
+
+    @Override
+    public void onJoinedChannel(int code, String audioFile, String videoFile) {
+        handleWithConnectServerResult(code);
+    }
+
+    @Override
+    public void onLeaveChannel() {
+
+    }
+
+    @Override
+    public void onUserJoined(String account) {
+        Log.d(TAG, "onUserJoin");
+        avChatUI.setVideoAccount(account);
+
+        avChatUI.initRemoteSurfaceView(avChatUI.getVideoAccount());
+    }
+
+    @Override
+    public void onUserLeave(String account, int event) {
+
+    }
+
+    @Override
+    public void onProtocolIncompatible(int status) {
+
+    }
+
+    @Override
+    public void onDisconnectServer() {
+
+    }
+
+    @Override
+    public void onNetworkQuality(String user, int value) {
+
+    }
+
+    @Override
+    public void onCallEstablished() {
+        Log.d(TAG, "onCallEstablished");
+        if (avChatUI.getTimeBase() == 0)
+            avChatUI.setTimeBase(SystemClock.elapsedRealtime());
+
+        if (state == AVChatType.AUDIO.getValue()) {
+            avChatUI.onCallStateChange(CallStateEnum.AUDIO);
+        } else {
+            avChatUI.initLocalSurfaceView();
+            avChatUI.onCallStateChange(CallStateEnum.VIDEO);
+        }
+        isCallEstablished = true;
+    }
+
+    @Override
+    public void onDeviceEvent(String account, int code, String desc) {
+
     }
 }
 

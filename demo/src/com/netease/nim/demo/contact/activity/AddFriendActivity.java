@@ -5,16 +5,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
@@ -22,7 +23,7 @@ import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
  * 添加好友页面
  * Created by huangjun on 2015/8/11.
  */
-public class AddFriendActivity extends TActionBarActivity {
+public class AddFriendActivity extends UI {
 
     private ClearableEditTextWithIcon searchEdit;
 
@@ -36,7 +37,11 @@ public class AddFriendActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_friend_activity);
-        setTitle(R.string.add_buddy);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.add_buddy;
+        setToolBar(R.id.toolbar, options);
+
         findViews();
         initActionbar();
     }
@@ -47,7 +52,9 @@ public class AddFriendActivity extends TActionBarActivity {
     }
 
     private void initActionbar() {
-        ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.search, new View.OnClickListener() {
+        TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
+        toolbarView.setText(R.string.search);
+        toolbarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(searchEdit.getText().toString())) {
@@ -89,6 +96,7 @@ public class AddFriendActivity extends TActionBarActivity {
             @Override
             public void onException(Throwable exception) {
                 DialogMaker.dismissProgressDialog();
+                Toast.makeText(AddFriendActivity.this, "on exception:" + exception.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

@@ -19,12 +19,12 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
 import com.netease.nim.uikit.cache.FriendDataCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
@@ -43,7 +43,7 @@ import java.util.Map;
 /**
  * Created by hzxuwen on 2015/9/14.
  */
-public class UserProfileEditItemActivity extends TActionBarActivity implements View.OnClickListener {
+public class UserProfileEditItemActivity extends UI implements View.OnClickListener {
 
     private static final String EXTRA_KEY = "EXTRA_KEY";
     private static final String EXTRA_DATA = "EXTRA_DATA";
@@ -96,6 +96,8 @@ public class UserProfileEditItemActivity extends TActionBarActivity implements V
             setContentView(R.layout.user_profile_birth_layout);
             findBirthViews();
         }
+        ToolBarOptions options = new ToolBarOptions();
+        setToolBar(R.id.toolbar, options);
         initActionbar();
         setTitles();
     }
@@ -163,7 +165,9 @@ public class UserProfileEditItemActivity extends TActionBarActivity implements V
     }
 
     private void initActionbar() {
-        ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.save, new View.OnClickListener() {
+        TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
+        toolbarView.setText(R.string.save);
+        toolbarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (!NetworkUtil.isNetAvailable(UserProfileEditItemActivity.this)) {

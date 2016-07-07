@@ -9,15 +9,17 @@ def getGitVersion() {
 }
 
 android {
-    compileSdkVersion 21
+    compileSdkVersion 23
     buildToolsVersion buildToolsVer
+    useLibrary 'org.apache.http.legacy'
+
     defaultConfig {
         minSdkVersion 9
-        targetSdkVersion 19
+        targetSdkVersion 23
         buildConfigField "String", "GIT_REVISION", "\"${getGitVersion()}\""
         buildConfigField "String", "BUILD_DATE", "\"${new Date().toLocaleString()}\"";
     }
-    // release key password from gradle.properties
+
     signingConfigs {
         debug { storeFile file("debug.keystore") }
 
@@ -66,6 +68,7 @@ android {
         incremental true
         preDexLibraries false
         jumboMode true
+        javaMaxHeapSize "4g"
     }
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
@@ -75,6 +78,6 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar', exclude: ['android-support-*.jar'])
-    compile project(path: ':uikit')
+    compile fileTree(dir: 'libs', include: '*.jar')
+    compile project(path: ':uikit')
 }

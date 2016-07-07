@@ -1,5 +1,6 @@
 package com.netease.nim.demo.login;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -9,6 +10,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -23,18 +25,23 @@ import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHttpClient;
 import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.uikit.cache.DataCacheManager;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.MD5;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.permission.MPermission;
+import com.netease.nim.uikit.permission.annotation.OnMPermissionDenied;
+import com.netease.nim.uikit.permission.annotation.OnMPermissionGranted;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.auth.LoginInfo;
@@ -44,10 +51,11 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
  * <p/>
  * Created by huangjun on 2015/2/1.
  */
-public class LoginActivity extends TActionBarActivity implements OnKeyListener {
+public class LoginActivity extends UI implements OnKeyListener {
 
     private static final String TAG = LoginActivity.class.getSimpleName();
     private static final String KICK_OUT = "KICK_OUT";
+    private final int BASIC_PERMISSION_REQUEST_CODE = 110;
 
     private TextView rightTopBtn;  // ActionBar完成按钮
     private TextView switchModeBtn;  // 注册/登录切换按钮
@@ -91,10 +99,46 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.isNeedNavigate = false;
+        options.logoId = R.drawable.actionbar_white_logo_space;
+        setToolBar(R.id.toolbar, options);
+
+        requestBasicPermission();
+
         onParseIntent();
         initRightTopBtn();
         setupLoginPanel();
         setupRegisterPanel();
+    }
+
+    /**
+     * 基本权限管理
+     */
+    private void requestBasicPermission() {
+        MPermission.with(LoginActivity.this)
+                .addRequestCode(BASIC_PERMISSION_REQUEST_CODE)
+                .permissions(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE
+                )
+                .request();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        MPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    @OnMPermissionGranted(BASIC_PERMISSION_REQUEST_CODE)
+    public void onBasicPermissionSuccess(){
+        Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnMPermissionDenied(BASIC_PERMISSION_REQUEST_CODE)
+    public void onBasicPermissionFailed(){
+        Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
     }
 
     private void onParseIntent() {
@@ -107,6 +151,9 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                     break;
                 case ClientType.Windows:
                     client = "电脑端";
+                    break;
+                case ClientType.REST:
+                    client = "服务端";
                     break;
                 default:
                     client = "移动端";
@@ -129,6 +176,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
                 if (registerMode) {
                     register();
                 } else {
+                    //fakeLoginTest(); // 假登录代码示例
                     login();
                 }
             }
@@ -264,6 +312,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
 
             @Override
             public void onException(Throwable exception) {
+                Toast.makeText(LoginActivity.this, R.string.login_exception, Toast.LENGTH_LONG).show();
                 onLoginDone();
             }
         });
@@ -311,7 +360,7 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
             return;
         }
 
-        if (!checkRegisterContentValid(true)) {
+        if (!checkRegisterContentValid()) {
             return;
         }
 
@@ -352,34 +401,31 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
         });
     }
 
-    private boolean checkRegisterContentValid(boolean tipError) {
+    private boolean checkRegisterContentValid() {
         if (!registerMode || !registerPanelInited) {
             return false;
         }
 
         // 帐号检查
-        if (registerAccountEdit.length() <= 0 || registerAccountEdit.length() > 20) {
-            if (tipError) {
-                Toast.makeText(this, R.string.register_account_tip, Toast.LENGTH_SHORT).show();
-            }
+        String account = registerAccountEdit.getText().toString().trim();
+        if (account.length() <= 0 || account.length() > 20) {
+            Toast.makeText(this, R.string.register_account_tip, Toast.LENGTH_SHORT).show();
 
             return false;
         }
 
         // 昵称检查
-        if (registerNickNameEdit.length() <= 0 || registerNickNameEdit.length() > 10) {
-            if (tipError) {
-                Toast.makeText(this, R.string.register_nick_name_tip, Toast.LENGTH_SHORT).show();
-            }
+        String nick = registerNickNameEdit.getText().toString().trim();
+        if (nick.length() <= 0 || nick.length() > 10) {
+            Toast.makeText(this, R.string.register_nick_name_tip, Toast.LENGTH_SHORT).show();
 
             return false;
         }
 
         // 密码检查
-        if (registerPasswordEdit.length() < 6 || registerPasswordEdit.length() > 20) {
-            if (tipError) {
-                Toast.makeText(this, R.string.register_password_tip, Toast.LENGTH_SHORT).show();
-            }
+        String password = registerPasswordEdit.getText().toString().trim();
+        if (password.length() < 6 || password.length() > 20) {
+            Toast.makeText(this, R.string.register_password_tip, Toast.LENGTH_SHORT).show();
 
             return false;
         }
@@ -426,13 +472,67 @@ public class LoginActivity extends TActionBarActivity implements OnKeyListener {
         }
     }
 
-    public static TextView addRegisterRightTopBtn(TActionBarActivity activity, int strResId) {
+    public TextView addRegisterRightTopBtn(UI activity, int strResId) {
         String text = activity.getResources().getString(strResId);
-        TextView textView = ActionBarUtil.addRightClickableTextViewOnActionBar(activity, text);
+        TextView textView = findView(R.id.action_bar_right_clickable_textview);
+        textView.setText(text);
         if (textView != null) {
             textView.setBackgroundResource(R.drawable.register_right_top_btn_selector);
             textView.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
         }
         return textView;
+    }
+
+    /**
+     * *********** 假登录示例：假登录后，可以查看该用户数据，但向云信发送数据会失败；随后手动登录后可以发数据 **************
+     */
+    private void fakeLoginTest() {
+        // 获取账号、密码；账号用于假登录，密码在手动登录时需要
+        final String account = loginAccountEdit.getEditableText().toString().toLowerCase();
+        final String token = tokenFromPassword(loginPasswordEdit.getEditableText().toString());
+
+        // 执行假登录
+        boolean res = NIMClient.getService(AuthService.class).openLocalCache(account); // SDK会将DB打开，支持查询。
+        Log.i("test", "fake login " + (res ? "success" : "failed"));
+
+        if (!res) {
+            return;
+        }
+
+        // Demo缓存当前假登录的账号
+        DemoCache.setAccount(account);
+
+        // 初始化消息提醒
+        NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
+
+        // 初始化免打扰
+        if (UserPreferences.getStatusConfig() == null) {
+            UserPreferences.setStatusConfig(DemoCache.getNotificationConfig());
+        }
+        NIMClient.updateStatusBarNotificationConfig(UserPreferences.getStatusConfig());
+
+        // 构建缓存
+        DataCacheManager.buildDataCacheAsync();
+
+        // 进入主界面，此时可以查询数据（最近联系人列表、本地消息历史、群资料等都可以查询，但当云信服务器发起请求会返回408超时）
+        MainActivity.start(LoginActivity.this, null);
+
+        // 演示15s后手动登录，登录成功后，可以正常收发数据
+        getHandler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                loginRequest = NIMClient.getService(AuthService.class).login(new LoginInfo(account, token));
+                loginRequest.setCallback(new RequestCallbackWrapper() {
+                    @Override
+                    public void onResult(int code, Object result, Throwable exception) {
+                        Log.i("test", "real login, code=" + code);
+                        if (code == ResponseCode.RES_SUCCESS) {
+                            saveLoginInfo(account, token);
+                            finish();
+                        }
+                    }
+                });
+            }
+        }, 15 * 1000);
     }
 }

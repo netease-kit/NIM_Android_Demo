@@ -127,6 +127,8 @@ public class ChatRoomHttpClient {
                     }
                 } catch (JSONException e) {
                     callback.onFailed(-1, e.getMessage());
+                } catch (Exception e) {
+                    callback.onFailed(-2, e.getMessage());
                 }
             }
         });

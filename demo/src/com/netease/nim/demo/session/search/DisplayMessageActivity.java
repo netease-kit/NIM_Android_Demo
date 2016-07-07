@@ -7,7 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
 import com.netease.nim.uikit.session.module.list.MessageListPanel;
@@ -15,10 +16,7 @@ import com.netease.nim.uikit.uinfo.UserInfoHelper;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
-/**
- * Created by vincent on 1/9/15.
- */
-public class DisplayMessageActivity extends TActionBarActivity implements ModuleProxy {
+public class DisplayMessageActivity extends UI implements ModuleProxy {
 
     private static String EXTRA_ANCHOR = "anchor";
 
@@ -47,6 +45,9 @@ public class DisplayMessageActivity extends TActionBarActivity implements Module
 
         View rootView = LayoutInflater.from(this).inflate(R.layout.message_history_activity, null);
         setContentView(rootView);
+
+        ToolBarOptions options = new ToolBarOptions();
+        setToolBar(R.id.toolbar, options);
 
         onParseIntent();
 

@@ -1,8 +1,5 @@
 package com.netease.nim.demo.location.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
@@ -31,18 +28,21 @@ import com.amap.api.maps2d.model.LatLngBounds;
 import com.amap.api.maps2d.model.Marker;
 import com.amap.api.maps2d.model.MarkerOptions;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
-import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
-import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.demo.location.adapter.IconListAdapter;
 import com.netease.nim.demo.location.adapter.IconListAdapter.IconListItem;
 import com.netease.nim.demo.location.helper.MapHelper;
 import com.netease.nim.demo.location.helper.NimLocationManager;
 import com.netease.nim.demo.location.helper.NimLocationManager.NimLocationListener;
 import com.netease.nim.demo.location.model.NimLocation;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
+import com.netease.nim.uikit.common.util.string.StringUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 
-public class NavigationAmapActivity extends TActionBarActivity implements
+import java.util.ArrayList;
+import java.util.List;
+
+public class NavigationAmapActivity extends UI implements
 		OnClickListener, LocationExtras, NimLocationListener,
 		OnMarkerClickListener, OnInfoWindowClickListener, InfoWindowAdapter {
 
@@ -73,6 +73,10 @@ public class NavigationAmapActivity extends TActionBarActivity implements
 		setContentView(R.layout.map_view_amap_navigation_layout);
 		mapView = (MapView) findViewById(R.id.autonavi_mapView);
 		mapView.onCreate(savedInstanceState);// 此方法必须重写
+
+		ToolBarOptions options = new ToolBarOptions();
+		setToolBar(R.id.toolbar, options);
+
 		initView();
 		initAmap();
 		initLocation();
@@ -80,7 +84,9 @@ public class NavigationAmapActivity extends TActionBarActivity implements
 	}
 
 	private void initView() {
-		sendButton = ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.location_navigate, this);
+		sendButton = findView(R.id.action_bar_right_clickable_textview);
+		sendButton.setText(R.string.location_navigate);
+		sendButton.setOnClickListener(this);
 		sendButton.setVisibility(View.INVISIBLE);
 
 		myLocationFormatText = getString(R.string.format_mylocation);

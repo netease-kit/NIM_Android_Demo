@@ -5,12 +5,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.team.TeamService;
@@ -20,7 +21,7 @@ import com.netease.nimlib.sdk.team.model.Team;
  * 搜索加入群组界面
  * Created by hzxuwen on 2015/3/20.
  */
-public class AdvancedTeamSearchActivity extends TActionBarActivity{
+public class AdvancedTeamSearchActivity extends UI {
 
     private ClearableEditTextWithIcon searchEditText;
 
@@ -36,6 +37,10 @@ public class AdvancedTeamSearchActivity extends TActionBarActivity{
         setContentView(R.layout.nim_advanced_team_search_activity);
         setTitle(R.string.search_join_team);
 
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.search_join_team;
+        setToolBar(R.id.toolbar, options);
+
         findViews();
         initActionbar();
     }
@@ -46,7 +51,9 @@ public class AdvancedTeamSearchActivity extends TActionBarActivity{
     }
 
     private void initActionbar() {
-        ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.search, new View.OnClickListener() {
+        TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
+        toolbarView.setText(R.string.search);
+        toolbarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(searchEditText.getText().toString())) {

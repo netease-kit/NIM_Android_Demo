@@ -5,14 +5,14 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.imageview.BaseZoomableImageView;
 import com.netease.nim.uikit.common.util.media.BitmapDecoder;
@@ -28,7 +28,7 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
 /**
  * 查看阅后即焚消息原图
  */
-public class WatchSnapChatPictureActivity extends TActionBarActivity {
+public class WatchSnapChatPictureActivity extends UI {
     private static final String INTENT_EXTRA_IMAGE = "INTENT_EXTRA_IMAGE";
 
     private Handler handler;
@@ -36,7 +36,6 @@ public class WatchSnapChatPictureActivity extends TActionBarActivity {
 
     private View loadingLayout;
     private BaseZoomableImageView image;
-    private ActionBar actionBar;
     protected CustomAlertDialog alertDialog;
 
     private static WatchSnapChatPictureActivity instance;
@@ -58,8 +57,10 @@ public class WatchSnapChatPictureActivity extends TActionBarActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        onParseIntent();
         setContentView(R.layout.nim_watch_snapchat_activity);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        onParseIntent();
         findViews();
 
         handler = new Handler();
@@ -84,8 +85,6 @@ public class WatchSnapChatPictureActivity extends TActionBarActivity {
         alertDialog = new CustomAlertDialog(this);
         loadingLayout = findViewById(R.id.loading_layout);
         image = (BaseZoomableImageView) findViewById(R.id.watch_image_view);
-        actionBar = getSupportActionBar();
-        actionBar.hide();
     }
 
     private void requestOriImage() {

@@ -16,7 +16,8 @@ import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.model.SettingTemplate;
 import com.netease.nim.demo.main.model.SettingType;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 
@@ -26,7 +27,7 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/7/3.
  */
-public class NoDisturbActivity extends TActionBarActivity implements SettingsAdapter.SwitchChangeListener, View.OnClickListener{
+public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChangeListener, View.OnClickListener{
     public static final int NO_DISTURB_REQ = 0x01;
     private static final int TAG_NO_DISTURB = 1;
     private static final String EXTRA_TIME = "EXTRA_TIME";
@@ -61,7 +62,10 @@ public class NoDisturbActivity extends TActionBarActivity implements SettingsAda
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.no_disturb_activity);
-        setTitle(R.string.no_disturb);
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.no_disturb;
+        setToolBar(R.id.toolbar, options);
+
         parseIntentData();
         findViews();
     }

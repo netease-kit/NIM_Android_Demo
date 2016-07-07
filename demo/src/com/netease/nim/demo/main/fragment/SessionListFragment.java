@@ -17,7 +17,7 @@ import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.recent.RecentContactsCallback;
 import com.netease.nim.uikit.recent.RecentContactsFragment;
@@ -112,6 +112,12 @@ public class SessionListFragment extends MainTabFragment {
                 } else if (code == StatusCode.UNLOGIN) {
                     notifyBar.setVisibility(View.VISIBLE);
                     notifyBarText.setText(R.string.nim_status_unlogin);
+                } else if (code == StatusCode.CONNECTING) {
+                    notifyBar.setVisibility(View.VISIBLE);
+                    notifyBarText.setText(R.string.nim_status_connecting);
+                } else if (code == StatusCode.LOGINING) {
+                    notifyBar.setVisibility(View.VISIBLE);
+                    notifyBarText.setText(R.string.nim_status_logining);
                 } else {
                     notifyBar.setVisibility(View.GONE);
                 }
@@ -174,7 +180,7 @@ public class SessionListFragment extends MainTabFragment {
         fragment = new RecentContactsFragment();
         fragment.setContainerId(R.id.messages_fragment);
 
-        final TActionBarActivity activity = (TActionBarActivity) getActivity();
+        final UI activity = (UI) getActivity();
 
         // 如果是activity从堆栈恢复，FM中已经存在恢复而来的fragment，此时会使用恢复来的，而new出来这个会被丢弃掉
         fragment = (RecentContactsFragment) activity.addFragment(fragment);

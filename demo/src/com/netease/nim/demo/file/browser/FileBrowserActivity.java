@@ -11,10 +11,11 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
-import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
+import com.netease.nim.uikit.model.ToolBarOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -24,7 +25,7 @@ import java.util.List;
  * 文件管理器
  * Created by hzxuwen on 2015/4/17.
  */
-public class FileBrowserActivity extends TActionBarActivity implements TAdapterDelegate {
+public class FileBrowserActivity extends UI implements TAdapterDelegate {
     // constant
     private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath() + "/";
     public static final String EXTRA_DATA_PATH = "EXTRA_DATA_PATH";
@@ -47,6 +48,10 @@ public class FileBrowserActivity extends TActionBarActivity implements TAdapterD
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.file_browser_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        setToolBar(R.id.toolbar, options);
+
         findViews();
         showFileDir(ROOT_PATH);
     }

@@ -16,8 +16,9 @@ import android.widget.AdapterView;
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
@@ -32,7 +33,7 @@ import java.util.List;
 /**
  * Created by zhoujianghua on 2015/7/7.
  */
-public class SearchMessageActivity extends TActionBarActivity {
+public class SearchMessageActivity extends UI {
 
     private static final String INTENT_EXTRA_UID = "intent_extra_uid";
     private static final String INTENT_EXTRA_SESSION_TYPE = "intent_extra_session_type";
@@ -68,6 +69,9 @@ public class SearchMessageActivity extends TActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.message_search_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        setToolBar(R.id.toolbar, options);
 
         findViewById(R.id.global_search_root).setOnTouchListener(new View.OnTouchListener() {
 

@@ -14,11 +14,12 @@ import com.netease.nim.demo.contact.activity.UserProfileActivity;
 import com.netease.nim.demo.team.TeamCreateHelper;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -29,7 +30,7 @@ import java.util.ArrayList;
 /**
  * Created by hzxuwen on 2015/10/13.
  */
-public class MessageInfoActivity extends TActionBarActivity {
+public class MessageInfoActivity extends UI {
     private final static String EXTRA_ACCOUNT = "EXTRA_ACCOUNT";
     private static final int REQUEST_CODE_NORMAL = 1;
     // data
@@ -48,7 +49,11 @@ public class MessageInfoActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.message_info_activity);
-        setTitle(R.string.message_info);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.message_info;
+        options.navigateId = R.drawable.actionbar_dark_back_icon;
+        setToolBar(R.id.toolbar, options);
 
         account = getIntent().getStringExtra(EXTRA_ACCOUNT);
         findViews();

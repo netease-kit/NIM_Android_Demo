@@ -21,7 +21,7 @@ import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.cache.FriendDataCache;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
@@ -29,15 +29,18 @@ import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.common.util.sys.ActionBarUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.friend.FriendServiceObserve;
 import com.netease.nimlib.sdk.friend.constant.VerifyType;
 import com.netease.nimlib.sdk.friend.model.AddFriendData;
 import com.netease.nimlib.sdk.friend.model.Friend;
+import com.netease.nimlib.sdk.friend.model.MuteListChangedNotify;
 import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
@@ -49,7 +52,7 @@ import java.util.Map;
  * 用户资料页面
  * Created by huangjun on 2015/8/11.
  */
-public class UserProfileActivity extends TActionBarActivity {
+public class UserProfileActivity extends UI {
 
     private static final String TAG = UserProfileActivity.class.getSimpleName();
 
@@ -96,8 +99,13 @@ public class UserProfileActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_activity);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.user_profile;
+        setToolBar(R.id.toolbar, options);
+
         account = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
-        setTitle(R.string.user_profile);
+
         initActionbar();
 
         findViews();
@@ -120,7 +128,15 @@ public class UserProfileActivity extends TActionBarActivity {
 
     private void registerObserver(boolean register) {
         FriendDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
+        NIMClient.getService(FriendServiceObserve.class).observeMuteListChangedNotify(muteListChangedNotifyObserver, register);
     }
+
+    Observer<MuteListChangedNotify> muteListChangedNotifyObserver = new Observer<MuteListChangedNotify>() {
+        @Override
+        public void onEvent(MuteListChangedNotify notify) {
+            setToggleBtn(noticeSwitch, !notify.isMute());
+        }
+    };
 
     FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
         @Override
@@ -181,10 +197,15 @@ public class UserProfileActivity extends TActionBarActivity {
     }
 
     private void initActionbar() {
+        TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
         if (!DemoCache.getAccount().equals(account)) {
+            toolbarView.setVisibility(View.GONE);
             return;
+        } else {
+            toolbarView.setVisibility(View.VISIBLE);
         }
-        ActionBarUtil.addRightClickableTextViewOnActionBar(this, R.string.edit, new View.OnClickListener() {
+        toolbarView.setText(R.string.edit);
+        toolbarView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 UserProfileSettingActivity.start(UserProfileActivity.this, account);
@@ -447,7 +468,7 @@ public class UserProfileActivity extends TActionBarActivity {
         @Override
         public void onClick(View v) {
             if (v == addFriendBtn) {
-                if(FLAG_ADD_FRIEND_DIRECTLY) {
+                if (FLAG_ADD_FRIEND_DIRECTLY) {
                     doAddFriend(null, true);  // 直接加为好友
                 } else {
                     onAddFriendByVerify(); // 发起好友验证请求

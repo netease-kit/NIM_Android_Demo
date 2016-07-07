@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
@@ -39,18 +40,23 @@ import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
+import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
-import com.netease.nimlib.sdk.avchat.model.AVChatRingerConfig;
 import com.netease.nimlib.sdk.msg.MessageNotifierCustomization;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.model.RTSData;
+import com.netease.nimlib.sdk.team.constant.TeamFieldEnum;
+import com.netease.nimlib.sdk.team.model.IMMessageFilter;
+import com.netease.nimlib.sdk.team.model.UpdateTeamAttachment;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 public class NimApplication extends Application {
 
@@ -73,6 +79,9 @@ public class NimApplication extends Application {
 
             // 初始化UIKit模块
             initUIKit();
+
+            // 注册通知消息过滤器
+            registerIMMessageFilter();
 
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
@@ -114,6 +123,12 @@ public class NimApplication extends Application {
 
         // 通知铃声的uri字符串
         config.notificationSound = "android.resource://com.netease.nim.demo/raw/msg";
+
+        // 呼吸灯配置
+        config.ledARGB = Color.GREEN;
+        config.ledOnMs = 1000;
+        config.ledOffMs = 1500;
+
         options.statusBarNotificationConfig = config;
         DemoCache.setNotificationConfig(config);
         UserPreferences.setStatusConfig(config);
@@ -157,21 +172,34 @@ public class NimApplication extends Application {
     }
 
     /**
+     * 通知消息过滤器（如果过滤则该消息不存储不上报）
+     */
+    private void registerIMMessageFilter() {
+        NIMClient.getService(MsgService.class).registerIMMessageFilter(new IMMessageFilter() {
+            @Override
+            public boolean shouldIgnore(IMMessage message) {
+                if (UserPreferences.getMsgIgnore() && message.getAttachment() != null) {
+                    if (message.getAttachment() instanceof UpdateTeamAttachment) {
+                        UpdateTeamAttachment attachment = (UpdateTeamAttachment) message.getAttachment();
+                        for (Map.Entry<TeamFieldEnum, Object> field : attachment.getUpdatedFields().entrySet()) {
+                            if (field.getKey() == TeamFieldEnum.ICON) {
+                                return true;
+                            }
+                        }
+                    } else if (message.getAttachment() instanceof AVChatAttachment) {
+                        return true;
+                    }
+                }
+                return false;
+            }
+        });
+    }
+
+    /**
      * 音视频通话配置与监听
      */
     private void enableAVChat() {
-        setupAVChat();
         registerAVChatIncomingCallObserver(true);
-    }
-
-    private void setupAVChat() {
-        AVChatRingerConfig config = new AVChatRingerConfig();
-        config.res_connecting = R.raw.avchat_connecting;
-        config.res_no_response = R.raw.avchat_no_response;
-        config.res_peer_busy = R.raw.avchat_peer_busy;
-        config.res_peer_reject = R.raw.avchat_peer_reject;
-        config.res_ring = R.raw.avchat_ring;
-        AVChatManager.getInstance().setRingerConfig(config); // 设置铃声配置
     }
 
     private void registerAVChatIncomingCallObserver(boolean register) {
@@ -191,19 +219,9 @@ public class NimApplication extends Application {
      * 白板实时时会话配置与监听
      */
     private void enableRTS() {
-        //setupRTS();
         registerRTSIncomingObserver(true);
     }
 
-//    private void setupRTS() {
-//        RTSRingerConfig config = new RTSRingerConfig();
-//        config.res_connecting = R.raw.avchat_connecting;
-//        config.res_no_response = R.raw.avchat_no_response;
-//        config.res_peer_busy = R.raw.avchat_peer_busy;
-//        config.res_peer_reject = R.raw.avchat_peer_reject;
-//        config.res_ring = R.raw.avchat_ring;
-//        RTSManager.getInstance().setRingerConfig(config); // 设置铃声配置
-//    }
 
     private void registerRTSIncomingObserver(boolean register) {
         RTSManager.getInstance().observeIncomingSession(new Observer<RTSData>() {

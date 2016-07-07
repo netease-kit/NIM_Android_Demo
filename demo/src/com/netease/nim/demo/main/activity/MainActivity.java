@@ -1,5 +1,6 @@
 package com.netease.nim.demo.main.activity;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -11,23 +12,26 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
-import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
-import com.netease.nim.uikit.LoginSyncDataStatusObserver;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
+import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
 import com.netease.nim.demo.login.LoginActivity;
-import com.netease.nim.demo.main.fragment.HomeFragment;
 import com.netease.nim.demo.login.LogoutHelper;
+import com.netease.nim.demo.main.fragment.HomeFragment;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.demo.team.TeamCreateHelper;
 import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
+import com.netease.nim.uikit.LoginSyncDataStatusObserver;
 import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.permission.MPermission;
+import com.netease.nim.uikit.permission.annotation.OnMPermissionDenied;
+import com.netease.nim.uikit.permission.annotation.OnMPermissionGranted;
 import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimIntent;
@@ -41,12 +45,13 @@ import java.util.ArrayList;
  * <p/>
  * Created by huangjun on 2015/3/25.
  */
-public class MainActivity extends TActionBarActivity {
+public class MainActivity extends UI {
 
     private static final String EXTRA_APP_QUIT = "APP_QUIT";
     private static final int REQUEST_CODE_NORMAL = 1;
     private static final int REQUEST_CODE_ADVANCED = 2;
     private static final String TAG = MainActivity.class.getSimpleName();
+    private final int BASIC_PERMISSION_REQUEST_CODE = 100;
 
     private HomeFragment mainFragment;
 
@@ -80,7 +85,13 @@ public class MainActivity extends TActionBarActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
+
+        setToolBar(R.id.toolbar, R.string.app_name, R.drawable.actionbar_dark_logo);
+
         setTitle(R.string.app_name);
+
+        requestBasicPermission();
+
         onParseIntent();
 
         // 等待同步数据完成
@@ -97,6 +108,39 @@ public class MainActivity extends TActionBarActivity {
         }
 
         onInit();
+    }
+
+    /**
+     * 基本权限管理
+     */
+    private void requestBasicPermission() {
+        MPermission.with(MainActivity.this)
+                .addRequestCode(BASIC_PERMISSION_REQUEST_CODE)
+                .permissions(
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        Manifest.permission.READ_EXTERNAL_STORAGE,
+                        Manifest.permission.CAMERA,
+                        Manifest.permission.READ_PHONE_STATE,
+                        Manifest.permission.RECORD_AUDIO,
+                        Manifest.permission.ACCESS_COARSE_LOCATION,
+                        Manifest.permission.ACCESS_FINE_LOCATION
+                        )
+                .request();
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        MPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
+    }
+
+    @OnMPermissionGranted(BASIC_PERMISSION_REQUEST_CODE)
+    public void onBasicPermissionSuccess(){
+        Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+    }
+
+    @OnMPermissionDenied(BASIC_PERMISSION_REQUEST_CODE)
+    public void onBasicPermissionFailed(){
+        Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
     }
 
     private void onInit() {

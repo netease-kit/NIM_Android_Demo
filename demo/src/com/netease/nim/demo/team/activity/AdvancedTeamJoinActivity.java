@@ -11,7 +11,8 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.cache.SimpleCallback;
 import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.team.TeamService;
@@ -22,7 +23,7 @@ import com.netease.nimlib.sdk.team.model.Team;
  * 申请加入群组界面
  * Created by hzxuwen on 2015/3/20.
  */
-public class AdvancedTeamJoinActivity extends TActionBarActivity implements View.OnClickListener {
+public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener {
 
     private static final String EXTRA_ID = "EXTRA_ID";
 
@@ -46,7 +47,10 @@ public class AdvancedTeamJoinActivity extends TActionBarActivity implements View
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.nim_advanced_team_join_activity);
-        setTitle(R.string.team_join);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.team_join;
+        setToolBar(R.id.toolbar, options);
 
         findViews();
         parseIntentData();

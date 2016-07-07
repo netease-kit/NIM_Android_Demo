@@ -19,7 +19,7 @@ import com.netease.nim.demo.main.reminder.ReminderId;
 import com.netease.nim.demo.main.reminder.ReminderItem;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.contact.ContactsCustomization;
 import com.netease.nim.uikit.contact.ContactsFragment;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
@@ -176,7 +176,7 @@ public class ContactListFragment extends MainTabFragment {
         fragment = new ContactsFragment();
         fragment.setContainerId(R.id.contact_fragment);
 
-        TActionBarActivity activity = (TActionBarActivity) getActivity();
+        UI activity = (UI) getActivity();
 
         // 如果是activity从堆栈恢复，FM中已经存在恢复而来的fragment，此时会使用恢复来的，而new出来这个会被丢弃掉
         fragment = (ContactsFragment) activity.addFragment(fragment);

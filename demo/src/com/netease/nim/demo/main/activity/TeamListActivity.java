@@ -12,7 +12,7 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.contact.core.item.ContactItem;
 import com.netease.nim.uikit.contact.core.item.ItemTypes;
@@ -22,6 +22,7 @@ import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
 import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
 import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
 import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
@@ -34,7 +35,7 @@ import java.util.List;
  * <p/>
  * Created by huangjun on 2015/4/21.
  */
-public class TeamListActivity extends TActionBarActivity implements AdapterView.OnItemClickListener {
+public class TeamListActivity extends UI implements AdapterView.OnItemClickListener {
 
     private static final String EXTRA_DATA_ITEM_TYPES = "EXTRA_DATA_ITEM_TYPES";
 
@@ -59,7 +60,10 @@ public class TeamListActivity extends TActionBarActivity implements AdapterView.
         itemType = getIntent().getIntExtra(EXTRA_DATA_ITEM_TYPES, ItemTypes.TEAMS.ADVANCED_TEAM);
 
         setContentView(R.layout.group_list_activity);
-        setTitle(itemType == ItemTypes.TEAMS.ADVANCED_TEAM ? R.string.advanced_team : R.string.normal_team);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = itemType == ItemTypes.TEAMS.ADVANCED_TEAM ? R.string.advanced_team : R.string.normal_team;
+        setToolBar(R.id.toolbar, options);
 
         lvContacts = (ListView) findViewById(R.id.group_list);
 

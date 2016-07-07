@@ -17,11 +17,12 @@ import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.media.picker.PickImageHelper;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.actions.PickImageAction;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
@@ -38,7 +39,7 @@ import java.io.File;
 /**
  * Created by hzxuwen on 2015/9/14.
  */
-public class UserProfileSettingActivity extends TActionBarActivity implements View.OnClickListener {
+public class UserProfileSettingActivity extends UI implements View.OnClickListener {
     private final String TAG = UserProfileSettingActivity.class.getSimpleName();
 
     // constant
@@ -79,7 +80,10 @@ public class UserProfileSettingActivity extends TActionBarActivity implements Vi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_set_activity);
-        setTitle(R.string.user_information);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.user_information;
+        setToolBar(R.id.toolbar, options);
 
         account = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
         findViews();

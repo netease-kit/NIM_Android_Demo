@@ -19,6 +19,22 @@ public class UserPreferences {
     private final static String KEY_AVCHAT_SERVER_AUDIO_RECORD = "KEY_AVCHAT_SERVER_AUDIO_RECORD";
     private final static String KEY_AVCHAT_SERVER_VIDEO_RECORD = "KEY_AVCHAT_SERVER_VIDEO_RECORD";
 
+    // 测试过滤通知
+    private final static String KEY_MSG_IGNORE = "KEY_MSG_IGNORE";
+    // 响铃配置
+    private final static String KEY_RING_TOGGLE = "KEY_RING_TOGGLE";
+    // 呼吸灯配置
+    private final static String KEY_LED_TOGGLE = "KEY_LED_TOGGLE";
+    // 通知栏标题配置
+    private final static String KEY_NOTICE_CONTENT_TOGGLE = "KEY_NOTICE_CONTENT_TOGGLE";
+
+    public static void setMsgIgnore(boolean enable) {
+        saveBoolean(KEY_MSG_IGNORE, enable);
+    }
+
+    public static boolean getMsgIgnore() {
+        return getBoolean(KEY_MSG_IGNORE, false);
+    }
 
     public static void setAVChatServerAudioRecord(boolean enable) {
         saveBoolean(KEY_AVCHAT_SERVER_AUDIO_RECORD, enable);
@@ -42,6 +58,30 @@ public class UserPreferences {
 
     public static boolean getNotificationToggle() {
         return getBoolean(KEY_SB_NOTIFY_TOGGLE, true);
+    }
+
+    public static void setRingToggle(boolean on) {
+        saveBoolean(KEY_RING_TOGGLE, on);
+    }
+
+    public static boolean getRingToggle() {
+        return getBoolean(KEY_RING_TOGGLE, true);
+    }
+
+    public static void setLedToggle(boolean on) {
+        saveBoolean(KEY_LED_TOGGLE, on);
+    }
+
+    public static boolean getLedToggle() {
+        return getBoolean(KEY_LED_TOGGLE, true);
+    }
+
+    public static boolean getNoticeContentToggle() {
+        return getBoolean(KEY_NOTICE_CONTENT_TOGGLE, false);
+    }
+
+    public static void setNoticeContentToggle(boolean on) {
+        saveBoolean(KEY_NOTICE_CONTENT_TOGGLE, on);
     }
 
     public static void setDownTimeToggle(boolean on) {
@@ -84,6 +124,10 @@ public class UserPreferences {
             config.notificationSmallIconId = jsonObject.getIntValue("notificationSmallIconId");
             config.notificationSound = jsonObject.getString("notificationSound");
             config.hideContent = jsonObject.getBoolean("hideContent");
+            config.ledARGB = jsonObject.getIntValue("ledargb");
+            config.ledOnMs = jsonObject.getIntValue("ledonms");
+            config.ledOffMs = jsonObject.getIntValue("ledoffms");
+            config.titleOnlyShowAppName = jsonObject.getBoolean("titleOnlyShowAppName");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -103,6 +147,10 @@ public class UserPreferences {
             jsonObject.put("notificationSmallIconId", config.notificationSmallIconId);
             jsonObject.put("notificationSound", config.notificationSound);
             jsonObject.put("hideContent", config.hideContent);
+            jsonObject.put("ledargb", config.ledARGB);
+            jsonObject.put("ledonms", config.ledOnMs);
+            jsonObject.put("ledoffms", config.ledOffMs);
+            jsonObject.put("titleOnlyShowAppName", config.titleOnlyShowAppName);
         } catch (Exception e) {
             e.printStackTrace();
         }

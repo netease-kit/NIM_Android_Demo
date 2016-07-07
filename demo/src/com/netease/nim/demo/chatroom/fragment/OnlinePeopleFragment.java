@@ -1,10 +1,14 @@
 package com.netease.nim.demo.chatroom.fragment;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.InputType;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -21,6 +25,7 @@ import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
+import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.ptr.PullToRefreshBase;
 import com.netease.nim.uikit.common.ui.ptr.PullToRefreshListView;
 import com.netease.nimlib.sdk.NIMClient;
@@ -112,7 +117,7 @@ public class OnlinePeopleFragment extends TFragment implements TAdapterDelegate 
             }
         });
 
-        //listView.setOnItemLongClickListener(longClickListener); // 线上入口屏蔽成员操作
+//        listView.setOnItemLongClickListener(longClickListener); // 线上入口屏蔽成员操作
     }
 
     private void stopRefreshing() {
@@ -270,6 +275,12 @@ public class OnlinePeopleFragment extends TFragment implements TAdapterDelegate 
         // 设为/取消普通成员
         addNormalItem(currentMember, alertDialog);
 
+        // 设置临时禁言（含通知）
+        addTempMuteItemNotify(currentMember, alertDialog);
+
+        // 设置临时禁言（不通知）
+        addTemMuteItem(currentMember, alertDialog);
+
         alertDialog.show();
     }
 
@@ -319,6 +330,84 @@ public class OnlinePeopleFragment extends TFragment implements TAdapterDelegate 
             @Override
             public void onClick() {
                 setNormalMember(chatRoomMember, isNormal);
+            }
+        });
+    }
+
+    // 设置临时禁言（含通知）
+    private void addTempMuteItemNotify(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
+        alertDialog.addItem(R.string.set_temp_mute_notify, new CustomAlertDialog.onSeparateItemClickListener() {
+            @Override
+            public void onClick() {
+                final EasyEditDialog requestDialog = new EasyEditDialog(getActivity());
+                requestDialog.setEditTextMaxLength(200);
+                requestDialog.setTitle(getString(R.string.mute_duration));
+                requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                requestDialog.addNegativeButtonListener(R.string.cancel, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestDialog.dismiss();
+                        getActivity().getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                    }
+                });
+                requestDialog.addPositiveButtonListener(R.string.send, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestDialog.dismiss();
+                        String content = requestDialog.getEditMessage();
+                        if (!TextUtils.isEmpty(content)) {
+                            setTempMute(chatRoomMember.getAccount(), content, true);
+                        }
+                        getActivity().getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                    }
+                });
+                requestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                    }
+                });
+                requestDialog.show();
+            }
+        });
+    }
+
+    // 设置临时禁言（不通知）
+    private void addTemMuteItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
+        alertDialog.addItem(R.string.set_temp_mute_not_notify, new CustomAlertDialog.onSeparateItemClickListener() {
+            @Override
+            public void onClick() {
+                final EasyEditDialog requestDialog = new EasyEditDialog(getActivity());
+                requestDialog.setEditTextMaxLength(200);
+                requestDialog.setTitle(getString(R.string.mute_duration));
+                requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                requestDialog.addNegativeButtonListener(R.string.cancel, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestDialog.dismiss();
+                        getActivity().getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                    }
+                });
+                requestDialog.addPositiveButtonListener(R.string.send, new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        requestDialog.dismiss();
+                        String content = requestDialog.getEditMessage();
+                        if (!TextUtils.isEmpty(content)) {
+                            setTempMute(chatRoomMember.getAccount(), content, false);
+                        }
+                        getActivity().getWindow().setSoftInputMode(
+                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                    }
+                });
+                requestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialog) {
+                    }
+                });
+                requestDialog.show();
             }
         });
     }
@@ -439,6 +528,28 @@ public class OnlinePeopleFragment extends TFragment implements TAdapterDelegate 
                     @Override
                     public void onFailed(int code) {
 
+                    }
+
+                    @Override
+                    public void onException(Throwable exception) {
+
+                    }
+                });
+    }
+
+    // 设置临时禁言
+    private void setTempMute(String account, String content, boolean needNotify) {
+        MemberOption option = new MemberOption(roomId, account);
+        NIMClient.getService(ChatRoomService.class).markChatRoomTempMute(needNotify, Long.parseLong(content), option)
+                .setCallback(new RequestCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void param) {
+                        Toast.makeText(getActivity(), "设置临时禁言成功", Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailed(int code) {
+                        Toast.makeText(getActivity(), "设置临时禁言失败，code:" + code, Toast.LENGTH_SHORT).show();
                     }
 
                     @Override

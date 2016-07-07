@@ -13,7 +13,7 @@ import com.netease.nim.demo.common.util.sys.SysInfoUtil;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.model.Extras;
-import com.netease.nim.uikit.common.activity.TActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -25,7 +25,7 @@ import java.util.ArrayList;
  * <p/>
  * Created by huangjun on 2015/2/1.
  */
-public class WelcomeActivity extends TActivity {
+public class WelcomeActivity extends UI {
 
     private static final String TAG = "WelcomeActivity";
 

@@ -49,6 +49,7 @@
     <string name="delete_success">删除成功</string>
     <string name="clear_all_success">清空成功</string>
     <string name="login_failed">帐号或密码错误</string>
+    <string name="login_exception">无效输入</string>
     <string name="kick_out">帐号在其它设备登录</string>
     <string name="edittext_length_tips">你输入的字数已经超过了限制！</string>
     <string name="file_transfer">文件云存储</string>
@@ -64,6 +65,8 @@
     <string name="search_advanced_team">搜索高级群</string>
     <string name="net_broken">当前网络不可用</string>
     <string name="nim_status_unlogin">未登录</string>
+    <string name="nim_status_connecting">连接中...</string>
+    <string name="nim_status_logining">登录中...</string>
     <string name="copyright">Copyright ©1997-2016 网易公司版权所有</string>
     <string name="edit_nick">修改昵称</string>
     <string name="user_not_exsit">该用户不存在</string>
@@ -192,6 +195,9 @@
     <string name="time_to_default">08:00</string>
     <string name="black_list">黑名单</string>
     <string name="msg_speaker">听筒模式</string>
+    <string name="ring">响铃模式</string>
+    <string name="led">自定义呼吸灯</string>
+    <string name="notice_content">通知栏标题定制</string>
 
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>

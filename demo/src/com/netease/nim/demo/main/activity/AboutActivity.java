@@ -5,9 +5,10 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.BuildConfig;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.model.ToolBarOptions;
 
-public class AboutActivity extends TActionBarActivity{
+public class AboutActivity extends UI{
 	
 	private TextView versionGit;
 	private TextView versionDate;
@@ -16,6 +17,10 @@ public class AboutActivity extends TActionBarActivity{
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.about_layout);
+
+		ToolBarOptions options = new ToolBarOptions();
+		setToolBar(R.id.toolbar, options);
+
 		findViews();
 		initViewData();
 	}

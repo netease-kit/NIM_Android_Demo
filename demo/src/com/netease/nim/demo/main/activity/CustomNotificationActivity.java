@@ -19,7 +19,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.helper.CustomNotificationCache;
 import com.netease.nim.demo.main.viewholder.CustomNotificationViewHolder;
 import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.common.activity.TActionBarActivity;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapter;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
@@ -27,6 +27,7 @@ import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.common.ui.listview.MessageListView;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -43,7 +44,7 @@ import java.util.List;
  * <p/>
  * Created by huangjun on 2015/5/28
  */
-public class CustomNotificationActivity extends TActionBarActivity implements TAdapterDelegate {
+public class CustomNotificationActivity extends UI implements TAdapterDelegate {
 
     private static final int CONTACT_SELECT_REQUEST_CODE = 0x01;
 
@@ -93,7 +94,10 @@ public class CustomNotificationActivity extends TActionBarActivity implements TA
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.system_notification_message_activity);
-        setTitle(R.string.custom_notification);
+
+        ToolBarOptions options = new ToolBarOptions();
+        options.titleId = R.string.custom_notification;
+        setToolBar(R.id.toolbar, options);
 
         initAdapter();
         initListView();
@@ -166,16 +170,18 @@ public class CustomNotificationActivity extends TActionBarActivity implements TA
     }
 
     private void registerCustomNotificationObserver(boolean register) {
-        NIMClient.getService(MsgServiceObserve.class).observeCustomNotification(new Observer<CustomNotification>() {
-            @Override
-            public void onEvent(CustomNotification message) {
-                if (!items.contains(message) && message.getContent() != null) {
-                    items.add(0, message);
-                }
-                refresh();
-            }
-        }, register);
+        NIMClient.getService(MsgServiceObserve.class).observeCustomNotification(customNotificationObserver, register);
     }
+
+    Observer<CustomNotification> customNotificationObserver = new Observer<CustomNotification>() {
+        @Override
+        public void onEvent(CustomNotification customNotification) {
+            if (!items.contains(customNotification) && customNotification.getContent() != null) {
+                items.add(0, customNotification);
+            }
+            refresh();
+        }
+    };
 
     private void selectCustomNotificationTarget(boolean team) {
         ContactSelectActivity.Option option = new ContactSelectActivity.Option();
