@@ -3,6 +3,7 @@ package com.netease.nim.demo.session;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
@@ -133,8 +134,10 @@ public class SessionHelper {
 
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
             ArrayList<BaseAction> actions = new ArrayList<>();
-            actions.add(new AVChatAction(AVChatType.AUDIO));
-            actions.add(new AVChatAction(AVChatType.VIDEO));
+            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+                actions.add(new AVChatAction(AVChatType.AUDIO));
+                actions.add(new AVChatAction(AVChatType.VIDEO));
+            }
             actions.add(new RTSAction());
             actions.add(new SnapChatAction());
             actions.add(new GuessAction());

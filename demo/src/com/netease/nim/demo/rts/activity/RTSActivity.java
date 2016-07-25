@@ -2,7 +2,6 @@ package com.netease.nim.demo.rts.activity;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.res.TypedArray;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
@@ -500,7 +499,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
         });
 
         if (sessionId == null) {
-            Toast.makeText(RTSActivity.this, "发起会话失败,音频通道同时只能有一个会话开启", Toast.LENGTH_SHORT).show();
+            Toast.makeText(RTSActivity.this, "发起会话失败!", Toast.LENGTH_SHORT).show();
             onFinish();
         }
     }
@@ -633,10 +632,6 @@ public class RTSActivity extends UI implements View.OnClickListener {
         new Handler(getMainLooper()).postDelayed(new Runnable() {
             @Override
             public void run() {
-                TypedArray actionbarSizeTypedArray = obtainStyledAttributes(new int[]{android.R.attr.actionBarSize});
-                float actionBarHeight = actionbarSizeTypedArray.getDimension(0, 0);
-                Log.i("Doodle", "actionBarHeight =" + actionBarHeight);
-
                 Rect frame = new Rect();
                 getWindow().getDecorView().getWindowVisibleDisplayFrame(frame);
                 int statusBarHeight = frame.top;
@@ -649,7 +644,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
                 Log.i("Doodle", "doodleView marginLeft =" + marginLeft);
 
                 float offsetX = marginLeft;
-                float offsetY = actionBarHeight + statusBarHeight + marginTop;
+                float offsetY = statusBarHeight + marginTop;
 
                 doodleView.setPaintOffset(offsetX, offsetY);
                 Log.i("Doodle", "client1 offsetX = " + offsetX + ", offsetY = " + offsetY);

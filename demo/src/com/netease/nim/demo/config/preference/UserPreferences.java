@@ -16,9 +16,6 @@ public class UserPreferences {
     private final static String KEY_TEAM_ANNOUNCE_CLOSED = "team_announce_closed";
     private final static String KEY_STATUS_BAR_NOTIFICATION_CONFIG = "KEY_STATUS_BAR_NOTIFICATION_CONFIG";
 
-    private final static String KEY_AVCHAT_SERVER_AUDIO_RECORD = "KEY_AVCHAT_SERVER_AUDIO_RECORD";
-    private final static String KEY_AVCHAT_SERVER_VIDEO_RECORD = "KEY_AVCHAT_SERVER_VIDEO_RECORD";
-
     // 测试过滤通知
     private final static String KEY_MSG_IGNORE = "KEY_MSG_IGNORE";
     // 响铃配置
@@ -34,22 +31,6 @@ public class UserPreferences {
 
     public static boolean getMsgIgnore() {
         return getBoolean(KEY_MSG_IGNORE, false);
-    }
-
-    public static void setAVChatServerAudioRecord(boolean enable) {
-        saveBoolean(KEY_AVCHAT_SERVER_AUDIO_RECORD, enable);
-    }
-
-    public static boolean getAVChatServerAudioRecord() {
-        return getBoolean(KEY_AVCHAT_SERVER_AUDIO_RECORD, false);
-    }
-
-    public static void setAVChatServerVideoRecord(boolean enable) {
-        saveBoolean(KEY_AVCHAT_SERVER_VIDEO_RECORD, enable);
-    }
-
-    public static boolean getAVChatServerVideoRecord() {
-        return getBoolean(KEY_AVCHAT_SERVER_VIDEO_RECORD, false);
     }
 
     public static void setNotificationToggle(boolean on) {

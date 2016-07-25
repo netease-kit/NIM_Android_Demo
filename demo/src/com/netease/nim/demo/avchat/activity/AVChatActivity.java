@@ -14,7 +14,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatNotification;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.AVChatUI;
-import com.netease.nim.demo.avchat.SoundPlayer;
+import com.netease.nim.demo.avchat.AVChatSoundPlayer;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
@@ -231,11 +231,11 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         @Override
         public void onEvent(AVChatCalleeAckEvent ackInfo) {
 
-            SoundPlayer.instance(AVChatActivity.this).stop();
+            AVChatSoundPlayer.instance(AVChatActivity.this).stop();
 
             if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_BUSY) {
 
-                SoundPlayer.instance(AVChatActivity.this).play(SoundPlayer.RingerTypeEnum.PEER_BUSY);
+                AVChatSoundPlayer.instance(AVChatActivity.this).play(AVChatSoundPlayer.RingerTypeEnum.PEER_BUSY);
 
                 avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
             } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_REJECT) {
@@ -267,7 +267,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
                 activeMissCallNotifier();
             }
 
-            SoundPlayer.instance(AVChatActivity.this).stop();
+            AVChatSoundPlayer.instance(AVChatActivity.this).stop();
         }
     };
 
@@ -275,7 +275,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         @Override
         public void onEvent(Integer integer) {
 
-            SoundPlayer.instance(AVChatActivity.this).stop();
+            AVChatSoundPlayer.instance(AVChatActivity.this).stop();
 
             avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
         }
@@ -298,7 +298,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         @Override
         public void onEvent(AVChatCommonEvent avChatHangUpInfo) {
 
-            SoundPlayer.instance(AVChatActivity.this).stop();
+            AVChatSoundPlayer.instance(AVChatActivity.this).stop();
 
             avChatUI.closeSessions(AVChatExitCode.HANGUP);
             cancelCallingNotifier();
@@ -316,7 +316,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         @Override
         public void onEvent(AVChatOnlineAckEvent ackInfo) {
 
-            SoundPlayer.instance(AVChatActivity.this).stop();
+            AVChatSoundPlayer.instance(AVChatActivity.this).stop();
 
             if (ackInfo.getClientType() != ClientType.Android) {
                 String client = null;
@@ -486,9 +486,10 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onConnectionTypeChanged(int current, int old) {
+    public void onConnectionTypeChanged(int netType) {
 
     }
+
 
     @Override
     public void onLocalRecordEnd(String[] files, int event) {

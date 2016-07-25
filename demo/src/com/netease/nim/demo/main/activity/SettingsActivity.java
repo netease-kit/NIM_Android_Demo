@@ -13,6 +13,7 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
@@ -42,8 +43,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_ABOUT = 6;
     private static final int TAG_SPEAKER = 7;
 
-    private static final int TAG_AVCHAT_SERVER_AUDIO_RECORD = 8;
-    private static final int TAG_AVCHAT_SERVER_VIDEO_RECORD = 9;
+    private static final int TAG_NRTC_SETTINGS = 8;
 
     private static final int TAG_MSG_IGNORE = 10;
     private static final int TAG_RING = 11;
@@ -143,12 +143,10 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(disturbItem);
         items.add(SettingTemplate.makeSeperator());
 
-        items.add(new SettingTemplate(TAG_AVCHAT_SERVER_AUDIO_RECORD, "网络通话服务器录制音频",
-                SettingType.TYPE_TOGGLE, UserPreferences.getAVChatServerAudioRecord()));
-        items.add(new SettingTemplate(TAG_AVCHAT_SERVER_VIDEO_RECORD, "网络通话服务器录制视频",
-                SettingType.TYPE_TOGGLE, UserPreferences.getAVChatServerVideoRecord()));
-
-        items.add(SettingTemplate.makeSeperator());
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            items.add(new SettingTemplate(TAG_NRTC_SETTINGS, getString(R.string.nrtc_settings)));
+            items.add(SettingTemplate.makeSeperator());
+        }
 
         items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知",
                 SettingType.TYPE_TOGGLE, UserPreferences.getMsgIgnore()));
@@ -179,6 +177,9 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_CLEAR:
                 NIMClient.getService(MsgService.class).clearMsgDatabase(true);
                 Toast.makeText(SettingsActivity.this, R.string.clear_msg_history_success, Toast.LENGTH_SHORT).show();
+                break;
+            case TAG_NRTC_SETTINGS:
+                startActivity(new Intent(SettingsActivity.this, AVChatSettingsActivity.class));
                 break;
             default:
                 break;
@@ -217,12 +218,6 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_SPEAKER:
                 com.netease.nim.uikit.UserPreferences.setEarPhoneModeEnable(checkState);
                 MessageAudioControl.getInstance(SettingsActivity.this).setEarPhoneModeEnable(checkState);
-                break;
-            case TAG_AVCHAT_SERVER_AUDIO_RECORD:
-                UserPreferences.setAVChatServerAudioRecord(checkState);
-                break;
-            case TAG_AVCHAT_SERVER_VIDEO_RECORD:
-                UserPreferences.setAVChatServerVideoRecord(checkState);
                 break;
             case TAG_MSG_IGNORE:
                 UserPreferences.setMsgIgnore(checkState);

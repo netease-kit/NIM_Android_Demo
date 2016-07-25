@@ -3,7 +3,7 @@
     package="com.netease.nim.demo"
     android:installLocation="auto"
     android:versionCode="25"
-    android:versionName="2.5.0">
+    android:versionName="2.6.0">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
@@ -285,6 +285,10 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize" />
+
+        <!-- NRTC Settings -->
+        <activity android:name=".avchat.activity.AVChatSettingsActivity"
+            android:screenOrientation="portrait" />
 
         <!-- 声明云信后台服务 -->
         <service
