@@ -587,7 +587,17 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onDeviceEvent(String account, int code, String desc) {
+    public void onDeviceEvent(int code, String desc) {
+
+    }
+
+    @Override
+    public void onFirstVideoFrameRendered(String user) {
+
+    }
+
+    @Override
+    public void onVideoFrameResolutionChanged(String user, int width, int height, int rotate) {
 
     }
 }

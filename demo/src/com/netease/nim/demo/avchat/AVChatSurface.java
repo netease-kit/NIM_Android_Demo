@@ -18,6 +18,11 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
+import com.netease.nimlib.sdk.avchat.constant.AVChatVideoScalingType;
+import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 视频绘制管理
@@ -38,12 +43,14 @@ public class AVChatSurface {
 
     // view
     private LinearLayout largeSizePreviewLayout;
-    public SurfaceView mCapturePreview ;
-    private SurfaceView smallSizeSurfaceView;// always added into small size layout
     private FrameLayout smallSizePreviewFrameLayout;
     private LinearLayout smallSizePreviewLayout;
     private ImageView smallSizePreviewCoverImg;//stands for peer or local close camera
     private View largeSizePreviewCoverLayout;//stands for peer or local close camera
+
+    //render
+    private AVChatVideoRender smallRender;
+    private AVChatVideoRender largeRender;
 
     // state
     private boolean init =false;
@@ -65,14 +72,14 @@ public class AVChatSurface {
         this.manager = manager;
         this.surfaceRoot = surfaceRoot;
         this.uiHandler = new Handler(context.getMainLooper());
+        this.smallRender = new AVChatVideoRender(context);
+        this.largeRender = new AVChatVideoRender(context);
     }
 
     private void findViews() {
         if(init)
             return;
         if(surfaceRoot != null){
-            mCapturePreview = (SurfaceView) surfaceRoot.findViewById(R.id.capture_preview);
-            mCapturePreview.getHolder().setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
 
             smallSizePreviewFrameLayout = (FrameLayout) surfaceRoot.findViewById(R.id.small_size_preview_layout);
             smallSizePreviewLayout = (LinearLayout) surfaceRoot.findViewById(R.id.small_size_preview);
@@ -187,10 +194,9 @@ public class AVChatSurface {
          * 获取视频SurfaceView，加入到自己的布局中，用于呈现视频图像
          * account 要显示视频的用户帐号
          */
-        SurfaceView surfaceView = AVChatManager.getInstance().getSurfaceRender(account);
-        if (surfaceView != null) {
-            addIntoLargeSizePreviewLayout(surfaceView);
-        }
+        AVChatManager.getInstance().setupVideoRender(account, largeRender, false, AVChatVideoScalingType.SCALE_ASPECT_BALANCED);
+        addIntoLargeSizePreviewLayout(largeRender);
+
     }
 
     /**
@@ -201,15 +207,14 @@ public class AVChatSurface {
     public void initSmallSurfaceView(String account){
         smallAccount = account;
         findViews();
+
         /**
          * 获取视频SurfaceView，加入到自己的布局中，用于呈现视频图像
          * account 要显示视频的用户帐号
          */
-        SurfaceView surfaceView = AVChatManager.getInstance().getSurfaceRender(account);
-        if (surfaceView != null) {
-            smallSizeSurfaceView = surfaceView;
-            addIntoSmallSizePreviewLayout();
-        }
+        AVChatManager.getInstance().setupVideoRender(account, smallRender, false, AVChatVideoScalingType.SCALE_ASPECT_BALANCED);
+        addIntoSmallSizePreviewLayout(smallRender);
+
     }
 
 
@@ -230,13 +235,13 @@ public class AVChatSurface {
     /**
      * 添加surfaceview到smallSizePreviewLayout
      */
-    private void addIntoSmallSizePreviewLayout() {
+    private void addIntoSmallSizePreviewLayout(SurfaceView surfaceView) {
         smallSizePreviewCoverImg.setVisibility(View.GONE);
-        if (smallSizeSurfaceView.getParent() != null) {
-            ((ViewGroup)smallSizeSurfaceView.getParent()).removeView(smallSizeSurfaceView);
+        if (surfaceView.getParent() != null) {
+            ((ViewGroup)surfaceView.getParent()).removeView(surfaceView);
         }
-        smallSizePreviewLayout.addView(smallSizeSurfaceView);
-        smallSizeSurfaceView.setZOrderMediaOverlay(true);
+        smallSizePreviewLayout.addView(surfaceView);
+        surfaceView.setZOrderMediaOverlay(true);
         smallSizePreviewLayout.setVisibility(View.VISIBLE);
     }
 
@@ -344,8 +349,28 @@ public class AVChatSurface {
      * @param user1 用户1的account
      * @param user2 用户2的account
      */
-    private void switchRender(String user1, String user2){
-        AVChatManager.getInstance().switchRender(user1, user2);
+    private void switchRender(String user1, String user2) {
+
+        //先取消用户的画布
+        AVChatManager.getInstance().setupVideoRender(user1, null, false, 0);
+        AVChatManager.getInstance().setupVideoRender(user2, null, false, 0);
+
+        //交换画布
+        //如果存在多个用户,建议用Map维护account,render关系.
+        //目前只有两个用户,并且认为这两个account肯定是对的
+        AVChatVideoRender render1;
+        AVChatVideoRender render2;
+        if(user1.equals(smallAccount)) {
+            render1 = largeRender;
+            render2 = smallRender;
+        } else {
+            render1 = smallRender;
+            render2 = largeRender;
+        }
+
+        //重新设置上画布
+        AVChatManager.getInstance().setupVideoRender(user1, render1, false, AVChatVideoScalingType.SCALE_ASPECT_BALANCED);
+        AVChatManager.getInstance().setupVideoRender(user2, render2, false, AVChatVideoScalingType.SCALE_ASPECT_BALANCED);
     }
 
     /**

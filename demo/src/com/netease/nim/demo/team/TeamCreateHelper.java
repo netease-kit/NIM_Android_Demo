@@ -54,7 +54,7 @@ public class TeamCreateHelper {
                         Toast.makeText(DemoCache.getContext(), com.netease.nim.uikit.R.string.create_team_success,
                                 Toast.LENGTH_SHORT).show();
                         if (isNeedBack) {
-                            SessionHelper.startTeamSession(context, team.getId(), MainActivity.class); // 进入创建的群
+                            SessionHelper.startTeamSession(context, team.getId(), MainActivity.class, null); // 进入创建的群
                         } else {
                             SessionHelper.startTeamSession(context, team.getId());
                         }

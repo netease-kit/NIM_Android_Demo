@@ -79,5 +79,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
-    compile project(path: ':uikit')
+    compile project(path: ':uikit')
 }

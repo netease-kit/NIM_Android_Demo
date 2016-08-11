@@ -23,16 +23,21 @@ import com.netease.nim.uikit.common.util.string.StringUtil;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.contact.core.item.ContactItem;
 import com.netease.nim.uikit.contact.core.item.ItemTypes;
+import com.netease.nim.uikit.contact.core.item.MsgItem;
 import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
 import com.netease.nim.uikit.contact.core.model.ContactGroupStrategy;
 import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
 import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
 import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
 import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
+import com.netease.nim.uikit.contact.core.viewholder.MsgHolder;
 import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.search.model.MsgIndexRecord;
 
 /**
- * 全局搜索页面(目前仅支持通讯录搜索)
+ * 全局搜索页面
+ * 支持通讯录搜索、消息全文检索
  * <p/>
  * Created by huangjun on 2015/4/13.
  */
@@ -79,19 +84,19 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
         searchView.setOnQueryTextListener(new OnQueryTextListener() {
 
             @Override
-            public boolean onQueryTextSubmit(String arg0) {
+            public boolean onQueryTextSubmit(String query) {
                 showKeyboard(false);
                 return false;
             }
 
             @Override
-            public boolean onQueryTextChange(String arg0) {
-                if (StringUtil.isEmpty(arg0)) {
+            public boolean onQueryTextChange(String query) {
+                if (StringUtil.isEmpty(query)) {
                     lvContacts.setVisibility(View.GONE);
                 } else {
                     lvContacts.setVisibility(View.VISIBLE);
                 }
-                adapter.query(arg0);
+                adapter.query(query);
                 return true;
             }
         });
@@ -111,12 +116,13 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
         lvContacts = (ListView) findViewById(R.id.searchResultList);
         lvContacts.setVisibility(View.GONE);
         SearchGroupStrategy searchGroupStrategy = new SearchGroupStrategy();
-        IContactDataProvider dataProvider = new ContactDataProvider(ItemTypes.FRIEND, ItemTypes.TEAM);
+        IContactDataProvider dataProvider = new ContactDataProvider(ItemTypes.FRIEND, ItemTypes.TEAM, ItemTypes.MSG);
 
         adapter = new ContactDataAdapter(this, searchGroupStrategy, dataProvider);
         adapter.addViewHolder(ItemTypes.LABEL, LabelHolder.class);
         adapter.addViewHolder(ItemTypes.FRIEND, ContactHolder.class);
         adapter.addViewHolder(ItemTypes.TEAM, ContactHolder.class);
+        adapter.addViewHolder(ItemTypes.MSG, MsgHolder.class);
 
         lvContacts.setAdapter(adapter);
         lvContacts.setOnItemClickListener(this);
@@ -127,8 +133,7 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
             }
 
             @Override
-            public void onScroll(AbsListView view, int firstVisibleItem,
-                                 int visibleItemCount, int totalItemCount) {
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
             }
         });
         findViewById(R.id.global_search_root).setOnTouchListener(new OnTouchListener() {
@@ -155,11 +160,13 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
     private static class SearchGroupStrategy extends ContactGroupStrategy {
         public static final String GROUP_FRIEND = "FRIEND";
         public static final String GROUP_TEAM = "TEAM";
+        public static final String GROUP_MSG = "MSG";
 
         SearchGroupStrategy() {
             add(ContactGroupStrategy.GROUP_NULL, 0, "");
             add(GROUP_TEAM, 1, "群组");
             add(GROUP_FRIEND, 2, "好友");
+            add(GROUP_MSG, 3, "聊天记录");
         }
 
         @Override
@@ -169,6 +176,8 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
                     return GROUP_FRIEND;
                 case ItemTypes.TEAM:
                     return GROUP_TEAM;
+                case ItemTypes.MSG:
+                    return GROUP_MSG;
                 default:
                     return null;
             }
@@ -181,15 +190,28 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
         switch (item.getItemType()) {
             case ItemTypes.TEAM: {
                 SessionHelper.startTeamSession(this, ((ContactItem) item).getContact().getContactId());
-                finish();
                 break;
             }
 
             case ItemTypes.FRIEND: {
                 SessionHelper.startP2PSession(this, ((ContactItem) item).getContact().getContactId());
-                finish();
                 break;
             }
+
+            case ItemTypes.MSG: {
+                MsgIndexRecord msgIndexRecord = ((MsgItem) item).getRecord();
+                if (msgIndexRecord.getCount() > 1) {
+                    GlobalSearchDetailActivity2.start(this, msgIndexRecord);
+                } else {
+                    if (msgIndexRecord.getSessionType() == SessionTypeEnum.P2P) {
+                        SessionHelper.startP2PSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
+                    } else if (msgIndexRecord.getSessionType() == SessionTypeEnum.Team) {
+                        SessionHelper.startTeamSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
+                    }
+                }
+                break;
+            }
+
             default:
                 break;
         }

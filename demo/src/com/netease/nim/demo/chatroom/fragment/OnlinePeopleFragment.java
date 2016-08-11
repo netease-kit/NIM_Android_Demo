@@ -117,7 +117,7 @@ public class OnlinePeopleFragment extends TFragment implements TAdapterDelegate 
             }
         });
 
-        listView.setOnItemLongClickListener(longClickListener); // 线上入口屏蔽成员操作
+//        listView.setOnItemLongClickListener(longClickListener); // 线上入口屏蔽成员操作
     }
 
     private void stopRefreshing() {

@@ -1,6 +1,6 @@
 package com.netease.nim.demo.config;
 
-final class ServerConfig {
+public final class ServerConfig {
 
     public enum ServerEnv {
         TEST("t"),

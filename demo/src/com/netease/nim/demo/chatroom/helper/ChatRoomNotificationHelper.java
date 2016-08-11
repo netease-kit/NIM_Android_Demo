@@ -64,6 +64,12 @@ public class ChatRoomNotificationHelper {
             case ChatRoomMemberTempMuteRemove:
                 text = buildText(targets, "被解除临时禁言");
                 break;
+            case ChatRoomMyRoomRoleUpdated:
+                text = buildText(targets, "更新了自己的角色信息");
+                break;
+            case ChatRoomQueueChange:
+                text = buildText(targets, "麦序队列中有变更");
+                break;
             default:
                 text = attachment.toString();
                 break;

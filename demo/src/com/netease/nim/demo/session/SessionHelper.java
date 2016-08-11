@@ -93,20 +93,28 @@ public class SessionHelper {
     }
 
     public static void startP2PSession(Context context, String account) {
+        startP2PSession(context, account, null);
+    }
+
+    public static void startP2PSession(Context context, String account, IMMessage anchor) {
         if (!DemoCache.getAccount().equals(account)) {
-            NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getP2pCustomization());
+            NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getP2pCustomization(), anchor);
         } else {
-            NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getMyP2pCustomization());
+            NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getMyP2pCustomization(), anchor);
         }
     }
 
     public static void startTeamSession(Context context, String tid) {
-        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization());
+        startTeamSession(context, tid, null);
+    }
+
+    public static void startTeamSession(Context context, String tid, IMMessage anchor) {
+        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization(), anchor);
     }
 
     // 打开群聊界面(用于 UIKIT 中部分界面跳转回到指定的页面)
-    public static void startTeamSession(Context context, String tid, Class<? extends Activity> backToClass) {
-        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization(), backToClass);
+    public static void startTeamSession(Context context, String tid, Class<? extends Activity> backToClass, IMMessage anchor) {
+        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization(), backToClass, anchor);
     }
 
     // 定制化单聊界面。如果使用默认界面，返回null即可

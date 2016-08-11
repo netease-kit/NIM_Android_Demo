@@ -110,8 +110,13 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
 
         if(ischecked) {
             String time = getIntent().getStringExtra(EXTRA_TIME);
-            startTime = time.substring(0, 5);
-            endTime = time.substring(6, 11);
+            if (time.length() < 11) {
+                startTime = getString(R.string.time_from_default);
+                endTime = getString(R.string.time_to_default);
+            } else {
+                startTime = time.substring(0, 5);
+                endTime = time.substring(6, 11);
+            }
         }
 
     }

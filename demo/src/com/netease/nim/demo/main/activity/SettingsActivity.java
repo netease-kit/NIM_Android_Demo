@@ -14,6 +14,7 @@ import android.widget.Toast;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
+import com.netease.nim.demo.config.ServerConfig;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
@@ -24,9 +25,14 @@ import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.audio.MessageAudioControl;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.AuthService;
+import com.netease.nimlib.sdk.lucene.LuceneService;
 import com.netease.nimlib.sdk.msg.MsgService;
+import com.netease.nimlib.sdk.settings.SettingsService;
+import com.netease.nimlib.sdk.settings.SettingsServiceObserver;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,7 +42,7 @@ import java.util.List;
  */
 public class SettingsActivity extends UI implements SettingsAdapter.SwitchChangeListener {
     private static final int TAG_HEAD = 1;
-    private static final int TAG_NOTICE= 2;
+    private static final int TAG_NOTICE = 2;
     private static final int TAG_NO_DISTURBE = 3;
     private static final int TAG_CLEAR = 4;
     private static final int TAG_CUSTOM_NOTIFY = 5;
@@ -49,12 +55,15 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_RING = 11;
     private static final int TAG_LED = 12;
     private static final int TAG_NOTICE_CONTENT = 13; // 通知栏提醒配置
+    private static final int TAG_CLEAR_INDEX = 18; // 清空全文检索缓存
+    private static final int TAG_MULTIPORT_PUSH = 19; // 桌面端登录，是否推送
 
     ListView listView;
     SettingsAdapter adapter;
     private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
     private String noDisturbTime;
     private SettingTemplate disturbItem;
+    private SettingTemplate clearIndexItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,8 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
 
         initData();
         initUI();
+
+        registerObservers(true);
     }
 
     @Override
@@ -82,8 +93,25 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         }
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        registerObservers(false);
+    }
+
+    private void registerObservers(boolean register) {
+        NIMClient.getService(SettingsServiceObserver.class).observeMultiportPushConfigNotify(pushConfigObserver, register);
+    }
+
+    Observer<Boolean> pushConfigObserver = new Observer<Boolean>() {
+        @Override
+        public void onEvent(Boolean aBoolean) {
+            Toast.makeText(SettingsActivity.this, "收到multiport push config：" + aBoolean, Toast.LENGTH_SHORT).show();
+        }
+    };
+
     private void initData() {
-        if(UserPreferences.getStatusConfig() == null || !UserPreferences.getStatusConfig().downTimeToggle) {
+        if (UserPreferences.getStatusConfig() == null || !UserPreferences.getStatusConfig().downTimeToggle) {
             noDisturbTime = getString(R.string.setting_close);
         } else {
             noDisturbTime = String.format("%s到%s", UserPreferences.getStatusConfig().downTimeBegin,
@@ -141,25 +169,35 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
 
         disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
         items.add(disturbItem);
+        items.add(SettingTemplate.addLine());
+        items.add(new SettingTemplate(TAG_MULTIPORT_PUSH, getString(R.string.multiport_push), SettingType.TYPE_TOGGLE,
+               !NIMClient.getService(SettingsService.class).isMultiportPushOpen()));
         items.add(SettingTemplate.makeSeperator());
 
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
             items.add(new SettingTemplate(TAG_NRTC_SETTINGS, getString(R.string.nrtc_settings)));
             items.add(SettingTemplate.makeSeperator());
         }
 
         items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知",
                 SettingType.TYPE_TOGGLE, UserPreferences.getMsgIgnore()));
-
+        items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_CLEAR, getString(R.string.about_clear_msg_history)));
         items.add(SettingTemplate.addLine());
+
+        clearIndexItem = new SettingTemplate(TAG_CLEAR_INDEX, getString(R.string.clear_index), getIndexCacheSize() + " M");
+        items.add(clearIndexItem);
+        items.add(SettingTemplate.addLine());
+
         items.add(new SettingTemplate(TAG_CUSTOM_NOTIFY, getString(R.string.custom_notification)));
         items.add(SettingTemplate.addLine());
+        items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_ABOUT, getString(R.string.setting_about)));
+
     }
 
     private void onListItemClick(SettingTemplate item) {
-        if(item == null) return;
+        if (item == null) return;
 
         switch (item.getId()) {
             case TAG_HEAD:
@@ -177,6 +215,9 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_CLEAR:
                 NIMClient.getService(MsgService.class).clearMsgDatabase(true);
                 Toast.makeText(SettingsActivity.this, R.string.clear_msg_history_success, Toast.LENGTH_SHORT).show();
+                break;
+            case TAG_CLEAR_INDEX:
+                clearIndex();
                 break;
             case TAG_NRTC_SETTINGS:
                 startActivity(new Intent(SettingsActivity.this, AVChatSettingsActivity.class));
@@ -251,6 +292,9 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 UserPreferences.setStatusConfig(config2);
                 NIMClient.updateStatusBarNotificationConfig(config2);
                 break;
+            case TAG_MULTIPORT_PUSH:
+                updateMultiportPushConfig(!checkState);
+                break;
             default:
                 break;
         }
@@ -265,10 +309,41 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         NoDisturbActivity.startActivityForResult(this, UserPreferences.getStatusConfig(), noDisturbTime, NoDisturbActivity.NO_DISTURB_REQ);
     }
 
+    private String getIndexCacheSize() {
+        long size = NIMClient.getService(LuceneService.class).getCacheSize();
+        return String.format("%.2f", size / (1024.0f * 1024.0f));
+    }
+
+    private void clearIndex() {
+        NIMClient.getService(LuceneService.class).clearCache();
+        clearIndexItem.setDetail("0.00 M");
+        adapter.notifyDataSetChanged();
+    }
+
+    private void updateMultiportPushConfig(final boolean checkState) {
+        NIMClient.getService(SettingsService.class).updateMultiportPushConfig(checkState).setCallback(new RequestCallback<Void>() {
+            @Override
+            public void onSuccess(Void param) {
+                Toast.makeText(SettingsActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailed(int code) {
+                Toast.makeText(SettingsActivity.this, "设置失败,code:" + code, Toast.LENGTH_SHORT).show();
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onException(Throwable exception) {
+
+            }
+        });
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             switch (requestCode) {
                 case NoDisturbActivity.NO_DISTURB_REQ:
                     setNoDisturbTime(data);
@@ -281,13 +356,14 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
 
     /**
      * 设置免打扰时间
+     *
      * @param data
      */
     private void setNoDisturbTime(Intent data) {
         boolean isChecked = data.getBooleanExtra(NoDisturbActivity.EXTRA_ISCHECKED, false);
         noDisturbTime = getString(R.string.setting_close);
         StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
-        if(isChecked) {
+        if (isChecked) {
             config.downTimeBegin = data.getStringExtra(NoDisturbActivity.EXTRA_START_TIME);
             config.downTimeEnd = data.getStringExtra(NoDisturbActivity.EXTRA_END_TIME);
             noDisturbTime = String.format("%s到%s", config.downTimeBegin, config.downTimeEnd);

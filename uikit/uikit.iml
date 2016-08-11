@@ -112,6 +112,7 @@
     <orderEntry type="library" exported="" name="design-23.3.0" level="project" />
     <orderEntry type="library" exported="" name="appcompat-v7-23.3.0" level="project" />
     <orderEntry type="module" module-name="avchat" exported="" />
+    <orderEntry type="module" module-name="lucene" exported="" />
     <orderEntry type="module" module-name="basesdk" exported="" />
     <orderEntry type="library" exported="" name="org.apache.http.legacy-android-23" level="project" />
   </component>

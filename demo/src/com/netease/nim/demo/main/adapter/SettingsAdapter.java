@@ -71,6 +71,12 @@ public class SettingsAdapter extends BaseAdapter {
             convertView.setTag(viewHolder);
         }
 
+
+        ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
+        if(lp != null) {
+            lp.height = itemHeight;
+            viewHolder.root.setLayoutParams(lp);
+        }
         viewHolder.root.setBackgroundResource(R.drawable.nim_semitransparency_selector);
         viewHolder.headImageView.setVisibility(View.GONE);
         viewHolder.titleView.setVisibility(View.GONE);

@@ -185,6 +185,7 @@
     <!-- setting -->
     <string name="settings">设置</string>
     <string name="no_disturb">免打扰</string>
+    <string name="multiport_push">PC/Web在线推送</string>
     <string name="msg_notice">消息提醒</string>
     <string name="setting_about">关于</string>
     <string name="setting_close">已关闭</string>
@@ -198,6 +199,11 @@
     <string name="ring">响铃模式</string>
     <string name="led">自定义呼吸灯</string>
     <string name="notice_content">通知栏标题定制</string>
+    <string name="mass_message">批量消息测试</string>
+    <string name="sqlite_fts">SQLite FTS4</string>
+    <string name="sqlite_like">SQLite LIKE</string>
+    <string name="luc">Lucene</string>
+    <string name="clear_index">清理全文检索缓存</string>
 
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
