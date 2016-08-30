@@ -85,7 +85,7 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
                     AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getPath());
                     AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getThumbPath());
 
-                    getAdapter().deleteItem(message);
+                    getAdapter().deleteItem(message, true);
                     isLongClick = false;
                 }
                 break;

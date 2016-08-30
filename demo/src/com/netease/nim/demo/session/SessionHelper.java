@@ -44,6 +44,7 @@ import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nim.uikit.session.module.MsgForwardFilter;
+import com.netease.nim.uikit.session.module.MsgRevokeFilter;
 import com.netease.nim.uikit.team.model.TeamExtras;
 import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
@@ -90,6 +91,9 @@ public class SessionHelper {
 
         // 注册消息转发过滤器
         registerMsgForwardFilter();
+
+        // 注册消息撤回过滤器
+        registerMsgRevokeFilter();
     }
 
     public static void startP2PSession(Context context, String account) {
@@ -347,6 +351,27 @@ public class SessionHelper {
                         && (message.getAttachment() instanceof SnapChatAttachment
                         || message.getAttachment() instanceof RTSAttachment)) {
                     // 白板消息和阅后即焚消息 不允许转发
+                    return true;
+                }
+                return false;
+            }
+        });
+    }
+
+    /**
+     * 消息撤回过滤器
+     */
+    private static void registerMsgRevokeFilter() {
+        NimUIKit.setMsgRevokeFilter(new MsgRevokeFilter() {
+            @Override
+            public boolean shouldIgnore(IMMessage message) {
+                if (message.getAttachment() != null
+                        && (message.getAttachment() instanceof AVChatAttachment
+                        || message.getAttachment() instanceof RTSAttachment)) {
+                    // 视频通话消息和白板消息 不允许撤回
+                    return true;
+                } else if (DemoCache.getAccount().equals(message.getSessionId())) {
+                    // 发给我的电脑 不允许撤回
                     return true;
                 }
                 return false;

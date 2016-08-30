@@ -42,7 +42,6 @@ public class MsgViewHolderTip extends MsgViewHolderBase {
         }
 
         handleTextNotification(text);
-        timeTextView.setVisibility(View.GONE);
     }
 
     private void handleTextNotification(String text) {
