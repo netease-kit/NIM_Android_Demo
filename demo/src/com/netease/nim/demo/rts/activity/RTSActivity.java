@@ -31,6 +31,8 @@ import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.StatusCode;
+import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.auth.ClientType;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -157,6 +159,9 @@ public class RTSActivity extends UI implements View.OnClickListener {
 
         initAudioSwitch();
         registerCommonObserver(true);
+
+        //放到所有UI的基类里面注册，所有的UI实现onKickOut接口
+        NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, true);
     }
 
     private void initActionBarButton() {
@@ -210,6 +215,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
         }
 
         super.onDestroy();
+        NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, false);
         registerInComingObserver(false);
         registerOutgoingObserver(false);
         registerCommonObserver(false);
@@ -218,6 +224,16 @@ public class RTSActivity extends UI implements View.OnClickListener {
 
         isBusy = false;
     }
+
+    Observer<StatusCode> userStatusObserver = new Observer<StatusCode>() {
+
+        @Override
+        public void onEvent(StatusCode code) {
+            if (code.wontAutoLogin()) {
+                finish();
+            }
+        }
+    };
 
     private void findViews() {
         startSessionLayout = findViewById(R.id.start_session_layout);
@@ -398,9 +414,10 @@ public class RTSActivity extends UI implements View.OnClickListener {
     private RTSChannelStateObserver channelStateObserver = new RTSChannelStateObserver() {
 
         @Override
-        public void onConnectResult(RTSTunType tunType, int code) {
-            Toast.makeText(RTSActivity.this, "onConnectResult, tunType=" + tunType.toString() + ", code=" +
-                    code, Toast.LENGTH_SHORT).show();
+        public void onConnectResult(RTSTunType tunType, long channelId, int code) {
+            Toast.makeText(RTSActivity.this, "onConnectResult, tunType=" + tunType.toString() +
+                    ", channelId=" + channelId +
+                    ", code=" + code, Toast.LENGTH_SHORT).show();
         }
 
         @Override

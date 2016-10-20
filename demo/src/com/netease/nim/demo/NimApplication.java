@@ -50,6 +50,7 @@ import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.model.RTSData;
 import com.netease.nimlib.sdk.team.constant.TeamFieldEnum;
 import com.netease.nimlib.sdk.team.model.IMMessageFilter;
+import com.netease.nimlib.sdk.team.model.Team;
 import com.netease.nimlib.sdk.team.model.UpdateTeamAttachment;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
@@ -299,6 +300,19 @@ public class NimApplication extends Application {
 
         @Override
         public Bitmap getTeamIcon(String teamId) {
+            /**
+             * 注意：这里最好从缓存里拿，如果读取本地头像可能导致UI进程阻塞，导致通知栏提醒延时弹出。
+             */
+            // 从内存缓存中查找群头像
+            Team team = TeamDataCache.getInstance().getTeamById(teamId);
+            if (team != null) {
+                Bitmap bm = ImageLoaderKit.getNotificationBitmapFromCache(team.getIcon());
+                if (bm != null) {
+                    return bm;
+                }
+            }
+
+            // 默认图
             Drawable drawable = getResources().getDrawable(R.drawable.nim_avatar_group);
             if (drawable instanceof BitmapDrawable) {
                 return ((BitmapDrawable) drawable).getBitmap();
@@ -313,7 +327,7 @@ public class NimApplication extends Application {
              * 注意：这里最好从缓存里拿，如果读取本地头像可能导致UI进程阻塞，导致通知栏提醒延时弹出。
              */
             UserInfo user = getUserInfo(account);
-            return (user != null) ? ImageLoaderKit.getNotificationBitmapFromCache(user) : null;
+            return (user != null) ? ImageLoaderKit.getNotificationBitmapFromCache(user.getAvatar()) : null;
         }
 
         @Override

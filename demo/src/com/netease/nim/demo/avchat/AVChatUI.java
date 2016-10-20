@@ -274,7 +274,7 @@ public class AVChatUI implements AVChatUIListener {
         this.avChatData = avChatData;
         receiverId = avChatData.getAccount();
 
-        AVChatSoundPlayer.instance(context).play(AVChatSoundPlayer.RingerTypeEnum.RING);
+        AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.RING);
 
         if (avChatData.getChatType() == AVChatType.AUDIO) {
             onCallStateChange(CallStateEnum.INCOMING_AUDIO_CALLING);
@@ -291,7 +291,7 @@ public class AVChatUI implements AVChatUIListener {
 
         DialogMaker.showProgressDialog(context, null);
 
-        AVChatSoundPlayer.instance(context).play(AVChatSoundPlayer.RingerTypeEnum.CONNECTING);
+        AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.CONNECTING);
 
         this.receiverId = account;
 
@@ -319,7 +319,7 @@ public class AVChatUI implements AVChatUIListener {
                         LogUtil.d(TAG, "avChat call failed code->" + code);
                         DialogMaker.dismissProgressDialog();
 
-                        AVChatSoundPlayer.instance(context).stop();
+                        AVChatSoundPlayer.instance().stop();
 
                         if (code == ResponseCode.RES_FORBIDDEN) {
                             Toast.makeText(context, R.string.avchat_no_permission, Toast.LENGTH_SHORT).show();
@@ -334,7 +334,7 @@ public class AVChatUI implements AVChatUIListener {
                         LogUtil.d(TAG, "avChat call onException->" + exception);
                         DialogMaker.dismissProgressDialog();
 
-                        AVChatSoundPlayer.instance(context).stop();
+                        AVChatSoundPlayer.instance().stop();
                     }
                 });
     }
@@ -375,7 +375,7 @@ public class AVChatUI implements AVChatUIListener {
             });
         }
         closeSessions(type);
-        AVChatSoundPlayer.instance(context).stop();
+        AVChatSoundPlayer.instance().stop();
     }
 
     /**
@@ -464,7 +464,7 @@ public class AVChatUI implements AVChatUIListener {
             }
         });
         closeSessions(AVChatExitCode.REJECT);
-        AVChatSoundPlayer.instance(context).stop();
+        AVChatSoundPlayer.instance().stop();
     }
 
     /**
@@ -514,7 +514,7 @@ public class AVChatUI implements AVChatUIListener {
             }
         });
 
-        AVChatSoundPlayer.instance(context).stop();
+        AVChatSoundPlayer.instance().stop();
     }
 
     /*************************** AVChatUIListener ******************************/
