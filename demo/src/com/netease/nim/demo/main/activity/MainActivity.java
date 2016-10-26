@@ -86,10 +86,6 @@ public class MainActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_tab);
 
-        setToolBar(R.id.toolbar, R.string.app_name, R.drawable.actionbar_dark_logo);
-
-        setTitle(R.string.app_name);
-
         requestBasicPermission();
 
         onParseIntent();

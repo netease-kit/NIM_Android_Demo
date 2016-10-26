@@ -16,12 +16,18 @@ import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderItem;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.uikit.common.fragment.TFragment;
+import com.netease.nim.uikit.common.ui.drop.DropCover;
+import com.netease.nim.uikit.common.ui.drop.DropManager;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
 import com.netease.nimlib.sdk.msg.SystemMessageService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
+
+import java.util.List;
 
 /**
  * 云信主界面（导航页）
@@ -51,12 +57,17 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        setToolBar(R.id.toolbar, R.string.app_name, R.drawable.actionbar_dark_logo);
+
+        setTitle(R.string.app_name);
+
         findViews();
         setupPager();
         setupTabs();
         registerMsgUnreadInfoObserver(true);
         registerSystemMessageObservers(true);
         requestSystemMessageUnreadCount();
+        initUnreadCover();
     }
 
     @Override
@@ -207,7 +218,6 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
         }
     }
 
-
     /**
      * 注册/注销系统消息未读数变化
      *
@@ -233,5 +243,39 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
         int unread = NIMClient.getService(SystemMessageService.class).querySystemMessageUnreadCountBlock();
         SystemMessageUnreadManager.getInstance().setSysMsgUnreadCount(unread);
         ReminderManager.getInstance().updateContactUnreadNum(unread);
+    }
+
+    /**
+     * 初始化未读红点动画
+     */
+    private void initUnreadCover() {
+        DropManager.getInstance().init(getContext(), (DropCover) findView(R.id.unread_cover),
+                new DropCover.IDropCompletedListener() {
+            @Override
+            public void onCompleted(Object id, boolean explosive) {
+                if (id == null || !explosive) {
+                    return;
+                }
+
+                if (id instanceof RecentContact) {
+                    RecentContact r = (RecentContact) id;
+                    NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(), r.getSessionType());
+                    LogUtil.i("HomeFragment", "clearUnreadCount, sessionId=" + r.getContactId());
+                } else if (id instanceof String) {
+                    if (((String) id).contentEquals("0")) {
+                        List<RecentContact> recentContacts = NIMClient.getService(MsgService.class).queryRecentContactsBlock();
+                        for (RecentContact r : recentContacts) {
+                            if (r.getUnreadCount() > 0) {
+                                NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(), r.getSessionType());
+                            }
+                        }
+                        LogUtil.i("HomeFragment", "clearAllUnreadCount");
+                    } else if (((String) id).contentEquals("1")) {
+                        NIMClient.getService(SystemMessageService.class).resetSystemMessageUnreadCount();
+                        LogUtil.i("HomeFragment", "clearAllSystemUnreadCount");
+                    }
+                }
+            }
+        });
     }
 }

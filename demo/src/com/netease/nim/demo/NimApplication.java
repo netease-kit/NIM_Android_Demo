@@ -10,6 +10,7 @@ import android.graphics.Color;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Environment;
+import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -61,6 +62,10 @@ import java.util.Map;
 
 public class NimApplication extends Application {
 
+    protected void attachBaseContext(Context newBase) {
+        super.attachBaseContext(newBase);
+        MultiDex.install(this);
+    }
     public void onCreate() {
         super.onCreate();
 

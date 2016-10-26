@@ -7,7 +7,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"
         android:layout_marginRight="@dimen/bubble_layout_margin_side"
-        android:autoLink="phone|email|map"
+        android:autoLink="phone|email"
         android:drawableLeft="@drawable/icon_rts_send"
         android:drawablePadding="5dp"
         android:gravity="center_vertical|left"

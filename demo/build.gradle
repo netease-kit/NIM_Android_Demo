@@ -18,6 +18,7 @@ android {
         targetSdkVersion 23
         buildConfigField "String", "GIT_REVISION", "\"${getGitVersion()}\""
         buildConfigField "String", "BUILD_DATE", "\"${new Date().toLocaleString()}\"";
+        multiDexEnabled true
     }
 
     signingConfigs {
@@ -65,7 +66,6 @@ android {
         abortOnError false
     }
     dexOptions {
-        incremental true
         preDexLibraries false
         jumboMode true
         javaMaxHeapSize "4g"
@@ -78,6 +78,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+    compile fileTree(include: '*.jar', dir: 'libs')
     compile project(path: ':uikit')
+    compile 'com.android.support:multidex:1.0.0'
 }

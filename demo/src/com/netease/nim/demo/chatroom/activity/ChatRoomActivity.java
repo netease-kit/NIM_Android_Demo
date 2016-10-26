@@ -114,8 +114,7 @@ public class ChatRoomActivity extends UI {
             @Override
             public void onFailed(int code) {
                 // test
-                LogUtil.ui("enter chat room failed, callback code=" + code + ", getErrorCode=" + NIMClient.getService
-                        (ChatRoomService.class).getEnterErrorCode(roomId));
+                LogUtil.ui("enter chat room failed, callback code=" + code);
 
                 onLoginDone();
                 if (code == ResponseCode.RES_CHATROOM_BLACKLIST) {
@@ -155,6 +154,9 @@ public class ChatRoomActivity extends UI {
     Observer<ChatRoomStatusChangeData> onlineStatus = new Observer<ChatRoomStatusChangeData>() {
         @Override
         public void onEvent(ChatRoomStatusChangeData chatRoomStatusChangeData) {
+            if (!chatRoomStatusChangeData.roomId.equals(roomId)) {
+                return;
+            }
             if (chatRoomStatusChangeData.status == StatusCode.CONNECTING) {
                 DialogMaker.updateLoadingMessage("连接中...");
             } else if (chatRoomStatusChangeData.status == StatusCode.LOGINING) {
@@ -168,6 +170,7 @@ public class ChatRoomActivity extends UI {
                     fragment.updateOnlineStatus(false);
                 }
                 int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
+                LogUtil.d(TAG, "chat room enter error code:" + code);
                 if (code != ResponseCode.RES_ECONNECTION) {
                     Toast.makeText(ChatRoomActivity.this, "未登录,code=" + code, Toast.LENGTH_LONG).show();
                 }

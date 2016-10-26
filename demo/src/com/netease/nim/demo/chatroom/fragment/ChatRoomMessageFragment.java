@@ -157,6 +157,8 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
                     public void onFailed(int code) {
                         if (code == ResponseCode.RES_CHATROOM_MUTED) {
                             Toast.makeText(DemoCache.getContext(), "用户被禁言", Toast.LENGTH_SHORT).show();
+                        } else if (code == ResponseCode.RES_CHATROOM_ROOM_MUTED) {
+                            Toast.makeText(DemoCache.getContext(), "全体禁言", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(DemoCache.getContext(), "消息发送失败：code:" + code, Toast.LENGTH_SHORT).show();
                         }

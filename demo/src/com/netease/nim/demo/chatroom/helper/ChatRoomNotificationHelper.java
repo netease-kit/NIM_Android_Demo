@@ -70,6 +70,12 @@ public class ChatRoomNotificationHelper {
             case ChatRoomQueueChange:
                 text = buildText(targets, "麦序队列中有变更");
                 break;
+            case ChatRoomRoomMuted:
+                text = buildText("全体禁言，管理员可发言");
+                break;
+            case ChatRoomRoomDeMuted:
+                text = buildText("解除全体禁言");
+                break;
             default:
                 text = attachment.toString();
                 break;

@@ -135,8 +135,8 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
     public void onIncomingMessage(List<ChatRoomMessage> messages) {
         boolean needScrollToBottom = ListViewUtil.isLastMessageVisible(messageListView);
         boolean needRefresh = false;
-        List<IMMessage> addedListItems = new ArrayList<>(messages.size());
-        for (IMMessage message : messages) {
+        List<ChatRoomMessage> addedListItems = new ArrayList<>(messages.size());
+        for (ChatRoomMessage message : messages) {
             // 保证显示到界面上的消息，来自同一个聊天室
             if (isMyMessage(message)) {
                 saveMessage(message, false);
@@ -149,7 +149,7 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         }
 
         // incoming messages tip
-        IMMessage lastMsg = messages.get(messages.size() - 1);
+        ChatRoomMessage lastMsg = messages.get(messages.size() - 1);
         if (isMyMessage(lastMsg) && needScrollToBottom) {
             ListViewUtil.scrollToBottom(messageListView);
         }
@@ -357,7 +357,7 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         }
     }
 
-    public boolean isMyMessage(IMMessage message) {
+    public boolean isMyMessage(ChatRoomMessage message) {
         return message.getSessionType() == container.sessionType
                 && message.getSessionId() != null
                 && message.getSessionId().equals(container.account);

@@ -16,8 +16,6 @@
 
 package com.netease.nim.demo.common.ui.viewpager;
 
-import java.util.Locale;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.Resources;
@@ -46,7 +44,11 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.reminder.ReminderItem;
 import com.netease.nim.demo.main.reminder.ReminderSettings;
+import com.netease.nim.uikit.common.ui.drop.DropFake;
+import com.netease.nim.uikit.common.ui.drop.DropManager;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
+
+import java.util.Locale;
 
 public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPageChangeListener {
 
@@ -283,16 +285,35 @@ public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPage
         if (tabView == null) {
             tabView = inflater.inflate(R.layout.tab_layout_main, null);
         }
-        TextView titltTV = ((TextView) tabView.findViewById(R.id.tab_title_label));
-        TextView unreadTV = ((TextView) tabView.findViewById(R.id.tab_new_msg_label));
+        TextView titleTV = ((TextView) tabView.findViewById(R.id.tab_title_label));
         final boolean needAdaptation = ScreenUtil.density <= 1.5 && screenAdaptation;
         final Resources resources = getContext().getResources();
-        if (titltTV != null) {
-            titltTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, needAdaptation ? resources.getDimensionPixelSize(R.dimen.text_size_11) : resources.getDimensionPixelSize(R.dimen.text_size_15));
-            titltTV.setText(title);
+        if (titleTV != null) {
+            titleTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, needAdaptation ? resources.getDimensionPixelSize(R.dimen.text_size_11) : resources.getDimensionPixelSize(R.dimen.text_size_15));
+            titleTV.setText(title);
         }
+
+        final DropFake unreadTV = ((DropFake) tabView.findViewById(R.id.tab_new_msg_label));
         if (unreadTV != null) {
-            unreadTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, needAdaptation ? resources.getDimensionPixelSize(R.dimen.text_size_9) : resources.getDimensionPixelSize(R.dimen.text_size_12));
+            unreadTV.setClickListener(new DropFake.ITouchListener() {
+                @Override
+                public void onDown() {
+                    DropManager.getInstance().setCurrentId(String.valueOf(position));
+                    DropManager.getInstance().getDropCover().down(unreadTV, unreadTV.getText());
+                }
+
+                @Override
+                public void onMove(float curX, float curY) {
+                    DropManager.getInstance().getDropCover().move(curX, curY);
+                }
+
+                @Override
+                public void onUp() {
+                    DropManager.getInstance().getDropCover().up();
+                }
+            });
+
+            //unreadTV.setTextSize(TypedValue.COMPLEX_UNIT_PX, needAdaptation ? resources.getDimensionPixelSize(R.dimen.text_size_9) : resources.getDimensionPixelSize(R.dimen.text_size_12));
         }
         addTab(position, tabView);
     }
@@ -337,19 +358,19 @@ public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPage
     public void updateTab(int index, ReminderItem item) {
         LinearLayout tabView = (LinearLayout) tabsContainer.getChildAt(index);
         ImageView indicatorView = (ImageView) tabView.findViewById(R.id.tab_new_indicator);
-        TextView unreadLbl = (TextView) tabView.findViewById(R.id.tab_new_msg_label);
+        final DropFake unreadTV = ((DropFake) tabView.findViewById(R.id.tab_new_msg_label));
 
-        if (item == null || unreadLbl == null || indicatorView == null) {
-            unreadLbl.setVisibility(View.GONE);
+        if (item == null || unreadTV == null || indicatorView == null) {
+            unreadTV.setVisibility(View.GONE);
             indicatorView.setVisibility(View.GONE);
             return;
         }
         int unread = item.unread();
         boolean indicator = item.indicator();
-        unreadLbl.setVisibility(unread > 0 ? View.VISIBLE : View.GONE);
+        unreadTV.setVisibility(unread > 0 ? View.VISIBLE : View.GONE);
         indicatorView.setVisibility(indicator ? View.VISIBLE : View.GONE);
         if (unread > 0) {
-            unreadLbl.setText(String.valueOf(ReminderSettings.unreadMessageShowRule(unread)));
+            unreadTV.setText(String.valueOf(ReminderSettings.unreadMessageShowRule(unread)));
         }
     }
 
