@@ -4,11 +4,16 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.RTSAttachment;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 
 public class MsgViewHolderRTS extends MsgViewHolderBase {
 
     private TextView textView;
+
+    public MsgViewHolderRTS(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {

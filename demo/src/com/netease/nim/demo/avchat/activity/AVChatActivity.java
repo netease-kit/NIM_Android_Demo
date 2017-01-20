@@ -327,24 +327,28 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
             AVChatSoundPlayer.instance().stop();
 
-            if (ackInfo.getClientType() != ClientType.Android) {
-                String client = null;
-                switch (ackInfo.getClientType()) {
-                    case ClientType.Web:
-                        client = "Web";
-                        break;
-                    case ClientType.Windows:
-                        client = "Windows";
-                        break;
-                    default:
-                        break;
-                }
-                if (client != null) {
-                    String option = ackInfo.getEvent() == AVChatEventType.CALLEE_ONLINE_CLIENT_ACK_AGREE ? "接听！" : "拒绝！";
-                    Toast.makeText(AVChatActivity.this, "通话已在" + client + "端被" + option, Toast.LENGTH_SHORT).show();
-                }
-                avChatUI.closeSessions(-1);
+            String client = null;
+            switch (ackInfo.getClientType()) {
+                case ClientType.Web:
+                    client = "Web";
+                    break;
+                case ClientType.Windows:
+                    client = "Windows";
+                    break;
+                case ClientType.Android:
+                    client = "Android";
+                    break;
+                case ClientType.iOS:
+                    client =  "iOS";
+                    break;
+                default:
+                    break;
             }
+            if (client != null) {
+                String option = ackInfo.getEvent() == AVChatEventType.CALLEE_ONLINE_CLIENT_ACK_AGREE ? "接听！" : "拒绝！";
+                Toast.makeText(AVChatActivity.this, "通话已在" + client + "端被" + option, Toast.LENGTH_SHORT).show();
+            }
+            avChatUI.closeSessions(-1);
         }
     };
 
@@ -621,7 +625,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onAudioOutputDeviceChanged(int device) {
+    public void onAudioDeviceChanged(int device) {
 
     }
 
@@ -637,6 +641,11 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onStopLiveResult(int code) {
+
+    }
+
+    @Override
+    public void onAudioMixingEvent(int event) {
 
     }
 

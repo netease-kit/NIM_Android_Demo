@@ -26,7 +26,6 @@ public class AVChatSettingsFragment extends PreferenceFragment implements Prefer
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_hw_encoder_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_hw_decoder_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_voe_audio_aec_key)));
-        bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_voe_audio_agc_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_voe_audio_ns_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_max_bitrate_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_other_device_default_rotation_key)));

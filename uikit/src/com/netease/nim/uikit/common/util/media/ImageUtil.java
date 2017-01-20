@@ -28,17 +28,19 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public class ImageUtil {
-	 public static class ImageSize {
-	        public int width = 0;
-	        public int height = 0;
+    public static class ImageSize {
+        public int width = 0;
+        public int height = 0;
 
-	        public ImageSize(int width, int height) {
-	            this.width = width;
-	            this.height = height;
-	        }
-	    }
-	public final static float MAX_IMAGE_RATIO = 5f;
-	public static Bitmap getDefaultBitmapWhenGetFail() {
+        public ImageSize(int width, int height) {
+            this.width = width;
+            this.height = height;
+        }
+    }
+
+    public final static float MAX_IMAGE_RATIO = 5f;
+
+    public static Bitmap getDefaultBitmapWhenGetFail() {
         try {
             return getBitmapImmutableCopy(NimUIKit.getContext().getResources(), R.drawable.nim_image_download_failed);
         } catch (Exception e) {
@@ -46,59 +48,59 @@ public class ImageUtil {
             return null;
         }
     }
-	
-	public static final Bitmap getBitmapImmutableCopy(Resources res, int id) {
-		return getBitmap(res.getDrawable(id)).copy(Config.RGB_565, false);
-	}
-	
-	public static final Bitmap getBitmap(Drawable dr) {
-		if (dr == null) {
-			return null;
-		}
-		
-		if (dr instanceof BitmapDrawable) {
-			return ((BitmapDrawable) dr).getBitmap();
-		}
-		
-		return null;
-	}
-	
-	public static Bitmap rotateBitmapInNeeded(String path, Bitmap srcBitmap) {
-		if (TextUtils.isEmpty(path) || srcBitmap == null) {
-			return null;
-		}
 
-		ExifInterface localExifInterface;
-		try {
-			localExifInterface = new ExifInterface(path);
-			int rotateInt = localExifInterface.getAttributeInt(
-					ExifInterface.TAG_ORIENTATION,
-					ExifInterface.ORIENTATION_NORMAL);
-			float rotate = getImageRotate(rotateInt);
-			if (rotate != 0) {
-				Matrix matrix = new Matrix();
-				matrix.postRotate(rotate);
-				Bitmap dstBitmap = Bitmap.createBitmap(srcBitmap, 0, 0,
-						srcBitmap.getWidth(), srcBitmap.getHeight(), matrix,
-						false);
-				if (dstBitmap == null) {
-					return srcBitmap;
-				} else {
-					if (srcBitmap != null && !srcBitmap.isRecycled()) {
-						srcBitmap.recycle();
-					}
-					return dstBitmap;
-				}
-			} else {
-				return srcBitmap;
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-			return srcBitmap;
-		}
-	}
-	
-	/**
+    public static final Bitmap getBitmapImmutableCopy(Resources res, int id) {
+        return getBitmap(res.getDrawable(id)).copy(Config.RGB_565, false);
+    }
+
+    public static final Bitmap getBitmap(Drawable dr) {
+        if (dr == null) {
+            return null;
+        }
+
+        if (dr instanceof BitmapDrawable) {
+            return ((BitmapDrawable) dr).getBitmap();
+        }
+
+        return null;
+    }
+
+    public static Bitmap rotateBitmapInNeeded(String path, Bitmap srcBitmap) {
+        if (TextUtils.isEmpty(path) || srcBitmap == null) {
+            return null;
+        }
+
+        ExifInterface localExifInterface;
+        try {
+            localExifInterface = new ExifInterface(path);
+            int rotateInt = localExifInterface.getAttributeInt(
+                    ExifInterface.TAG_ORIENTATION,
+                    ExifInterface.ORIENTATION_NORMAL);
+            float rotate = getImageRotate(rotateInt);
+            if (rotate != 0) {
+                Matrix matrix = new Matrix();
+                matrix.postRotate(rotate);
+                Bitmap dstBitmap = Bitmap.createBitmap(srcBitmap, 0, 0,
+                        srcBitmap.getWidth(), srcBitmap.getHeight(), matrix,
+                        false);
+                if (dstBitmap == null) {
+                    return srcBitmap;
+                } else {
+                    if (srcBitmap != null && !srcBitmap.isRecycled()) {
+                        srcBitmap.recycle();
+                    }
+                    return dstBitmap;
+                }
+            } else {
+                return srcBitmap;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return srcBitmap;
+        }
+    }
+
+    /**
      * 获得旋转角度
      *
      * @param rotate
@@ -118,30 +120,30 @@ public class ImageUtil {
 
         return f;
     }
-    
+
     public static String makeThumbnail(Context context, File imageFile) {
-    	String thumbFilePath = StorageUtil.getWritePath(imageFile.getName(),
-    			StorageType.TYPE_THUMB_IMAGE);
-    	File thumbFile = AttachmentStore.create(thumbFilePath);
-    	if (thumbFile == null) {
-    		return null;
-    	}
-    	
-    	boolean result = scaleThumbnail(
+        String thumbFilePath = StorageUtil.getWritePath(imageFile.getName(),
+                StorageType.TYPE_THUMB_IMAGE);
+        File thumbFile = AttachmentStore.create(thumbFilePath);
+        if (thumbFile == null) {
+            return null;
+        }
+
+        boolean result = scaleThumbnail(
                 imageFile,
                 thumbFile,
                 MsgViewHolderThumbBase.getImageMaxEdge(),
                 MsgViewHolderThumbBase.getImageMinEdge(),
                 CompressFormat.JPEG,
                 60);
-    	if (!result) {
-    		AttachmentStore.delete(thumbFilePath);
-    		return null;
-    	}
-    	
-    	return thumbFilePath;
+        if (!result) {
+            AttachmentStore.delete(thumbFilePath);
+            return null;
+        }
+
+        return thumbFilePath;
     }
-    
+
     public static Boolean scaleThumbnail(File srcFile, File dstFile, int dstMaxWH, int dstMinWH, CompressFormat compressFormat, int quality) {
         Boolean bRet = false;
         Bitmap srcBitmap = null;
@@ -152,7 +154,7 @@ public class ImageUtil {
             int[] bound = BitmapDecoder.decodeBound(srcFile);
             ImageSize size = getThumbnailDisplaySize(bound[0], bound[1], dstMaxWH, dstMinWH);
             srcBitmap = BitmapDecoder.decodeSampled(srcFile.getPath(), size.width, size.height);
-            
+
             // 旋转
             ExifInterface localExifInterface = new ExifInterface(srcFile.getAbsolutePath());
             int rotateInt = localExifInterface.getAttributeInt(
@@ -222,58 +224,57 @@ public class ImageUtil {
         }
         return bRet;
     }
-    
+
     public static ImageSize getThumbnailDisplaySize(float srcWidth, float srcHeight, float dstMaxWH, float dstMinWH) {
         if (srcWidth <= 0 || srcHeight <= 0) { // bounds check
-            return new ImageSize((int)dstMinWH, (int)dstMinWH);
+            return new ImageSize((int) dstMinWH, (int) dstMinWH);
         }
 
         float shorter;
         float longer;
         boolean widthIsShorter;
-        
+
         //store
         if (srcHeight < srcWidth) {
-			shorter = srcHeight;
-			longer = srcWidth;
-			widthIsShorter = false;
-		} else {
-			shorter = srcWidth;
-			longer = srcHeight;
-			widthIsShorter = true;
-		}
-        
+            shorter = srcHeight;
+            longer = srcWidth;
+            widthIsShorter = false;
+        } else {
+            shorter = srcWidth;
+            longer = srcHeight;
+            widthIsShorter = true;
+        }
+
         if (shorter < dstMinWH) {
             float scale = dstMinWH / shorter;
             shorter = dstMinWH;
-			if (longer * scale > dstMaxWH) {
-				longer = dstMaxWH;
-			} else {
+            if (longer * scale > dstMaxWH) {
+                longer = dstMaxWH;
+            } else {
                 longer *= scale;
             }
-		}
-        else if (longer > dstMaxWH) {
+        } else if (longer > dstMaxWH) {
             float scale = dstMaxWH / longer;
             longer = dstMaxWH;
-			if (shorter * scale < dstMinWH) {
+            if (shorter * scale < dstMinWH) {
                 shorter = dstMinWH;
-			} else {
+            } else {
                 shorter *= scale;
             }
-		}
-             
+        }
+
         //restore
         if (widthIsShorter) {
-			srcWidth = shorter;
-			srcHeight = longer;
-		} else {
-			srcWidth = longer;
-			srcHeight = shorter;
-		}
+            srcWidth = shorter;
+            srcHeight = longer;
+        } else {
+            srcWidth = longer;
+            srcHeight = shorter;
+        }
 
-		return new ImageSize((int) srcWidth, (int) srcHeight);
+        return new ImageSize((int) srcWidth, (int) srcHeight);
     }
-    
+
     public static File getScaledImageFileWithMD5(File imageFile, String mimeType) {
         String filePath = imageFile.getPath();
 
@@ -299,19 +300,19 @@ public class ImageUtil {
             return null;
         }
     }
-    
+
     private static String getTempFilePath(String extension) {
-    	return StorageUtil.getWritePath(
+        return StorageUtil.getWritePath(
                 NimUIKit.getContext(),
-    			"temp_image_" + StringUtil.get36UUID() + "." + extension,
-    			StorageType.TYPE_TEMP);
+                "temp_image_" + StringUtil.get36UUID() + "." + extension,
+                StorageType.TYPE_TEMP);
     }
-    
+
     public static Boolean scaleImage(File srcFile, File dstFile, int dstMaxWH, CompressFormat compressFormat, int quality) {
         Boolean success = false;
 
-        try {          
-        	int inSampleSize = SampleSizeUtil.calculateSampleSize(srcFile.getAbsolutePath(), dstMaxWH * dstMaxWH);            
+        try {
+            int inSampleSize = SampleSizeUtil.calculateSampleSize(srcFile.getAbsolutePath(), dstMaxWH * dstMaxWH);
             Bitmap srcBitmap = BitmapDecoder.decodeSampled(srcFile.getPath(), inSampleSize);
             if (srcBitmap == null) {
                 return success;
@@ -321,7 +322,7 @@ public class ImageUtil {
             ExifInterface localExifInterface = new ExifInterface(srcFile.getAbsolutePath());
             int rotateInt = localExifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
             float rotate = getImageRotate(rotateInt);
-            
+
             Bitmap dstBitmap;
             float scale = (float) Math.sqrt(((float) dstMaxWH * (float) dstMaxWH) / ((float) srcBitmap.getWidth() * (float) srcBitmap.getHeight()));
             if (rotate == 0f && scale >= 1) {
@@ -331,10 +332,10 @@ public class ImageUtil {
                     Matrix matrix = new Matrix();
                     if (rotate != 0) {
                         matrix.postRotate(rotate);
-					}
+                    }
                     if (scale < 1) {
-                        matrix.postScale(scale, scale);						
-					}
+                        matrix.postScale(scale, scale);
+                    }
                     dstBitmap = Bitmap.createBitmap(srcBitmap, 0, 0, srcBitmap.getWidth(), srcBitmap.getHeight(), matrix, true);
                 } catch (OutOfMemoryError e) {
                     BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(dstFile));
@@ -371,48 +372,48 @@ public class ImageUtil {
         }
         return success;
     }
-    
+
     public static ImageSize getThumbnailDisplaySize(int maxSide, int minSide, String imagePath) {
         int[] bound = BitmapDecoder.decodeBound(imagePath);
-        ImageSize imageSize = getThumbnailDisplaySize(bound[0], bound[1], maxSide, minSide);        
+        ImageSize imageSize = getThumbnailDisplaySize(bound[0], bound[1], maxSide, minSide);
         return imageSize;
     }
-    
+
     public static int[] getBoundWithLength(int maxSide, Object imageObject, boolean resizeToDefault) {
         int width = -1;
         int height = -1;
-        
+
         int[] bound;
         if (String.class.isInstance(imageObject)) {
-        	bound = BitmapDecoder.decodeBound((String) imageObject);
-        	width = bound[0];
-        	height = bound[1];
+            bound = BitmapDecoder.decodeBound((String) imageObject);
+            width = bound[0];
+            height = bound[1];
         } else if (Integer.class.isInstance(imageObject)) {
-        	bound = BitmapDecoder.decodeBound(NimUIKit.getContext().getResources(), (Integer) imageObject);
-        	width = bound[0];
-        	height = bound[1];
+            bound = BitmapDecoder.decodeBound(NimUIKit.getContext().getResources(), (Integer) imageObject);
+            width = bound[0];
+            height = bound[1];
         } else if (InputStream.class.isInstance(imageObject)) {
-        	bound = BitmapDecoder.decodeBound((InputStream) imageObject);
-        	width = bound[0];
-        	height = bound[1];
-        }        
-        
+            bound = BitmapDecoder.decodeBound((InputStream) imageObject);
+            width = bound[0];
+            height = bound[1];
+        }
+
         int defaultWidth = maxSide;
         int defaultHeight = maxSide;
         if (width <= 0 || height <= 0) {
             width = defaultWidth;
             height = defaultHeight;
         } else if (resizeToDefault) {
-        	if (width > height) {
-        		height = (int) (defaultWidth * ((float) height / (float) width));
-        		width = defaultWidth;
-        	} else {
-        		width = (int) (defaultHeight * ((float) width / (float) height));
-        		height = defaultHeight;
-        	}
+            if (width > height) {
+                height = (int) (defaultWidth * ((float) height / (float) width));
+                width = defaultWidth;
+            } else {
+                width = (int) (defaultHeight * ((float) width / (float) height));
+                height = defaultHeight;
+            }
         }
-        
-        return new int[] {width, height};
+
+        return new int[]{width, height};
     }
 
     /**

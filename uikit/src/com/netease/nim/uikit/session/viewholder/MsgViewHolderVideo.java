@@ -1,14 +1,19 @@
 package com.netease.nim.uikit.session.viewholder;
 
 import com.netease.nim.uikit.R;
-import com.netease.nim.uikit.session.activity.WatchVideoActivity;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.media.BitmapDecoder;
+import com.netease.nim.uikit.session.activity.WatchVideoActivity;
 import com.netease.nimlib.sdk.msg.attachment.VideoAttachment;
 
 /**
  * Created by zhoujianghua on 2015/8/5.
  */
 public class MsgViewHolderVideo extends MsgViewHolderThumbBase {
+
+    public MsgViewHolderVideo(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {

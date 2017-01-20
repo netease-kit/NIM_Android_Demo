@@ -5,6 +5,7 @@ import android.widget.TextView;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.imageview.MsgThumbImageView;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.media.ImageUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nimlib.sdk.msg.attachment.LocationAttachment;
@@ -14,7 +15,12 @@ import com.netease.nimlib.sdk.msg.attachment.LocationAttachment;
  */
 public class MsgViewHolderLocation extends MsgViewHolderBase {
 
+    public MsgViewHolderLocation(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
+
     public MsgThumbImageView mapView;
+
     public TextView addressText;
 
     @Override

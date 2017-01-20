@@ -42,15 +42,18 @@ import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
 import com.netease.nim.uikit.session.SessionCustomization;
 import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
+import com.netease.nim.uikit.session.helper.MessageHelper;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nim.uikit.session.module.MsgForwardFilter;
 import com.netease.nim.uikit.session.module.MsgRevokeFilter;
 import com.netease.nim.uikit.team.model.TeamExtras;
 import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.msg.MsgService;
+import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.attachment.FileAttachment;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.constant.AttachStatusEnum;
@@ -94,6 +97,13 @@ public class SessionHelper {
 
         // 注册消息撤回过滤器
         registerMsgRevokeFilter();
+
+        // 注册消息撤回监听器
+        registerMsgRevokeObserver();
+
+        NimUIKit.setCommonP2PSessionCustomization(getP2pCustomization());
+
+        NimUIKit.setCommonTeamSessionCustomization(getTeamCustomization());
     }
 
     public static void startP2PSession(Context context, String account) {
@@ -102,7 +112,7 @@ public class SessionHelper {
 
     public static void startP2PSession(Context context, String account, IMMessage anchor) {
         if (!DemoCache.getAccount().equals(account)) {
-            NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getP2pCustomization(), anchor);
+            NimUIKit.startP2PSession(context, account, anchor);
         } else {
             NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getMyP2pCustomization(), anchor);
         }
@@ -113,7 +123,7 @@ public class SessionHelper {
     }
 
     public static void startTeamSession(Context context, String tid, IMMessage anchor) {
-        NimUIKit.startChatting(context, tid, SessionTypeEnum.Team, getTeamCustomization(), anchor);
+        NimUIKit.startTeamSession(context, tid, anchor);
     }
 
     // 打开群聊界面(用于 UIKIT 中部分界面跳转回到指定的页面)
@@ -146,7 +156,7 @@ public class SessionHelper {
 
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
             ArrayList<BaseAction> actions = new ArrayList<>();
-            if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
                 actions.add(new AVChatAction(AVChatType.AUDIO));
                 actions.add(new AVChatAction(AVChatType.VIDEO));
             }
@@ -378,6 +388,20 @@ public class SessionHelper {
             }
         });
     }
+
+    private static void registerMsgRevokeObserver() {
+        NIMClient.getService(MsgServiceObserve.class).observeRevokeMessage(new Observer<IMMessage>() {
+            @Override
+            public void onEvent(IMMessage message) {
+                if (message == null) {
+                    return;
+                }
+
+                MessageHelper.getInstance().onRevokeMessage(message);
+            }
+        }, true);
+    }
+
 
     private static void initPopuptWindow(Context context, View view, String sessionId, SessionTypeEnum sessionTypeEnum) {
         if (popupMenu == null) {

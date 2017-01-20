@@ -11,7 +11,7 @@ import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
-import com.netease.nim.uikit.session.module.list.MessageListPanel;
+import com.netease.nim.uikit.session.module.list.MessageListPanelEx;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -29,7 +29,7 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
     private SessionTypeEnum sessionType;
     private String account; // 对方帐号
 
-    private MessageListPanel messageListPanel;
+    private MessageListPanelEx messageListPanel;
 
     public static void start(Context context, String account, SessionTypeEnum sessionType) {
         Intent intent = new Intent();
@@ -57,7 +57,7 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
         onParseIntent();
 
         Container container = new Container(this, account, sessionType, this);
-        messageListPanel = new MessageListPanel(container, rootView, true, true);
+        messageListPanel = new MessageListPanelEx(container, rootView, true, true);
     }
 
     @Override

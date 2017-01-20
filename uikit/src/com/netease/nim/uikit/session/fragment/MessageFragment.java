@@ -7,6 +7,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.netease.nim.uikit.CustomPushContentProvider;
+import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.session.SessionCustomization;
@@ -18,7 +20,7 @@ import com.netease.nim.uikit.session.constant.Extras;
 import com.netease.nim.uikit.session.module.Container;
 import com.netease.nim.uikit.session.module.ModuleProxy;
 import com.netease.nim.uikit.session.module.input.InputPanel;
-import com.netease.nim.uikit.session.module.list.MessageListPanel;
+import com.netease.nim.uikit.session.module.list.MessageListPanelEx;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -29,6 +31,7 @@ import com.netease.nimlib.sdk.msg.model.MessageReceipt;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 聊天界面基类
@@ -50,7 +53,7 @@ public class MessageFragment extends TFragment implements ModuleProxy {
 
     // modules
     protected InputPanel inputPanel;
-    protected MessageListPanel messageListPanel;
+    protected MessageListPanelEx messageListPanel;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -117,7 +120,7 @@ public class MessageFragment extends TFragment implements ModuleProxy {
         Container container = new Container(getActivity(), sessionId, sessionType, this);
 
         if (messageListPanel == null) {
-            messageListPanel = new MessageListPanel(container, rootView, anchor, false, false);
+            messageListPanel = new MessageListPanelEx(container, rootView, anchor, false, false);
         } else {
             messageListPanel.reload(container, anchor);
         }
@@ -185,7 +188,7 @@ public class MessageFragment extends TFragment implements ModuleProxy {
         if (!isAllowSendMessage(message)) {
             return false;
         }
-
+        appendPushConfig(message);
         // send message to server and save to db
         NIMClient.getService(MsgService.class).sendMessage(message, false);
 
@@ -194,9 +197,18 @@ public class MessageFragment extends TFragment implements ModuleProxy {
         return true;
     }
 
+    private void appendPushConfig(IMMessage message) {
+        CustomPushContentProvider customConfig = NimUIKit.getCustomPushContentProvider();
+        if (customConfig != null) {
+            String content = customConfig.getPushContent(message);
+            Map<String, Object> payload = customConfig.getPushPayload(message);
+            message.setPushContent(content);
+            message.setPushPayload(payload);
+        }
+    }
+
     @Override
     public void onInputPanelExpand() {
-        messageListPanel.jumpReload();
         messageListPanel.scrollToBottom();
     }
 

@@ -199,7 +199,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
      *
      * @return 撤销是否成功
      */
-    public boolean paintBack() {
+    public synchronized boolean paintBack() {
         if (paintChannel == null) {
             return false;
         }
@@ -212,7 +212,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
     /**
      *
      */
-    public void clear() {
+    public synchronized void clear() {
         clearAll();
         transactionManager.sendClearSelfTransaction();
     }
@@ -224,7 +224,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
      * @return
      */
     @Override
-    public boolean onTouchEvent(MotionEvent event) {
+    public synchronized boolean onTouchEvent(MotionEvent event) {
         int action = event.getAction();
         if (action == MotionEvent.ACTION_CANCEL) {
             return false;
@@ -289,7 +289,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
      */
 
     @Override
-    public void onTransaction(List<Transaction> transactions) {
+    public synchronized void onTransaction(List<Transaction> transactions) {
         Log.i(TAG, "onTransaction, size =" + transactions.size());
 
         if (playbackChannel == null) {

@@ -1,5 +1,6 @@
 package com.netease.nim.demo.session.viewholder;
 
+import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,13 +10,13 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.activity.WatchSnapChatPictureActivity;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.file.AttachmentStore;
 import com.netease.nim.uikit.common.util.string.StringUtil;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.AttachStatusEnum;
-import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 
 /**
@@ -28,6 +29,10 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
     protected View progressCover;
     private TextView progressLabel;
     private boolean isLongClick = false;
+
+    public MsgViewHolderSnapChat(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {
@@ -61,7 +66,8 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
             progressCover.setVisibility(View.GONE);
         }
 
-        progressLabel.setText(StringUtil.getPercentString(getAdapter().getProgress(message)));
+        progressLabel.setText(StringUtil.getPercentString(getMsgAdapter().getProgress(message)));
+        readReceiptTextView.setVisibility(View.GONE);
     }
 
     protected View.OnTouchListener onTouchListener = new View.OnTouchListener() {
@@ -69,26 +75,26 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
         @Override
         public boolean onTouch(View v, MotionEvent event) {
             switch (event.getAction()) {
-            case MotionEvent.ACTION_MOVE:
-                v.getParent().requestDisallowInterceptTouchEvent(true);
-                break;
-            case MotionEvent.ACTION_UP:
-            case MotionEvent.ACTION_CANCEL:
-                v.getParent().requestDisallowInterceptTouchEvent(false);
+                case MotionEvent.ACTION_MOVE:
+                    v.getParent().requestDisallowInterceptTouchEvent(true);
+                    break;
+                case MotionEvent.ACTION_UP:
+                case MotionEvent.ACTION_CANCEL:
+                    v.getParent().requestDisallowInterceptTouchEvent(false);
 
-                WatchSnapChatPictureActivity.destroy();
+                    WatchSnapChatPictureActivity.destroy();
 
-                // 删除这条消息，当然你也可以将其标记为已读，同时删除附件内容，然后不让再查看
-                if (isLongClick && message.getAttachStatus() == AttachStatusEnum.transferred) {
-                    // 物理删除
-                    NIMClient.getService(MsgService.class).deleteChattingHistory(message);
-                    AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getPath());
-                    AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getThumbPath());
+                    // 删除这条消息，当然你也可以将其标记为已读，同时删除附件内容，然后不让再查看
+                    if (isLongClick && message.getAttachStatus() == AttachStatusEnum.transferred) {
+                        // 物理删除
+                        NIMClient.getService(MsgService.class).deleteChattingHistory(message);
+                        AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getPath());
+                        AttachmentStore.delete(((SnapChatAttachment) message.getAttachment()).getThumbPath());
 
-                    getAdapter().deleteItem(message, true);
-                    isLongClick = false;
-                }
-                break;
+                        getMsgAdapter().deleteItem(message, true);
+                        isLongClick = false;
+                    }
+                    break;
             }
 
             return false;
@@ -117,18 +123,25 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
 
     private void layoutByDirection() {
         View body = findViewById(R.id.message_item_snap_chat_body);
+        View tipsLayout = findViewById(R.id.message_item_tips_layout);
         View tips = findViewById(R.id.message_item_snap_chat_tips_label);
+        View readed = findViewById(R.id.message_item_snap_chat_readed);
         ViewGroup container = (ViewGroup) body.getParent();
-        container.removeView(tips);
+        container.removeView(tipsLayout);
         if (isReceivedMessage()) {
-            container.addView(tips, 1);
+            container.addView(tipsLayout, 1);
         } else {
-            container.addView(tips, 0);
+            container.addView(tipsLayout, 0);
         }
         if (message.getStatus() == MsgStatusEnum.success) {
             tips.setVisibility(View.VISIBLE);
         } else {
             tips.setVisibility(View.GONE);
+        }
+        if (!TextUtils.isEmpty(getMsgAdapter().getUuid()) && message.getUuid().equals(getMsgAdapter().getUuid())) {
+            readed.setVisibility(View.VISIBLE);
+        } else {
+            readed.setVisibility(View.GONE);
         }
     }
 }

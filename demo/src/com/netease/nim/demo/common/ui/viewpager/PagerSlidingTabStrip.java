@@ -295,21 +295,21 @@ public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPage
 
         final DropFake unreadTV = ((DropFake) tabView.findViewById(R.id.tab_new_msg_label));
         if (unreadTV != null) {
-            unreadTV.setClickListener(new DropFake.ITouchListener() {
+            unreadTV.setTouchListener(new DropFake.ITouchListener() {
                 @Override
                 public void onDown() {
                     DropManager.getInstance().setCurrentId(String.valueOf(position));
-                    DropManager.getInstance().getDropCover().down(unreadTV, unreadTV.getText());
+                    DropManager.getInstance().down(unreadTV, unreadTV.getText());
                 }
 
                 @Override
                 public void onMove(float curX, float curY) {
-                    DropManager.getInstance().getDropCover().move(curX, curY);
+                    DropManager.getInstance().move(curX, curY);
                 }
 
                 @Override
                 public void onUp() {
-                    DropManager.getInstance().getDropCover().up();
+                    DropManager.getInstance().up();
                 }
             });
 

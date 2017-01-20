@@ -4,6 +4,7 @@ import android.widget.ImageView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.StickerAttachment;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.session.emoji.StickerManager;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
@@ -16,6 +17,10 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 public class MsgViewHolderSticker extends MsgViewHolderBase {
 
     private ImageView baseView;
+
+    public MsgViewHolderSticker(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {

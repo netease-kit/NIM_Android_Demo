@@ -2,6 +2,7 @@ package com.netease.nim.uikit.session.module.list;
 
 import android.content.Context;
 import android.os.Handler;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.text.style.ImageSpan;
 import android.view.View;
@@ -10,8 +11,7 @@ import android.widget.TextView;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.common.ui.listview.ListViewUtil;
-import com.netease.nim.uikit.common.ui.listview.MessageListView;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseFetchLoadAdapter;
 import com.netease.nim.uikit.session.emoji.MoonUtil;
 import com.netease.nim.uikit.session.helper.TeamNotificationHelper;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -28,13 +28,16 @@ public class IncomingMsgPrompt {
 
     private Context context;
     private View view;
-    private MessageListView messageListView;
+    private RecyclerView messageListView;
+    private BaseFetchLoadAdapter adapter;
     private Handler uiHandler;
 
-    public IncomingMsgPrompt(Context context, View view, MessageListView messageListView, Handler uiHandler) {
+    public IncomingMsgPrompt(Context context, View view, RecyclerView messageListView, BaseFetchLoadAdapter adapter,
+                             Handler uiHandler) {
         this.context = context;
         this.view = view;
         this.messageListView = messageListView;
+        this.adapter = adapter;
         this.uiHandler = uiHandler;
     }
 
@@ -70,7 +73,7 @@ public class IncomingMsgPrompt {
 
             @Override
             public void onClick(View v) {
-                ListViewUtil.scrollToBottom(messageListView);
+                messageListView.scrollToPosition(adapter.getBottomDataPosition());
                 newMessageTipLayout.setVisibility(View.GONE);
             }
         });

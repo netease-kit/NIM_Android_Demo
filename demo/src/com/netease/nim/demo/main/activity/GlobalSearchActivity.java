@@ -18,6 +18,7 @@ import android.widget.ListView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.demo.session.search.DisplayMessageActivity;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.string.StringUtil;
 import com.netease.nim.uikit.contact.core.item.AbsContactItem;
@@ -32,7 +33,6 @@ import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
 import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
 import com.netease.nim.uikit.contact.core.viewholder.MsgHolder;
 import com.netease.nim.uikit.model.ToolBarOptions;
-import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.search.model.MsgIndexRecord;
 
 /**
@@ -203,11 +203,7 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
                 if (msgIndexRecord.getCount() > 1) {
                     GlobalSearchDetailActivity2.start(this, msgIndexRecord);
                 } else {
-                    if (msgIndexRecord.getSessionType() == SessionTypeEnum.P2P) {
-                        SessionHelper.startP2PSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
-                    } else if (msgIndexRecord.getSessionType() == SessionTypeEnum.Team) {
-                        SessionHelper.startTeamSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
-                    }
+                    DisplayMessageActivity.start(this, msgIndexRecord.getMessage());
                 }
                 break;
             }

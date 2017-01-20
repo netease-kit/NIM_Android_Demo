@@ -1,5 +1,6 @@
 package com.netease.nim.uikit.session.viewholder;
 
+import android.content.Context;
 import android.text.TextUtils;
 import android.view.Gravity;
 import android.view.View;
@@ -13,8 +14,10 @@ import android.widget.TextView;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
+import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
+import com.netease.nim.uikit.common.ui.recyclerview.holder.RecyclerViewHolder;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nim.uikit.session.module.list.MsgAdapter;
 import com.netease.nimlib.sdk.NIMClient;
@@ -27,12 +30,24 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
 
 /**
  * 会话窗口消息列表项的ViewHolder基类，负责每个消息项的外层框架，包括头像，昵称，发送/接收进度条，重发按钮等。<br>
- *     具体的消息展示项可继承该基类，然后完成具体消息内容展示即可。
+ * 具体的消息展示项可继承该基类，然后完成具体消息内容展示即可。
  */
-public abstract class MsgViewHolderBase extends TViewHolder {
+public abstract class MsgViewHolderBase extends RecyclerViewHolder<BaseMultiItemFetchLoadAdapter, BaseViewHolder, IMMessage> {
 
+    public MsgViewHolderBase(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+        this.adapter = adapter;
+    }
+
+    // basic
+    protected View view;
+    protected Context context;
+    protected BaseMultiItemFetchLoadAdapter adapter;
+
+    // data
     protected IMMessage message;
 
+    // view
     protected View alertButton;
     protected TextView timeTextView;
     protected ProgressBar progressBar;
@@ -95,8 +110,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
     }
 
     /// -- 以下接口可由子类调用
-    // 获取MsgAdapter对象
-    protected final MsgAdapter getAdapter() {
+    protected final MsgAdapter getMsgAdapter() {
         return (MsgAdapter) adapter;
     }
 
@@ -110,7 +124,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
 
     // 设置FrameLayout子控件的gravity参数
     protected final void setGravity(View view, int gravity) {
-        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams)view.getLayoutParams();
+        FrameLayout.LayoutParams params = (FrameLayout.LayoutParams) view.getLayoutParams();
         params.gravity = gravity;
     }
 
@@ -126,7 +140,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
 
     // 根据layout id查找对应的控件
     protected <T extends View> T findViewById(int id) {
-        return (T)view.findViewById(id);
+        return (T) view.findViewById(id);
     }
 
     // 判断消息方向，是否是接收到的消息
@@ -136,11 +150,15 @@ public abstract class MsgViewHolderBase extends TViewHolder {
 
     /// -- 以下是基类实现代码
     @Override
-    protected final int getResId() {
-        return R.layout.nim_message_item;
+    public void convert(BaseViewHolder holder, IMMessage data, int position, boolean isScrolling) {
+        view = holder.getConvertView();
+        context = holder.getContext();
+        message = data;
+
+        inflate();
+        refresh();
     }
 
-    @Override
     protected final void inflate() {
         timeTextView = findViewById(R.id.message_item_time);
         avatarLeft = findViewById(R.id.message_item_portrait_left);
@@ -151,15 +169,16 @@ public abstract class MsgViewHolderBase extends TViewHolder {
         contentContainer = findViewById(R.id.message_item_content);
         nameIconView = findViewById(R.id.message_item_name_icon);
         nameContainer = findViewById(R.id.message_item_name_layout);
-        readReceiptTextView = findView(R.id.textViewAlreadyRead);
+        readReceiptTextView = findViewById(R.id.textViewAlreadyRead);
 
-        View.inflate(view.getContext(), getContentResId(), contentContainer);
+        // 这里只要inflate出来后加入一次即可
+        if(contentContainer.getChildCount() == 0) {
+            View.inflate(view.getContext(), getContentResId(), contentContainer);
+        }
         inflateContentView();
     }
 
-    @Override
-    protected final void refresh(Object item) {
-        message = (IMMessage) item;
+    protected final void refresh() {
         setHeadImageView();
         setNameTextView();
         setTimeTextView();
@@ -174,7 +193,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
 
     public void refreshCurrentItem() {
         if (message != null) {
-            refresh(message);
+            refresh();
         }
     }
 
@@ -182,7 +201,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
      * 设置时间显示
      */
     private void setTimeTextView() {
-        if (getAdapter().needShowTime(message)) {
+        if (getMsgAdapter().needShowTime(message)) {
             timeTextView.setVisibility(View.VISIBLE);
         } else {
             timeTextView.setVisibility(View.GONE);
@@ -197,21 +216,20 @@ public abstract class MsgViewHolderBase extends TViewHolder {
      * 设置消息发送状态
      */
     private void setStatus() {
-
         MsgStatusEnum status = message.getStatus();
         switch (status) {
-        case fail:
-            progressBar.setVisibility(View.GONE);
-            alertButton.setVisibility(View.VISIBLE);
-            break;
-        case sending:
-            progressBar.setVisibility(View.VISIBLE);
-            alertButton.setVisibility(View.GONE);
-            break;
-        default:
-            progressBar.setVisibility(View.GONE);
-            alertButton.setVisibility(View.GONE);
-            break;
+            case fail:
+                progressBar.setVisibility(View.GONE);
+                alertButton.setVisibility(View.VISIBLE);
+                break;
+            case sending:
+                progressBar.setVisibility(View.VISIBLE);
+                alertButton.setVisibility(View.GONE);
+                break;
+            default:
+                progressBar.setVisibility(View.GONE);
+                alertButton.setVisibility(View.GONE);
+                break;
         }
     }
 
@@ -234,12 +252,12 @@ public abstract class MsgViewHolderBase extends TViewHolder {
 
     private void setOnClickListener() {
         // 重发/重收按钮响应事件
-        if (getAdapter().getEventListener() != null) {
+        if (getMsgAdapter().getEventListener() != null) {
             alertButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
                 public void onClick(View v) {
-                    getAdapter().getEventListener().onFailedBtnClick(message);
+                    getMsgAdapter().getEventListener().onFailedBtnClick(message);
                 }
             });
         }
@@ -274,8 +292,8 @@ public abstract class MsgViewHolderBase extends TViewHolder {
             public boolean onLongClick(View v) {
                 // 优先派发给自己处理，
                 if (!onItemLongClick()) {
-                    if (getAdapter().getEventListener() != null) {
-                        getAdapter().getEventListener().onViewHolderLongClick(contentContainer, view, message);
+                    if (getMsgAdapter().getEventListener() != null) {
+                        getMsgAdapter().getEventListener().onViewHolderLongClick(contentContainer, view, message);
                         return true;
                     }
                 }
@@ -337,7 +355,7 @@ public abstract class MsgViewHolderBase extends TViewHolder {
     }
 
     private void setReadReceipt() {
-        if (!TextUtils.isEmpty(getAdapter().getUuid()) && message.getUuid().equals(getAdapter().getUuid())) {
+        if (!TextUtils.isEmpty(getMsgAdapter().getUuid()) && message.getUuid().equals(getMsgAdapter().getUuid())) {
             readReceiptTextView.setVisibility(View.VISIBLE);
         } else {
             readReceiptTextView.setVisibility(View.GONE);

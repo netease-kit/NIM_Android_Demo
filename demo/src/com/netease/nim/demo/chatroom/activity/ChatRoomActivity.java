@@ -41,7 +41,7 @@ public class ChatRoomActivity extends UI {
      */
     private String roomId;
     private ChatRoomInfo roomInfo;
-
+    private boolean hasEnterSuccess = false; // 是否已经成功登录聊天室
     private ChatRoomFragment fragment;
 
     /**
@@ -97,8 +97,9 @@ public class ChatRoomActivity extends UI {
                 }
             }
         }).setCanceledOnTouchOutside(false);
+        hasEnterSuccess = false;
         EnterChatRoomData data = new EnterChatRoomData(roomId);
-        enterRequest = NIMClient.getService(ChatRoomService.class).enterChatRoom(data);
+        enterRequest = NIMClient.getService(ChatRoomService.class).enterChatRoomEx(data, 1);
         enterRequest.setCallback(new RequestCallback<EnterChatRoomResultData>() {
             @Override
             public void onSuccess(EnterChatRoomResultData result) {
@@ -109,6 +110,7 @@ public class ChatRoomActivity extends UI {
                 ChatRoomMemberCache.getInstance().saveMyMember(member);
                 initChatRoomFragment();
                 initMessageFragment();
+                hasEnterSuccess = true;
             }
 
             @Override
@@ -169,10 +171,12 @@ public class ChatRoomActivity extends UI {
                 if (fragment != null) {
                     fragment.updateOnlineStatus(false);
                 }
-                int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
-                LogUtil.d(TAG, "chat room enter error code:" + code);
-                if (code != ResponseCode.RES_ECONNECTION) {
-                    Toast.makeText(ChatRoomActivity.this, "未登录,code=" + code, Toast.LENGTH_LONG).show();
+
+                // 登录成功后，断网重连交给云信SDK，如果重连失败，可以查询具体失败的原因
+                if (hasEnterSuccess) {
+                    int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
+                    Toast.makeText(ChatRoomActivity.this, "getEnterErrorCode=" + code, Toast.LENGTH_LONG).show();
+                    LogUtil.d(TAG, "chat room enter error code:" + code);
                 }
             } else if (chatRoomStatusChangeData.status == StatusCode.NET_BROKEN) {
                 if (fragment != null) {

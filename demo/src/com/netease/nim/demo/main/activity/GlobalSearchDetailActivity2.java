@@ -9,7 +9,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.demo.session.search.DisplayMessageActivity;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.activity.UI;
@@ -94,7 +94,7 @@ public class GlobalSearchDetailActivity2 extends UI implements OnItemClickListen
         lvContacts = findView(R.id.search_result_list);
         IContactDataProvider dataProvider = new ContactDataProviderSearch(new ArrayList<AbsContactItem>(), ItemTypes.MSG);
 
-        adapter = new ContactDataAdapter(this, null, dataProvider){
+        adapter = new ContactDataAdapter(this, null, dataProvider) {
             @Override
             protected void onPostLoad(boolean empty, String query, boolean all) {
                 super.onPostLoad(empty, query, all);
@@ -117,7 +117,7 @@ public class GlobalSearchDetailActivity2 extends UI implements OnItemClickListen
                 // query data
                 if (dataList != null && dataList.size() < resultCount) {
                     TextQuery textQuery = new TextQuery(query);
-                    textQuery.extra = new Object[]{sessionType, sessionId,  ((MsgItem)(dataList.get(dataList.size() - 1))).getRecord()};
+                    textQuery.extra = new Object[]{sessionType, sessionId, ((MsgItem) (dataList.get(dataList.size() - 1))).getRecord()};
 
                     adapter.query(textQuery);
                 } else {
@@ -133,6 +133,7 @@ public class GlobalSearchDetailActivity2 extends UI implements OnItemClickListen
     }
 
     private List<AbsContactItem> dataList;
+
     private class ContactDataProviderSearch extends ContactDataProvider {
 
         public ContactDataProviderSearch(List<AbsContactItem> data, int... itemTypes) {
@@ -161,11 +162,7 @@ public class GlobalSearchDetailActivity2 extends UI implements OnItemClickListen
         switch (item.getItemType()) {
             case ItemTypes.MSG: {
                 MsgIndexRecord msgIndexRecord = ((MsgItem) item).getRecord();
-                if (msgIndexRecord.getSessionType() == SessionTypeEnum.P2P) {
-                    SessionHelper.startP2PSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
-                } else if (msgIndexRecord.getSessionType() == SessionTypeEnum.Team) {
-                    SessionHelper.startTeamSession(this, msgIndexRecord.getSessionId(), msgIndexRecord.getMessage());
-                }
+                DisplayMessageActivity.start(this, msgIndexRecord.getMessage());
                 break;
             }
 

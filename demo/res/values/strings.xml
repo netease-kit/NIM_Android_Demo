@@ -67,7 +67,7 @@
     <string name="nim_status_unlogin">未登录</string>
     <string name="nim_status_connecting">连接中...</string>
     <string name="nim_status_logining">登录中...</string>
-    <string name="copyright">Copyright ©1997-2016 网易公司版权所有</string>
+    <string name="copyright">Copyright ©1997-2017 网易公司版权所有</string>
     <string name="edit_nick">修改昵称</string>
     <string name="user_not_exsit">该用户不存在</string>
     <string name="user_tips">请检查你输入的帐号是否正确</string>
@@ -204,7 +204,8 @@
     <string name="sqlite_like">SQLite LIKE</string>
     <string name="luc">Lucene</string>
     <string name="clear_index">清理全文检索缓存</string>
-
+    <string name="operation_too_frequent">操作太频繁</string>
+    <string name="notification_folded">通知栏折叠</string>
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
     <string name="multiport_logout">下线</string>
@@ -241,6 +242,9 @@
     <string name="head_update_failed">头像设置失败，请重试</string>
     <string name="nickname_empty">昵称不能为空</string>
 
+    <!-- JsBridge -->
+    <string name="js_bridge">NIM JS Bridge</string>
+    <string name="js_bridge_demonstration">Js Bridge演示</string>
 
     <!-- NRTC -->
     <string name="nrtc_settings">网络通话设置</string>
@@ -337,11 +341,13 @@
     <string name="nrtc_setting_vie_max_bitrate_key">nrtc_setting_vie_max_bitrate_key</string>
     <string name="nrtc_setting_vie_max_bitrate">码率(Kbps)</string>
     <string name="nrtc_setting_voe_audio_aec_key">nrtc_setting_voe_audio_aec_key</string>
-    <string name="nrtc_setting_voe_audio_aec">Acoustic Echo Canceler</string>
-    <string name="nrtc_setting_voe_audio_agc_key">nrtc_setting_voe_audio_agc_key</string>
-    <string name="nrtc_setting_voe_audio_agc">Automatic Gain Control</string>
+    <string name="nrtc_setting_voe_audio_aec">回音消除</string>
     <string name="nrtc_setting_voe_audio_ns_key">nrtc_setting_voe_audio_ns_key</string>
-    <string name="nrtc_setting_voe_audio_ns">Noise Suppressor</string>
+    <string name="nrtc_setting_voe_audio_ns">降噪</string>
+    <string name="nrtc_setting_voe_high_quality_key">nrtc_setting_voe_high_quality_key</string>
+    <string name="nrtc_setting_voe_high_quality">高清语音</string>
+    <string name="nrtc_setting_voe_dtx_key">nrtc_setting_voe_dtx_key</string>
+    <string name="nrtc_setting_voe_dtx">人声检测</string>
 
 
 </resources>

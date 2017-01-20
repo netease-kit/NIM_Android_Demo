@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.session.emoji.MoonUtil;
 
@@ -15,6 +16,10 @@ import com.netease.nim.uikit.session.emoji.MoonUtil;
  * Created by zhoujianghua on 2015/8/4.
  */
 public class MsgViewHolderText extends MsgViewHolderBase {
+
+    public MsgViewHolderText(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {

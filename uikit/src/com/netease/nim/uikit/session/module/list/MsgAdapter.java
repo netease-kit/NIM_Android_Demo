@@ -1,10 +1,13 @@
 package com.netease.nim.uikit.session.module.list;
 
-import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
-import com.netease.nim.uikit.common.adapter.TAdapter;
-import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
+import com.netease.nim.uikit.R;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
+import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
+import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
+import com.netease.nim.uikit.session.viewholder.MsgViewHolderFactory;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -14,17 +17,42 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class MsgAdapter extends TAdapter<IMMessage> {
+/**
+ * Created by huangjun on 2016/12/21.
+ */
+public class MsgAdapter extends BaseMultiItemFetchLoadAdapter<IMMessage, BaseViewHolder> {
+
+    private Map<Class<? extends MsgViewHolderBase>, Integer> holder2ViewType;
 
     private ViewHolderEventListener eventListener;
     private Map<String, Float> progresses; // 有文件传输，需要显示进度条的消息ID map
     private String messageId;
 
-    public MsgAdapter(Context context, List<IMMessage> items, TAdapterDelegate delegate) {
-        super(context, items, delegate);
+    public MsgAdapter(RecyclerView recyclerView, List<IMMessage> data) {
+        super(recyclerView, data);
 
         timedItems = new HashSet<>();
         progresses = new HashMap<>();
+
+        // view type, view holder
+        holder2ViewType = new HashMap<>();
+        List<Class<? extends MsgViewHolderBase>> holders = MsgViewHolderFactory.getAllViewHolders();
+        int viewType = 0;
+        for (Class<? extends MsgViewHolderBase> holder : holders) {
+            viewType++;
+            addItemType(viewType, R.layout.nim_message_item, holder);
+            holder2ViewType.put(holder, viewType);
+        }
+    }
+
+    @Override
+    protected int getViewType(IMMessage message) {
+        return holder2ViewType.get(MsgViewHolderFactory.getViewHolderByType(message));
+    }
+
+    @Override
+    protected String getItemKey(IMMessage item) {
+        return item.getUuid();
     }
 
     public void setEventListener(ViewHolderEventListener eventListener) {
@@ -41,19 +69,19 @@ public class MsgAdapter extends TAdapter<IMMessage> {
         }
 
         int index = 0;
-        for (IMMessage item : getItems()) {
+        for (IMMessage item : getData()) {
             if (item.isTheSame(message)) {
                 break;
             }
             ++index;
         }
 
-        if (index < getCount()) {
-            getItems().remove(index);
+        if (index < getDataSize()) {
+            remove(index);
             if (isRelocateTime) {
                 relocateShowTimeItemAfterDelete(message, index);
             }
-            notifyDataSetChanged();
+            notifyDataSetChanged(); // 可以不要！！！
         }
     }
 
@@ -66,7 +94,9 @@ public class MsgAdapter extends TAdapter<IMMessage> {
         progresses.put(message.getUuid(), progress);
     }
 
-    /*********************** 时间显示处理 ****************************/
+    /**
+     * *********************** 时间显示处理 ***********************
+     */
 
     private Set<String> timedItems; // 需要显示消息时间的消息ID
     private IMMessage lastShowTimeItem; // 用于消息时间显示,判断和上条消息间的时间间隔
@@ -136,9 +166,9 @@ public class MsgAdapter extends TAdapter<IMMessage> {
         // 如果被删的项显示了时间，需要继承
         if (needShowTime(messageItem)) {
             setShowTime(messageItem, false);
-            if (getCount() > 0) {
+            if (getDataSize() > 0) {
                 IMMessage nextItem;
-                if (index == getCount()) {
+                if (index == getDataSize()) {
                     //删除的是最后一项
                     nextItem = getItem(index - 1);
                 } else {
@@ -152,7 +182,7 @@ public class MsgAdapter extends TAdapter<IMMessage> {
                     if (lastShowTimeItem != null && lastShowTimeItem != null
                             && lastShowTimeItem.isTheSame(messageItem)) {
                         lastShowTimeItem = null;
-                        for (int i = getCount() - 1; i >= 0; i--) {
+                        for (int i = getDataSize() - 1; i >= 0; i--) {
                             IMMessage item = getItem(i);
                             if (needShowTime(item)) {
                                 lastShowTimeItem = item;
@@ -178,10 +208,10 @@ public class MsgAdapter extends TAdapter<IMMessage> {
             return true;
         }
         switch (message.getMsgType()) {
-        case notification:
-            return true;
-        default:
-            return false;
+            case notification:
+                return true;
+            default:
+                return false;
         }
     }
 

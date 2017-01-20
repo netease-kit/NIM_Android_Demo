@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.media.audioplayer.Playable;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nim.uikit.session.audio.MessageAudioControl;
@@ -24,6 +25,10 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
  * Created by zhoujianghua on 2015/8/5.
  */
 public class MsgViewHolderAudio extends MsgViewHolderBase {
+
+    public MsgViewHolderAudio(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     public static int MAX_AUDIO_TIME_SECOND = 120;
     public static final int CLICK_TO_PLAY_AUDIO_DELAY = 500;
@@ -46,7 +51,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
         containerView = findViewById(R.id.message_item_audio_container);
         unreadIndicator = findViewById(R.id.message_item_audio_unread_indicator);
         animationView = findViewById(R.id.message_item_audio_playing_animation);
-
+        animationView.setBackgroundResource(0);
         audioControl = MessageAudioControl.getInstance(context);
     }
 
@@ -71,7 +76,10 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
                 unreadIndicator.setVisibility(View.GONE);
             }
 
+            initPlayAnim(); // 设置语音播放动画
+
             audioControl.startPlayAudioDelay(CLICK_TO_PLAY_AUDIO_DELAY, message, onPlayListener);
+
             audioControl.setPlayNext(true, adapter, message);
         }
     }
@@ -82,7 +90,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
             setGravity(durationLabel, Gravity.RIGHT | Gravity.CENTER_VERTICAL);
 
             containerView.setBackgroundResource(R.drawable.nim_message_item_left_selector);
-            containerView.setPadding(ScreenUtil.dip2px(15),ScreenUtil.dip2px(8), ScreenUtil.dip2px(10), ScreenUtil.dip2px(8));
+            containerView.setPadding(ScreenUtil.dip2px(15), ScreenUtil.dip2px(8), ScreenUtil.dip2px(10), ScreenUtil.dip2px(8));
             animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_left);
             durationLabel.setTextColor(Color.BLACK);
 
@@ -92,7 +100,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
             unreadIndicator.setVisibility(View.GONE);
 
             containerView.setBackgroundResource(R.drawable.nim_message_item_right_selector);
-            containerView.setPadding(ScreenUtil.dip2px(10),ScreenUtil.dip2px(8), ScreenUtil.dip2px(15), ScreenUtil.dip2px(8));
+            containerView.setPadding(ScreenUtil.dip2px(10), ScreenUtil.dip2px(8), ScreenUtil.dip2px(15), ScreenUtil.dip2px(8));
             animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_right);
             durationLabel.setTextColor(Color.WHITE);
         }
@@ -120,7 +128,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
         }
 
         // unread indicator
-        if (isReceivedMessage() && attachStatus == AttachStatusEnum.transferred  && status != MsgStatusEnum.read) {
+        if (isReceivedMessage() && attachStatus == AttachStatusEnum.transferred && status != MsgStatusEnum.read) {
             unreadIndicator.setVisibility(View.VISIBLE);
         } else {
             unreadIndicator.setVisibility(View.GONE);
@@ -238,18 +246,35 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
         if (animationView.getBackground() instanceof AnimationDrawable) {
             AnimationDrawable animation = (AnimationDrawable) animationView.getBackground();
             animation.stop();
-            animation.selectDrawable(2);
+
+            endPlayAnim();
         }
     }
 
-    @Override
-    public void reclaim() {
-        super.reclaim();
-        if (audioControl.getAudioControlListener() != null
-                && audioControl.getAudioControlListener().equals(onPlayListener)) {
-            audioControl.changeAudioControlListener(null);
+    private void initPlayAnim() {
+        if (isReceivedMessage()) {
+            animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_left);
+        } else {
+            animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_right);
         }
     }
+
+    private void endPlayAnim() {
+        if (isReceivedMessage()) {
+            animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_left_3);
+        } else {
+            animationView.setBackgroundResource(R.drawable.nim_audio_animation_list_right_3);
+        }
+    }
+
+//    @Override
+//    public void reclaim() {
+//        super.reclaim();
+//        if (audioControl.getAudioControlListener() != null
+//                && audioControl.getAudioControlListener().equals(onPlayListener)) {
+//            audioControl.changeAudioControlListener(null);
+//        }
+//    }
 
     @Override
     protected int leftBackground() {

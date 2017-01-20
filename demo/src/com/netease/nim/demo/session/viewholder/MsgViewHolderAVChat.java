@@ -5,6 +5,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
@@ -17,6 +18,10 @@ public class MsgViewHolderAVChat extends MsgViewHolderBase {
 
     private ImageView typeImage;
     private TextView statusLabel;
+
+    public MsgViewHolderAVChat(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {
@@ -65,15 +70,15 @@ public class MsgViewHolderAVChat extends MsgViewHolderBase {
 
         String textString = "";
         switch (attachment.getState()) {
-        case Success: //成功接听
-            textString = TimeUtil.secToTime(attachment.getDuration());
-            break;
-        case Missed: //未接听
-        case Rejected: //主动拒绝
-            textString = context.getString(R.string.avchat_no_pick_up);
-            break;
-        default:
-            break;
+            case Success: //成功接听
+                textString = TimeUtil.secToTime(attachment.getDuration());
+                break;
+            case Missed: //未接听
+            case Rejected: //主动拒绝
+                textString = context.getString(R.string.avchat_no_pick_up);
+                break;
+            default:
+                break;
         }
 
         statusLabel.setText(textString);

@@ -45,7 +45,7 @@ import com.netease.nimlib.sdk.rts.RTSChannelStateObserver;
 import com.netease.nimlib.sdk.rts.RTSManager;
 import com.netease.nimlib.sdk.rts.constant.RTSEventType;
 import com.netease.nimlib.sdk.rts.constant.RTSTimeOutEvent;
-import com.netease.nimlib.sdk.rts.constant.RTSTunType;
+import com.netease.nimlib.sdk.rts.constant.RTSTunnelType;
 import com.netease.nimlib.sdk.rts.model.RTSCalleeAckEvent;
 import com.netease.nimlib.sdk.rts.model.RTSCommonEvent;
 import com.netease.nimlib.sdk.rts.model.RTSControlEvent;
@@ -103,8 +103,8 @@ public class RTSActivity extends UI implements View.OnClickListener {
 
     public static void incomingSession(Context context, RTSData data, int source) {
 
-        if(isBusy) {
-            RTSManager.getInstance().close(data.getSessionId(), null);
+        if (isBusy) {
+            RTSManager.getInstance().close(data.getLocalSessionId(), null);
             Toast.makeText(context, "close session", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -268,7 +268,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
     private void incoming() {
         sessionInfo = (RTSData) getIntent().getSerializableExtra(KEY_RTS_DATA);
         account = sessionInfo.getAccount();
-        sessionId = sessionInfo.getSessionId();
+        sessionId = sessionInfo.getLocalSessionId();
 
         Toast.makeText(RTSActivity.this, "incoming session, extra=" + sessionInfo.getExtra(),
                 Toast.LENGTH_SHORT)
@@ -414,38 +414,42 @@ public class RTSActivity extends UI implements View.OnClickListener {
     private RTSChannelStateObserver channelStateObserver = new RTSChannelStateObserver() {
 
         @Override
-        public void onConnectResult(RTSTunType tunType, long channelId, int code) {
+        public void onConnectResult(String sessionId, RTSTunnelType tunType, long channelId, int code, String file) {
             Toast.makeText(RTSActivity.this, "onConnectResult, tunType=" + tunType.toString() +
                     ", channelId=" + channelId +
-                    ", code=" + code, Toast.LENGTH_SHORT).show();
+                    ", code=" + code + ", file=" + file, Toast.LENGTH_SHORT).show();
         }
 
-        @Override
-        public void onRecordInfo(RTSTunType tunType, String file) {
-            String tip = "onRecordInfo, tunType=" + tunType.toString() + ", file=" + file ;
-            Toast.makeText(RTSActivity.this, tip, Toast.LENGTH_SHORT).show();
-            LogUtil.i("RTS", tip);
-        }
 
         @Override
-        public void onChannelEstablished(RTSTunType tunType) {
+        public void onChannelEstablished(String sessionId, RTSTunnelType tunType) {
             Toast.makeText(RTSActivity.this, "onCallEstablished,tunType=" + tunType.toString(), Toast
                     .LENGTH_SHORT).show();
 
-            if (tunType == RTSTunType.AUDIO) {
+            if (tunType == RTSTunnelType.AUDIO) {
                 RTSManager.getInstance().setSpeaker(sessionId, true); // 默认开启扬声器
             }
         }
 
         @Override
-        public void onDisconnectServer(RTSTunType tunType) {
+        public void onUserJoin(String sessionId, RTSTunnelType tunType, String account) {
+
+        }
+
+        @Override
+        public void onUserLeave(String sessionId, RTSTunnelType tunType, String account, int event) {
+
+        }
+
+        @Override
+        public void onDisconnectServer(String sessionId, RTSTunnelType tunType) {
             Toast.makeText(RTSActivity.this, "onDisconnectServer, tunType=" + tunType.toString(), Toast
                     .LENGTH_SHORT).show();
-            if (tunType == RTSTunType.TCP) {
+            if (tunType == RTSTunnelType.DATA) {
                 // 如果数据通道断了，那么关闭会话
                 Toast.makeText(RTSActivity.this, "TCP通道断开，自动结束会话", Toast.LENGTH_SHORT).show();
                 endSession();
-            } else if (tunType == RTSTunType.AUDIO) {
+            } else if (tunType == RTSTunnelType.AUDIO) {
                 // 如果音频通道断了，那么UI变换
                 if (audioOpen) {
                     audioSwitch();
@@ -454,14 +458,14 @@ public class RTSActivity extends UI implements View.OnClickListener {
         }
 
         @Override
-        public void onError(RTSTunType tunType, int code) {
+        public void onError(String sessionId, RTSTunnelType tunType, int code) {
             Toast.makeText(RTSActivity.this, "onError, tunType=" + tunType.toString() + ", error=" + code,
                     Toast.LENGTH_LONG).show();
             endSession();
         }
 
         @Override
-        public void onNetworkStatusChange(RTSTunType tunType, int value) {
+        public void onNetworkStatusChange(String sessionId, RTSTunnelType tunType, int value) {
             // 网络信号强弱
         }
     };
@@ -477,14 +481,14 @@ public class RTSActivity extends UI implements View.OnClickListener {
     };
 
     private void startSession() {
-        List<RTSTunType> types = new ArrayList<>(1);
-        types.add(RTSTunType.AUDIO);
-        types.add(RTSTunType.TCP);
+        List<RTSTunnelType> types = new ArrayList<>(1);
+        types.add(RTSTunnelType.AUDIO);
+        types.add(RTSTunnelType.DATA);
 
         String pushContent = account + "发起一个会话";
         String extra = "extra_data";
-        RTSOptions options = new RTSOptions().setRecordAudioTun(true)
-                .setRecordTCPTun(true);
+        RTSOptions options = new RTSOptions().setRecordAudioTun(false)
+                .setRecordDataTun(true);
         RTSNotifyOption notifyOption = new RTSNotifyOption();
         notifyOption.apnsContent = pushContent;
         notifyOption.extendMessage = extra;
@@ -548,7 +552,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
     }
 
     private void acceptSession() {
-        RTSOptions options = new RTSOptions().setRecordAudioTun(true).setRecordTCPTun(true);
+        RTSOptions options = new RTSOptions().setRecordAudioTun(false).setRecordDataTun(true);
         RTSManager.getInstance().accept(sessionId, options, new RTSCallback<Boolean>() {
             @Override
             public void onSuccess(Boolean success) {

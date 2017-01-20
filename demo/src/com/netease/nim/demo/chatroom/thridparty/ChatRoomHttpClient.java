@@ -8,7 +8,7 @@ import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.chatroom.helper.ExtensionHelper;
-import com.netease.nim.demo.common.http.NimHttpClient;
+import com.netease.nim.uikit.common.http.NimHttpClient;
 import com.netease.nim.demo.config.DemoServers;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomInfo;
@@ -66,7 +66,7 @@ public class ChatRoomHttpClient {
     }
 
     private ChatRoomHttpClient() {
-        NimHttpClient.getInstance().init();
+        NimHttpClient.getInstance().init(DemoCache.getContext());
     }
 
     /**
@@ -81,11 +81,12 @@ public class ChatRoomHttpClient {
 
         NimHttpClient.getInstance().execute(url, headers, null, false, new NimHttpClient.NimHttpCallback() {
             @Override
-            public void onResponse(String response, int code, String errorMsg) {
-                if (code != 0) {
-                    LogUtil.e(TAG, "fetchChatRoomList failed : code = " + code + ", errorMsg = " + errorMsg);
+            public void onResponse(String response, int code, Throwable exception) {
+                if (code != 200 || exception != null) {
+                    LogUtil.e(TAG, "fetchChatRoomList failed : code = " + code + ", errorMsg = "
+                            + (exception != null ? exception.getMessage() : "null"));
                     if (callback != null) {
-                        callback.onFailed(code, errorMsg);
+                        callback.onFailed(code, exception != null ? exception.getMessage() : "null");
                     }
                     return;
                 }

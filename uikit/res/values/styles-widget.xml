@@ -6,6 +6,18 @@
         <item name="android:scrollbarThumbHorizontal">@drawable/nim_scrollbar_handle_holo_dark</item>
     </style>
 
+    <style name="scroll_view" parent="@android:style/Widget.ScrollView">
+        <item name="android:scrollbarThumbVertical">@drawable/nim_scrollbar_handle_holo_dark</item>
+        <item name="android:scrollbarThumbHorizontal">@drawable/nim_scrollbar_handle_holo_dark</item>
+    </style>
+
+    <style name="recycler_view" parent="scroll_view">
+        <item name="android:fadingEdge">none</item>
+        <item name="android:focusable">false</item>
+        <item name="android:overScrollMode">ifContentScrolls</item>
+        <item name="android:cacheColorHint">@android:color/transparent</item>
+    </style>
+
     <style name="horizontal_light_thin_divider">
         <item name="android:layout_height">2px</item>
         <item name="android:layout_width">fill_parent</item>
@@ -98,11 +110,6 @@
         <!-- 背景透明 -->
         <item name="android:backgroundDimEnabled">true</item>
         <!-- 后面的activity变暗 -->
-    </style>
-
-    <style name="scroll_view" parent="@android:style/Widget.ScrollView">
-        <item name="android:scrollbarThumbVertical">@drawable/nim_scrollbar_handle_holo_dark</item>
-        <item name="android:scrollbarThumbHorizontal">@drawable/nim_scrollbar_handle_holo_dark</item>
     </style>
 
     <style name="blue_bottom_line_edit_text_style" parent="@android:style/Widget.EditText">

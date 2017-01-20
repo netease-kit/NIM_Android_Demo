@@ -122,11 +122,12 @@ public class AVChatUI implements AVChatUIListener {
     private int videoHwDecoderMode;
     private boolean videoFpsReported;
     private int audioEffectAecMode;
-    private int audioEffectAgcMode;
     private int audioEffectNsMode;
     private int videoMaxBitrate;
     private int deviceDefaultRotation;
     private int deviceRotationOffset;
+    private boolean audioHighQuality;
+    private boolean audioDtx;
 
     private void configFromPreference(SharedPreferences preferences) {
         videoAutoCrop = preferences.getBoolean(context.getString(R.string.nrtc_setting_vie_crop_key), true);
@@ -140,7 +141,6 @@ public class AVChatUI implements AVChatUIListener {
         videoHwDecoderMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_vie_hw_decoder_key), 0 + ""));
         videoFpsReported = preferences.getBoolean(context.getString(R.string.nrtc_setting_vie_fps_reported_key), true);
         audioEffectAecMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_voe_audio_aec_key), 2 + ""));
-        audioEffectAgcMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_voe_audio_agc_key), 2 + ""));
         audioEffectNsMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_voe_audio_ns_key), 2 + ""));
         String value1 = preferences.getString(context.getString(R.string.nrtc_setting_vie_max_bitrate_key), 0 + "");
         videoMaxBitrate = Integer.parseInt(TextUtils.isDigitsOnly(value1) && !TextUtils.isEmpty(value1) ? value1 : 0 + "");
@@ -148,6 +148,8 @@ public class AVChatUI implements AVChatUIListener {
         deviceDefaultRotation = Integer.parseInt(TextUtils.isDigitsOnly(value2) && !TextUtils.isEmpty(value2) ? value2 : 0 + "");
         String value3 = preferences.getString(context.getString(R.string.nrtc_setting_other_device_rotation_fixed_offset_key), 0 + "");
         deviceRotationOffset = Integer.parseInt(TextUtils.isDigitsOnly(value3) && !TextUtils.isEmpty(value3) ? value3 : 0 + "");
+        audioHighQuality = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_high_quality_key), false);
+        audioDtx = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_dtx_key), true);
     }
 
 
@@ -164,10 +166,11 @@ public class AVChatUI implements AVChatUIListener {
      * 10, deviceRotationOffset: 99.99%情况下你不需要设置这个参数, 当你的设备传感器获取的角度永远偏移固定值时设置,用于修正旋转角度
      * 11, videoMaxBitrate: 视频最大码率设置, 100K ~ 5M. 如果没有特殊需求不要去设置,会影响SDK内部的调节机制
      * 12, audioEffectAecMode: 语音处理选择, 默认使用平台内置,当你发现平台内置不好用时可以设置到SDK内置
-     * 13, audioEffectAgcMode: 语音处理选择, 默认使用平台内置,当你发现平台内置不好用时可以设置到SDK内置
-     * 14, audioEffectNsMode: 语音处理选择, 默认使用平台内置,当你发现平台内置不好用时可以设置到SDK内置
-     * 15, videoHwEncoderMode: 视频编码类型, 默认情况下不用设置.
-     * 16, videoHwDecoderMode: 视频解码类型, 默认情况下不用设置.
+     * 13, audioEffectNsMode: 语音处理选择, 默认使用平台内置,当你发现平台内置不好用时可以设置到SDK内置
+     * 14, videoHwEncoderMode: 视频编码类型, 默认情况下不用设置.
+     * 15, videoHwDecoderMode: 视频解码类型, 默认情况下不用设置.
+     * 16, audioHighQuality: 高清语音，采用更高的采样率来传输语音
+     * 17, audioDtx: 非连续发送，当监测到人声非活跃状态时减少数据包的发送
      */
     private void updateAVChatOptionalConfig() {
 
@@ -193,17 +196,6 @@ public class AVChatUI implements AVChatUIListener {
                 break;
             case 2:
                 avChatOptionalConfig.setAudioEffectAECMode(AVChatAudioEffectMode.PLATFORM_BUILTIN);
-                break;
-        }
-        switch (audioEffectAgcMode) {
-            case 0:
-                avChatOptionalConfig.setAudioEffectAGCMode(AVChatAudioEffectMode.DISABLE);
-                break;
-            case 1:
-                avChatOptionalConfig.setAudioEffectAGCMode(AVChatAudioEffectMode.SDK_BUILTIN);
-                break;
-            case 2:
-                avChatOptionalConfig.setAudioEffectAGCMode(AVChatAudioEffectMode.PLATFORM_BUILTIN);
                 break;
         }
         switch (audioEffectNsMode) {
@@ -239,6 +231,9 @@ public class AVChatUI implements AVChatUIListener {
                 avChatOptionalConfig.setVideoDecoderMode(AVChatParameters.MEDIA_CODEC_HARDWARE);
                 break;
         }
+
+        avChatOptionalConfig.enableAudioHighQuality(audioHighQuality);
+        avChatOptionalConfig.enableAudioDtx(audioDtx);
 
         //观众角色,多人模式下使用. IM Demo没有多人通话, 全部设置为true.
         avChatOptionalConfig.enableAudienceRole(true);

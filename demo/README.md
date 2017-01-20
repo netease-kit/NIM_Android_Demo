@@ -95,7 +95,7 @@
 
 在 `AVChatActivity` 的 oncreate 中，进行管理器的初始化工作
 
-```
+```java
 avChatUI = new AVChatUI(this, root, this);
 if (!avChatUI.initiation()) {
 	this.finish();
@@ -117,13 +117,13 @@ public boolean initiation() {
 
 1、传入参数，对方帐号和拨打的类型（AVChatType.AUDIO 或 AVChatType.VIDEO）。
 
-```
+```java
 avChatUI.outGoingCalling(receiverId, AVChatType.typeOfValue(state));
 ```
 
 2、通知界面刷新，详见[界面刷新](#界面刷新) 一节。
 
-```
+```java
 if (callTypeEnum == AVChatType.AUDIO) {
 	onCallStateChange(CallStateEnum.OUTGOING_AUDIO_CALLING);
 } else {
@@ -133,7 +133,7 @@ if (callTypeEnum == AVChatType.AUDIO) {
 
 3、发起通话
 
-```
+```java
 /**
 * 发起通话
 * account 对方帐号
@@ -163,13 +163,13 @@ AVChatManager.getInstance().call(account, callTypeEnum, videoParam, new AVChatCa
 
 1、传入参数 AVChatData
 
-```
+```java
 avChatUI.inComingCalling(avChatData);
 ```
 
 2、通知界面刷新，详见[界面刷新](#界面刷新) 一节。
 
-```
+```java
 if (callTypeEnum == AVChatType.AUDIO) {
 	onCallStateChange(CallStateEnum.OUTGOING_AUDIO_CALLING);
 } else {
@@ -184,7 +184,7 @@ if (callTypeEnum == AVChatType.AUDIO) {
 2、如果界面没有进行过初始化，则进行界面初始化 findViews，并为各个按钮添加响应事件。
 3、根据 CallStateEnum 判断界面布局设置和显隐性。
 
-```
+```java
 // 有来电，界面状态更新
 onCallStateChange(CallStateEnum.INCOMING_AUDIO_CALLING);
 
@@ -211,7 +211,7 @@ switch (state){
 
 AVChatAudio 和 AVChatVideo 中包含了挂断，拒绝，接受，禁音，开启扬声器，音视频切换和摄像头切换的操作。 按钮的点击响应事件，通过 AVChatUIListener 统一交给 AVChatUI 进行管理。示例如下：
 
-```
+```java
 // 初始化挂断按钮
 hangup = mute_speaker_hangup.findViewById(R.id.avchat_audio_hangup);
 hangup.setOnClickListener(this);
@@ -278,7 +278,7 @@ public void onHangUp() {
 
 在需要相关权限的地方，发起申请并等待用户操作后的返回结果。具体实现方法：
 
-```
+```java
 private void requestBasicPermission() {
 	MPermission.with(MainActivity.this)             
 		.addRequestCode(BASIC_PERMISSION_REQUEST_CODE)

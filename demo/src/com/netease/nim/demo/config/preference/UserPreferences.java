@@ -25,6 +25,9 @@ public class UserPreferences {
     // 通知栏标题配置
     private final static String KEY_NOTICE_CONTENT_TOGGLE = "KEY_NOTICE_CONTENT_TOGGLE";
 
+    // 通知栏样式（展开、折叠）配置
+    private final static String KEY_NOTIFICATION_FOLDED_TOGGLE = "KEY_NOTIFICATION_FOLDED";
+
     public static void setMsgIgnore(boolean enable) {
         saveBoolean(KEY_MSG_IGNORE, enable);
     }
@@ -73,6 +76,14 @@ public class UserPreferences {
         return getBoolean(KEY_DOWNTIME_TOGGLE, false);
     }
 
+    public static void setNotificationFoldedToggle(boolean folded) {
+        saveBoolean(KEY_NOTIFICATION_FOLDED_TOGGLE, folded);
+    }
+
+    public static boolean getNotificationFoldedToggle() {
+        return getBoolean(KEY_NOTIFICATION_FOLDED_TOGGLE, true);
+    }
+
     public static void setStatusConfig(StatusBarNotificationConfig config) {
         saveStatusBarNotificationConfig(KEY_STATUS_BAR_NOTIFICATION_CONFIG, config);
     }
@@ -109,6 +120,7 @@ public class UserPreferences {
             config.ledOnMs = jsonObject.getIntValue("ledonms");
             config.ledOffMs = jsonObject.getIntValue("ledoffms");
             config.titleOnlyShowAppName = jsonObject.getBoolean("titleOnlyShowAppName");
+            config.notificationFolded = jsonObject.getBoolean("notificationFolded");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -132,6 +144,7 @@ public class UserPreferences {
             jsonObject.put("ledonms", config.ledOnMs);
             jsonObject.put("ledoffms", config.ledOffMs);
             jsonObject.put("titleOnlyShowAppName", config.titleOnlyShowAppName);
+            jsonObject.put("notificationFolded", config.notificationFolded);
         } catch (Exception e) {
             e.printStackTrace();
         }

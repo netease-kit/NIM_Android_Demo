@@ -10,6 +10,7 @@ import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.UserPreferences;
@@ -19,7 +20,9 @@ import com.netease.nim.demo.main.model.SettingType;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
+import com.netease.nimlib.sdk.mixpush.MixPushService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,7 +30,7 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/7/3.
  */
-public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChangeListener, View.OnClickListener{
+public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChangeListener, View.OnClickListener {
     public static final int NO_DISTURB_REQ = 0x01;
     private static final int TAG_NO_DISTURB = 1;
     private static final String EXTRA_TIME = "EXTRA_TIME";
@@ -49,6 +52,8 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
     private TextView endText;
     private RelativeLayout startLayout;
     private RelativeLayout endLayout;
+
+    private SettingTemplate noDisturbItem;
 
     public static void startActivityForResult(Activity activity, StatusBarNotificationConfig config, String time, int reqcode) {
         Intent intent = new Intent();
@@ -89,7 +94,7 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
         startText = (TextView) footer.findViewById(R.id.start_time_value);
         endText = (TextView) footer.findViewById(R.id.end_time_value);
         noDisturbList.addFooterView(footer);
-        if(ischecked) {
+        if (ischecked) {
             showTimeSetting();
         } else {
             closeTimeSetting();
@@ -98,7 +103,8 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
 
     private void initItems() {
         items.clear();
-        items.add(new SettingTemplate(TAG_NO_DISTURB, getString(R.string.no_disturb), SettingType.TYPE_TOGGLE, UserPreferences.getDownTimeToggle()));
+        noDisturbItem = new SettingTemplate(TAG_NO_DISTURB, getString(R.string.no_disturb), SettingType.TYPE_TOGGLE, UserPreferences.getDownTimeToggle());
+        items.add(noDisturbItem);
         items.add(SettingTemplate.addLine());
     }
 
@@ -108,7 +114,7 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
             ischecked = config.downTimeToggle;
         }
 
-        if(ischecked) {
+        if (ischecked) {
             String time = getIntent().getStringExtra(EXTRA_TIME);
             if (time.length() < 11) {
                 startTime = getString(R.string.time_from_default);
@@ -126,17 +132,7 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
         switch (item.getId()) {
             case TAG_NO_DISTURB:
                 try {
-                    ischecked = checkState;
-                    UserPreferences.setDownTimeToggle(checkState);
-                    StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
-                    config.downTimeToggle = checkState;
-                    UserPreferences.setStatusConfig(config);
-                    NIMClient.updateStatusBarNotificationConfig(config);
-                    if(checkState) {
-                        showTimeSetting();
-                    } else {
-                        closeTimeSetting();
-                    }
+                    setNoDisturbReq(checkState, startTime, endTime);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -146,9 +142,58 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
         }
     }
 
+    private void setNoDisturbReq(final boolean checked, final String sTime, final String eTime) {
+        NIMClient.getService(MixPushService.class).setPushNoDisturbConfig(checked,
+                sTime, eTime).setCallback(new RequestCallback<Void>() {
+            @Override
+            public void onSuccess(Void param) {
+                // update
+                ischecked = checked;
+                startTime = sTime;
+                endTime = eTime;
+                // show
+                if (checked) {
+                    showTimeSetting();
+                } else {
+                    closeTimeSetting();
+                }
+                // save
+                saveStatusConfig();
+
+                Toast.makeText(NoDisturbActivity.this, "免打扰设置成功 ", Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onFailed(int code) {
+                resetFail(ischecked);
+                Toast.makeText(NoDisturbActivity.this, "免打扰设置失败 " + code, Toast.LENGTH_SHORT).show();
+            }
+
+            @Override
+            public void onException(Throwable exception) {
+
+            }
+        });
+    }
+
+    private void resetFail(boolean checked) {
+        noDisturbItem.setChecked(checked);
+        adapter.notifyDataSetChanged();
+    }
+
+    private void saveStatusConfig() {
+        UserPreferences.setDownTimeToggle(ischecked);
+        StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
+        config.downTimeToggle = ischecked;
+        config.downTimeBegin = startTime;
+        config.downTimeEnd = endTime;
+        UserPreferences.setStatusConfig(config);
+        NIMClient.updateStatusBarNotificationConfig(config);
+    }
+
     private void showTimeSetting() {
         timeLayout.setVisibility(View.VISIBLE);
-        if(startTime == null || endTime == null) {
+        if (startTime == null || endTime == null) {
             startTime = getString(R.string.time_from_default);
             endTime = getString(R.string.time_to_default);
         }
@@ -166,14 +211,14 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
         TimePickerDialog timePicker = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
-                if(isStartTime) {
-                    startTime = String.format("%02d:%02d", hourOfDay, minute);
-                    startText.setText(startTime);
+                String sTime = startTime;
+                String eTime = endTime;
+                if (isStartTime) {
+                    sTime = String.format("%02d:%02d", hourOfDay, minute);
                 } else {
-                    endTime = String.format("%02d:%02d", hourOfDay, minute);
-                    endText.setText(endTime);
+                    eTime = String.format("%02d:%02d", hourOfDay, minute);
                 }
-
+                setNoDisturbReq(ischecked, sTime, eTime);
             }
         }, hour, minute, true);
         timePicker.show();
@@ -196,7 +241,7 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
     @Override
     public void onBackPressed() {
         Intent intent = new Intent();
-        if(ischecked) {
+        if (ischecked) {
             intent.putExtra(EXTRA_START_TIME, startText.getText().toString());
             intent.putExtra(EXTRA_END_TIME, endText.getText().toString());
         }

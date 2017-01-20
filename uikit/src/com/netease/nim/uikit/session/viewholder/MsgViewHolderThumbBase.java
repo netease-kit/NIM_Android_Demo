@@ -6,6 +6,7 @@ import android.widget.TextView;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.imageview.MsgThumbImageView;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.media.BitmapDecoder;
 import com.netease.nim.uikit.common.util.media.ImageUtil;
 import com.netease.nim.uikit.common.util.string.StringUtil;
@@ -23,6 +24,10 @@ import java.io.File;
  * Created by zhoujianghua on 2015/8/4.
  */
 public abstract class MsgViewHolderThumbBase extends MsgViewHolderBase {
+
+    public MsgViewHolderThumbBase(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     protected MsgThumbImageView thumbnail;
     protected View progressCover;
@@ -71,7 +76,7 @@ public abstract class MsgViewHolderThumbBase extends MsgViewHolderBase {
             progressCover.setVisibility(View.VISIBLE);
             progressBar.setVisibility(View.VISIBLE);
             progressLabel.setVisibility(View.VISIBLE);
-            progressLabel.setText(StringUtil.getPercentString(getAdapter().getProgress(message)));
+            progressLabel.setText(StringUtil.getPercentString(getMsgAdapter().getProgress(message)));
         } else {
             progressCover.setVisibility(View.GONE);
             progressBar.setVisibility(View.GONE);

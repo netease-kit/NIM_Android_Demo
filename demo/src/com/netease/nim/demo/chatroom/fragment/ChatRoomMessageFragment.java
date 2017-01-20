@@ -169,7 +169,7 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
                         Toast.makeText(DemoCache.getContext(), "消息发送失败！", Toast.LENGTH_SHORT).show();
                     }
                 });
-        messageListPanel.onMsgSend(msg);
+        messageListPanel.onMsgSend(message);
         return true;
     }
 

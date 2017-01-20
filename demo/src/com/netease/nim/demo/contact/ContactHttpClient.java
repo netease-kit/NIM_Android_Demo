@@ -6,7 +6,7 @@ import android.content.pm.PackageManager;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.common.http.NimHttpClient;
+import com.netease.nim.uikit.common.http.NimHttpClient;
 import com.netease.nim.demo.config.DemoServers;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.MD5;
@@ -62,7 +62,7 @@ public class ContactHttpClient {
     }
 
     private ContactHttpClient() {
-        NimHttpClient.getInstance().init();
+        NimHttpClient.getInstance().init(DemoCache.getContext());
     }
 
 
@@ -93,11 +93,12 @@ public class ContactHttpClient {
 
         NimHttpClient.getInstance().execute(url, headers, bodyString, new NimHttpClient.NimHttpCallback() {
             @Override
-            public void onResponse(String response, int code, String errorMsg) {
-                if (code != 0) {
-                    LogUtil.e(TAG, "register failed : code = " + code + ", errorMsg = " + errorMsg);
+            public void onResponse(String response, int code, Throwable exception) {
+                if (code != 200 || exception != null) {
+                    LogUtil.e(TAG, "register failed : code = " + code + ", errorMsg = "
+                            + (exception != null ? exception.getMessage() : "null"));
                     if (callback != null) {
-                        callback.onFailed(code, errorMsg);
+                        callback.onFailed(code, exception != null ? exception.getMessage() : "null");
                     }
                     return;
                 }

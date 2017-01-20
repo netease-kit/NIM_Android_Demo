@@ -7,6 +7,8 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.session.activity.FileDownloadActivity;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.file.AttachmentStore;
 import com.netease.nim.uikit.common.util.file.FileUtil;
 import com.netease.nim.demo.file.FileIcons;
@@ -18,14 +20,16 @@ import com.netease.nimlib.sdk.msg.constant.AttachStatusEnum;
  * Created by zhoujianghua on 2015/8/6.
  */
 public class MsgViewHolderFile extends MsgViewHolderBase {
-
-
     private ImageView fileIcon;
     private TextView fileNameLabel;
     private TextView fileStatusLabel;
     private ProgressBar progressBar;
 
     private FileAttachment msgAttachment;
+
+    public MsgViewHolderFile(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {
@@ -35,8 +39,8 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
     @Override
     protected void inflateContentView() {
         fileIcon = (ImageView) view.findViewById(R.id.message_item_file_icon_image);
-        fileNameLabel = (TextView)view.findViewById(R.id.message_item_file_name_label);
-        fileStatusLabel = (TextView)view.findViewById(R.id.message_item_file_status_label);
+        fileNameLabel = (TextView) view.findViewById(R.id.message_item_file_name_label);
+        fileStatusLabel = (TextView) view.findViewById(R.id.message_item_file_status_label);
         progressBar = (ProgressBar) view.findViewById(R.id.message_item_file_transfer_progress_bar);
     }
 
@@ -51,19 +55,19 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
         } else {
             AttachStatusEnum status = message.getAttachStatus();
             switch (status) {
-            case def:
-                updateFileStatusLabel();
-                break;
-            case transferring:
-                fileStatusLabel.setVisibility(View.GONE);
-                progressBar.setVisibility(View.VISIBLE);
-                int percent = (int) (getAdapter().getProgress (message) * 100);
-                progressBar.setProgress(percent);
-                break;
-            case transferred:
-            case fail:
-                updateFileStatusLabel();
-                break;
+                case def:
+                    updateFileStatusLabel();
+                    break;
+                case transferring:
+                    fileStatusLabel.setVisibility(View.GONE);
+                    progressBar.setVisibility(View.VISIBLE);
+                    int percent = (int) (getMsgAdapter().getProgress(message) * 100);
+                    progressBar.setProgress(percent);
+                    break;
+                case transferred:
+                case fail:
+                    updateFileStatusLabel();
+                    break;
             }
         }
     }
@@ -100,6 +104,11 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
             sb.append(context.getString(R.string.file_transfer_state_undownload));
         }
         fileStatusLabel.setText(sb.toString());
+    }
+
+    @Override
+    protected void onItemClick() {
+        FileDownloadActivity.start(context, message);
     }
 
     @Override

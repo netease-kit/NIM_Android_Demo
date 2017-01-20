@@ -5,7 +5,6 @@ import android.util.Log;
 
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.rts.RTSManager;
-import com.netease.nimlib.sdk.rts.constant.RTSTunType;
 import com.netease.nimlib.sdk.rts.model.RTSTunData;
 
 import java.io.UnsupportedEncodingException;
@@ -50,7 +49,7 @@ public class TransactionCenter {
 
         String data = pack(transactions);
         try {
-            RTSTunData channelData = new RTSTunData(sessionId, RTSTunType.TCP, toAccount, data.getBytes
+            RTSTunData channelData = new RTSTunData(sessionId, toAccount, data.getBytes
                     ("UTF-8"), data.getBytes().length);
             RTSManager.getInstance().sendData(channelData);
             Log.i(TAG, "SEND DATA = " + index + ", BYTES = " + data.getBytes().length);

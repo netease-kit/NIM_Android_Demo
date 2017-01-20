@@ -3,9 +3,9 @@ package com.netease.nim.demo.session.viewholder;
 import android.text.TextUtils;
 import android.text.method.LinkMovementMethod;
 import android.text.style.ImageSpan;
-import android.view.View;
 import android.widget.TextView;
 
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.session.emoji.MoonUtil;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 
@@ -18,6 +18,10 @@ import java.util.Map;
 public class MsgViewHolderTip extends MsgViewHolderBase {
 
     protected TextView notificationTextView;
+
+    public MsgViewHolderTip(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     @Override
     protected int getContentResId() {
@@ -32,7 +36,7 @@ public class MsgViewHolderTip extends MsgViewHolderBase {
     @Override
     protected void bindContentView() {
         String text = "未知通知提醒";
-        if(TextUtils.isEmpty(message.getContent())) {
+        if (TextUtils.isEmpty(message.getContent())) {
             Map<String, Object> content = message.getRemoteExtension();
             if (content != null && !content.isEmpty()) {
                 text = (String) content.get("content");

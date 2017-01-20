@@ -14,10 +14,10 @@ import android.widget.Toast;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
-import com.netease.nim.demo.config.ServerConfig;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
+import com.netease.nim.demo.jsbridge.JsBridgeActivity;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.model.SettingTemplate;
 import com.netease.nim.demo.main.model.SettingType;
@@ -27,9 +27,13 @@ import com.netease.nim.uikit.session.audio.MessageAudioControl;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.AuthService;
+import com.netease.nimlib.sdk.avchat.AVChatNetDetectCallback;
+import com.netease.nimlib.sdk.avchat.AVChatNetDetector;
 import com.netease.nimlib.sdk.lucene.LuceneService;
+import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.settings.SettingsService;
 import com.netease.nimlib.sdk.settings.SettingsServiceObserver;
@@ -50,6 +54,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_SPEAKER = 7;
 
     private static final int TAG_NRTC_SETTINGS = 8;
+    private static final int TAG_NRTC_NET_DETECT = 9;
 
     private static final int TAG_MSG_IGNORE = 10;
     private static final int TAG_RING = 11;
@@ -57,14 +62,16 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_NOTICE_CONTENT = 13; // 通知栏提醒配置
     private static final int TAG_CLEAR_INDEX = 18; // 清空全文检索缓存
     private static final int TAG_MULTIPORT_PUSH = 19; // 桌面端登录，是否推送
+    private static final int TAG_JS_BRIDGE = 20; // js bridge
 
+    private static final int TAG_NOTIFICATION_STYLE = 21; // 通知栏展开、折叠
     ListView listView;
     SettingsAdapter adapter;
     private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
     private String noDisturbTime;
     private SettingTemplate disturbItem;
     private SettingTemplate clearIndexItem;
-
+    private SettingTemplate notificationItem;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -151,47 +158,57 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.clear();
 
         items.add(new SettingTemplate(TAG_HEAD, SettingType.TYPE_HEAD));
-        items.add(new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice), SettingType.TYPE_TOGGLE,
-                UserPreferences.getNotificationToggle()));
+        notificationItem = new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice), SettingType.TYPE_TOGGLE,
+                UserPreferences.getNotificationToggle());
+        items.add(notificationItem);
         items.add(SettingTemplate.addLine());
-        items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
-                com.netease.nim.uikit.UserPreferences.isEarPhoneModeEnable()));
-        items.add(SettingTemplate.makeSeperator());
         items.add(new SettingTemplate(TAG_RING, getString(R.string.ring), SettingType.TYPE_TOGGLE,
                 UserPreferences.getRingToggle()));
         items.add(new SettingTemplate(TAG_LED, getString(R.string.led), SettingType.TYPE_TOGGLE,
                 UserPreferences.getLedToggle()));
-        items.add(SettingTemplate.makeSeperator());
-
+        items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_NOTICE_CONTENT, getString(R.string.notice_content), SettingType.TYPE_TOGGLE,
                 UserPreferences.getNoticeContentToggle()));
-        items.add(SettingTemplate.makeSeperator());
-
+//        items.add(new SettingTemplate(TAG_NOTIFICATION_STYLE, getString(R.string.notification_folded), SettingType.TYPE_TOGGLE,
+//                UserPreferences.getNotificationFoldedToggle()));
+        items.add(SettingTemplate.addLine());
         disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
         items.add(disturbItem);
         items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_MULTIPORT_PUSH, getString(R.string.multiport_push), SettingType.TYPE_TOGGLE,
-               !NIMClient.getService(SettingsService.class).isMultiportPushOpen()));
+                !NIMClient.getService(SettingsService.class).isMultiportPushOpen()));
+
         items.add(SettingTemplate.makeSeperator());
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH) {
+        items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
+                com.netease.nim.uikit.UserPreferences.isEarPhoneModeEnable()));
+
+        items.add(SettingTemplate.makeSeperator());
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
             items.add(new SettingTemplate(TAG_NRTC_SETTINGS, getString(R.string.nrtc_settings)));
+            items.add(SettingTemplate.addLine());
+            items.add(new SettingTemplate(TAG_NRTC_NET_DETECT, "音视频通话网络探测"));
             items.add(SettingTemplate.makeSeperator());
         }
 
         items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知",
                 SettingType.TYPE_TOGGLE, UserPreferences.getMsgIgnore()));
-        items.add(SettingTemplate.addLine());
+
+        items.add(SettingTemplate.makeSeperator());
+
         items.add(new SettingTemplate(TAG_CLEAR, getString(R.string.about_clear_msg_history)));
         items.add(SettingTemplate.addLine());
-
         clearIndexItem = new SettingTemplate(TAG_CLEAR_INDEX, getString(R.string.clear_index), getIndexCacheSize() + " M");
         items.add(clearIndexItem);
-        items.add(SettingTemplate.addLine());
+
+        items.add(SettingTemplate.makeSeperator());
 
         items.add(new SettingTemplate(TAG_CUSTOM_NOTIFY, getString(R.string.custom_notification)));
         items.add(SettingTemplate.addLine());
-        items.add(SettingTemplate.addLine());
+        items.add(new SettingTemplate(TAG_JS_BRIDGE, getString(R.string.js_bridge_demonstration)));
+        items.add(SettingTemplate.makeSeperator());
+
         items.add(new SettingTemplate(TAG_ABOUT, getString(R.string.setting_about)));
 
     }
@@ -222,9 +239,34 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_NRTC_SETTINGS:
                 startActivity(new Intent(SettingsActivity.this, AVChatSettingsActivity.class));
                 break;
+            case TAG_NRTC_NET_DETECT:
+                netDetectForNrtc();
+                break;
+            case TAG_JS_BRIDGE:
+                startActivity(new Intent(SettingsActivity.this, JsBridgeActivity.class));
+                break;
             default:
                 break;
         }
+    }
+
+    private void netDetectForNrtc() {
+        AVChatNetDetector.startNetDetect(new AVChatNetDetectCallback() {
+            @Override
+            public void onDetectResult(String id,
+                                       int code,
+                                       int loss,
+                                       int rttMax,
+                                       int rttMin,
+                                       int rttAvg,
+                                       int mdev,
+                                       String info) {
+                String msg = code == 200 ?
+                        ("loss:" + loss + ", rtt min/avg/max/mdev = " + rttMin + "/" + rttAvg + "/" + rttMax + "/" + mdev + " ms")
+                        : ("error:" + code);
+                Toast.makeText(SettingsActivity.this, msg, Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     /**
@@ -249,12 +291,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     public void onSwitchChange(SettingTemplate item, boolean checkState) {
         switch (item.getId()) {
             case TAG_NOTICE:
-                try {
-                    setNotificationToggle(checkState);
-                    NIMClient.toggleNotification(checkState);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                setMessageNotify(checkState);
                 break;
             case TAG_SPEAKER:
                 com.netease.nim.uikit.UserPreferences.setEarPhoneModeEnable(checkState);
@@ -295,10 +332,58 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_MULTIPORT_PUSH:
                 updateMultiportPushConfig(!checkState);
                 break;
+            case TAG_NOTIFICATION_STYLE:
+                UserPreferences.setNotificationFoldedToggle(checkState);
+                config = UserPreferences.getStatusConfig();
+                config.notificationFolded = checkState;
+                UserPreferences.setStatusConfig(config);
+                NIMClient.updateStatusBarNotificationConfig(config);
             default:
                 break;
         }
         item.setChecked(checkState);
+    }
+
+    private void setMessageNotify(final boolean checkState) {
+        // 如果接入第三方推送（小米），则同样应该设置开、关推送提醒
+        // 如果关闭消息提醒，则第三方推送消息提醒也应该关闭。
+        // 如果打开消息提醒，则同时打开第三方推送消息提醒。
+        NIMClient.getService(MixPushService.class).enable(checkState).setCallback(new RequestCallback<Void>() {
+            @Override
+            public void onSuccess(Void param) {
+                Toast.makeText(SettingsActivity.this, R.string.user_info_update_success, Toast.LENGTH_SHORT).show();
+                notificationItem.setChecked(checkState);
+                setToggleNotification(checkState);
+            }
+            @Override
+            public void onFailed(int code) {
+                notificationItem.setChecked(!checkState);
+                // 这种情况是客户端不支持第三方推送
+                if (code == ResponseCode.RES_UNSUPPORT) {
+                    notificationItem.setChecked(checkState);
+                    setToggleNotification(checkState);
+                } else if (code == ResponseCode.RES_EFREQUENTLY){
+                    Toast.makeText(SettingsActivity.this, R.string.operation_too_frequent, Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(SettingsActivity.this, R.string.user_info_update_failed, Toast.LENGTH_SHORT).show();
+                }
+                adapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void onException(Throwable exception) {
+
+            }
+        });
+    }
+
+    private void setToggleNotification(boolean checkState) {
+        try {
+            setNotificationToggle(checkState);
+            NIMClient.toggleNotification(checkState);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     private void setNotificationToggle(boolean on) {

@@ -2,23 +2,21 @@ package com.netease.nim.demo.chatroom.module;
 
 import android.os.Build;
 import android.os.Handler;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 
-import com.netease.nim.demo.chatroom.viewholder.ChatRoomMsgViewHolderFactory;
+import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.chatroom.adapter.ChatRoomMsgAdapter;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.UserPreferences;
-import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
-import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
-import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
-import com.netease.nim.uikit.common.ui.listview.ListViewUtil;
-import com.netease.nim.uikit.common.ui.listview.MessageListView;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseFetchLoadAdapter;
+import com.netease.nim.uikit.common.ui.recyclerview.loadmore.MsgListFetchLoadMoreView;
 import com.netease.nim.uikit.session.audio.MessageAudioControl;
 import com.netease.nim.uikit.session.module.Container;
-import com.netease.nim.uikit.session.module.list.MsgAdapter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -43,7 +41,7 @@ import java.util.List;
  * 聊天室消息收发模块
  * Created by huangjun on 2016/1/27.
  */
-public class ChatRoomMsgListPanel implements TAdapterDelegate {
+public class ChatRoomMsgListPanel {
     private static final int MESSAGE_CAPACITY = 500;
 
     // container
@@ -52,9 +50,9 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
     private Handler uiHandler;
 
     // message list view
-    private MessageListView messageListView;
-    private LinkedList<IMMessage> items;
-    private MsgAdapter adapter;
+    private RecyclerView messageListView;
+    private LinkedList<ChatRoomMessage> items;
+    private ChatRoomMsgAdapter adapter;
 
     public ChatRoomMsgListPanel(Container container, View rootView) {
         this.container = container;
@@ -83,63 +81,47 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
 
     private void init() {
         initListView();
-        this.uiHandler = new Handler();
+        this.uiHandler = new Handler(DemoCache.getContext().getMainLooper());
         registerObservers(true);
     }
 
     private void initListView() {
-        items = new LinkedList<>();
-        adapter = new MsgAdapter(container.activity, items, this);
-        adapter.setEventListener(new MsgItemEventListener());
-
-        messageListView = (MessageListView) rootView.findViewById(R.id.messageListView);
+        // RecyclerView
+        messageListView = (RecyclerView) rootView.findViewById(R.id.messageListView);
+        messageListView.setLayoutManager(new LinearLayoutManager(container.activity));
         messageListView.requestDisallowInterceptTouchEvent(true);
-
-        messageListView.setMode(AutoRefreshListView.Mode.START);
-
+        messageListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if (newState != RecyclerView.SCROLL_STATE_IDLE) {
+                    container.proxy.shouldCollapseInputPanel();
+                }
+            }
+        });
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             messageListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
+
         // adapter
+        items = new LinkedList<>();
+        adapter = new ChatRoomMsgAdapter(messageListView, items);
+        adapter.closeLoadAnimation();
+        adapter.setFetchMoreView(new MsgListFetchLoadMoreView());
+        adapter.setLoadMoreView(new MsgListFetchLoadMoreView());
+        adapter.setEventListener(new MsgItemEventListener());
+        adapter.setOnFetchMoreListener(new MessageLoader()); // load from start
         messageListView.setAdapter(adapter);
-
-        messageListView.setListViewEventListener(new MessageListView.OnListViewEventListener() {
-            @Override
-            public void onListViewStartScroll() {
-                container.proxy.shouldCollapseInputPanel();
-            }
-        });
-        messageListView.setOnRefreshListener(new MessageLoader());
-    }
-
-    // 刷新消息列表
-    public void refreshMessageList() {
-        container.activity.runOnUiThread(new Runnable() {
-
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
-    }
-
-    public void scrollToBottom() {
-        uiHandler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                ListViewUtil.scrollToBottom(messageListView);
-            }
-        }, 200);
     }
 
     public void onIncomingMessage(List<ChatRoomMessage> messages) {
-        boolean needScrollToBottom = ListViewUtil.isLastMessageVisible(messageListView);
+        boolean needScrollToBottom = isLastMessageVisible();
         boolean needRefresh = false;
         List<ChatRoomMessage> addedListItems = new ArrayList<>(messages.size());
         for (ChatRoomMessage message : messages) {
             // 保证显示到界面上的消息，来自同一个聊天室
             if (isMyMessage(message)) {
-                saveMessage(message, false);
+                saveMessage(message);
                 addedListItems.add(message);
                 needRefresh = true;
             }
@@ -151,32 +133,26 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         // incoming messages tip
         ChatRoomMessage lastMsg = messages.get(messages.size() - 1);
         if (isMyMessage(lastMsg) && needScrollToBottom) {
-            ListViewUtil.scrollToBottom(messageListView);
+            doScrollToBottom();
         }
     }
+
+    private boolean isLastMessageVisible() {
+        LinearLayoutManager layoutManager = (LinearLayoutManager) messageListView.getLayoutManager();
+        int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
+        return lastVisiblePosition >= adapter.getBottomDataPosition();
+    }
+
 
     // 发送消息后，更新本地消息列表
-    public void onMsgSend(IMMessage message) {
-        // add to listView and refresh
-        saveMessage(message, false);
-        List<IMMessage> addedListItems = new ArrayList<>(1);
-        addedListItems.add(message);
+    public void onMsgSend(ChatRoomMessage message) {
+        saveMessage(message);
 
         adapter.notifyDataSetChanged();
-        ListViewUtil.scrollToBottom(messageListView);
+        doScrollToBottom();
     }
 
-    private void saveMessage(final List<IMMessage> messageList, boolean addFirst) {
-        if (messageList == null || messageList.isEmpty()) {
-            return;
-        }
-
-        for (IMMessage msg : messageList) {
-            saveMessage(msg, addFirst);
-        }
-    }
-
-    public void saveMessage(final IMMessage message, boolean addFirst) {
+    public void saveMessage(final ChatRoomMessage message) {
         if (message == null) {
             return;
         }
@@ -185,36 +161,13 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
             items.poll();
         }
 
-        if (addFirst) {
-            items.add(0, message);
-        } else {
-            items.add(message);
-        }
+        items.add(message);
     }
-
-    /**
-     * *************** implements TAdapterDelegate ***************
-     */
-    @Override
-    public int getViewTypeCount() {
-        return ChatRoomMsgViewHolderFactory.getViewTypeCount();
-    }
-
-    @Override
-    public Class<? extends TViewHolder> viewHolderAtPosition(int position) {
-        return ChatRoomMsgViewHolderFactory.getViewHolderByType(items.get(position));
-    }
-
-    @Override
-    public boolean enabled(int position) {
-        return false;
-    }
-
 
     /**
      * *************** MessageLoader ***************
      */
-    private class MessageLoader implements AutoRefreshListView.OnRefreshListener {
+    private class MessageLoader implements BaseFetchLoadAdapter.RequestLoadMoreListener, BaseFetchLoadAdapter.RequestFetchMoreListener {
 
         private static final int LOAD_MESSAGE_COUNT = 10;
 
@@ -233,13 +186,12 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
                 if (messages != null) {
                     onMessageLoaded(messages);
                 } else {
-                    messageListView.onRefreshComplete(LOAD_MESSAGE_COUNT, LOAD_MESSAGE_COUNT, false);
+                    adapter.fetchMoreEnd(true);
                 }
             }
         };
 
         private void loadFromLocal() {
-            messageListView.onRefreshStart(AutoRefreshListView.Mode.START);
             NIMClient.getService(ChatRoomService.class).pullMessageHistory(container.account, anchor().getTime(), LOAD_MESSAGE_COUNT)
                     .setCallback(callback);
         }
@@ -258,48 +210,31 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         private void onMessageLoaded(List<ChatRoomMessage> messages) {
             int count = messages.size();
 
-            if (items.size() > 0) {
-                // 在第一次加载的过程中又收到了新消息，做一下去重
-                for (IMMessage message : messages) {
-                    for (IMMessage item : items) {
-                        if (item.isTheSame(message)) {
-                            items.remove(item);
-                            break;
-                        }
-                    }
-                }
+            // 加入到列表中
+            if (count <= 0) {
+                adapter.fetchMoreEnd(true);
+            } else {
+                adapter.fetchMoreComplete(messageListView, messages);
             }
-
-            List<IMMessage> result = new ArrayList<>();
-            for (IMMessage message : messages) {
-                result.add(message);
-            }
-            saveMessage(result, true);
 
             // 如果是第一次加载，updateShowTimeItem返回的就是lastShowTimeItem
             if (firstLoad) {
-                ListViewUtil.scrollToBottom(messageListView);
+                doScrollToBottom();
             }
-
-            refreshMessageList();
-            messageListView.onRefreshComplete(count, LOAD_MESSAGE_COUNT, true);
 
             firstLoad = false;
         }
 
-        /**
-         * *************** OnRefreshListener ***************
-         */
         @Override
-        public void onRefreshFromStart() {
+        public void onFetchMoreRequested() {
             loadFromLocal();
         }
 
         @Override
-        public void onRefreshFromEnd() {
+        public void onLoadMoreRequested() {
+
         }
     }
-
 
     /**
      * ************************* 观察者 ********************************
@@ -365,8 +300,6 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
 
     /**
      * 刷新单条消息
-     *
-     * @param index
      */
     private void refreshViewHolderByIndex(final int index) {
         container.activity.runOnUiThread(new Runnable() {
@@ -377,11 +310,7 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
                     return;
                 }
 
-                Object tag = ListViewUtil.getViewHolderByIndex(messageListView, index);
-                if (tag instanceof MsgViewHolderBase) {
-                    MsgViewHolderBase viewHolder = (MsgViewHolderBase) tag;
-                    viewHolder.refreshCurrentItem();
-                }
+                adapter.notifyDataItemChanged(index);
             }
         });
     }
@@ -397,7 +326,7 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
         return -1;
     }
 
-    private class MsgItemEventListener implements MsgAdapter.ViewHolderEventListener {
+    private class MsgItemEventListener implements ChatRoomMsgAdapter.ViewHolderEventListener {
 
         @Override
         public void onFailedBtnClick(IMMessage message) {
@@ -459,11 +388,23 @@ public class ChatRoomMsgListPanel implements TAdapterDelegate {
 
             NIMClient.getService(ChatRoomService.class).sendMessage((ChatRoomMessage) message, true);
         }
-
     }
 
     private void setEarPhoneMode(boolean earPhoneMode) {
         UserPreferences.setEarPhoneModeEnable(earPhoneMode);
         MessageAudioControl.getInstance(container.activity).setEarPhoneModeEnable(earPhoneMode);
+    }
+
+    public void scrollToBottom() {
+        uiHandler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                doScrollToBottom();
+            }
+        }, 200);
+    }
+
+    private void doScrollToBottom() {
+        messageListView.scrollToPosition(adapter.getBottomDataPosition());
     }
 }

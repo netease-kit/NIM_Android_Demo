@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -16,6 +15,7 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
+import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.login.LogoutHelper;
@@ -36,6 +36,8 @@ import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.StatusBarNotificationConfig;
+import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
 import java.util.ArrayList;
@@ -94,16 +96,39 @@ public class MainActivity extends UI {
         boolean syncCompleted = LoginSyncDataStatusObserver.getInstance().observeSyncDataCompletedEvent(new Observer<Void>() {
             @Override
             public void onEvent(Void v) {
+
+                syncPushNoDisturb(UserPreferences.getStatusConfig());
+
                 DialogMaker.dismissProgressDialog();
             }
         });
 
-        Log.i(TAG, "sync completed = " + syncCompleted);
+        LogUtil.i(TAG, "sync completed = " + syncCompleted);
         if (!syncCompleted) {
             DialogMaker.showProgressDialog(MainActivity.this, getString(R.string.prepare_data)).setCanceledOnTouchOutside(false);
+        }else {
+            syncPushNoDisturb(UserPreferences.getStatusConfig());
         }
 
         onInit();
+    }
+
+    /**
+     * 若增加第三方推送免打扰（V3.2.0新增功能），则：
+     * 1.添加下面逻辑使得 push 免打扰与先前的设置同步。
+     * 2.设置界面{@link com.netease.nim.demo.main.activity.SettingsActivity} 以及
+     * 免打扰设置界面{@link com.netease.nim.demo.main.activity.NoDisturbActivity} 也应添加 push 免打扰的逻辑
+     * <p>
+     * 注意：isPushDndValid 返回 false， 表示未设置过push 免打扰。
+     */
+    private void syncPushNoDisturb(StatusBarNotificationConfig staConfig) {
+
+        boolean isNoDisbConfigExist = NIMClient.getService(MixPushService.class).isPushNoDisturbConfigExist();
+
+        if(!isNoDisbConfigExist && staConfig.downTimeToggle) {
+            NIMClient.getService(MixPushService.class).setPushNoDisturbConfig(staConfig.downTimeToggle,
+                    staConfig.downTimeBegin, staConfig.downTimeEnd);
+        }
     }
 
     /**

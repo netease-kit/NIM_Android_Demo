@@ -86,5 +86,6 @@
     <dimen name="message_bottom_function_viewpager_height">220dp</dimen>
     <dimen name="input_panel_image_margin_bottom">3dip</dimen>
     <dimen name="input_panel_image_margin_top">20dip</dimen>
+    <dimen name="message_list_panel_jump_offset_y">30dip</dimen>
 
 </resources>

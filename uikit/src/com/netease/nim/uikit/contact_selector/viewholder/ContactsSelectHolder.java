@@ -1,6 +1,7 @@
 package com.netease.nim.uikit.contact_selector.viewholder;
 
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
@@ -9,7 +10,6 @@ import android.widget.TextView;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.common.ui.ptr.ViewCompat;
 import com.netease.nim.uikit.contact.core.item.ContactItem;
 import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
 import com.netease.nim.uikit.contact.core.model.IContact;
@@ -45,10 +45,10 @@ public class ContactsSelectHolder extends AbsContactViewHolder<ContactItem> {
                 this.select.setBackgroundResource(R.drawable.nim_contact_checkbox_checked_grey);
                 getView().setBackgroundColor(context.getResources().getColor(R.color.transparent));
             } else if (selected) {
-                ViewCompat.setBackground(getView(), defaultBackground);
+                setBackground(getView(), defaultBackground);
                 this.select.setBackgroundResource(R.drawable.nim_contact_checkbox_checked_green);
             } else {
-                ViewCompat.setBackground(getView(), defaultBackground);
+                setBackground(getView(), defaultBackground);
                 this.select.setBackgroundResource(R.drawable.nim_contact_checkbox_unchecked);
             }
         } else {
@@ -76,5 +76,13 @@ public class ContactsSelectHolder extends AbsContactViewHolder<ContactItem> {
         this.nickname = (TextView) view.findViewById(R.id.tv_nickname);
         this.select = (ImageView) view.findViewById(R.id.imgSelect);
         return view;
+    }
+
+    private void setBackground(View view, Drawable drawable) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+            view.setBackground(drawable);
+        } else {
+            view.setBackgroundDrawable(drawable);
+        }
     }
 }

@@ -9,7 +9,9 @@ import com.netease.nimlib.sdk.msg.attachment.VideoAttachment;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * 消息项展示ViewHolder工厂类。
@@ -57,12 +59,7 @@ public class MsgViewHolderFactory {
         }
     }
 
-    public static int getViewTypeCount() {
-        // plus text and unknown
-        return viewHolders.size() + 2;
-    }
-
-    public static Class<? extends MsgAttachment> getSuperClass(Class<? extends MsgAttachment> derived) {
+    private static Class<? extends MsgAttachment> getSuperClass(Class<? extends MsgAttachment> derived) {
         Class sup = derived.getSuperclass();
         if (sup != null && MsgAttachment.class.isAssignableFrom(sup)) {
             return sup;
@@ -74,5 +71,17 @@ public class MsgViewHolderFactory {
             }
         }
         return null;
+    }
+
+    public static List<Class<? extends MsgViewHolderBase>> getAllViewHolders() {
+        List<Class<? extends MsgViewHolderBase>> list = new ArrayList<>();
+        list.addAll(viewHolders.values());
+        if (tipMsgViewHolder != null) {
+            list.add(tipMsgViewHolder);
+        }
+        list.add(MsgViewHolderUnknown.class);
+        list.add(MsgViewHolderText.class);
+
+        return list;
     }
 }

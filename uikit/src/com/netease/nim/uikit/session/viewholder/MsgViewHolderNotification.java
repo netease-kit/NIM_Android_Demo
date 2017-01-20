@@ -5,10 +5,15 @@ import android.text.style.ImageSpan;
 import android.widget.TextView;
 
 import com.netease.nim.uikit.R;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.session.emoji.MoonUtil;
 import com.netease.nim.uikit.session.helper.TeamNotificationHelper;
 
 public class MsgViewHolderNotification extends MsgViewHolderBase {
+
+    public MsgViewHolderNotification(BaseMultiItemFetchLoadAdapter adapter) {
+        super(adapter);
+    }
 
     protected TextView notificationTextView;
 
