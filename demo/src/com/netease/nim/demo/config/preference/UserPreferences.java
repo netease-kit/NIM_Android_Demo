@@ -1,5 +1,6 @@
 package com.netease.nim.demo.config.preference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
 
@@ -11,8 +12,8 @@ import com.netease.nimlib.sdk.StatusBarNotificationConfig;
  * Created by hzxuwen on 2015/4/13.
  */
 public class UserPreferences {
-    private final static String KEY_DOWNTIME_TOGGLE ="down_time_toggle";
-    private final static String KEY_SB_NOTIFY_TOGGLE="sb_notify_toggle";
+    private final static String KEY_DOWNTIME_TOGGLE = "down_time_toggle";
+    private final static String KEY_SB_NOTIFY_TOGGLE = "sb_notify_toggle";
     private final static String KEY_TEAM_ANNOUNCE_CLOSED = "team_announce_closed";
     private final static String KEY_STATUS_BAR_NOTIFICATION_CONFIG = "KEY_STATUS_BAR_NOTIFICATION_CONFIG";
 
@@ -120,7 +121,10 @@ public class UserPreferences {
             config.ledOnMs = jsonObject.getIntValue("ledonms");
             config.ledOffMs = jsonObject.getIntValue("ledoffms");
             config.titleOnlyShowAppName = jsonObject.getBoolean("titleOnlyShowAppName");
-            config.notificationFolded = jsonObject.getBoolean("notificationFolded");
+            if (jsonObject.containsKey("notificationFolded")) {
+                config.notificationFolded = jsonObject.getBoolean("notificationFolded");
+            }
+            config.notificationEntrance = (Class<? extends Activity>) Class.forName(jsonObject.getString("notificationEntrance"));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -128,7 +132,7 @@ public class UserPreferences {
         return config;
     }
 
-    private static void saveStatusBarNotificationConfig(String key , StatusBarNotificationConfig config) {
+    private static void saveStatusBarNotificationConfig(String key, StatusBarNotificationConfig config) {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         JSONObject jsonObject = new JSONObject();
         try {
@@ -145,6 +149,7 @@ public class UserPreferences {
             jsonObject.put("ledoffms", config.ledOffMs);
             jsonObject.put("titleOnlyShowAppName", config.titleOnlyShowAppName);
             jsonObject.put("notificationFolded", config.notificationFolded);
+            jsonObject.put("notificationEntrance", config.notificationEntrance.getName());
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -1,15 +1,13 @@
 package com.netease.nim.demo.avchat;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.os.Build;
-import android.os.Environment;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.StatFs;
 import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.View;
 import android.widget.Toast;
 
@@ -17,8 +15,10 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatExitCode;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
+import com.netease.nim.demo.avchat.widgets.MultiSelectDialog;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.permission.BaseMPermission;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
@@ -29,7 +29,8 @@ import com.netease.nimlib.sdk.avchat.model.AVChatNotifyOption;
 import com.netease.nimlib.sdk.avchat.model.AVChatOptionalConfig;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
 
-import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
@@ -63,38 +64,15 @@ public class AVChatUI implements AVChatUIListener {
     private boolean isClosedCamera = false;
     public AtomicBoolean isCallEstablish = new AtomicBoolean(false);
 
+    private final String[] BASIC_PERMISSIONS = new String[]{ Manifest.permission.CAMERA,};
+
+    //是否在录制
+    private boolean isRecording = false;
 
     // 检查存储
-    private Handler uiHandler = new Handler(Looper.getMainLooper());
     private boolean recordWarning = false;
-    private Runnable runnable = new Runnable() {
-        @Override
-        public void run() {
-            File dir = Environment.getExternalStorageDirectory();
-            StatFs stat = new StatFs(dir.getPath());
-            long blockSize;
-            if (Build.VERSION.SDK_INT >= 18) {
-                blockSize = stat.getBlockSizeLong();
-            } else {
-                blockSize = stat.getBlockSize();
-            }
-            long availableBlocks;
-            if (Build.VERSION.SDK_INT >= 18) {
-                availableBlocks = stat.getAvailableBlocksLong();
-            } else {
-                availableBlocks = stat.getAvailableBlocks();
-            }
 
-            long size = availableBlocks * blockSize;
-
-            if (size <= 10 * 1024 * 1024) {
-                recordWarning = true;
-                updateRecordTip();
-            } else {
-                uiHandler.postDelayed(this, 1000);
-            }
-        }
-    };
+    List<Pair<String, Boolean>> recordList = new LinkedList<Pair<String, Boolean>>();
 
     public interface AVChatListener {
         void uiExit();
@@ -282,7 +260,7 @@ public class AVChatUI implements AVChatUIListener {
     /**
      * 拨打音视频
      */
-    public void outGoingCalling(String account, AVChatType callTypeEnum) {
+    public void outGoingCalling(String account,final AVChatType callTypeEnum) {
 
         DialogMaker.showProgressDialog(context, null);
 
@@ -290,16 +268,8 @@ public class AVChatUI implements AVChatUIListener {
 
         this.receiverId = account;
 
-        if (callTypeEnum == AVChatType.AUDIO) {
-            onCallStateChange(CallStateEnum.OUTGOING_AUDIO_CALLING);
-        } else {
-            onCallStateChange(CallStateEnum.OUTGOING_VIDEO_CALLING);
-        }
-
-
         AVChatNotifyOption notifyOption = new AVChatNotifyOption();
         notifyOption.extendMessage = "extra_data";
-
 
         AVChatManager.getInstance().call(account, callTypeEnum, avChatOptionalConfig,
                 notifyOption, new AVChatCallback<AVChatData>() {
@@ -307,6 +277,19 @@ public class AVChatUI implements AVChatUIListener {
                     public void onSuccess(AVChatData data) {
                         avChatData = data;
                         DialogMaker.dismissProgressDialog();
+                        //如果需要使用视频预览功能，在此进行设置，调用setupLocalVideoRender
+                        //如果不需要视频预览功能，那么删掉下面if语句代码即可
+                        if(callTypeEnum == AVChatType.VIDEO){
+                            List<String> deniedPermissions = BaseMPermission.getDeniedPermissions((Activity)context, BASIC_PERMISSIONS);
+                            if(deniedPermissions != null && !deniedPermissions.isEmpty()){
+                                avChatVideo.showNoneCameraPermissionView(true);
+                                return;
+                            }
+
+                            initLargeSurfaceView(DemoCache.getAccount());
+                            canSwitchCamera = true;
+                            onCallStateChange(CallStateEnum.OUTGOING_VIDEO_CALLING);
+                        }
                     }
 
                     @Override
@@ -332,6 +315,12 @@ public class AVChatUI implements AVChatUIListener {
                         AVChatSoundPlayer.instance().stop();
                     }
                 });
+        if (callTypeEnum == AVChatType.AUDIO) {
+            onCallStateChange(CallStateEnum.OUTGOING_AUDIO_CALLING);
+        } else {
+            onCallStateChange(CallStateEnum.OUTGOING_VIDEO_CALLING);
+        }
+
     }
 
     /**
@@ -385,7 +374,6 @@ public class AVChatUI implements AVChatUIListener {
             avChatAudio.closeSession(exitCode);
         if (avChatVideo != null)
             avChatVideo.closeSession(exitCode);
-        uiHandler.removeCallbacks(runnable);
         showQuitToast(exitCode);
         isCallEstablish.set(false);
         canSwitchCamera = false;
@@ -595,56 +583,92 @@ public class AVChatUI implements AVChatUIListener {
 
     @Override
     public void toggleRecord() {
-        if (AVChatManager.getInstance().isLocalRecording()) {
-            AVChatManager.getInstance().stopLocalRecord();
 
-            uiHandler.removeCallbacks(runnable);
-            recordWarning = false;
+        if(isRecording) {
+            //停止录制
+            isRecording = false;
+            updateRecordTip();
+            if(recordList.size() == 3) {
+                if(recordList.get(0).second) {
+                    AVChatManager.getInstance().stopAudioRecording();
+                }
+                if(recordList.get(1).second) {
+                    AVChatManager.getInstance().stopAVRecording(DemoCache.getAccount());
+                }
+                if(recordList.get(2).second) {
+                    AVChatManager.getInstance().stopAVRecording(receiverId);
+                }
+            }
 
         } else {
-            recordWarning = false;
-
-            if (AVChatManager.getInstance().startLocalRecord()) {
-
-                if (CallStateEnum.isAudioMode(callingState)) {
-                    Toast.makeText(context, "仅录制你说话的内容", Toast.LENGTH_SHORT).show();
-                }
-
-                if (CallStateEnum.isVideoMode(callingState)) {
-                    Toast.makeText(context, "仅录制你的声音和图像", Toast.LENGTH_SHORT).show();
-                }
-
-                uiHandler.post(runnable);
-
+            //探测对话框
+            final MultiSelectDialog selectDialog = new MultiSelectDialog(context);
+            selectDialog.setTitle("选择录制内容");
+            selectDialog.setMessage("录制的内容会被单独保存");
+            selectDialog.setMessageTextColor(context.getResources().getColor(R.color.color_grey_999999));
+            selectDialog.addItem("语音对话",false);
+            if (CallStateEnum.isAudioMode(callingState)) {
+                selectDialog.addItem("我的音频",false);
             } else {
-
-                Toast.makeText(context, "录制失败", Toast.LENGTH_SHORT).show();
+                selectDialog.addItem("我的音视频",false);
             }
+            if (CallStateEnum.isAudioMode(callingState)) {
+                selectDialog.addItem("对方音频",false);
+            } else {
+                selectDialog.addItem("对方音视频",false);
+            }
+            selectDialog.addPositiveButton("开始录制", MultiSelectDialog.NO_TEXT_COLOR, MultiSelectDialog.NO_TEXT_SIZE,
+                    new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            isRecording = true;
+                            updateRecordTip();
+                            List<Pair<String, Boolean>> selectDialogList = selectDialog.getItemTextList();
+                            if(selectDialogList.size() == 3) {
+                                if(selectDialogList.get(0).second) {
+                                    AVChatManager.getInstance().startAudioRecording();
+                                }
+                                if(selectDialogList.get(1).second) {
+                                    AVChatManager.getInstance().startAVRecording(DemoCache.getAccount());
+                                }
+                                if(selectDialogList.get(2).second) {
+                                    AVChatManager.getInstance().startAVRecording(receiverId);
+                                }
+                            }
+                            recordList.clear();
+                            recordList.addAll(selectDialogList);
+                            selectDialog.dismiss();
+                        }
+                    });
+            selectDialog.addNegativeButton(context.getString(com.netease.nim.uikit.R.string.cancel), MultiSelectDialog.NO_TEXT_COLOR,
+                    MultiSelectDialog.NO_TEXT_SIZE, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            selectDialog.dismiss();
+                        }
+                    });
+            selectDialog.show();
         }
-
-        updateRecordTip();
     }
 
     private void updateRecordTip() {
-
         if (CallStateEnum.isAudioMode(callingState)) {
-            avChatAudio.showRecordView(AVChatManager.getInstance().isLocalRecording(), recordWarning);
+            avChatAudio.showRecordView(isRecording, recordWarning);
         }
         if (CallStateEnum.isVideoMode(callingState)) {
-            avChatVideo.showRecordView(AVChatManager.getInstance().isLocalRecording(), recordWarning);
+            avChatVideo.showRecordView(isRecording, recordWarning);
         }
+    }
 
+    public void showRecordWarning() {
+        recordWarning = true;
+        updateRecordTip();
     }
 
     public void resetRecordTip() {
-        uiHandler.removeCallbacks(runnable);
         recordWarning = false;
-        if (CallStateEnum.isAudioMode(callingState)) {
-            avChatAudio.showRecordView(AVChatManager.getInstance().isLocalRecording(), recordWarning);
-        }
-        if (CallStateEnum.isVideoMode(callingState)) {
-            avChatVideo.showRecordView(AVChatManager.getInstance().isLocalRecording(), recordWarning);
-        }
+        isRecording = false;
+        updateRecordTip();
     }
 
     @Override
@@ -675,6 +699,7 @@ public class AVChatUI implements AVChatUIListener {
     @Override
     public void audioSwitchVideo() {
         onCallStateChange(CallStateEnum.OUTGOING_AUDIO_TO_VIDEO);
+        updateRecordTip();
         /**
          * 请求音频切换到视频
          */
@@ -758,11 +783,11 @@ public class AVChatUI implements AVChatUIListener {
         avChatSurface.initSmallSurfaceView(DemoCache.getAccount());
     }
 
-    public void initRemoteSurfaceView(String account) {
+    public void initLargeSurfaceView(String account) {
         avChatSurface.initLargeSurfaceView(account);
     }
 
-    public void initLocalSurfaceView() {
+    public void initSmallSurfaceView() {
         avChatSurface.initSmallSurfaceView(DemoCache.getAccount());
     }
 
@@ -772,7 +797,7 @@ public class AVChatUI implements AVChatUIListener {
     public void onAudioToVideo() {
         onCallStateChange(CallStateEnum.VIDEO);
         avChatVideo.onAudioToVideo(AVChatManager.getInstance().isLocalAudioMuted(),
-                AVChatManager.getInstance().isLocalRecording(), recordWarning); // isMute是否处于静音状态
+                isRecording, recordWarning); // isMute是否处于静音状态
         if (AVChatManager.getInstance().isLocalVideoMuted()) { // 是否在发送视频 即摄像头是否开启
             AVChatManager.getInstance().muteLocalVideo(false);
             avChatSurface.localVideoOn();
@@ -787,7 +812,7 @@ public class AVChatUI implements AVChatUIListener {
         // 判断是否静音，扬声器是否开启，对界面相应控件进行显隐处理。
         avChatAudio.onVideoToAudio(AVChatManager.getInstance().isLocalAudioMuted(),
                 AVChatManager.getInstance().speakerEnabled(),
-                AVChatManager.getInstance().isLocalRecording(), recordWarning);
+                isRecording, recordWarning);
     }
 
     public void peerVideoOff() {

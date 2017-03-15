@@ -2,7 +2,6 @@ package com.netease.nim.demo.main.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -310,10 +309,11 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_LED:
                 UserPreferences.setLedToggle(checkState);
                 StatusBarNotificationConfig config1 = UserPreferences.getStatusConfig();
-                if (checkState) {
-                    config1.ledARGB = Color.GREEN;
-                    config1.ledOnMs = 1000;
-                    config1.ledOffMs = 1500;
+                StatusBarNotificationConfig demoConfig = DemoCache.getNotificationConfig();
+                if (checkState && demoConfig != null) {
+                    config1.ledARGB = demoConfig.ledARGB;
+                    config1.ledOnMs = demoConfig.ledOnMs;
+                    config1.ledOffMs = demoConfig.ledOffMs;
                 } else {
                     config1.ledARGB = -1;
                     config1.ledOnMs = -1;

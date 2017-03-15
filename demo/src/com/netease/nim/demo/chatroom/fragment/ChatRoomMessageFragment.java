@@ -110,6 +110,8 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
         Container container = new Container(getActivity(), roomId, SessionTypeEnum.ChatRoom, this);
         if (messageListPanel == null) {
             messageListPanel = new ChatRoomMsgListPanel(container, rootView);
+        } else {
+            messageListPanel.reload(container);
         }
 
         if (inputPanel == null) {

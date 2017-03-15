@@ -25,7 +25,6 @@ import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
@@ -492,7 +491,6 @@ public class RTSActivity extends UI implements View.OnClickListener {
         RTSNotifyOption notifyOption = new RTSNotifyOption();
         notifyOption.apnsContent = pushContent;
         notifyOption.extendMessage = extra;
-
         sessionId = RTSManager.getInstance().start(account, types, options, notifyOption, new RTSCallback<RTSData>() {
             @Override
             public void onSuccess(RTSData rtsData) {

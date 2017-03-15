@@ -13,6 +13,7 @@ import android.util.Log;
 
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
+import com.netease.nim.demo.avchat.receiver.PhoneCallStateObserver;
 import com.netease.nim.demo.common.util.crash.AppCrashHandler;
 import com.netease.nim.demo.common.util.sys.SystemUtil;
 import com.netease.nim.demo.config.ExtraOptions;
@@ -23,9 +24,10 @@ import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.custom.DefalutUserInfoProvider;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.contact.core.query.PinYin;
+import com.netease.nim.uikit.custom.DefalutUserInfoProvider;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
@@ -34,6 +36,7 @@ import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
+import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.mixpush.NIMPushClient;
@@ -49,6 +52,8 @@ import com.netease.nimlib.sdk.team.model.UpdateTeamAttachment;
 import java.util.Map;
 
 public class NimApplication extends Application {
+
+    private static final String TAG = "NimApplication";
 
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
@@ -110,18 +115,7 @@ public class NimApplication extends Application {
         SDKOptions options = new SDKOptions();
 
         // 如果将新消息通知提醒托管给SDK完成，需要添加以下配置。
-
-        // load 应用的状态栏配置
-        StatusBarNotificationConfig config = loadStatusBarNotificationConfig();
-
-        // load 用户的 StatusBarNotificationConfig 设置项
-        StatusBarNotificationConfig userConfig = UserPreferences.getStatusConfig();
-        if (userConfig == null) {
-            userConfig = config;
-            UserPreferences.setStatusConfig(config);
-        }
-        // SDK statusBarNotificationConfig 生效
-        options.statusBarNotificationConfig = userConfig;
+        initStatusBarNotificationConfig(options);
 
         // 配置保存图片，文件，log等数据的目录
         String sdkPath = Environment.getExternalStorageDirectory() + "/" + getPackageName() + "/nim";
@@ -148,7 +142,27 @@ public class NimApplication extends Application {
         return options;
     }
 
-    // 这里开发者可以自定义该应用的 StatusBarNotificationConfig
+    private void initStatusBarNotificationConfig(SDKOptions options) {
+        // load 应用的状态栏配置
+        StatusBarNotificationConfig config = loadStatusBarNotificationConfig();
+
+        // load 用户的 StatusBarNotificationConfig 设置项
+        StatusBarNotificationConfig userConfig = UserPreferences.getStatusConfig();
+        if (userConfig == null) {
+            userConfig = config;
+        } else {
+            // 新增的 UserPreferences 存储项更新，兼容 3.4 及以前版本
+            // APP默认 StatusBarNotificationConfig 配置修改后，使其生效
+            userConfig.notificationEntrance = config.notificationEntrance;
+            userConfig.notificationFolded = config.notificationFolded;
+        }
+        // 持久化生效
+        UserPreferences.setStatusConfig(config);
+        // SDK statusBarNotificationConfig 生效
+        options.statusBarNotificationConfig = userConfig;
+    }
+
+    // 这里开发者可以自定义该应用初始的 StatusBarNotificationConfig
     private StatusBarNotificationConfig loadStatusBarNotificationConfig() {
         StatusBarNotificationConfig config = new StatusBarNotificationConfig();
         // 点击通知需要跳转到的界面
@@ -221,6 +235,11 @@ public class NimApplication extends Application {
             public void onEvent(AVChatData data) {
                 String extra = data.getExtra();
                 Log.e("Extra", "Extra Message->" + extra);
+                if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE) {
+                    LogUtil.i(TAG, "reject incoming call data =" + data.toString() + " as local phone is not idle");
+                    AVChatManager.getInstance().sendControlCommand(AVChatControlCommand.BUSY, null);
+                    return;
+                }
                 // 有网络来电打开AVChatActivity
                 AVChatProfile.getInstance().setAVChatting(true);
                 AVChatActivity.launch(DemoCache.getContext(), data, AVChatActivity.FROM_BROADCASTRECEIVER);

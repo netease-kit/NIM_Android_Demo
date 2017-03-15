@@ -5,6 +5,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewStub;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -13,8 +14,11 @@ import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomTabPagerAdapter;
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTabFragment;
 import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
+import com.netease.nim.demo.common.infra.Handlers;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
+import com.netease.nim.uikit.common.ui.barrage.BarrageConfig;
+import com.netease.nim.uikit.common.ui.barrage.BarrageSurfaceView;
 import com.netease.nim.uikit.common.ui.imageview.ImageViewEx;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
@@ -24,13 +28,13 @@ import com.netease.nimlib.sdk.chatroom.ChatRoomService;
  * Created by hzxuwen on 2015/12/14.
  */
 public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.OnPageChangeListener {
-    private static final String TAG = ChatRoomFragment.class.getSimpleName();
     private PagerSlidingTabStrip tabs;
     private ViewPager viewPager;
     private ChatRoomTabPagerAdapter adapter;
     private int scrollState;
     private ImageViewEx imageView;
     private TextView statusText;
+    private static final boolean SHOW_BARRAGE = false;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +86,30 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
                 ((ChatRoomActivity) getActivity()).clearChatRoom();
             }
         });
+
+        // 是否演示弹幕控件
+        if (SHOW_BARRAGE) {
+            ViewStub barrageViewStub = findView(R.id.barrage_view_stub);
+            barrageViewStub.inflate();
+
+            View barrageViewRoot = findView(R.id.barrage_view_after_inflate);
+            final BarrageSurfaceView barrageView = (BarrageSurfaceView) barrageViewRoot.findViewById(R.id.barrage_view);
+
+            final String barrageText1 = "欢迎进入直播间";
+            final String barrageText2 = "Welcome to live room";
+            Handlers.sharedHandler(getActivity()).postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    BarrageConfig config = new BarrageConfig();
+                    config.setDuration(4500);
+                    // 初始化弹幕控件
+                    barrageView.init(config);
+                    for (int i = 1; i <= 200; i++) {
+                        barrageView.addTextBarrage((i % 2 == 0 ? barrageText1 : barrageText2) + i);
+                    }
+                }
+            }, 1000);
+        }
     }
 
     private void setupPager() {
@@ -113,7 +141,9 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
         tabs.setOnTabDoubleTapListener(adapter);
     }
 
-    /******************** OnPageChangeListener **************************/
+    /********************
+     * OnPageChangeListener
+     **************************/
 
     @Override
     public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

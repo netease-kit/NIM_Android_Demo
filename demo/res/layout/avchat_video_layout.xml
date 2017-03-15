@@ -38,5 +38,12 @@
         android:layout_centerHorizontal="true"
         android:visibility="invisible" />
 
+    <include
+        android:id="@+id/avchat_video_permission_control"
+        layout="@layout/avchat_video_permission_layout"
+        android:layout_marginTop="170dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone" />
 
 </RelativeLayout>

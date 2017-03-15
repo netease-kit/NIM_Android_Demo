@@ -2,8 +2,8 @@
 <manifest package="com.netease.nim.demo"
           xmlns:android="http://schemas.android.com/apk/res/android"
           android:installLocation="auto"
-          android:versionCode="32"
-          android:versionName="3.4.0">
+          android:versionCode="33"
+          android:versionName="3.5.0">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
@@ -377,8 +377,9 @@
             </intent-filter>
         </receiver>
 
-        <!-- 申明本地电话状态（通话状态）的广播接收器，第三方APP集成时音视频模块时，如果需要网络通话与本地电话互斥，请加上此接收器 -->
-        <receiver android:name="com.netease.nimlib.receiver.IncomingCallReceiver">
+        <!-- 申明本地电话状态（通话状态）的广播接收器，第三方APP集成时音视频模块时，如果需要在App中处理网络通话与本地电话的交互请加上此接收器 -->
+        <!-- 在Demo的示例代码中是在Application进行了网络通话与本地电话的互斥处理 -->
+        <receiver android:name="com.netease.nim.demo.avchat.receiver.IncomingCallReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>

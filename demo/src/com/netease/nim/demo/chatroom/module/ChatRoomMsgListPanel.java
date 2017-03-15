@@ -32,8 +32,10 @@ import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.model.AttachmentProgress;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -77,6 +79,13 @@ public class ChatRoomMsgListPanel {
         uiHandler.removeCallbacks(null);
         MessageAudioControl.getInstance(container.activity).stopAudio(); // 界面返回，停止语音播放
         return false;
+    }
+
+    public void reload(Container container) {
+        this.container = container;
+        if (adapter != null) {
+            adapter.clearData();
+        }
     }
 
     private void init() {
@@ -175,6 +184,8 @@ public class ChatRoomMsgListPanel {
 
         private boolean firstLoad = true;
 
+        private boolean fetching = false;
+
         public MessageLoader() {
             anchor = null;
             loadFromLocal();
@@ -188,11 +199,18 @@ public class ChatRoomMsgListPanel {
                 } else {
                     adapter.fetchMoreEnd(true);
                 }
+
+                fetching = false;
             }
         };
 
         private void loadFromLocal() {
-            NIMClient.getService(ChatRoomService.class).pullMessageHistory(container.account, anchor().getTime(), LOAD_MESSAGE_COUNT)
+            if (fetching) {
+                return;
+            }
+
+            fetching = true;
+            NIMClient.getService(ChatRoomService.class).pullMessageHistoryEx(container.account, anchor().getTime(), LOAD_MESSAGE_COUNT, QueryDirectionEnum.QUERY_OLD)
                     .setCallback(callback);
         }
 
@@ -210,6 +228,8 @@ public class ChatRoomMsgListPanel {
         private void onMessageLoaded(List<ChatRoomMessage> messages) {
             int count = messages.size();
 
+            // 逆序
+            Collections.reverse(messages);
             // 加入到列表中
             if (count <= 0) {
                 adapter.fetchMoreEnd(true);

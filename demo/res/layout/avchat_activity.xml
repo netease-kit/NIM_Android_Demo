@@ -18,7 +18,7 @@
         layout="@layout/avchat_surface_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:visibility="gone" />
+        android:visibility="visible" />
 
     <include
         android:id="@+id/avchat_video_layout"

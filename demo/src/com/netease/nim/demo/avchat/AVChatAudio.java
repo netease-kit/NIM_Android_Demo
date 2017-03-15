@@ -1,14 +1,12 @@
 package com.netease.nim.demo.avchat;
 
-import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.NimApplication;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
@@ -40,7 +38,8 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     private View mute_speaker_hangup;
     private ToggleView muteToggle;
     private ToggleView speakerToggle;
-    private ToggleView recordToggle;
+    private View recordToggle;
+    private Button recordToggleButton;
     private View hangup;
 
     private View refuse_receive;
@@ -120,7 +119,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     private void enableToggle() {
         if(!isEnabled) {
-            recordToggle.enable();
+            recordToggle.setEnabled(true);
         }
         isEnabled = true;
     }
@@ -147,12 +146,13 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
         muteToggle = new ToggleView(mute, ToggleState.OFF, this);
         View speaker = mute_speaker_hangup.findViewById(R.id.avchat_audio_speaker);
         speakerToggle = new ToggleView(speaker, ToggleState.OFF, this);
-        View record = mute_speaker_hangup.findViewById(R.id.avchat_audio_record);
-        recordToggle = new ToggleView(record, ToggleState.OFF, this);
+        recordToggle = mute_speaker_hangup.findViewById(R.id.avchat_audio_record);
+        recordToggleButton = (Button) mute_speaker_hangup.findViewById(R.id.avchat_audio_record_button);
+
         hangup = mute_speaker_hangup.findViewById(R.id.avchat_audio_hangup);
         hangup.setOnClickListener(this);
-
-        recordToggle.disable(false);
+        recordToggle.setOnClickListener(this);
+        recordToggle.setEnabled(false);
 
         refuse_receive = rootView.findViewById(R.id.avchat_audio_refuse_receive);
         refuseTV = (TextView) refuse_receive.findViewById(R.id.refuse);
@@ -198,6 +198,8 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     public void showRecordView(boolean show, boolean warning) {
         if(show) {
+            recordToggle.setSelected(true);
+            recordToggleButton.setText("结束");
             recordView.setVisibility(View.VISIBLE);
             recordTip.setVisibility(View.VISIBLE);
             if(warning) {
@@ -206,6 +208,8 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 recordWarning.setVisibility(View.GONE);
             }
         } else {
+            recordToggle.setSelected(false);
+            recordToggleButton.setText("录制");
             recordView.setVisibility(View.INVISIBLE);
             recordTip.setVisibility(View.INVISIBLE);
             recordWarning.setVisibility(View.GONE);
@@ -293,8 +297,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
         muteToggle.toggle(muteOn ? ToggleState.ON : ToggleState.OFF);
         speakerToggle.toggle(speakerOn ? ToggleState.ON : ToggleState.OFF);
-        recordToggle.toggle(recordOn ? ToggleState.ON : ToggleState.OFF);
-
+        recordToggle.setSelected(recordOn);
         showRecordView(recordOn, recordWarning);
     }
 
@@ -332,7 +335,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
             time.stop();
             muteToggle.disable(false);
             speakerToggle.disable(false);
-            recordToggle.disable(false);
+            recordToggle.setEnabled(false);
             refuseTV.setEnabled(false);
             receiveTV.setEnabled(false);
             hangup.setEnabled(false);
