@@ -66,13 +66,8 @@ public class PhoneCallStateObserver {
     public void handleLocalCall() {
         LogUtil.i(TAG, "notify phone state changed, state=" + stateEnum.name());
 
-        // 当前没有发起or进行网络通话，直接返回
-        if (!AVChatManager.getInstance().isCurrentChatValid()) {
-            return;
-        }
-
         if (stateEnum != PhoneCallStateEnum.IDLE) {
-            AVChatManager.getInstance().hangUp(new HandleLocalCallCallback(1));
+            AVChatManager.getInstance().hangUp2(AVChatManager.getInstance().getCurrentChatId(), new HandleLocalCallCallback(1));
         }
     }
 

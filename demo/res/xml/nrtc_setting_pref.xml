@@ -42,11 +42,12 @@
 
     <PreferenceCategory android:title="@string/nrtc_setting_vie">
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/nrtc_setting_vie_crop_key"
-            android:summary="在双人通话时按照对方屏幕比例裁剪画面"
-            android:title="@string/nrtc_setting_vie_crop"/>
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/nrtc_setting_vie_crop_ratio_entries"
+            android:entryValues="@array/nrtc_setting_vie_crop_ratio_values"
+            android:key="@string/nrtc_setting_vie_crop_ratio_key"
+            android:title="@string/nrtc_setting_vie_crop_ratio" />
 
         <SwitchPreference
             android:defaultValue="true"

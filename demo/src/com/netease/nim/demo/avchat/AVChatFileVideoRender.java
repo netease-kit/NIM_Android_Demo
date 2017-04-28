@@ -68,7 +68,7 @@ public class AVChatFileVideoRender extends AVChatExternalVideoRender {
     }
 
     private boolean createFile(int w, int h) {
-        String fileName = attachedSession() + "_" + w + "x" + h + "_" + SystemClock.elapsedRealtime() + ".y4m";
+        String fileName = getAttachedSession() + "_" + w + "x" + h + "_" + SystemClock.elapsedRealtime() + ".y4m";
         Log.i("AVChatFileVideoRender", "create file -> " + fileName);
         if (outputStream != null) {
             try {

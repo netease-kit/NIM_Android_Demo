@@ -28,7 +28,6 @@ import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.AVChatStateObserver;
 import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
 import com.netease.nimlib.sdk.avchat.constant.AVChatEventType;
-import com.netease.nimlib.sdk.avchat.constant.AVChatTimeOutEvent;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAudioFrame;
 import com.netease.nimlib.sdk.avchat.model.AVChatCalleeAckEvent;
@@ -87,7 +86,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     // notification
     private AVChatNotification notifier;
 
-    public static void start(Context context, String account, int callType, int source) {
+    public static void launch(Context context, String account, int callType, int source) {
         needFinish = false;
         Intent intent = new Intent();
         intent.setClass(context, AVChatActivity.class);
@@ -130,12 +129,12 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
             return;
         }
 
+        registerNetCallObserver(true);
         if (mIsInComingCall) {
             inComingCalling();
         } else {
             outgoingCalling();
         }
-        registerNetCallObserver(true);
 
         notifier = new AVChatNotification(this);
         notifier.init(receiverId != null ? receiverId : avChatData.getAccount());
@@ -256,21 +255,23 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         }
     };
 
-    Observer<AVChatTimeOutEvent> timeoutObserver = new Observer<AVChatTimeOutEvent>() {
+    Observer<Long> timeoutObserver = new Observer<Long>() {
         @Override
-        public void onEvent(AVChatTimeOutEvent event) {
-            if (event == AVChatTimeOutEvent.NET_BROKEN_TIMEOUT) {
-                avChatUI.closeSessions(AVChatExitCode.NET_ERROR);
-            } else {
+        public void onEvent(Long chatId) {
+
+            AVChatData info = avChatUI.getAvChatData();
+            if (info != null && info.getChatId() == chatId) {
+
                 avChatUI.closeSessions(AVChatExitCode.PEER_NO_RESPONSE);
+
+                // 来电超时，自己未接听
+                if (mIsInComingCall) {
+                    activeMissCallNotifier();
+                }
+
+                AVChatSoundPlayer.instance().stop();
             }
 
-            // 来电超时，自己未接听
-            if (event == AVChatTimeOutEvent.INCOMING_TIMEOUT) {
-                activeMissCallNotifier();
-            }
-
-            AVChatSoundPlayer.instance().stop();
         }
     };
 
@@ -376,7 +377,6 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
 
-
     /****************************** 连接建立处理 ********************/
 
     /**
@@ -477,7 +477,6 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
 
-
     /**
      * ************************ AVChatStateObserver ****************************
      */
@@ -495,7 +494,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     @Override
     public void onAVRecordingCompletion(String account, String filePath) {
         if (account != null && filePath != null && filePath.length() > 0) {
-            String msg = "音视频录制已结束, "+"账号："+ account +" 录制文件已保存至：" + filePath;
+            String msg = "音视频录制已结束, " + "账号：" + account + " 录制文件已保存至：" + filePath;
             Toast.makeText(this, msg, Toast.LENGTH_SHORT).show();
         } else {
             Toast.makeText(this, "录制已结束.", Toast.LENGTH_SHORT).show();
@@ -520,7 +519,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onLowStorageSpaceWarning(long availableSize) {
-        if(avChatUI != null) {
+        if (avChatUI != null) {
             avChatUI.showRecordWarning();
         }
     }
@@ -624,16 +623,6 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onStartLiveResult(int code) {
-
-    }
-
-    @Override
-    public void onStopLiveResult(int code) {
-
-    }
-
-    @Override
     public void onAudioMixingEvent(int event) {
 
     }
@@ -644,6 +633,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         @Override
         public void onEvent(StatusCode code) {
             if (code.wontAutoLogin()) {
+                AVChatSoundPlayer.instance().stop();
                 finish();
             }
         }

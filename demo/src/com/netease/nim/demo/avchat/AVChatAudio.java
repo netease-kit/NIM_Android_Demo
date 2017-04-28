@@ -1,10 +1,12 @@
 package com.netease.nim.demo.avchat;
 
+import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
@@ -25,6 +27,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     private static final int[] NETWORK_GRADE_DRAWABLE = new int[]{R.drawable.network_grade_0,R.drawable.network_grade_1,R.drawable.network_grade_2,R.drawable.network_grade_3};
     private static final int[] NETWORK_GRADE_LABEL = new int[]{R.string.avchat_network_grade_0,R.string.avchat_network_grade_1,R.string.avchat_network_grade_2,R.string.avchat_network_grade_3};
 
+    private Context context;
     // view
     private View rootView ;
     private View switchVideo;
@@ -58,8 +61,11 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     // state
     private boolean init = false;
 
+    // is in switch
+    private boolean isInSwitch = false;
 
-    public AVChatAudio(View root, AVChatUIListener listener, AVChatUI manager) {
+    public AVChatAudio(Context context, View root, AVChatUIListener listener, AVChatUI manager) {
+        this.context = context;
         this.rootView = root;
         this.listener = listener;
         this.manager = manager;
@@ -90,6 +96,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 receiveTV.setText(R.string.avchat_pickup);
                 break;
             case AUDIO:
+                isInSwitch = false;
                 setWifiUnavailableNotifyTV(false);
                 showNetworkCondition(1);
                 showProfile();
@@ -104,6 +111,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 showNotify(R.string.avchat_connecting);
                 break;
             case INCOMING_AUDIO_TO_VIDEO:
+                isInSwitch = true;
                 showNotify(R.string.avchat_audio_to_video_invitation);
                 setMuteSpeakerHangupControl(false);
                 setRefuseReceive(true);
@@ -320,7 +328,11 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 listener.toggleSpeaker();
                 break;
             case R.id.avchat_audio_switch_video:
-                listener.audioSwitchVideo();
+                if(isInSwitch) {
+                    Toast.makeText(context, R.string.avchat_in_switch, Toast.LENGTH_SHORT).show();
+                }else {
+                    listener.audioSwitchVideo();
+                }
                 break;
             case R.id.avchat_audio_record:
                 listener.toggleRecord();

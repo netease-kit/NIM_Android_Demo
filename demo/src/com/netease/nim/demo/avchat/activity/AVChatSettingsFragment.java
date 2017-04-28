@@ -22,6 +22,7 @@ public class AVChatSettingsFragment extends PreferenceFragment implements Prefer
 
         addPreferencesFromResource(R.xml.nrtc_setting_pref);
 
+        bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_crop_ratio_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_quality_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_hw_encoder_key)));
         bindPreferenceSummaryToValue(findPreference(getString(R.string.nrtc_setting_vie_hw_decoder_key)));

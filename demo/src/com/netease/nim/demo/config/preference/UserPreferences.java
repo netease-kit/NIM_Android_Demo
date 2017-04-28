@@ -29,6 +29,9 @@ public class UserPreferences {
     // 通知栏样式（展开、折叠）配置
     private final static String KEY_NOTIFICATION_FOLDED_TOGGLE = "KEY_NOTIFICATION_FOLDED";
 
+    // 保存在线状态订阅时间
+    private final static String KEY_SUBSCRIBE_TIME = "KEY_SUBSCRIBE_TIME";
+
     public static void setMsgIgnore(boolean enable) {
         saveBoolean(KEY_MSG_IGNORE, enable);
     }
@@ -101,6 +104,14 @@ public class UserPreferences {
         return getBoolean(KEY_TEAM_ANNOUNCE_CLOSED + teamId, false);
     }
 
+    public static void setOnlineStateSubsTime(long time) {
+        saveLong(KEY_SUBSCRIBE_TIME, time);
+    }
+
+    public static long getOnlineStateSubsTime() {
+        return getLong(KEY_SUBSCRIBE_TIME, 0);
+    }
+
     private static StatusBarNotificationConfig getConfig(String key) {
         StatusBarNotificationConfig config = new StatusBarNotificationConfig();
         String jsonString = getSharedPreferences().getString(key, "");
@@ -121,10 +132,9 @@ public class UserPreferences {
             config.ledOnMs = jsonObject.getIntValue("ledonms");
             config.ledOffMs = jsonObject.getIntValue("ledoffms");
             config.titleOnlyShowAppName = jsonObject.getBoolean("titleOnlyShowAppName");
-            if (jsonObject.containsKey("notificationFolded")) {
-                config.notificationFolded = jsonObject.getBoolean("notificationFolded");
-            }
+            config.notificationFolded = jsonObject.getBoolean("notificationFolded");
             config.notificationEntrance = (Class<? extends Activity>) Class.forName(jsonObject.getString("notificationEntrance"));
+            config.notificationColor = jsonObject.getInteger("notificationColor");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -150,6 +160,7 @@ public class UserPreferences {
             jsonObject.put("titleOnlyShowAppName", config.titleOnlyShowAppName);
             jsonObject.put("notificationFolded", config.notificationFolded);
             jsonObject.put("notificationEntrance", config.notificationEntrance.getName());
+            jsonObject.put("notificationColor", config.notificationColor);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -165,6 +176,16 @@ public class UserPreferences {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putBoolean(key, value);
         editor.commit();
+    }
+
+    private static void saveLong(String key, long value) {
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+        editor.putLong(key, value);
+        editor.commit();
+    }
+
+    private static long getLong(String key, long value) {
+        return getSharedPreferences().getLong(key, value);
     }
 
     static SharedPreferences getSharedPreferences() {

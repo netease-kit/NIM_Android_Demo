@@ -216,6 +216,15 @@
     <string name="kickout_notify">下线通知</string>
     <string name="kickout_content">你的帐号被%1$s踢出下线，请确定帐号信息安全</string>
 
+    <!-- 多端在线类型 -->
+    <string name="on_line">在线</string>
+    <string name="on_line_pc">电脑在线</string>
+    <string name="on_line_web">web在线</string>
+    <string name="client_aos">Android</string>
+    <string name="client_ios">iOS</string>
+    <string name="on_line_busy">忙碌</string>
+    <string name="off_line">离线</string>
+
     <!-- 阅后即焚 -->
     <string name="snapchat_longclick_to_view">按住查看</string>
     <string name="snapchat_title">阅后即焚</string>
@@ -252,8 +261,26 @@
     <string name="nrtc_setting_voe">语音通话</string>
     <string name="nrtc_setting_vie">视频通话</string>
     <string name="nrtc_setting_other">其它</string>
-    <string name="nrtc_setting_vie_crop_key">nrtc_setting_vie_crop_key</string>
-    <string name="nrtc_setting_vie_crop">画面裁剪</string>
+
+    <string name="nrtc_setting_vie_crop_ratio_key">nrtc_setting_vie_crop_ratio_key</string>
+    <string name="nrtc_setting_vie_crop_ratio">画面裁剪比例</string>
+
+    <string-array name="nrtc_setting_vie_crop_ratio_entries"> 
+        <item>原始比例</item> 
+        <item>16:9</item> 
+        <item>4:3</item> 
+        <item>3:2</item> 
+        <item>1:1</item> 
+    </string-array>
+    <string-array name="nrtc_setting_vie_crop_ratio_values"> 
+        <item>0</item> 
+        <item>1</item> 
+        <item>2</item> 
+        <item>3</item> 
+        <item>4</item> 
+    </string-array>
+
+
     <string name="nrtc_setting_vie_quality_key">nrtc_setting_vie_quality_key</string>
     <string name="nrtc_setting_vie_quality">视频清晰度</string>
     <string-array name="nrtc_setting_vie_quality_entries"> 

@@ -9,6 +9,7 @@ import android.media.SoundPool;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 
 
 /**
@@ -16,6 +17,8 @@ import com.netease.nim.demo.R;
  * 在不同的系统下 SoundPool 表现可能存在不一致
  */
 public class AVChatSoundPlayer {
+
+    private static final String TAG = "AVChatSoundPlayer";
 
     public enum RingerTypeEnum {
         CONNECTING,
@@ -55,6 +58,7 @@ public class AVChatSoundPlayer {
     }
 
     public synchronized void play(RingerTypeEnum type) {
+        LogUtil.d(TAG, "play type->" + type.name());
         this.ringerTypeEnum = type;
         int ringId = 0;
         switch (type) {
@@ -87,6 +91,7 @@ public class AVChatSoundPlayer {
     }
 
     public void stop() {
+        LogUtil.d(TAG, "stop");
         if (soundPool != null) {
             if (streamId != 0) {
                 soundPool.stop(streamId);

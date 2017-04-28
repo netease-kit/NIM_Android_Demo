@@ -174,6 +174,11 @@ public class AVChatSurface {
                 break;
             case INCOMING_AUDIO_TO_VIDEO:
                 break;
+            case AUDIO:
+                if(smallSizePreviewFrameLayout != null) {
+                    smallSizePreviewFrameLayout.setVisibility(View.INVISIBLE);
+                }
+                break;
             default:
                 break;
         }
@@ -210,7 +215,7 @@ public class AVChatSurface {
     public void initSmallSurfaceView(String account) {
         smallAccount = account;
         findViews();
-
+        smallSizePreviewFrameLayout.setVisibility(View.VISIBLE);
         /**
          * 设置画布，加入到自己的布局中，用于呈现视频图像
          * account 要显示视频的用户帐号
@@ -231,8 +236,9 @@ public class AVChatSurface {
      * @param surfaceView
      */
     private void addIntoLargeSizePreviewLayout(SurfaceView surfaceView) {
-        if (surfaceView.getParent() != null)
+        if (surfaceView.getParent() != null) {
             ((ViewGroup) surfaceView.getParent()).removeView(surfaceView);
+        }
         largeSizePreviewLayout.addView(surfaceView);
         surfaceView.setZOrderMediaOverlay(false);
         if (manager.getCallingState() == CallStateEnum.VIDEO || manager.getCallingState() == CallStateEnum.OUTGOING_VIDEO_CALLING) {

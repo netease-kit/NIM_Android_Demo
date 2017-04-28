@@ -1,6 +1,6 @@
-# 网易云信安卓 Demo 结构说明
+# 网易云通信安卓 Demo 结构说明
 
-网易云信 Demo 工程基于网易云信 SDK，演示了 SDK 聊天、群组、白板、实时音视频等功能接口的使用方法。Demo 工程依赖于 UIKit 工程，UIKit 实现了基本的消息收发，群组服务以及通讯录等功能，包含有完整的界面显示。开发者可以直接调用UIKit 中的接口，来进行功能开发，加快开发速度。用户可参照该 Demo，将网易云信 SDK 接入自己的 APP。
+网易云通信 Demo 工程基于网易云通信 SDK，演示了 SDK 聊天、群组、白板、实时音视频等功能接口的使用方法。Demo 工程依赖于 UIKit 工程，UIKit 实现了基本的消息收发，群组服务以及通讯录等功能，包含有完整的界面显示。开发者可以直接调用UIKit 中的接口，来进行功能开发，加快开发速度。用户可参照该 Demo，将网易云通信 SDK 接入自己的 APP。
 
 ## <span id="工程导入指引"> 工程导入指引</span>
 - [Eclipse导入Demo](http://note.youdao.com/groupshare/?token=7565E66468734B5C89D114AFD7AAB493&gid=14302436  "target=_blank")
@@ -12,7 +12,7 @@
 
 ## <span id="下载编译 Demo"> 下载编译 Demo</span>
 
-用户可在[网易云信官网](http://netease.im/?page=download  "target=_blank")下载 Demo 源码工程。
+用户可在下载页面进行下载 Demo 源码工程。
 
 总体环境需求：
 
@@ -31,7 +31,7 @@
 - 由于需要使用 JDK7 编译，旧版本的 ADT 插件仅支持到1.6，因此你需要使用最新的 ADT 版本（23.0及以上）才能正确编译 Demo。
 - 将 UIKit 下 AndoridManifeset 文件下所有 Activity 声明复制到 APP 工程的 AndoridManifeset 文件中。
 - 将 UIKit 下 assets 目录下所有资源复制到 APP工程的 assets 目录下。
->由于 google 已经将 Android Studio 作为官方开发工具，不再提供 ADT Bundle 下载，继续使用 Eclipse 开发会让你错过很多新特性，因此我们强烈建议你使用 Android Studio 开发基于网易云信 SDK 的 APP，该 Demo的很多自动化特性也将只有 Android Studio 才能体验到。
+>由于 google 已经将 Android Studio 作为官方开发工具，不再提供 ADT Bundle 下载，继续使用 Eclipse 开发会让你错过很多新特性，因此我们强烈建议你使用 Android Studio 开发基于网易云通信 SDK 的 APP，该 Demo的很多自动化特性也将只有 Android Studio 才能体验到。
 
 ## <span id="源码结构"> 源码结构</span>
 
@@ -42,7 +42,7 @@
 ### <span id="Demo源码结构"> Demo源码结构</span>
 
 - Application 入口：NimApplication, 包含 SDK 的初始化，UIKit的初始化以及配置示例。
-- 登录相关：login 包，包含一个比较典型的从第三方 APP 授权，然后登录到网易云信服务器的例子。
+- 登录相关：login 包，包含一个比较典型的从第三方 APP 授权，然后登录到网易云通信服务器的例子。
 - 主界面：main 包，包含最近联系人列表和好友/群组列表。该包作为各个功能的入口点，内含获取和管理最近联系人，获取群组列表，收发自定义通知等 SDK 接口使用示例。
 - 消息相关：session 包，包含消息历史，聊天信息和搜索消息界面。消息的具体展示和收发都在 UIKit 中。可以使用 NimUIKit 直接展示和使用。也可以使用 SessionHelper 进行消息界面的定制。
 - 群组相关：team 包，包含搜索群组和加入群组界面。包含创建高级群和讨论组的接口使用示例。
@@ -60,9 +60,9 @@
 
 ## <span id="修改Demo为己用"> 修改Demo为己用</span>
 
-网易云信 Demo 实现了一个 IM 软件的所有基础功能，开发者可直接以 Demo 为基础开发自己的 IM 软件，也可以稍作修改，用于前期流程验证，也可以作为 SDK 开发的参考和指南。
+网易云通信 Demo 实现了一个 IM 软件的所有基础功能，开发者可直接以 Demo 为基础开发自己的 IM 软件，也可以稍作修改，用于前期流程验证，也可以作为 SDK 开发的参考和指南。
 
-- 如果你已经在网易云信官网上注册了 APP，你需要修改 AndroidManifest 中的 “com.netease.nim.appKey” 为你自己的 appkey，否则登录会失败。
+- 如果你已经在网易云通信官网上注册了 APP，你需要修改 AndroidManifest 中的 “com.netease.nim.appKey” 为你自己的 appkey，否则登录会失败。
 
 ## <span id="聊天界面代码说明"> 聊天界面代码说明</span>
 
@@ -246,13 +246,13 @@ public void onHangUp() {
 - fragment包：界面相关。其中包括 tab 包，定义了聊天室框架中的 tab fragment。
 - helper包：缓存管理，通知类消息字段管理等辅助功能。
 - module包：模块化相关。包括聊天室收发消息模块。
-- thirdparty包：第三方实现相关。包括网易云信 demo 聊天室 http 客户端。
+- thirdparty包：第三方实现相关。包括网易云通信 demo 聊天室 http 客户端。
 - viewholder包：界面相关 viewholder 展示。
 - widget包：聊天室相关控件
 
 ### 重点类说明
 
-- ChatRoomsFragment：直播间列表 fragment。包含向网易云信Demo应用服务器请求聊天室列表操作。
+- ChatRoomsFragment：直播间列表 fragment。包含向网易云通信Demo应用服务器请求聊天室列表操作。
 - ChatRoomActivity：聊天室界面。封装了 ChatRoomFragment。包括聊天室的进入/离开的操作，监听聊天室在线状态和监听聊天室被踢出状态。
 - ChatRoomTabFragment：聊天室内 tab fragment 的基类。
 - ChatRoomFragment：聊天室 Activity 包含的顶层 Fragment。包括界面上方界面和下方的 viewpager。viewpager 包含3个 tab fragment，分别是：MessageTabFragment （直播互动 tab）， MasterTabFragment （主播 tab）， OnlinePeopleTabFragment （在线成员 tab）。
@@ -274,7 +274,7 @@ public void onHangUp() {
 
 ## <span id=" Android 6.0 权限管理"> Android 6.0 权限管理 </span>
 
-云信 demo 提供 Android 6.0 权限管理示例。相关方法的实现，在 uikit 的 permission 包中。
+网易云通信 demo 提供 Android 6.0 权限管理示例。相关方法的实现，在 uikit 的 permission 包中。
 
 在需要相关权限的地方，发起申请并等待用户操作后的返回结果。具体实现方法：
 

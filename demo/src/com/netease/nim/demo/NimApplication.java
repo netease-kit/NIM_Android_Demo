@@ -20,6 +20,8 @@ import com.netease.nim.demo.config.ExtraOptions;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
+import com.netease.nim.demo.event.DemoOnlineStateContentProvider;
+import com.netease.nim.demo.event.OnlineStateEventManager;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
@@ -33,6 +35,7 @@ import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.SDKOptions;
+import com.netease.nimlib.sdk.ServerAddresses;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
@@ -89,13 +92,15 @@ public class NimApplication extends Application {
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
 
             // 注册网络通话来电
-            enableAVChat();
+            registerAVChatIncomingCallObserver(true);
 
             // 注册白板会话
-            enableRTS();
+            registerRTSIncomingObserver(true);
 
             // 注册语言变化监听
             registerLocaleReceiver(true);
+
+            OnlineStateEventManager.init();
         }
     }
 
@@ -118,8 +123,7 @@ public class NimApplication extends Application {
         initStatusBarNotificationConfig(options);
 
         // 配置保存图片，文件，log等数据的目录
-        String sdkPath = Environment.getExternalStorageDirectory() + "/" + getPackageName() + "/nim";
-        options.sdkStorageRootPath = sdkPath;
+        options.sdkStorageRootPath = Environment.getExternalStorageDirectory() + "/" + getPackageName() + "/nim";
 
         // 配置数据库加密秘钥
         options.databaseEncryptKey = "NETEASE";
@@ -139,7 +143,22 @@ public class NimApplication extends Application {
         // 在线多端同步未读数
         options.sessionReadAck = true;
 
+        // 云信私有化配置项
+        configServerAddress(options);
+
         return options;
+    }
+
+    private void configServerAddress(final SDKOptions options) {
+        String appKey = PrivatizationConfig.getAppKey();
+        if (!TextUtils.isEmpty(appKey)) {
+            options.appKey = appKey;
+        }
+
+        ServerAddresses serverConfig = PrivatizationConfig.getServerAddresses();
+        if (serverConfig != null) {
+            options.serverConfig = serverConfig;
+        }
     }
 
     private void initStatusBarNotificationConfig(SDKOptions options) {
@@ -152,12 +171,14 @@ public class NimApplication extends Application {
             userConfig = config;
         } else {
             // 新增的 UserPreferences 存储项更新，兼容 3.4 及以前版本
+            // 新增 notificationColor 存储，兼容3.6以前版本
             // APP默认 StatusBarNotificationConfig 配置修改后，使其生效
             userConfig.notificationEntrance = config.notificationEntrance;
             userConfig.notificationFolded = config.notificationFolded;
+            userConfig.notificationColor = getResources().getColor(R.color.color_blue_3a9efb);
         }
         // 持久化生效
-        UserPreferences.setStatusConfig(config);
+        UserPreferences.setStatusConfig(userConfig);
         // SDK statusBarNotificationConfig 生效
         options.statusBarNotificationConfig = userConfig;
     }
@@ -168,7 +189,7 @@ public class NimApplication extends Application {
         // 点击通知需要跳转到的界面
         config.notificationEntrance = WelcomeActivity.class;
         config.notificationSmallIconId = R.drawable.ic_stat_notify_msg;
-
+        config.notificationColor = getResources().getColor(R.color.color_blue_3a9efb);
         // 通知铃声的uri字符串
         config.notificationSound = "android.resource://com.netease.nim.demo/raw/msg";
 
@@ -222,22 +243,17 @@ public class NimApplication extends Application {
         });
     }
 
-    /**
-     * 音视频通话配置与监听
-     */
-    private void enableAVChat() {
-        registerAVChatIncomingCallObserver(true);
-    }
-
     private void registerAVChatIncomingCallObserver(boolean register) {
         AVChatManager.getInstance().observeIncomingCall(new Observer<AVChatData>() {
             @Override
             public void onEvent(AVChatData data) {
                 String extra = data.getExtra();
                 Log.e("Extra", "Extra Message->" + extra);
-                if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE) {
+                if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE
+                        || AVChatProfile.getInstance().isAVChatting()
+                        || AVChatManager.getInstance().getCurrentChatId() != 0) {
                     LogUtil.i(TAG, "reject incoming call data =" + data.toString() + " as local phone is not idle");
-                    AVChatManager.getInstance().sendControlCommand(AVChatControlCommand.BUSY, null);
+                    AVChatManager.getInstance().sendControlCommand(data.getChatId(), AVChatControlCommand.BUSY, null);
                     return;
                 }
                 // 有网络来电打开AVChatActivity
@@ -245,13 +261,6 @@ public class NimApplication extends Application {
                 AVChatActivity.launch(DemoCache.getContext(), data, AVChatActivity.FROM_BROADCASTRECEIVER);
             }
         }, register);
-    }
-
-    /**
-     * 白板实时时会话配置与监听
-     */
-    private void enableRTS() {
-        registerRTSIncomingObserver(true);
     }
 
 
@@ -314,8 +323,9 @@ public class NimApplication extends Application {
 
         // 添加自定义推送文案以及选项，请开发者在各端（Android、IOS、PC、Web）消息发送时保持一致，以免出现通知不一致的情况
         // NimUIKit.CustomPushContentProvider(new DemoPushContentProvider());
-    }
 
+        NimUIKit.setOnlineStateContentProvider(new DemoOnlineStateContentProvider());
+    }
 
     private MessageNotifierCustomization messageNotifierCustomization = new MessageNotifierCustomization() {
         @Override
@@ -328,4 +338,6 @@ public class NimApplication extends Application {
             return null; // 采用SDK默认文案
         }
     };
+
+
 }
