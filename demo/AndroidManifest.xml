@@ -3,7 +3,7 @@
           xmlns:android="http://schemas.android.com/apk/res/android"
           android:installLocation="auto"
           android:versionCode="34"
-          android:versionName="3.6.0">
+          android:versionName="3.7.0">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
