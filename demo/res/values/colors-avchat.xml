@@ -6,4 +6,5 @@
     <color name="color_grey_d0d0d0">#d0d0d0</color>
     <color name="video_call_peer_close_cameral_text_shadow">#484848</color>
     <color name="video_call_peer_close_cameral_text_color">#f1f1f1</color>
+    <color name="t_av_chat_setting_bar">#3C4149</color>
 </resources>

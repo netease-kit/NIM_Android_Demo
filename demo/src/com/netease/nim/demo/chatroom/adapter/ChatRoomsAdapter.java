@@ -1,11 +1,11 @@
 package com.netease.nim.demo.chatroom.adapter;
 
 import android.support.v7.widget.RecyclerView;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
-import com.netease.nim.uikit.common.ui.imageview.ImageViewEx;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseQuickAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomInfo;
@@ -25,8 +25,8 @@ public class ChatRoomsAdapter extends BaseQuickAdapter<ChatRoomInfo, BaseViewHol
         // bg
         holder.getConvertView().setBackgroundResource(R.drawable.list_item_bg_selecter);
         // cover
-        ImageViewEx coverImage = holder.getView(R.id.cover_image);
-        ChatRoomHelper.setCoverImage(room.getRoomId(), coverImage);
+        ImageView coverImage = holder.getView(R.id.cover_image);
+        ChatRoomHelper.setCoverImage(room.getRoomId(), coverImage, false);
         // name
         holder.setText(R.id.tv_name, room.getName());
         // online count

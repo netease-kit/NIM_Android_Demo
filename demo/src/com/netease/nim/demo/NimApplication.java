@@ -26,10 +26,11 @@ import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.demo.team.TeamAVChatHelper;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.contact.core.query.PinYin;
-import com.netease.nim.uikit.custom.DefalutUserInfoProvider;
+import com.netease.nim.uikit.custom.DefaultUserInfoProvider;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
@@ -135,7 +136,7 @@ public class NimApplication extends Application {
         options.thumbnailSize = MsgViewHolderThumbBase.getImageMaxEdge();
 
         // 用户信息提供者
-        options.userInfoProvider = new DefalutUserInfoProvider(this);
+        options.userInfoProvider = new DefaultUserInfoProvider(this);
 
         // 定制通知栏提醒文案（可选，如果不定制将采用SDK默认文案）
         options.messageNotifierCustomization = messageNotifierCustomization;
@@ -251,6 +252,7 @@ public class NimApplication extends Application {
                 Log.e("Extra", "Extra Message->" + extra);
                 if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE
                         || AVChatProfile.getInstance().isAVChatting()
+                        || TeamAVChatHelper.sharedInstance().isTeamAVChatting()
                         || AVChatManager.getInstance().getCurrentChatId() != 0) {
                     LogUtil.i(TAG, "reject incoming call data =" + data.toString() + " as local phone is not idle");
                     AVChatManager.getInstance().sendControlCommand(data.getChatId(), AVChatControlCommand.BUSY, null);
@@ -258,11 +260,10 @@ public class NimApplication extends Application {
                 }
                 // 有网络来电打开AVChatActivity
                 AVChatProfile.getInstance().setAVChatting(true);
-                AVChatActivity.launch(DemoCache.getContext(), data, AVChatActivity.FROM_BROADCASTRECEIVER);
+                AVChatProfile.getInstance().launchActivity(data, AVChatActivity.FROM_BROADCASTRECEIVER);
             }
         }, register);
     }
-
 
     private void registerRTSIncomingObserver(boolean register) {
         RTSManager.getInstance().observeIncomingSession(new Observer<RTSData>() {

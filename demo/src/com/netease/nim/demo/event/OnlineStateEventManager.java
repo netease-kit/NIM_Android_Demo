@@ -55,7 +55,13 @@ public class OnlineStateEventManager {
     // 已发布的网络状态
     private static int pubNetState = -1;
 
+    private static boolean enable = false;
+
+
     public static void init() {
+        if (!enableOnlineStateEvent()) {
+            return;
+        }
         registerEventObserver(true);
         registerOnlineStatusObserver();
         FriendDataCache.getInstance().registerFriendDataChangedObserver(observer, true);
@@ -335,6 +341,9 @@ public class OnlineStateEventManager {
      * @return
      */
     public static String getOnlineClientContent(Context context, OnlineState state, boolean simple) {
+        if (!enable) {
+            return null;
+        }
         // 离线
         if (!isOnline(state)) {
             return context.getString(R.string.off_line);
@@ -402,6 +411,9 @@ public class OnlineStateEventManager {
      * @param account
      */
     public static void checkSubscribe(String account) {
+        if (!enable) {
+            return;
+        }
         // 未曾订阅过
         if (!OnlineStateEventCache.hasSubscribed(account)) {
             List<String> accounts = new ArrayList<>(1);
@@ -409,5 +421,17 @@ public class OnlineStateEventManager {
             LogUtil.ui("display online state but not subscribe " + account);
             OnlineStateEventSubscribe.subscribeOnlineStateEvent(accounts, OnlineStateEventSubscribe.SUBSCRIBE_EXPIRY);
         }
+    }
+
+    public static boolean isEnable() {
+        return enable;
+    }
+
+    /**
+     * 允许在线状态事件,开发者开通在线状态后修改此处直接返回true
+     */
+    public static boolean enableOnlineStateEvent() {
+        String packageName = DemoCache.getContext().getPackageName();
+        return enable = (packageName != null && packageName.equals("com.netease.nim.demo"));
     }
 }

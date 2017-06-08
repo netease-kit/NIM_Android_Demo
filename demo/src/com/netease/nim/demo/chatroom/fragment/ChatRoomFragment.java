@@ -19,7 +19,6 @@ import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
 import com.netease.nim.uikit.common.ui.barrage.BarrageConfig;
 import com.netease.nim.uikit.common.ui.barrage.BarrageSurfaceView;
-import com.netease.nim.uikit.common.ui.imageview.ImageViewEx;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
 
@@ -32,7 +31,7 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     private ViewPager viewPager;
     private ChatRoomTabPagerAdapter adapter;
     private int scrollState;
-    private ImageViewEx imageView;
+    private ImageView imageView;
     private TextView statusText;
     private static final boolean SHOW_BARRAGE = false;
 
@@ -64,7 +63,7 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     }
 
     public void updateView() {
-        ChatRoomHelper.setCoverImage(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId(), imageView);
+        ChatRoomHelper.setCoverImage(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId(), imageView, true);
     }
 
     @Override

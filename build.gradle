@@ -15,12 +15,12 @@ allprojects {
 }
 
 ext {
-    compileSdkVersion = 21
-    buildToolsVersion = buildToolsVer
+    compileSdkVersion = 25
+    buildToolsVersion = '25.0.3'
     minSdkVersion = 14
-    targetSdkVersion = 23
-    versionCode = 34
-    versionName = '3.7.0'
+    targetSdkVersion = 25
+    versionCode = 35
+    versionName = '3.8.0'
     targetCompatibility = 1.7
     sourceCompatibility = 1.7
 }

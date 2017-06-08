@@ -16,6 +16,7 @@ import com.netease.nim.demo.session.action.FileAction;
 import com.netease.nim.demo.session.action.GuessAction;
 import com.netease.nim.demo.session.action.RTSAction;
 import com.netease.nim.demo.session.action.SnapChatAction;
+import com.netease.nim.demo.session.action.TeamAVChatAction;
 import com.netease.nim.demo.session.action.TipAction;
 import com.netease.nim.demo.session.activity.MessageHistoryActivity;
 import com.netease.nim.demo.session.activity.MessageInfoActivity;
@@ -34,11 +35,13 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderRTS;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderTip;
+import com.netease.nim.demo.team.TeamAVChatHelper;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
 import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
+import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.session.SessionCustomization;
 import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
@@ -256,6 +259,17 @@ public class SessionHelper {
 
     private static SessionCustomization getTeamCustomization() {
         if (teamCustomization == null) {
+
+            // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
+            final TeamAVChatAction avChatAction = new TeamAVChatAction(AVChatType.VIDEO);
+            TeamAVChatHelper.sharedInstance().registerObserver(true);
+
+            ArrayList<BaseAction> actions = new ArrayList<>();
+            actions.add(avChatAction);
+            actions.add(new GuessAction());
+            actions.add(new FileAction());
+            actions.add(new TipAction());
+
             teamCustomization = new SessionCustomization() {
                 @Override
                 public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -268,6 +282,13 @@ public class SessionHelper {
                                 activity.finish(); // 退出or解散群直接退出多人会话
                             }
                         }
+                    } else if (requestCode == TeamRequestCode.REQUEST_TEAM_VIDEO) {
+                        if (resultCode == Activity.RESULT_OK) {
+                            ArrayList<String> selectedAccounts = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
+                            avChatAction.onSelectedAccountsResult(selectedAccounts);
+                        } else {
+                            avChatAction.onSelectedAccountFail();
+                        }
                     }
                 }
 
@@ -277,11 +298,6 @@ public class SessionHelper {
                 }
             };
 
-            // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
-            ArrayList<BaseAction> actions = new ArrayList<>();
-            actions.add(new GuessAction());
-            actions.add(new FileAction());
-            actions.add(new TipAction());
             teamCustomization.actions = actions;
 
             // 定制ActionBar右边的按钮，可以加多个

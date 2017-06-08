@@ -1,6 +1,6 @@
 apply plugin: 'com.android.application'
 
-def getGitVersion() {
+def static getGitVersion() {
     try {
         return 'git rev-parse --short HEAD'.execute().text.trim()
     } catch (Throwable th) {
@@ -9,11 +9,10 @@ def getGitVersion() {
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion buildToolsVer
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
 
     defaultConfig {
-
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         buildConfigField "String", "GIT_REVISION", "\"${getGitVersion()}\""
@@ -43,6 +42,7 @@ android {
         }
 
         release {
+            shrinkResources true
             minifyEnabled true
             zipAlignEnabled true
             proguardFile('proguard.cfg')
@@ -50,6 +50,7 @@ android {
             manifestPlaceholders = [AMAP_KEY: "ee20324fba1c7f4ad7a4a207e7f08e8d"]
         }
     }
+
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -69,11 +70,13 @@ android {
         checkReleaseBuilds false
         abortOnError false
     }
+
     dexOptions {
         preDexLibraries false
         jumboMode true
         javaMaxHeapSize "4g"
     }
+
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'

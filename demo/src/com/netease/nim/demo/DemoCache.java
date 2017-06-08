@@ -24,6 +24,8 @@ public class DemoCache {
         return account;
     }
 
+    private static boolean mainTaskLaunching;
+
     public static void setAccount(String account) {
         DemoCache.account = account;
         NimUIKit.setAccount(account);
@@ -43,5 +45,13 @@ public class DemoCache {
 
     public static void setContext(Context context) {
         DemoCache.context = context.getApplicationContext();
+    }
+
+    public static void setMainTaskLaunching(boolean mainTaskLaunching) {
+        DemoCache.mainTaskLaunching = mainTaskLaunching;
+    }
+
+    public static boolean isMainTaskLaunching() {
+        return mainTaskLaunching;
     }
 }

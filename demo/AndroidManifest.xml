@@ -2,8 +2,8 @@
 <manifest package="com.netease.nim.demo"
           xmlns:android="http://schemas.android.com/apk/res/android"
           android:installLocation="auto"
-          android:versionCode="34"
-          android:versionName="3.7.0">
+          android:versionCode="35"
+          android:versionName="3.8.0">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
@@ -280,6 +280,13 @@
             android:theme="@style/FullScreenTheme"
             android:windowSoftInputMode="stateAlwaysHidden"/>
 
+        <activity
+            android:name=".teamavchat.activity.TeamAVChatActivity"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+
         <!-- 白板 -->
         <activity
             android:name=".rts.activity.RTSActivity"
@@ -384,25 +391,6 @@
                 <action android:name="android.intent.action.PHONE_STATE"/>
             </intent-filter>
         </receiver>
-
-        <!-- cosine -->
-        <service
-            android:name="com.netease.cosine.core.CosineService"
-            android:process=":cosine"></service>
-
-        <receiver
-            android:name="com.netease.cosine.target.CosineReceiver"
-            android:exported="true"
-            android:process=":cosine"></receiver>
-
-        <!-- cosine target SDK integrated -->
-        <meta-data
-            android:name="com.netease.cosine.target"
-            android:value=""/>
-        <meta-data
-            android:name="com.netease.cosine.target.receiver"
-            android:value="com.netease.nimlib.service.NimReceiver"/>
-
 
         <!-- 小米推送配置 -->
         <service

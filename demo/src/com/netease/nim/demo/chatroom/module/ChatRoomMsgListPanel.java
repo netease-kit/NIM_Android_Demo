@@ -194,11 +194,7 @@ public class ChatRoomMsgListPanel {
         private RequestCallback<List<ChatRoomMessage>> callback = new RequestCallbackWrapper<List<ChatRoomMessage>>() {
             @Override
             public void onResult(int code, List<ChatRoomMessage> messages, Throwable exception) {
-                if (messages != null) {
-                    onMessageLoaded(messages);
-                } else {
-                    adapter.fetchMoreEnd(true);
-                }
+                onMessageLoaded(messages);
 
                 fetching = false;
             }
@@ -231,10 +227,10 @@ public class ChatRoomMsgListPanel {
             // 逆序
             Collections.reverse(messages);
             // 加入到列表中
-            if (count <= 0) {
-                adapter.fetchMoreEnd(true);
+            if (count < LOAD_MESSAGE_COUNT) {
+                adapter.fetchMoreEnd(messages, true);
             } else {
-                adapter.fetchMoreComplete(messageListView, messages);
+                adapter.fetchMoreComplete(messages);
             }
 
             // 如果是第一次加载，updateShowTimeItem返回的就是lastShowTimeItem

@@ -10,11 +10,10 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <com.netease.nim.uikit.common.ui.imageview.ImageViewEx
+        <ImageView
             android:id="@+id/cover_image"
             android:layout_width="match_parent"
             android:layout_height="100dip"
-            android:layout_centerHorizontal="true"
             android:layout_gravity="center_vertical"
             android:scaleType="centerCrop"/>
 

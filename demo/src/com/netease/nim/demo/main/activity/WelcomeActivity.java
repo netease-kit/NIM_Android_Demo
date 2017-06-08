@@ -36,9 +36,9 @@ public class WelcomeActivity extends UI {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_welcome);
 
+        DemoCache.setMainTaskLaunching(true);
         if (savedInstanceState != null) {
             setIntent(new Intent()); // 从堆栈恢复，不再重复解析之前的intent
         }
@@ -95,6 +95,7 @@ public class WelcomeActivity extends UI {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        DemoCache.setMainTaskLaunching(false);
     }
 
     @Override
@@ -172,4 +173,5 @@ public class WelcomeActivity extends UI {
         MainActivity.start(WelcomeActivity.this, intent);
         finish();
     }
+
 }
