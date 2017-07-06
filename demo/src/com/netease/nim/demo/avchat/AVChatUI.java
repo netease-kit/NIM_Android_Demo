@@ -24,12 +24,14 @@ import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatAudioEffectMode;
 import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
+import com.netease.nimlib.sdk.avchat.constant.AVChatMediaCodecMode;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.constant.AVChatUserRole;
+import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatNotifyOption;
-import com.netease.nimlib.sdk.avchat.constant.AVChatMediaCodecMode;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
+import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -76,6 +78,8 @@ public class AVChatUI implements AVChatUIListener {
 
     List<Pair<String, Boolean>> recordList = new LinkedList<Pair<String, Boolean>>();
 
+    private AVChatCameraCapturer mVideoCapturer;
+
     public interface AVChatListener {
         void uiExit();
     }
@@ -108,6 +112,7 @@ public class AVChatUI implements AVChatUIListener {
     private int deviceRotationOffset;
     private boolean audioHighQuality;
     private boolean audioDtx;
+    private boolean webrtcCompat;
 
     private void configFromPreference(SharedPreferences preferences) {
         videoCropRatio = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_vie_crop_ratio_key), "0"));
@@ -130,6 +135,7 @@ public class AVChatUI implements AVChatUIListener {
         deviceRotationOffset = Integer.parseInt(TextUtils.isDigitsOnly(value3) && !TextUtils.isEmpty(value3) ? value3 : 0 + "");
         audioHighQuality = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_high_quality_key), false);
         audioDtx = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_dtx_key), true);
+        webrtcCompat = preferences.getBoolean(context.getString(R.string.nrtc_setting_other_webrtc_compat_key), true);
     }
 
 
@@ -230,7 +236,7 @@ public class AVChatUI implements AVChatUIListener {
      */
     public boolean initiation() {
         AVChatProfile.getInstance().setAVChatting(true);
-        avChatAudio = new AVChatAudio(context,root.findViewById(R.id.avchat_audio_layout), this, this);
+        avChatAudio = new AVChatAudio(context, root.findViewById(R.id.avchat_audio_layout), this, this);
         avChatVideo = new AVChatVideo(context, root.findViewById(R.id.avchat_video_layout), this, this);
         avChatSurface = new AVChatSurface(context, this, root.findViewById(R.id.avchat_surface_layout));
 
@@ -271,10 +277,15 @@ public class AVChatUI implements AVChatUIListener {
 
         AVChatNotifyOption notifyOption = new AVChatNotifyOption();
         notifyOption.extendMessage = "extra_data";
+        notifyOption.webRTCCompat = webrtcCompat;
 //        默认forceKeepCalling为true，开发者如果不需要离线持续呼叫功能可以将forceKeepCalling设为false
 //        notifyOption.forceKeepCalling = false;
 
         AVChatManager.getInstance().enableRtc();
+        if (mVideoCapturer == null) {
+            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+            AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
+        }
         this.callingState = (callTypeEnum == AVChatType.VIDEO ? CallStateEnum.VIDEO : CallStateEnum.AUDIO);
         AVChatManager.getInstance().setParameters(avChatParameters);
         if (callTypeEnum == AVChatType.VIDEO) {
@@ -305,24 +316,19 @@ public class AVChatUI implements AVChatUIListener {
             @Override
             public void onFailed(int code) {
                 LogUtil.d(TAG, "avChat call failed code->" + code);
-                DialogMaker.dismissProgressDialog();
-
-                AVChatSoundPlayer.instance().stop();
 
                 if (code == ResponseCode.RES_FORBIDDEN) {
                     Toast.makeText(context, R.string.avchat_no_permission, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(context, R.string.avchat_call_failed, Toast.LENGTH_SHORT).show();
                 }
-                closeSessions(-1);
+                handlCallFailed();
             }
 
             @Override
             public void onException(Throwable exception) {
                 LogUtil.d(TAG, "avChat call onException->" + exception);
-                DialogMaker.dismissProgressDialog();
-
-                AVChatSoundPlayer.instance().stop();
+                handlCallFailed();
             }
         });
 
@@ -331,6 +337,18 @@ public class AVChatUI implements AVChatUIListener {
         } else {
             onCallStateChange(CallStateEnum.OUTGOING_VIDEO_CALLING);
         }
+    }
+
+    private void handlCallFailed() {
+        if (callingState == CallStateEnum.VIDEO) {
+            AVChatManager.getInstance().stopVideoPreview();
+            AVChatManager.getInstance().disableVideo();
+        }
+        AVChatManager.getInstance().disableRtc();
+        DialogMaker.dismissProgressDialog();
+
+        AVChatSoundPlayer.instance().stop();
+        closeSessions(-1);
     }
 
     /**
@@ -448,7 +466,7 @@ public class AVChatUI implements AVChatUIListener {
         AVChatManager.getInstance().hangUp2(avChatData.getChatId(), new AVChatCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                LogUtil.d(TAG, "reject onSuccess-" );
+                LogUtil.d(TAG, "reject onSuccess-");
             }
 
             @Override
@@ -503,6 +521,10 @@ public class AVChatUI implements AVChatUIListener {
         }
 
         AVChatManager.getInstance().enableRtc();
+        if (mVideoCapturer == null) {
+            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+            AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
+        }
         AVChatManager.getInstance().setParameters(avChatParameters);
         if (callingState == CallStateEnum.VIDEO_CONNECTING) {
             AVChatManager.getInstance().enableVideo();
@@ -526,15 +548,25 @@ public class AVChatUI implements AVChatUIListener {
                     Toast.makeText(context, "建立连接失败", Toast.LENGTH_SHORT).show();
                 }
                 LogUtil.e(TAG, "accept onFailed->" + code);
-                closeSessions(AVChatExitCode.CANCEL);
+                handleAcceptFailed();
             }
 
             @Override
             public void onException(Throwable exception) {
                 LogUtil.d(TAG, "accept exception->" + exception);
+                handleAcceptFailed();
             }
         });
         AVChatSoundPlayer.instance().stop();
+    }
+
+    private void handleAcceptFailed() {
+        if (callingState == CallStateEnum.VIDEO_CONNECTING) {
+            AVChatManager.getInstance().stopVideoPreview();
+            AVChatManager.getInstance().disableVideo();
+        }
+        AVChatManager.getInstance().disableRtc();
+        closeSessions(AVChatExitCode.CANCEL);
     }
 
     /*************************** AVChatUIListener ******************************/
@@ -764,7 +796,7 @@ public class AVChatUI implements AVChatUIListener {
 
     @Override
     public void switchCamera() {
-        AVChatManager.getInstance().switchCamera(); // 切换摄像头（主要用于前置和后置摄像头切换）
+        mVideoCapturer.switchCamera(); // 切换摄像头（主要用于前置和后置摄像头切换）
     }
 
     @Override

@@ -8,14 +8,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
 import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
+import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nimlib.sdk.avchat.AVChatManager;
+import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 
 /**
  * 视频管理器， 视频界面初始化和相关管理
@@ -227,7 +227,7 @@ public class AVChatVideo implements View.OnClickListener, ToggleListener{
      */
     private void enableToggle() {
         if (shouldEnableToggle) {
-            if (manager.canSwitchCamera() && AVChatManager.getInstance().hasMultipleCameras())
+            if (manager.canSwitchCamera() && AVChatCameraCapturer.hasMultipleCameras())
                 switchCameraToggle.enable();
             closeCameraToggle.enable();
             muteToggle.enable();
@@ -238,7 +238,7 @@ public class AVChatVideo implements View.OnClickListener, ToggleListener{
 
     private void enableCameraToggle() {
         if (shouldEnableToggle) {
-            if (manager.canSwitchCamera() && AVChatManager.getInstance().hasMultipleCameras())
+            if (manager.canSwitchCamera() && AVChatCameraCapturer.hasMultipleCameras())
                 switchCameraToggle.enable();
         }
     }

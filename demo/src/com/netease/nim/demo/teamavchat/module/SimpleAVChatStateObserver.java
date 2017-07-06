@@ -2,6 +2,8 @@ package com.netease.nim.demo.teamavchat.module;
 
 import com.netease.nimlib.sdk.avchat.AVChatStateObserver;
 import com.netease.nimlib.sdk.avchat.model.AVChatAudioFrame;
+import com.netease.nimlib.sdk.avchat.model.AVChatNetworkStats;
+import com.netease.nimlib.sdk.avchat.model.AVChatSessionStats;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoFrame;
 
 import java.util.Map;
@@ -77,9 +79,10 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
     }
 
     @Override
-    public void onNetworkQuality(String user, int value) {
+    public void onNetworkQuality(String user, int quality, AVChatNetworkStats stats) {
 
     }
+
 
     @Override
     public void onCallEstablished() {
@@ -102,7 +105,7 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
     }
 
     @Override
-    public boolean onVideoFrameFilter(AVChatVideoFrame frame) {
+    public boolean onVideoFrameFilter(AVChatVideoFrame frame,boolean maybeDualInput) {
         return false;
     }
 
@@ -123,6 +126,16 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
 
     @Override
     public void onAudioMixingEvent(int event) {
+
+    }
+
+    @Override
+    public void onSessionStats(AVChatSessionStats sessionStats) {
+
+    }
+
+    @Override
+    public void onLiveEvent(int event) {
 
     }
 }

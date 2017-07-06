@@ -47,9 +47,12 @@ import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.constant.AVChatUserRole;
 import com.netease.nimlib.sdk.avchat.constant.AVChatVideoCropRatio;
 import com.netease.nimlib.sdk.avchat.constant.AVChatVideoScalingType;
+import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
+import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturer;
+import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
 import com.netease.nrtc.video.render.IVideoRender;
 
@@ -74,6 +77,7 @@ import static com.netease.nim.demo.teamavchat.module.TeamAVChatItem.TYPE.TYPE_DA
  * <li>打开视频模块 {@link AVChatManager#enableVideo()}。</li>
  * <li>设置本地预览画布 {@link AVChatManager#setupLocalVideoRender(IVideoRender, boolean, int)} 。</li>
  * <li>设置视频通话可选参数[可以不设置] {@link AVChatManager#setParameter(AVChatParameters.Key, Object)}, {@link AVChatManager#setParameters(AVChatParameters)}。</li>
+ * <li>创建并设置本地视频预览源 {@link AVChatVideoCapturerFactory#createCameraCapturer()}, {@link AVChatManager#setupVideoCapturer(AVChatVideoCapturer)}</li>
  * <li>打开本地视频预览 {@link AVChatManager#startVideoPreview()}。</li>
  * <li>加入房间 {@link AVChatManager#joinRoom2(String, AVChatType, AVChatCallback)}。</li>
  * <li>开始多人会议或者互动直播，以及各种音视频操作。</li>
@@ -132,7 +136,7 @@ public class TeamAVChatActivity extends UI {
     // AVCAHT OBSERVER
     private AVChatStateObserver stateObserver;
     private Observer<AVChatControlEvent> notificationObserver;
-
+    private AVChatCameraCapturer mVideoCapturer;
     private static boolean needFinish = true;
 
     private TeamAVChatNotification notifier;
@@ -356,6 +360,9 @@ public class TeamAVChatActivity extends UI {
         AVChatManager.getInstance().enableRtc();
         AVChatManager.getInstance().enableVideo();
         LogUtil.i(TAG, "start rtc done");
+
+        mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+        AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
 
         // state observer
         if (stateObserver != null) {
@@ -662,7 +669,7 @@ public class TeamAVChatActivity extends UI {
             switch (v.getId()) {
                 case R.id.avchat_switch_camera:
                     // 切换前后摄像头
-                    AVChatManager.getInstance().switchCamera();
+                    mVideoCapturer.switchCamera();
                     break;
                 case R.id.avchat_enable_video:
                     // 视频

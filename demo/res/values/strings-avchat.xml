@@ -51,6 +51,6 @@
     <string name="t_avchat_not_start_with_less_member">无法发起，人数少于2人</string>
     <string name="t_avchat_start">发起了视频聊天</string>
     <string name="t_avchat_create_room_fail">创建房间失败</string>
-    <string name="t_avchat_push_content">"正在呼叫您"</string>
+    <string name="t_avchat_push_content">"[网络通话]"</string>
     <string name="t_avchat_join_fail_not_exist">"加入房间失败，房间不存在"</string>
 </resources>

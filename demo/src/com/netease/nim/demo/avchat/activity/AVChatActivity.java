@@ -34,7 +34,9 @@ import com.netease.nimlib.sdk.avchat.model.AVChatCalleeAckEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatCommonEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
+import com.netease.nimlib.sdk.avchat.model.AVChatNetworkStats;
 import com.netease.nimlib.sdk.avchat.model.AVChatOnlineAckEvent;
+import com.netease.nimlib.sdk.avchat.model.AVChatSessionStats;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoFrame;
 
 import java.util.Map;
@@ -568,7 +570,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onNetworkQuality(String user, int value) {
+    public void onNetworkQuality(String user, int quality, AVChatNetworkStats stats) {
 
     }
 
@@ -603,7 +605,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public boolean onVideoFrameFilter(AVChatVideoFrame frame) {
+    public boolean onVideoFrameFilter(AVChatVideoFrame frame,boolean maybeDualInput) {
         return true;
     }
 
@@ -624,6 +626,16 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onAudioMixingEvent(int event) {
+
+    }
+
+    @Override
+    public void onSessionStats(AVChatSessionStats sessionStats) {
+
+    }
+
+    @Override
+    public void onLiveEvent(int event) {
 
     }
 
