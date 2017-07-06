@@ -38,13 +38,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/common/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/common/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/common/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/common/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/common/debug" isTestSource="true" generated="true" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/common/debug" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/common/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/assets" type="java-test-resource" />
@@ -52,6 +45,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/common/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/common/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/common/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/androidTest/common/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/common/debug" isTestSource="true" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/common/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/common/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/assets" type="java-resource" />
@@ -129,7 +129,7 @@
     <orderEntry type="jdk" jdkName="Android API 25 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" scope="TEST" name="multidex-instrumentation-1.0.1" level="project" />
-    <orderEntry type="library" exported="" name="nrtc-3.9.0" level="project" />
+    <orderEntry type="library" exported="" name="nrtc-3.9.1" level="project" />
     <orderEntry type="library" exported="" name="design-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="transition-25.0.1" level="project" />
