@@ -1,0 +1,18 @@
+<template id="order_list" version="0.1" params="a=1;b=2">
+	<LinearLayout>
+		<text name="hj1">您想咨询的订单是哪个呢？</text>
+	</LinearLayout>
+	<LinearLayout>
+    	<image name="hj2" url="http://www.163.com/1.jpg"/>
+    </LinearLayout>
+    <LinearLayout>
+		<link type="block" style="button" target="block_id_1" params="orderId=4512" >
+			<image name="p_img1" url="xxx1.jpg"/>
+			<text name="p_name">ZARA女装加大码飞行夹克 08073243800</text>
+			<text name="p_price">2499</text>
+			<text name="p_count">1</text>
+			<text name="p_status">待付款</text>
+			<image name="p_img2" url="xxx2.jpg"/>
+		</link>
+    </LinearLayout>
+</template>

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.BlackListActivity;
+import com.netease.nim.demo.main.activity.RobotListActivity;
 import com.netease.nim.demo.main.activity.SystemMessageActivity;
 import com.netease.nim.demo.main.activity.TeamListActivity;
 import com.netease.nim.demo.main.helper.SystemMessageUnreadManager;
@@ -47,8 +48,9 @@ public class ContactListFragment extends MainTabFragment {
     /**
      * ******************************** 功能项定制 ***********************************
      */
-    public final static class FuncItem extends AbsContactItem {
+    final static class FuncItem extends AbsContactItem {
         static final FuncItem VERIFY = new FuncItem();
+        static final FuncItem ROBOT = new FuncItem();
         static final FuncItem NORMAL_TEAM = new FuncItem();
         static final FuncItem ADVANCED_TEAM = new FuncItem();
         static final FuncItem BLACK_LIST = new FuncItem();
@@ -97,6 +99,9 @@ public class ContactListFragment extends MainTabFragment {
                             updateUnreadNum(item.getUnread());
                         }
                     });
+                } else if (item == ROBOT) {
+                    funcName.setText("智能机器人");
+                    image.setImageResource(R.drawable.ic_robot);
                 } else if (item == NORMAL_TEAM) {
                     funcName.setText("讨论组");
                     image.setImageResource(R.drawable.ic_secretary);
@@ -131,6 +136,7 @@ public class ContactListFragment extends MainTabFragment {
         static List<AbsContactItem> provide() {
             List<AbsContactItem> items = new ArrayList<AbsContactItem>();
             items.add(VERIFY);
+            items.add(ROBOT);
             items.add(NORMAL_TEAM);
             items.add(ADVANCED_TEAM);
             items.add(BLACK_LIST);
@@ -142,6 +148,8 @@ public class ContactListFragment extends MainTabFragment {
         static void handle(Context context, AbsContactItem item) {
             if (item == VERIFY) {
                 SystemMessageActivity.start(context);
+            } else if (item == ROBOT) {
+                RobotListActivity.start(context);
             } else if (item == NORMAL_TEAM) {
                 TeamListActivity.start(context, ItemTypes.TEAMS.NORMAL_TEAM);
             } else if (item == ADVANCED_TEAM) {

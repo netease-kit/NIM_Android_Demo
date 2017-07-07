@@ -58,6 +58,7 @@ public class WelcomeActivity extends UI {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    customSplash = false;
                     if (canAutoLogin()) {
                         onIntent();
                     } else {
@@ -83,7 +84,9 @@ public class WelcomeActivity extends UI {
          * 场景：点击通知栏跳转到此，会收到Intent
          */
         setIntent(intent);
-        onIntent();
+        if(!customSplash){
+            onIntent();
+        }
     }
 
     @Override

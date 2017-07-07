@@ -25,7 +25,7 @@ public class DemoMixPushMessageHandler implements MixPushMessageHandler {
     @Override
     public boolean onNotificationClicked(Context context, Map<String, String> payload) {
 
-        LogUtil.i(DemoMixPushMessageHandler.class.getSimpleName(), "rev miPushMessage payload " + payload);
+        LogUtil.i(DemoMixPushMessageHandler.class.getSimpleName(), "rev pushMessage payload " + payload);
 
         String sessionId = payload.get("sessionID");
         String type = payload.get("sessionType");

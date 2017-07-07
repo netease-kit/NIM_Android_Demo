@@ -414,6 +414,9 @@ public class OnlineStateEventManager {
         if (!enable) {
             return;
         }
+        if (OnlineStateEventSubscribe.subscribeFilter(account)) {
+            return;
+        }
         // 未曾订阅过
         if (!OnlineStateEventCache.hasSubscribed(account)) {
             List<String> accounts = new ArrayList<>(1);

@@ -84,8 +84,15 @@ android {
 
 }
 
+repositories {
+    flatDir {
+        dirs 'aars'
+    }
+}
+
 dependencies {
-    compile fileTree(include: '*.jar', dir: 'libs')
+    compile fileTree(include: '*.jar', dir: 'libs')
+    compile(name: 'HMS-SDK-2.4.0.300', ext: 'aar')
     compile project(path: ':uikit')
     compile 'com.netease.nimlib:jsbridge:1.3.1'
     compile 'com.android.support:multidex:1.0.1'

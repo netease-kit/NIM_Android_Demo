@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.contact.activity.RobotProfileActivity;
 import com.netease.nim.demo.contact.activity.UserProfileActivity;
 import com.netease.nim.demo.session.action.AVChatAction;
 import com.netease.nim.demo.session.action.FileAction;
@@ -37,6 +38,7 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderTip;
 import com.netease.nim.demo.team.TeamAVChatHelper;
 import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.cache.RobotInfoCache;
 import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
@@ -64,6 +66,7 @@ import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.robot.model.RobotAttachment;
 import com.netease.nimlib.sdk.team.model.Team;
 
 import java.util.ArrayList;
@@ -81,6 +84,7 @@ public class SessionHelper {
     private static SessionCustomization p2pCustomization;
     private static SessionCustomization teamCustomization;
     private static SessionCustomization myP2pCustomization;
+    private static SessionCustomization robotCustomization;
 
     private static NIMPopupMenu popupMenu;
     private static List<PopupMenuItem> menuItemList;
@@ -115,7 +119,11 @@ public class SessionHelper {
 
     public static void startP2PSession(Context context, String account, IMMessage anchor) {
         if (!DemoCache.getAccount().equals(account)) {
-            NimUIKit.startP2PSession(context, account, anchor);
+            if (RobotInfoCache.getInstance().getRobotByAccount(account) != null) {
+                NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getRobotCustomization(), anchor);
+            } else {
+                NimUIKit.startP2PSession(context, account, anchor);
+            }
         } else {
             NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getMyP2pCustomization(), anchor);
         }
@@ -184,9 +192,11 @@ public class SessionHelper {
             SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
                 @Override
                 public void onClick(Context context, View view, String sessionId) {
+
                     MessageInfoActivity.startActivity(context, sessionId); //打开聊天信息
                 }
             };
+
 
             infoButton.iconId = R.drawable.nim_ic_message_actionbar_p2p_add;
 
@@ -255,6 +265,51 @@ public class SessionHelper {
             myP2pCustomization.buttons = buttons;
         }
         return myP2pCustomization;
+    }
+
+    private static SessionCustomization getRobotCustomization() {
+        if (robotCustomization == null) {
+            robotCustomization = new SessionCustomization() {
+                // 由于需要Activity Result， 所以重载该函数。
+                @Override
+                public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
+                    super.onActivityResult(activity, requestCode, resultCode, data);
+
+                }
+
+                @Override
+                public MsgAttachment createStickerAttachment(String category, String item) {
+                    return null;
+                }
+            };
+
+            // 定制ActionBar右边的按钮，可以加多个
+            ArrayList<SessionCustomization.OptionsButton> buttons = new ArrayList<>();
+            SessionCustomization.OptionsButton cloudMsgButton = new SessionCustomization.OptionsButton() {
+                @Override
+                public void onClick(Context context, View view, String sessionId) {
+                    initPopuptWindow(context, view, sessionId, SessionTypeEnum.P2P);
+                }
+            };
+            cloudMsgButton.iconId = R.drawable.nim_ic_messge_history;
+
+            SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
+                @Override
+                public void onClick(Context context, View view, String sessionId) {
+
+                    RobotProfileActivity.start(context, sessionId); //打开聊天信息
+                }
+            };
+
+
+            infoButton.iconId = R.drawable.nim_ic_actionbar_robot_info;
+
+            buttons.add(cloudMsgButton);
+            buttons.add(infoButton);
+            robotCustomization.buttons = buttons;
+        }
+
+        return robotCustomization;
     }
 
     private static SessionCustomization getTeamCustomization() {
@@ -348,6 +403,13 @@ public class SessionHelper {
             @Override
             public void onAvatarClicked(Context context, IMMessage message) {
                 // 一般用于打开用户资料页面
+                if (message.getMsgType() == MsgTypeEnum.robot && message.getDirect() == MsgDirectionEnum.In) {
+                    RobotAttachment attachment = (RobotAttachment) message.getAttachment();
+                    if (attachment.isRobotSend()) {
+                        RobotProfileActivity.start(context, attachment.getFromRobotAccount());
+                        return;
+                    }
+                }
                 UserProfileActivity.start(context, message.getFromAccount());
             }
 
@@ -378,6 +440,8 @@ public class SessionHelper {
                         || message.getAttachment() instanceof RTSAttachment)) {
                     // 白板消息和阅后即焚消息 不允许转发
                     return true;
+                } else if (message.getMsgType() == MsgTypeEnum.robot && message.getAttachment() != null && ((RobotAttachment) message.getAttachment()).isRobotSend()) {
+                    return true; // 如果是机器人发送的消息 不支持转发
                 }
                 return false;
             }

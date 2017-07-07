@@ -255,6 +255,10 @@
     <string name="js_bridge">NIM JS Bridge</string>
     <string name="js_bridge_demonstration">Js Bridge演示</string>
 
+    <!--机器人-->
+    <string name="nim_robot_title">云小信机器人</string>
+    <string name="robot_start_chat">开始对话</string>
+
     <!-- NRTC -->
     <string name="nrtc_settings">网络通话设置</string>
     <string name="nrtc_setting_net">网络</string>

@@ -29,6 +29,12 @@ public class DemoOnlineStateContentProvider implements OnlineStateContentProvide
         if (account == null || account.equals(DemoCache.getAccount())) {
             return "";
         }
+
+        // 被过滤掉的直接显示在线，如机器人
+        if (OnlineStateEventSubscribe.subscribeFilter(account)) {
+            return "在线";
+        }
+
         // 检查是否订阅过
         OnlineStateEventManager.checkSubscribe(account);
 
