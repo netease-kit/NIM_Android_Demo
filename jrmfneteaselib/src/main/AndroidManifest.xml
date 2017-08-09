@@ -1,0 +1,150 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.jrmf360.neteaselib">
+
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- 要检查用户权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application>
+
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.AddCardActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.AddCardFirsstActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.AddCardSecondActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.BankCardListActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.OpenRpActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/Jrmf_b_DialogTheme"/>
+
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.EnBrowserActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:theme="@android:style/Theme.Translucent"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.PayTypeActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/jrmf_b_dialog"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TransPayActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"
+            android:launchMode="singleTask"
+            android:theme="@style/jrmf_b_dialog"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.CertificationActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.CheckUserInfoActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.SendGroupEnvelopesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.SendSingleEnvelopesActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.SettingPswdActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.RpDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.rp.ui.MyRpActivity"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TradeHistoryActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TradeDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.CheckAuthActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.ResetPwdActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TransAccountActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TransSuccActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity
+            android:name="com.jrmf360.neteaselib.rp.ui.TransDetailActivity"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <!-- 支付宝 配置开始 -->
+
+
+
+        <!--钱包页面-->
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.MyWalletActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.AccountInfoActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.TradeHistoryActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.SecureSettingActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.SetPayPwdActivity"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.IdentityAuthenActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.UpdatePwdActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.GetPwdActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.SupportBankCardActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.BankSettingActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.AddCardSecondActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.AddCardFirstActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.RechargeActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.GetDepositActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.PwdCheckActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.MyRpActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.SelectSubBankActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.WebViewActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.TradeDetailActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+        <activity android:name="com.jrmf360.neteaselib.wallet.ui.RpDetailActivity"
+                  android:configChanges="keyboardHidden|orientation|screenSize"/>
+
+        <!-- 支付宝h5支付页面 -->
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+        <!-- 支付宝 配置结束 -->
+
+    </application>
+
+</manifest>
