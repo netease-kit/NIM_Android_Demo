@@ -1,6 +1,7 @@
 package com.netease.nim.demo.session.action;
 
 import android.content.Intent;
+import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -117,7 +118,8 @@ public class TeamAVChatAction extends AVChatAction {
         final String roomName = StringUtil.get32UUID();
         LogUtil.ui("create room " + roomName);
         // 创建房间
-        AVChatManager.getInstance().createRoom(roomName, null, new AVChatCallback<AVChatChannelInfo>() {
+        boolean webRTCCompat = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getActivity().getString(R.string.nrtc_setting_other_webrtc_compat_key), true);
+        AVChatManager.getInstance().createRoom(roomName, null, webRTCCompat, new AVChatCallback<AVChatChannelInfo>() {
             @Override
             public void onSuccess(AVChatChannelInfo avChatChannelInfo) {
                 LogUtil.ui("create room " + roomName + " success !");

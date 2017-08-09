@@ -49,7 +49,7 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
     }
 
     @Override
-    public void onJoinedChannel(int code, String audioFile, String videoFile) {
+    public void onJoinedChannel(int code, String audioFile, String videoFile, int i) {
 
     }
 

@@ -186,6 +186,10 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
     }
 
     @Override
+    public void onItemFooterClick(IMMessage message) {
+    }
+
+    @Override
     public boolean isLongClickEnabled() {
         return !inputPanel.isRecording();
     }

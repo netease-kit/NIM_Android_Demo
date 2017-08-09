@@ -20,13 +20,19 @@
         android:layout_height="match_parent"
         android:visibility="gone" />
 
-
     <include
         android:id="@+id/avchat_video_bottom_control"
         layout="@layout/video_call_bottom_switch_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true" />
+
+    <include
+        android:id="@+id/avchat_video_face_unity"
+        layout="@layout/faceu_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/avchat_video_bottom_control"/>
 
     <include
         android:id="@+id/avchat_record_layout"

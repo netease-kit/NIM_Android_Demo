@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:id="@+id/packet_ll"
+              android:layout_width="wrap_content"
+              android:layout_height="wrap_content"
+              android:layout_gravity="center_horizontal"
+              android:background="@drawable/rp_open_holder_bg"
+              android:gravity="center"
+              android:orientation="horizontal"
+              android:paddingBottom="3dip"
+              android:paddingTop="3dip">
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:src="@drawable/red_packet_open_tip"/>
+
+    <TextView
+        android:id="@+id/packet_message"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:ellipsize="middle"
+        android:gravity="center"
+        android:maxLines="2"
+        android:text="11"
+        android:textColor="@color/white"
+        android:textSize="12sp"/>
+
+</LinearLayout>

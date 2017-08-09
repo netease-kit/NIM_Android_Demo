@@ -157,6 +157,7 @@ public class LoginActivity extends UI implements OnKeyListener {
                     client = "网页端";
                     break;
                 case ClientType.Windows:
+                case ClientType.MAC:
                     client = "电脑端";
                     break;
                 case ClientType.REST:

@@ -2,18 +2,24 @@ package com.netease.nim.demo.avchat.activity;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.faceunity.FaceU;
+import com.faceunity.utils.VersionUtil;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatNotification;
 import com.netease.nim.demo.avchat.AVChatProfile;
-import com.netease.nim.demo.avchat.AVChatUI;
 import com.netease.nim.demo.avchat.AVChatSoundPlayer;
+import com.netease.nim.demo.avchat.AVChatSurface;
+import com.netease.nim.demo.avchat.AVChatUI;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.receiver.PhoneCallStateObserver;
 import com.netease.nim.uikit.common.activity.UI;
@@ -45,7 +51,7 @@ import java.util.Map;
  * 音视频界面
  * Created by hzxuwen on 2015/4/21.
  */
-public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVChatStateObserver {
+public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVChatStateObserver, AVChatSurface.TouchZoneCallback {
     // constant
     private static final String TAG = "AVChatActivity";
     private static final String KEY_IN_CALLING = "KEY_IN_CALLING";
@@ -85,12 +91,16 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     private static boolean needFinish = true; // 若来电或去电未接通时，点击home。另外一方挂断通话。从最近任务列表恢复，则finish
     private boolean hasOnPause = false; // 是否暂停音视频
 
+    // face unity
+    private FaceU faceU;
+
     // notification
     private AVChatNotification notifier;
 
     public static void launch(Context context, String account, int callType, int source) {
         needFinish = false;
         Intent intent = new Intent();
+        intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.setClass(context, AVChatActivity.class);
         intent.putExtra(KEY_ACCOUNT, account);
         intent.putExtra(KEY_IN_CALLING, false);
@@ -122,11 +132,19 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
             finish();
             return;
         }
+
+        // 锁屏唤醒
+        dismissKeyguard();
+
         View root = LayoutInflater.from(this).inflate(R.layout.avchat_activity, null);
         setContentView(root);
+
+        // face unity
+        initFaceU();
+
         mIsInComingCall = getIntent().getBooleanExtra(KEY_IN_CALLING, false);
         avChatUI = new AVChatUI(this, root, this);
-        if (!avChatUI.initiation()) {
+        if (!avChatUI.init(this)) {
             this.finish();
             return;
         }
@@ -143,6 +161,16 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         isCallEstablished = false;
         //放到所有UI的基类里面注册，所有的UI实现onKickOut接口
         NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, true);
+    }
+
+    // 设置窗口flag，亮屏并且解锁/覆盖在锁屏界面上
+    private void dismissKeyguard() {
+        getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        );
     }
 
     @Override
@@ -175,6 +203,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         AVChatProfile.getInstance().setAVChatting(false);
         registerNetCallObserver(false);
         cancelCallingNotifier();
+        destroyFaceU();
         needFinish = true;
     }
 
@@ -249,6 +278,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
                 avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
             } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_REJECT) {
+                avChatUI.closeRtc();
                 avChatUI.closeSessions(AVChatExitCode.REJECT);
             } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_AGREE) {
                 avChatUI.isCallEstablish.set(true);
@@ -305,7 +335,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         public void onEvent(AVChatCommonEvent avChatHangUpInfo) {
 
             AVChatSoundPlayer.instance().stop();
-
+            avChatUI.closeRtc();
             avChatUI.closeSessions(AVChatExitCode.HANGUP);
             cancelCallingNotifier();
             // 如果是incoming call主叫方挂断，那么通知栏有通知
@@ -337,6 +367,9 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
                     break;
                 case ClientType.iOS:
                     client = "iOS";
+                    break;
+                case ClientType.MAC:
+                    client = "Mac";
                     break;
                 default:
                     break;
@@ -538,7 +571,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public void onJoinedChannel(int code, String audioFile, String videoFile) {
+    public void onJoinedChannel(int code, String audioFile, String videoFile, int i) {
         handleWithConnectServerResult(code);
     }
 
@@ -557,6 +590,8 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     @Override
     public void onUserLeave(String account, int event) {
         Log.d(TAG, "onUserLeave -> " + account);
+        avChatUI.closeRtc();
+        avChatUI.closeSessions(AVChatExitCode.HANGUP);
     }
 
     @Override
@@ -605,7 +640,11 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     }
 
     @Override
-    public boolean onVideoFrameFilter(AVChatVideoFrame frame,boolean maybeDualInput) {
+    public boolean onVideoFrameFilter(AVChatVideoFrame frame, boolean maybeDualInput) {
+        if (faceU != null) {
+            faceU.effect(frame.data, frame.width, frame.height, FaceU.VIDEO_FRAME_FORMAT.I420);
+        }
+
         return true;
     }
 
@@ -651,5 +690,52 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         }
     };
 
+
+    /**
+     * ******************************** face unity 接入 ********************************
+     */
+
+    private void initFaceU() {
+        showOrHideFaceULayout(false); // hide default
+
+        if (VersionUtil.isCompatible(Build.VERSION_CODES.JELLY_BEAN_MR2) && FaceU.hasAuthorized()) {
+            // async load FaceU
+            FaceU.createAndAttach(AVChatActivity.this, findView(R.id.avchat_video_face_unity), new FaceU.Response<FaceU>() {
+                @Override
+                public void onResult(FaceU faceU) {
+                    AVChatActivity.this.faceU = faceU;
+                    showOrHideFaceULayout(true); // show
+                }
+            });
+        }
+    }
+
+    private void destroyFaceU() {
+        if (faceU == null) {
+            return;
+        }
+
+        try {
+            faceU.destroy();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void showOrHideFaceULayout(boolean show) {
+        ViewGroup vp = findView(R.id.avchat_video_face_unity);
+        for (int i = 0; i < vp.getChildCount(); i++) {
+            vp.getChildAt(i).setVisibility(show ? View.VISIBLE : View.GONE);
+        }
+    }
+
+    @Override
+    public void onTouch() {
+        if (faceU == null) {
+            return;
+        }
+
+        faceU.showOrHideLayout();
+    }
 }
 

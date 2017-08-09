@@ -22,6 +22,8 @@ import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
 import com.netease.nim.demo.event.DemoOnlineStateContentProvider;
 import com.netease.nim.demo.event.OnlineStateEventManager;
+import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
+import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
@@ -68,18 +70,22 @@ public class NimApplication extends Application {
         super.onCreate();
 
         DemoCache.setContext(this);
-        // 注册小米推送appID 、appKey 以及在云信管理后台添加的小米推送证书名称，该逻辑放在 NIMClient init 之前
+        // 注册小米推送，参数：小米推送证书名称（需要在云信管理后台配置）、appID 、appKey，该逻辑放在 NIMClient init 之前
         NIMPushClient.registerMiPush(this, "DEMO_MI_PUSH", "2882303761517502883", "5671750254883");
-        // 注册华为推送
+        // 注册华为推送，参数：华为推送证书名称（需要在云信管理后台配置）
         NIMPushClient.registerHWPush(this, "DEMO_HW_PUSH");
-        // 注册自定义小米推送消息处理，这个是可选项
-        //NIMPushClient.registerMixPushMessageHandler(new DemoMixPushMessageHandler());
+
+        // 注册自定义推送消息处理，这个是可选项
+        NIMPushClient.registerMixPushMessageHandler(new DemoMixPushMessageHandler());
         NIMClient.init(this, getLoginInfo(), getOptions());
         ExtraOptions.provide();
         // crash handler
         AppCrashHandler.getInstance(this);
 
         if (inMainProcess()) {
+
+            // 初始化红包模块，在初始化UIKit模块之前执行
+            NIMRedPacketClient.init(this);
 
             // init pinyin
             PinYin.init(this);
@@ -178,7 +184,7 @@ public class NimApplication extends Application {
             // APP默认 StatusBarNotificationConfig 配置修改后，使其生效
             userConfig.notificationEntrance = config.notificationEntrance;
             userConfig.notificationFolded = config.notificationFolded;
-            userConfig.notificationColor = getResources().getColor(R.color.color_blue_3a9efb);
+            userConfig.notificationColor = config.notificationColor;
         }
         // 持久化生效
         UserPreferences.setStatusConfig(userConfig);

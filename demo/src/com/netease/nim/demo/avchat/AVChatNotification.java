@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v4.app.NotificationCompat;
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
@@ -105,8 +106,10 @@ public class AVChatNotification {
             if (active) {
                 buildCallingNotification();
                 notificationManager.notify(CALLING_NOTIFY_ID, callingNotification);
+                DemoCache.getNotifications().put(CALLING_NOTIFY_ID, callingNotification);
             } else {
                 notificationManager.cancel(CALLING_NOTIFY_ID);
+                DemoCache.getNotifications().remove(CALLING_NOTIFY_ID);
             }
         }
     }
@@ -116,8 +119,10 @@ public class AVChatNotification {
             if (active) {
                 buildMissCallNotification();
                 notificationManager.notify(MISS_CALL_NOTIFY_ID, missCallNotification);
+                DemoCache.getNotifications().put(MISS_CALL_NOTIFY_ID, callingNotification);
             } else {
                 notificationManager.cancel(MISS_CALL_NOTIFY_ID);
+                DemoCache.getNotifications().remove(MISS_CALL_NOTIFY_ID);
             }
         }
     }

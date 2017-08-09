@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.app.NotificationCompat;
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.teamavchat.activity.TeamAVChatActivity;
 import com.netease.nim.uikit.cache.TeamDataCache;
@@ -96,8 +97,10 @@ public class TeamAVChatNotification {
             if (active) {
                 buildCallingNotification();
                 notificationManager.notify(CALLING_NOTIFY_ID, callingNotification);
+                DemoCache.getNotifications().put(CALLING_NOTIFY_ID, callingNotification);
             } else {
                 notificationManager.cancel(CALLING_NOTIFY_ID);
+                DemoCache.getNotifications().remove(CALLING_NOTIFY_ID);
             }
         }
     }

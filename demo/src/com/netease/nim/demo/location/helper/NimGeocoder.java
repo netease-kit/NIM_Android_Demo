@@ -21,11 +21,11 @@ import com.amap.api.services.geocoder.GeocodeSearch;
 import com.amap.api.services.geocoder.RegeocodeAddress;
 import com.amap.api.services.geocoder.RegeocodeQuery;
 import com.netease.nim.demo.location.model.NimLocation;
-import com.netease.nim.demo.common.infra.DefaultTaskManager;
-import com.netease.nim.demo.common.infra.DefaultTaskWorker;
-import com.netease.nim.demo.common.infra.ManagedTask;
-import com.netease.nim.demo.common.infra.TaskExecutor;
-import com.netease.nim.demo.common.infra.TaskManager;
+import com.netease.nim.uikit.common.framework.infra.DefaultTaskManager;
+import com.netease.nim.uikit.common.framework.infra.DefaultTaskWorker;
+import com.netease.nim.uikit.common.framework.infra.ManagedTask;
+import com.netease.nim.uikit.common.framework.infra.TaskExecutor;
+import com.netease.nim.uikit.common.framework.infra.TaskManager;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 
 public class NimGeocoder {

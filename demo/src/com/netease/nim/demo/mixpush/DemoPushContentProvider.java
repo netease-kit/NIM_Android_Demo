@@ -7,14 +7,11 @@ import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nim.uikit.CustomPushContentProvider;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.model.Team;
-import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
-import com.netease.nimlib.sdk.uinfo.UserService;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.HashMap;
@@ -52,9 +49,9 @@ public class DemoPushContentProvider implements CustomPushContentProvider {
         if (message.getSessionType() == SessionTypeEnum.Team) {
             Team team = NIMClient.getService(TeamService.class).queryTeamBlock(message.getSessionId());
             String teamName = team == null ? "" : team.getName();
-            return String.format("(群：%s) ", teamName) + createDefalutContent(nick, message);
+            return String.format("(群：%s) ", teamName) + createDefaultContent(nick, message);
         } else {
-            return createDefalutContent(nick, message);
+            return createDefaultContent(nick, message);
         }
     }
 
@@ -73,7 +70,7 @@ public class DemoPushContentProvider implements CustomPushContentProvider {
         return payload;
     }
 
-    private String createDefalutContent(String nick, IMMessage message) {
+    private String createDefaultContent(String nick, IMMessage message) {
         if (message == null) {
             return null;
         }

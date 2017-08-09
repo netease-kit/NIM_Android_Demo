@@ -16,10 +16,11 @@ import android.widget.TextView;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatVideoScalingType;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
+import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 
 /**
  * 视频绘制管理
@@ -44,10 +45,11 @@ public class AVChatSurface {
     private LinearLayout smallSizePreviewLayout;
     private ImageView smallSizePreviewCoverImg;//stands for peer or local close camera
     private View largeSizePreviewCoverLayout;//stands for peer or local close camera
+    private View touchLayout;
 
     //render
-    private AVChatVideoRender smallRender;
-    private AVChatVideoRender largeRender;
+    private AVChatSurfaceViewRenderer smallRender;
+    private AVChatSurfaceViewRenderer largeRender;
 
     // state
     private boolean init = false;
@@ -64,24 +66,34 @@ public class AVChatSurface {
     private String largeAccount; // 显示在大图像的用户id
     private String smallAccount; // 显示在小图像的用户id
 
-    public AVChatSurface(Context context, AVChatUI manager, View surfaceRoot) {
+    // touch zone
+    public interface TouchZoneCallback {
+        void onTouch();
+    }
+
+    private TouchZoneCallback touchZoneCallback;
+
+    public AVChatSurface(Context context, AVChatUI manager, View surfaceRoot, TouchZoneCallback cb) {
         this.context = context;
         this.manager = manager;
         this.surfaceRoot = surfaceRoot;
         this.uiHandler = new Handler(context.getMainLooper());
-        this.smallRender = new AVChatVideoRender(context);
-        this.largeRender = new AVChatVideoRender(context);
+        this.smallRender = new AVChatSurfaceViewRenderer(context);
+        this.largeRender = new AVChatSurfaceViewRenderer(context);
+        this.touchZoneCallback = cb;
     }
 
     private void findViews() {
         if (init)
             return;
         if (surfaceRoot != null) {
+            touchLayout = surfaceRoot.findViewById(R.id.touch_zone);
+            touchLayout.setOnTouchListener(touchListener);
 
             smallSizePreviewFrameLayout = (FrameLayout) surfaceRoot.findViewById(R.id.small_size_preview_layout);
             smallSizePreviewLayout = (LinearLayout) surfaceRoot.findViewById(R.id.small_size_preview);
             smallSizePreviewCoverImg = (ImageView) surfaceRoot.findViewById(R.id.smallSizePreviewCoverImg);
-            smallSizePreviewFrameLayout.setOnTouchListener(touchListener);
+            smallSizePreviewFrameLayout.setOnTouchListener(smallPreviewTouchListener);
 
             largeSizePreviewLayout = (LinearLayout) surfaceRoot.findViewById(R.id.large_size_preview);
             largeSizePreviewCoverLayout = surfaceRoot.findViewById(R.id.notificationLayout);
@@ -91,6 +103,17 @@ public class AVChatSurface {
     }
 
     private View.OnTouchListener touchListener = new View.OnTouchListener() {
+        @Override
+        public boolean onTouch(View v, MotionEvent event) {
+            if (event.getAction() == MotionEvent.ACTION_UP && touchZoneCallback != null) {
+                touchZoneCallback.onTouch();
+            }
+
+            return true;
+        }
+    };
+
+    private View.OnTouchListener smallPreviewTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(final View v, MotionEvent event) {
             int x = (int) event.getRawX();
@@ -151,8 +174,6 @@ public class AVChatSurface {
                         largeAccount = smallAccount;
                         smallAccount = temp;
                         switchAndSetLayout();
-                    } else {
-
                     }
 
                     break;
@@ -175,7 +196,7 @@ public class AVChatSurface {
             case INCOMING_AUDIO_TO_VIDEO:
                 break;
             case AUDIO:
-                if(smallSizePreviewFrameLayout != null) {
+                if (smallSizePreviewFrameLayout != null) {
                     smallSizePreviewFrameLayout.setVisibility(View.INVISIBLE);
                 }
                 break;
@@ -227,6 +248,7 @@ public class AVChatSurface {
         }
         addIntoSmallSizePreviewLayout(smallRender);
 
+        smallSizePreviewFrameLayout.bringToFront();
     }
 
 
@@ -334,7 +356,7 @@ public class AVChatSurface {
      * @param closeType
      */
     private void showNotificationLayout(int closeType) {
-        if(largeSizePreviewCoverLayout == null) {
+        if (largeSizePreviewCoverLayout == null) {
             return;
         }
         TextView textView = (TextView) largeSizePreviewCoverLayout;
@@ -385,9 +407,9 @@ public class AVChatSurface {
         //交换画布
         //如果存在多个用户,建议用Map维护account,render关系.
         //目前只有两个用户,并且认为这两个account肯定是对的
-        AVChatVideoRender render1;
-        AVChatVideoRender render2;
-        if(user1.equals(smallAccount)) {
+        AVChatSurfaceViewRenderer render1;
+        AVChatSurfaceViewRenderer render2;
+        if (user1.equals(smallAccount)) {
             render1 = largeRender;
             render2 = smallRender;
         } else {
@@ -416,4 +438,19 @@ public class AVChatSurface {
     public boolean isLocalPreviewInSmallSize() {
         return localPreviewInSmallSize;
     }
+
+    public void closeSession(int exitCode) {
+        LogUtil.i("AVChatUI", "closeSession,init->" + init);
+        if (init) {
+            if (largeRender.getParent() != null) {
+                ((ViewGroup) largeRender.getParent()).removeView(largeRender);
+            }
+            if (smallRender.getParent() != null) {
+                ((ViewGroup) smallRender.getParent()).removeView(smallRender);
+            }
+            largeRender = null;
+            smallRender = null;
+        }
+    }
+
 }

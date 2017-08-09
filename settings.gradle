@@ -1,2 +1,4 @@
 include ':uikit' 
-include ':demo'
+include ':demo' 
+include ':faceunity' 
+include ':jrmfneteaselib'

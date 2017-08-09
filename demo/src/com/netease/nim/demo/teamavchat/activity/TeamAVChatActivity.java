@@ -51,9 +51,9 @@ import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
+import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
 import com.netease.nrtc.video.render.IVideoRender;
 
 import java.util.ArrayList;
@@ -164,7 +164,7 @@ public class TeamAVChatActivity extends UI {
         }
 
         LogUtil.i(TAG, "TeamAVChatActivity onCreate, savedInstanceState=" + savedInstanceState);
-
+        dismissKeyguard();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.team_avchat_activity);
         onInit();
@@ -234,6 +234,16 @@ public class TeamAVChatActivity extends UI {
     /**
      * ************************************ 初始化 ***************************************
      */
+
+    // 设置窗口flag，亮屏并且解锁/覆盖在锁屏界面上
+    private void dismissKeyguard() {
+        getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        );
+    }
 
     private void onInit() {
         mainHandler = new Handler(this.getMainLooper());
@@ -370,7 +380,7 @@ public class TeamAVChatActivity extends UI {
         }
         stateObserver = new SimpleAVChatStateObserver() {
             @Override
-            public void onJoinedChannel(int code, String audioFile, String videoFile) {
+            public void onJoinedChannel(int code, String audioFile, String videoFile, int i) {
                 if (code == 200) {
                     onJoinRoomSuccess();
                 } else {
@@ -459,7 +469,7 @@ public class TeamAVChatActivity extends UI {
         int index = getItemIndex(account);
         if (index >= 0) {
             TeamAVChatItem item = data.get(index);
-            AVChatVideoRender surfaceView = adapter.getViewHolderSurfaceView(item);
+            AVChatSurfaceViewRenderer surfaceView = adapter.getViewHolderSurfaceView(item);
             if (surfaceView != null) {
                 item.state = TeamAVChatItem.STATE.STATE_PLAYING;
                 item.videoLive = true;
@@ -487,7 +497,7 @@ public class TeamAVChatActivity extends UI {
 
     private void startLocalPreview() {
         if (data.size() > 1 && data.get(0).account.equals(DemoCache.getAccount())) {
-            AVChatVideoRender surfaceView = adapter.getViewHolderSurfaceView(data.get(0));
+            AVChatSurfaceViewRenderer surfaceView = adapter.getViewHolderSurfaceView(data.get(0));
             if (surfaceView != null) {
                 AVChatManager.getInstance().setupLocalVideoRender(surfaceView, false, AVChatVideoScalingType.SCALE_ASPECT_FIT);
                 AVChatManager.getInstance().startVideoPreview();

@@ -58,15 +58,16 @@ public class MultiportActivity extends UI {
 
 
     private void parseIntent() {
-        onlineClients = (List<OnlineClient>)getIntent().getSerializableExtra(EXTRA_DATA);
+        onlineClients = (List<OnlineClient>) getIntent().getSerializableExtra(EXTRA_DATA);
         count = onlineClients.size();
     }
 
     private void updateView() {
-        for(OnlineClient client : onlineClients) {
+        for (OnlineClient client : onlineClients) {
             TextView clientName = initVersionView(client);
             switch (client.getClientType()) {
                 case ClientType.Windows:
+                case ClientType.MAC:
                     clientName.setText(R.string.computer_version);
                     break;
                 case ClientType.Web:
@@ -118,7 +119,7 @@ public class MultiportActivity extends UI {
 
     private void hideLayout(View layout, int finished) {
         layout.setVisibility(View.GONE);
-        if(finished == 1) {
+        if (finished == 1) {
             finish();
         }
     }

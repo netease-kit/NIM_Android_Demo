@@ -6,7 +6,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.avchat.AVChatProfile;
-import com.netease.nim.demo.common.infra.Handlers;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.demo.teamavchat.activity.TeamAVChatActivity;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;

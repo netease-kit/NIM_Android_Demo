@@ -294,7 +294,7 @@ public class OnlineStateEventManager {
     }
 
     /**
-     * 多端在线时展示规则 PC > IOS/Android > Web
+     * 多端在线时展示规则 PC > Mac > IOS/Android > Web
      */
     public static OnlineState getDisplayOnlineState(Event event) {
 
@@ -309,6 +309,8 @@ public class OnlineStateEventManager {
         OnlineState result;
 
         if (isOnline(result = multiClientStates.get(ClientType.Windows))) {
+            return result;
+        } else if (isOnline(result = multiClientStates.get(ClientType.MAC))) {
             return result;
         } else if (isOnline(result = multiClientStates.get(ClientType.iOS))) {
             return result;
@@ -357,6 +359,9 @@ public class OnlineStateEventManager {
         switch (type) {
             case ClientType.Windows:
                 result = context.getString(R.string.on_line_pc);
+                break;
+            case ClientType.MAC:
+                result = context.getString(R.string.on_line_mac);
                 break;
             case ClientType.Web:
                 result = context.getString(R.string.on_line_web);

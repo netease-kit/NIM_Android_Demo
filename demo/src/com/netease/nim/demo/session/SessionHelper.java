@@ -12,10 +12,12 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.RobotProfileActivity;
 import com.netease.nim.demo.contact.activity.UserProfileActivity;
+import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.action.AVChatAction;
 import com.netease.nim.demo.session.action.FileAction;
 import com.netease.nim.demo.session.action.GuessAction;
 import com.netease.nim.demo.session.action.RTSAction;
+import com.netease.nim.demo.session.action.RedPacketAction;
 import com.netease.nim.demo.session.action.SnapChatAction;
 import com.netease.nim.demo.session.action.TeamAVChatAction;
 import com.netease.nim.demo.session.action.TipAction;
@@ -25,6 +27,8 @@ import com.netease.nim.demo.session.extension.CustomAttachParser;
 import com.netease.nim.demo.session.extension.CustomAttachment;
 import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
+import com.netease.nim.demo.session.extension.RedPacketAttachment;
+import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.demo.session.extension.StickerAttachment;
 import com.netease.nim.demo.session.search.SearchMessageActivity;
@@ -32,7 +36,9 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderAVChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderDefCustom;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderFile;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderGuess;
+import com.netease.nim.demo.session.viewholder.MsgViewHolderOpenRedPacket;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderRTS;
+import com.netease.nim.demo.session.viewholder.MsgViewHolderRedPacket;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderTip;
@@ -51,6 +57,7 @@ import com.netease.nim.uikit.session.helper.MessageHelper;
 import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
 import com.netease.nim.uikit.session.module.MsgForwardFilter;
 import com.netease.nim.uikit.session.module.MsgRevokeFilter;
+import com.netease.nim.uikit.session.viewholder.MsgViewHolderUnknown;
 import com.netease.nim.uikit.team.model.TeamExtras;
 import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
@@ -176,6 +183,9 @@ public class SessionHelper {
             actions.add(new GuessAction());
             actions.add(new FileAction());
             actions.add(new TipAction());
+            if (NIMRedPacketClient.isEnable()) {
+                actions.add(new RedPacketAction());
+            }
             p2pCustomization.actions = actions;
             p2pCustomization.withSticker = true;
 
@@ -324,6 +334,9 @@ public class SessionHelper {
             actions.add(new GuessAction());
             actions.add(new FileAction());
             actions.add(new TipAction());
+            if (NIMRedPacketClient.isEnable()) {
+                actions.add(new RedPacketAction());
+            }
 
             teamCustomization = new SessionCustomization() {
                 @Override
@@ -396,6 +409,17 @@ public class SessionHelper {
         NimUIKit.registerMsgItemViewHolder(SnapChatAttachment.class, MsgViewHolderSnapChat.class);
         NimUIKit.registerMsgItemViewHolder(RTSAttachment.class, MsgViewHolderRTS.class);
         NimUIKit.registerTipMsgViewHolder(MsgViewHolderTip.class);
+        registerRedPacketViewHolder();
+    }
+
+    private static void registerRedPacketViewHolder() {
+        if (NIMRedPacketClient.isEnable()) {
+            NimUIKit.registerMsgItemViewHolder(RedPacketAttachment.class, MsgViewHolderRedPacket.class);
+            NimUIKit.registerMsgItemViewHolder(RedPacketOpenedAttachment.class, MsgViewHolderOpenRedPacket.class);
+        } else {
+            NimUIKit.registerMsgItemViewHolder(RedPacketAttachment.class, MsgViewHolderUnknown.class);
+            NimUIKit.registerMsgItemViewHolder(RedPacketOpenedAttachment.class, MsgViewHolderUnknown.class);
+        }
     }
 
     private static void setSessionListener() {
@@ -437,8 +461,9 @@ public class SessionHelper {
                     return true;
                 } else if (message.getMsgType() == MsgTypeEnum.custom && message.getAttachment() != null
                         && (message.getAttachment() instanceof SnapChatAttachment
-                        || message.getAttachment() instanceof RTSAttachment)) {
-                    // 白板消息和阅后即焚消息 不允许转发
+                        || message.getAttachment() instanceof RTSAttachment
+                        || message.getAttachment() instanceof RedPacketAttachment)) {
+                    // 白板消息和阅后即焚消息，红包消息 不允许转发
                     return true;
                 } else if (message.getMsgType() == MsgTypeEnum.robot && message.getAttachment() != null && ((RobotAttachment) message.getAttachment()).isRobotSend()) {
                     return true; // 如果是机器人发送的消息 不支持转发
@@ -457,8 +482,9 @@ public class SessionHelper {
             public boolean shouldIgnore(IMMessage message) {
                 if (message.getAttachment() != null
                         && (message.getAttachment() instanceof AVChatAttachment
-                        || message.getAttachment() instanceof RTSAttachment)) {
-                    // 视频通话消息和白板消息 不允许撤回
+                        || message.getAttachment() instanceof RTSAttachment
+                        || message.getAttachment() instanceof RedPacketAttachment)) {
+                    // 视频通话消息和白板消息，红包消息 不允许撤回
                     return true;
                 } else if (DemoCache.getAccount().equals(message.getSessionId())) {
                     // 发给我的电脑 不允许撤回

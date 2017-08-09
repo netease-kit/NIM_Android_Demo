@@ -86,6 +86,11 @@ public class DisplayMessageActivity extends UI implements ModuleProxy {
     }
 
     @Override
+    public void onItemFooterClick(IMMessage message) {
+
+    }
+
+    @Override
     public void shouldCollapseInputPanel() {
 
     }

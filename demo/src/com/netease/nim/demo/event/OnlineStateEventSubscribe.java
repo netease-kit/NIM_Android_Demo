@@ -3,7 +3,7 @@ package com.netease.nim.demo.event;
 import android.os.Handler;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.demo.common.infra.Handlers;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.uikit.cache.FriendDataCache;
 import com.netease.nim.uikit.cache.RobotInfoCache;
@@ -17,7 +17,6 @@ import com.netease.nimlib.sdk.event.model.NimOnlineStateEvent;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
-import com.netease.nimlib.sdk.robot.model.NimRobotInfo;
 
 import java.util.Iterator;
 import java.util.List;

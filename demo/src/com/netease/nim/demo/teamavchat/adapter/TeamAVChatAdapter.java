@@ -9,7 +9,7 @@ import com.netease.nim.demo.teamavchat.module.TeamAVChatItem;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.RecyclerViewHolder;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
+import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 
 import java.util.HashMap;
 import java.util.List;
@@ -53,7 +53,7 @@ public class TeamAVChatAdapter extends BaseMultiItemFetchLoadAdapter<TeamAVChatI
         return item.type + "_" + item.teamId + "_" + item.account;
     }
 
-    public AVChatVideoRender getViewHolderSurfaceView(TeamAVChatItem item) {
+    public AVChatSurfaceViewRenderer getViewHolderSurfaceView(TeamAVChatItem item) {
         RecyclerViewHolder holder = getViewHolder(VIEW_TYPE_DATA, getItemKey(item));
         if (holder instanceof TeamAVChatItemViewHolder) {
             return ((TeamAVChatItemViewHolder) holder).getSurfaceView();

@@ -114,7 +114,7 @@ public class ChatRoomMsgListPanel {
 
         // adapter
         items = new LinkedList<>();
-        adapter = new ChatRoomMsgAdapter(messageListView, items);
+        adapter = new ChatRoomMsgAdapter(messageListView, items, container);
         adapter.closeLoadAnimation();
         adapter.setFetchMoreView(new MsgListFetchLoadMoreView());
         adapter.setLoadMoreView(new MsgListFetchLoadMoreView());

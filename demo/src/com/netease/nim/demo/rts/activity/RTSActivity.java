@@ -9,6 +9,7 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -137,7 +138,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
         }
 
         isBusy = true;
-
+        dismissKeyguard();
         setContentView(R.layout.rts_activity);
 
         ToolBarOptions options = new ToolBarOptions();
@@ -233,6 +234,16 @@ public class RTSActivity extends UI implements View.OnClickListener {
             }
         }
     };
+
+    // 设置窗口flag，亮屏并且解锁/覆盖在锁屏界面上
+    private void dismissKeyguard() {
+        getWindow().addFlags(
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
+                        WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
+        );
+    }
 
     private void findViews() {
         startSessionLayout = findViewById(R.id.start_session_layout);
@@ -381,6 +392,9 @@ public class RTSActivity extends UI implements View.OnClickListener {
                         break;
                     case ClientType.Windows:
                         client = "Windows";
+                        break;
+                    case ClientType.MAC:
+                        client = "Mac";
                         break;
                     default:
                         break;

@@ -1,6 +1,8 @@
 package com.netease.nim.demo;
 
+import android.app.Notification;
 import android.content.Context;
+import android.util.SparseArray;
 
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
@@ -15,6 +17,12 @@ public class DemoCache {
     private static String account;
 
     private static StatusBarNotificationConfig notificationConfig;
+
+    private static SparseArray<Notification> notifications = new SparseArray<>();
+
+    public static SparseArray<Notification> getNotifications() {
+        return notifications;
+    }
 
     public static void clear() {
         account = null;

@@ -14,7 +14,7 @@ import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoRender;
+import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 import com.netease.nimlib.sdk.nos.model.NosThumbParam;
 import com.netease.nimlib.sdk.nos.util.NosThumbImageUtil;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
@@ -29,7 +29,7 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
     private static final int DEFAULT_AVATAR_THUMB_SIZE = (int) NimUIKit.getContext().getResources().getDimension(com.netease.nim.uikit.R.dimen.avatar_max_size);
     private ImageView avatarImage;
     private ImageView loadingImage;
-    private AVChatVideoRender surfaceView;
+    private AVChatSurfaceViewRenderer surfaceView;
     private TextView nickNameText;
     private TextView stateText;
     private ProgressBar volumeBar;
@@ -96,7 +96,7 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
         return thumbSize > 0 ? NosThumbImageUtil.makeImageThumbUrl(url, NosThumbParam.ThumbType.Crop, thumbSize, thumbSize) : url;
     }
 
-    public AVChatVideoRender getSurfaceView() {
+    public AVChatSurfaceViewRenderer getSurfaceView() {
         return surfaceView;
     }
 

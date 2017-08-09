@@ -94,6 +94,11 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
     }
 
     @Override
+    public void onItemFooterClick(IMMessage message) {
+
+    }
+
+    @Override
     public boolean isLongClickEnabled() {
         return true;
     }

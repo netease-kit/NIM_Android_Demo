@@ -14,7 +14,7 @@ import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomTabPagerAdapter;
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTabFragment;
 import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
-import com.netease.nim.demo.common.infra.Handlers;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
 import com.netease.nim.uikit.common.ui.barrage.BarrageConfig;

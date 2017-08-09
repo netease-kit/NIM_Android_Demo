@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="red_packet">红包</string>
+    <string name="my_rp">我的红包</string>
+    <string name="open_rp">领取红包</string>
+    <string name="check_rp">查看红包</string>
+    <string name="rp_push_content">发来了一个红包</string>
+</resources>

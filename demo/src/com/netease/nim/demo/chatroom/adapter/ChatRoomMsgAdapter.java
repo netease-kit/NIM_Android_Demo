@@ -8,6 +8,7 @@ import com.netease.nim.demo.chatroom.viewholder.ChatRoomMsgViewHolderFactory;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
+import com.netease.nim.uikit.session.module.Container;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -28,8 +29,9 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
     private ViewHolderEventListener eventListener;
     private Map<String, Float> progresses; // 有文件传输，需要显示进度条的消息ID map
     private String messageId;
+    private Container container;
 
-    public ChatRoomMsgAdapter(RecyclerView recyclerView, List<ChatRoomMessage> data) {
+    public ChatRoomMsgAdapter(RecyclerView recyclerView, List<ChatRoomMessage> data, Container container) {
         super(recyclerView, data);
 
         timedItems = new HashSet<>();
@@ -44,6 +46,8 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
             addItemType(viewType, R.layout.nim_message_item, holder);
             holder2ViewType.put(holder, viewType);
         }
+
+        this.container = container;
     }
 
     @Override
@@ -230,5 +234,9 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
 
     public String getUuid() {
         return messageId;
+    }
+
+    public Container getContainer() {
+        return container;
     }
 }

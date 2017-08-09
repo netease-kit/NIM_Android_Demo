@@ -21,7 +21,7 @@ import com.amap.api.location.AMapLocationListener;
 import com.amap.api.location.LocationManagerProxy;
 import com.amap.api.location.LocationProviderProxy;
 import com.netease.nim.demo.location.model.NimLocation;
-import com.netease.nim.demo.common.infra.TaskExecutor;
+import com.netease.nim.uikit.common.framework.infra.TaskExecutor;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 
 public class NimLocationManager implements AMapLocationListener {

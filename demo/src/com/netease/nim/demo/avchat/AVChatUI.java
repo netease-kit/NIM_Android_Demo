@@ -9,6 +9,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
@@ -29,6 +30,7 @@ import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.constant.AVChatUserRole;
 import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
+import com.netease.nimlib.sdk.avchat.model.AVChatImageFormat;
 import com.netease.nimlib.sdk.avchat.model.AVChatNotifyOption;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
@@ -75,6 +77,7 @@ public class AVChatUI implements AVChatUIListener {
 
     // 检查存储
     private boolean recordWarning = false;
+    private boolean destroyRTC = false;
 
     List<Pair<String, Boolean>> recordList = new LinkedList<Pair<String, Boolean>>();
 
@@ -92,7 +95,6 @@ public class AVChatUI implements AVChatUIListener {
         configFromPreference(PreferenceManager.getDefaultSharedPreferences(context));
         updateAVChatOptionalConfig();
     }
-
 
     //Config from Preference
     private int videoCropRatio;
@@ -222,6 +224,9 @@ public class AVChatUI implements AVChatUIListener {
 
         //观众角色,多人模式下使用. IM Demo没有多人通话, 全部设置为AVChatUserRole.NORMAL.
         avChatParameters.setInteger(AVChatParameters.KEY_SESSION_MULTI_MODE_USER_ROLE, AVChatUserRole.NORMAL);
+
+        //采用I420图像格式
+        avChatParameters.setInteger(AVChatParameters.KEY_VIDEO_FRAME_FILTER_FORMAT, AVChatImageFormat.I420);
     }
 
 
@@ -234,11 +239,11 @@ public class AVChatUI implements AVChatUIListener {
      *
      * @return boolean
      */
-    public boolean initiation() {
+    public boolean init(AVChatSurface.TouchZoneCallback cb) {
         AVChatProfile.getInstance().setAVChatting(true);
         avChatAudio = new AVChatAudio(context, root.findViewById(R.id.avchat_audio_layout), this, this);
         avChatVideo = new AVChatVideo(context, root.findViewById(R.id.avchat_video_layout), this, this);
-        avChatSurface = new AVChatSurface(context, this, root.findViewById(R.id.avchat_surface_layout));
+        avChatSurface = new AVChatSurface(context, this, root.findViewById(R.id.avchat_surface_layout), cb);
 
         return true;
     }
@@ -293,6 +298,7 @@ public class AVChatUI implements AVChatUIListener {
             AVChatManager.getInstance().startVideoPreview();
         }
 
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
         AVChatManager.getInstance().call2(account, callTypeEnum, notifyOption, new AVChatCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData data) {
@@ -322,13 +328,15 @@ public class AVChatUI implements AVChatUIListener {
                 } else {
                     Toast.makeText(context, R.string.avchat_call_failed, Toast.LENGTH_SHORT).show();
                 }
-                handlCallFailed();
+                closeRtc();
+                closeSessions(-1);
             }
 
             @Override
             public void onException(Throwable exception) {
                 LogUtil.d(TAG, "avChat call onException->" + exception);
-                handlCallFailed();
+                closeRtc();
+                closeSessions(-1);
             }
         });
 
@@ -339,16 +347,19 @@ public class AVChatUI implements AVChatUIListener {
         }
     }
 
-    private void handlCallFailed() {
-        if (callingState == CallStateEnum.VIDEO) {
+    public void closeRtc() {
+        if(destroyRTC) {
+            return;
+        }
+        if (callingState == CallStateEnum.OUTGOING_VIDEO_CALLING || callingState == CallStateEnum.VIDEO) {
             AVChatManager.getInstance().stopVideoPreview();
             AVChatManager.getInstance().disableVideo();
         }
         AVChatManager.getInstance().disableRtc();
         DialogMaker.dismissProgressDialog();
-
         AVChatSoundPlayer.instance().stop();
-        closeSessions(-1);
+
+        destroyRTC = true;
     }
 
     /**
@@ -369,7 +380,10 @@ public class AVChatUI implements AVChatUIListener {
      * @param type 音视频类型
      */
     private void hangUp(final int type) {
-        if (callingState == CallStateEnum.INCOMING_VIDEO_CALLING || callingState == CallStateEnum.VIDEO) {
+        if(destroyRTC) {
+            return;
+        }
+        if (callingState == CallStateEnum.OUTGOING_VIDEO_CALLING || callingState == CallStateEnum.VIDEO) {
             AVChatManager.getInstance().stopVideoPreview();
         }
         if ((type == AVChatExitCode.HANGUP || type == AVChatExitCode.PEER_NO_RESPONSE || type == AVChatExitCode.CANCEL) && avChatData != null) {
@@ -390,6 +404,7 @@ public class AVChatUI implements AVChatUIListener {
             });
         }
         AVChatManager.getInstance().disableRtc();
+        destroyRTC = true;
         closeSessions(type);
         AVChatSoundPlayer.instance().stop();
     }
@@ -402,10 +417,18 @@ public class AVChatUI implements AVChatUIListener {
     public void closeSessions(int exitCode) {
         //not  user  hang up active  and warning tone is playing,so wait its end
         Log.i(TAG, "close session -> " + AVChatExitCode.getExitString(exitCode));
-        if (avChatAudio != null)
+        if (avChatAudio != null) {
             avChatAudio.closeSession(exitCode);
-        if (avChatVideo != null)
+            avChatAudio = null;
+        }
+        if (avChatVideo != null) {
             avChatVideo.closeSession(exitCode);
+            avChatVideo = null;
+        }
+        if (avChatSurface != null) {
+            avChatSurface.closeSession(exitCode);
+            avChatSurface = null;
+        }
         showQuitToast(exitCode);
         isCallEstablish.set(false);
         canSwitchCamera = false;
@@ -531,6 +554,7 @@ public class AVChatUI implements AVChatUIListener {
             AVChatManager.getInstance().startVideoPreview();
         }
 
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
         AVChatManager.getInstance().accept2(avChatData.getChatId(), new AVChatCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -561,11 +585,15 @@ public class AVChatUI implements AVChatUIListener {
     }
 
     private void handleAcceptFailed() {
+        if(destroyRTC) {
+            return;
+        }
         if (callingState == CallStateEnum.VIDEO_CONNECTING) {
             AVChatManager.getInstance().stopVideoPreview();
             AVChatManager.getInstance().disableVideo();
         }
         AVChatManager.getInstance().disableRtc();
+        destroyRTC = true;
         closeSessions(AVChatExitCode.CANCEL);
     }
 

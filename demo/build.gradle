@@ -58,7 +58,7 @@ android {
             resources.srcDirs = ['src']
             aidl.srcDirs = ['src']
             renderscript.srcDirs = ['src']
-            res.srcDirs = ['res', 'res-avchat', 'res-chatroom']
+            res.srcDirs = ['res', 'res-avchat', 'res-chatroom', 'res-rp']
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs', 'libs-sdk']
 
@@ -94,7 +94,9 @@ dependencies {
     compile fileTree(include: '*.jar', dir: 'libs')
     compile(name: 'HMS-SDK-2.4.0.300', ext: 'aar')
     compile project(path: ':uikit')
+    compile project(path: ':faceunity')
     compile 'com.netease.nimlib:jsbridge:1.3.1'
     compile 'com.android.support:multidex:1.0.1'
     //debugCompile project(':plugins:sf')
+    compile project(':jrmfneteaselib')
 }

@@ -2,7 +2,7 @@ package com.netease.nim.demo.avchat;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
-import com.netease.nim.demo.common.infra.Handlers;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 
 /**

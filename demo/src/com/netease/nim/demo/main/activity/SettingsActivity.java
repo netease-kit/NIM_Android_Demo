@@ -16,6 +16,7 @@ import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
+import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.jsbridge.JsBridgeActivity;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.model.SettingTemplate;
@@ -64,6 +65,8 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_JS_BRIDGE = 20; // js bridge
 
     private static final int TAG_NOTIFICATION_STYLE = 21; // 通知栏展开、折叠
+
+    private static final int TAG_JRMFWAllET = 22; // 我的钱包
     ListView listView;
     SettingsAdapter adapter;
     private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
@@ -71,6 +74,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private SettingTemplate disturbItem;
     private SettingTemplate clearIndexItem;
     private SettingTemplate notificationItem;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -208,6 +212,11 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(new SettingTemplate(TAG_JS_BRIDGE, getString(R.string.js_bridge_demonstration)));
         items.add(SettingTemplate.makeSeperator());
 
+        if (NIMRedPacketClient.isEnable()) {
+            items.add(new SettingTemplate(TAG_JRMFWAllET, "我的钱包"));
+            items.add(SettingTemplate.makeSeperator());
+        }
+
         items.add(new SettingTemplate(TAG_ABOUT, getString(R.string.setting_about)));
 
     }
@@ -243,6 +252,9 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 break;
             case TAG_JS_BRIDGE:
                 startActivity(new Intent(SettingsActivity.this, JsBridgeActivity.class));
+                break;
+            case TAG_JRMFWAllET:
+                NIMRedPacketClient.startWalletActivity(this);
                 break;
             default:
                 break;
@@ -355,6 +367,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 notificationItem.setChecked(checkState);
                 setToggleNotification(checkState);
             }
+
             @Override
             public void onFailed(int code) {
                 notificationItem.setChecked(!checkState);
@@ -362,7 +375,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 if (code == ResponseCode.RES_UNSUPPORT) {
                     notificationItem.setChecked(checkState);
                     setToggleNotification(checkState);
-                } else if (code == ResponseCode.RES_EFREQUENTLY){
+                } else if (code == ResponseCode.RES_EFREQUENTLY) {
                     Toast.makeText(SettingsActivity.this, R.string.operation_too_frequent, Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(SettingsActivity.this, R.string.user_info_update_failed, Toast.LENGTH_SHORT).show();

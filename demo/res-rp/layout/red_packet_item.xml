@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content">
+
+    <RelativeLayout
+        android:id="@+id/bri_send"
+        android:layout_width="220dp"
+        android:layout_height="85dp"
+        android:visibility="gone"
+        android:background="@drawable/red_packet_send_bg">
+
+        <TextView
+            android:id="@+id/tv_bri_mess_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="13dp"
+            android:gravity="center|left"
+            android:singleLine="true"
+            android:text="恭喜发财，大吉大利"
+            android:textColor="@color/white"
+            android:textSize="14sp"/>
+
+        <TextView
+            android:id="@+id/tv_bri_target_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="48dp"
+            android:layout_marginTop="34dp"
+            android:gravity="center|left"
+            android:text="@string/check_rp"
+            android:textColor="@color/white"
+            android:textSize="11sp"/>
+
+        <TextView
+            android:id="@+id/tv_bri_name_send"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="6dip"
+            android:gravity="center|left"
+            android:paddingLeft="10dp"
+            android:text="@string/red_packet"
+            android:textColor="@color/color_999"
+            android:textSize="10sp"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bri_rev"
+        android:layout_width="220dp"
+        android:layout_height="85dp"
+        android:background="@drawable/red_packet_rev_bg">
+
+        <TextView
+            android:id="@+id/tv_bri_mess_rev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="52dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="13dp"
+            android:gravity="center|left"
+            android:singleLine="true"
+            android:text="恭喜发财，大吉大利"
+            android:textColor="@color/white"
+            android:textSize="14sp"/>
+        <TextView
+            android:id="@+id/tv_bri_target_rev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="52dp"
+            android:layout_marginTop="34dp"
+            android:gravity="center|left"
+            android:text="@string/open_rp"
+            android:textColor="@color/white"
+            android:textSize="11sp"/>
+        <TextView
+            android:id="@+id/tv_bri_name_rev"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="6dp"
+            android:gravity="center|left"
+            android:paddingLeft="14dp"
+            android:text="@string/red_packet"
+            android:textColor="@color/color_999"
+            android:textSize="10sp"/>
+    </RelativeLayout>
+
+</FrameLayout>
