@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.SystemClock;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,7 @@ import com.netease.nim.demo.avchat.AVChatNotification;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.avchat.AVChatSoundPlayer;
 import com.netease.nim.demo.avchat.AVChatSurface;
+import com.netease.nim.demo.avchat.AVChatTimeoutObserver;
 import com.netease.nim.demo.avchat.AVChatUI;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.receiver.PhoneCallStateObserver;
@@ -259,7 +259,10 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
         AVChatManager.getInstance().observeControlNotification(callControlObserver, register);
         AVChatManager.getInstance().observeHangUpNotification(callHangupObserver, register);
         AVChatManager.getInstance().observeOnlineAckNotification(onlineAckObserver, register);
-        AVChatManager.getInstance().observeTimeoutNotification(timeoutObserver, register);
+//        超时挂断请在demo上层实现，sdk未来会移除超时相关接口
+//        AVChatManager.getInstance().observeTimeoutNotification(timeoutObserver, register);
+//        demo上层实现超时挂断示例
+        AVChatTimeoutObserver.getInstance().observeTimeoutNotification(timeoutObserver, register, mIsInComingCall);
         PhoneCallStateObserver.getInstance().observeAutoHangUpForLocalPhone(autoHangUpForLocalPhoneObserver, register);
     }
 
@@ -269,41 +272,38 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     Observer<AVChatCalleeAckEvent> callAckObserver = new Observer<AVChatCalleeAckEvent>() {
         @Override
         public void onEvent(AVChatCalleeAckEvent ackInfo) {
+            AVChatData info = avChatUI.getAvChatData();
+            if (info != null && info.getChatId() == ackInfo.getChatId()) {
+                AVChatSoundPlayer.instance().stop();
 
-            AVChatSoundPlayer.instance().stop();
+                if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_BUSY) {
 
-            if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_BUSY) {
+                    AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.PEER_BUSY);
 
-                AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.PEER_BUSY);
-
-                avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
-            } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_REJECT) {
-                avChatUI.closeRtc();
-                avChatUI.closeSessions(AVChatExitCode.REJECT);
-            } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_AGREE) {
-                avChatUI.isCallEstablish.set(true);
-                avChatUI.canSwitchCamera = true;
+                    avChatUI.closeSessions(AVChatExitCode.PEER_BUSY);
+                } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_REJECT) {
+                    avChatUI.closeRtc();
+                    avChatUI.closeSessions(AVChatExitCode.REJECT);
+                } else if (ackInfo.getEvent() == AVChatEventType.CALLEE_ACK_AGREE) {
+                    avChatUI.isCallEstablish.set(true);
+                    avChatUI.canSwitchCamera = true;
+                }
             }
         }
     };
 
-    Observer<Long> timeoutObserver = new Observer<Long>() {
+    Observer<Integer> timeoutObserver = new Observer<Integer>() {
         @Override
-        public void onEvent(Long chatId) {
+        public void onEvent(Integer integer) {
 
-            AVChatData info = avChatUI.getAvChatData();
-            if (info != null && info.getChatId() == chatId) {
+            avChatUI.onHangUp();
 
-                avChatUI.closeSessions(AVChatExitCode.PEER_NO_RESPONSE);
-
-                // 来电超时，自己未接听
-                if (mIsInComingCall) {
-                    activeMissCallNotifier();
-                }
-
-                AVChatSoundPlayer.instance().stop();
+            // 来电超时，自己未接听
+            if (mIsInComingCall) {
+                activeMissCallNotifier();
             }
 
+            AVChatSoundPlayer.instance().stop();
         }
     };
 
@@ -333,15 +333,18 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     Observer<AVChatCommonEvent> callHangupObserver = new Observer<AVChatCommonEvent>() {
         @Override
         public void onEvent(AVChatCommonEvent avChatHangUpInfo) {
-
-            AVChatSoundPlayer.instance().stop();
-            avChatUI.closeRtc();
-            avChatUI.closeSessions(AVChatExitCode.HANGUP);
-            cancelCallingNotifier();
-            // 如果是incoming call主叫方挂断，那么通知栏有通知
-            if (mIsInComingCall && !isCallEstablished) {
-                activeMissCallNotifier();
+            AVChatData info = avChatUI.getAvChatData();
+            if (info != null && info.getChatId() == avChatHangUpInfo.getChatId()) {
+                AVChatSoundPlayer.instance().stop();
+                avChatUI.closeRtc();
+                avChatUI.closeSessions(AVChatExitCode.HANGUP);
+                cancelCallingNotifier();
+                // 如果是incoming call主叫方挂断，那么通知栏有通知
+                if (mIsInComingCall && !isCallEstablished) {
+                    activeMissCallNotifier();
+                }
             }
+
         }
     };
 
@@ -351,34 +354,36 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     Observer<AVChatOnlineAckEvent> onlineAckObserver = new Observer<AVChatOnlineAckEvent>() {
         @Override
         public void onEvent(AVChatOnlineAckEvent ackInfo) {
+            AVChatData info = avChatUI.getAvChatData();
+            if (info != null && info.getChatId() == ackInfo.getChatId()) {
+                AVChatSoundPlayer.instance().stop();
 
-            AVChatSoundPlayer.instance().stop();
-
-            String client = null;
-            switch (ackInfo.getClientType()) {
-                case ClientType.Web:
-                    client = "Web";
-                    break;
-                case ClientType.Windows:
-                    client = "Windows";
-                    break;
-                case ClientType.Android:
-                    client = "Android";
-                    break;
-                case ClientType.iOS:
-                    client = "iOS";
-                    break;
-                case ClientType.MAC:
-                    client = "Mac";
-                    break;
-                default:
-                    break;
+                String client = null;
+                switch (ackInfo.getClientType()) {
+                    case ClientType.Web:
+                        client = "Web";
+                        break;
+                    case ClientType.Windows:
+                        client = "Windows";
+                        break;
+                    case ClientType.Android:
+                        client = "Android";
+                        break;
+                    case ClientType.iOS:
+                        client = "iOS";
+                        break;
+                    case ClientType.MAC:
+                        client = "Mac";
+                        break;
+                    default:
+                        break;
+                }
+                if (client != null) {
+                    String option = ackInfo.getEvent() == AVChatEventType.CALLEE_ONLINE_CLIENT_ACK_AGREE ? "接听！" : "拒绝！";
+                    Toast.makeText(AVChatActivity.this, "通话已在" + client + "端被" + option, Toast.LENGTH_SHORT).show();
+                }
+                avChatUI.closeSessions(-1);
             }
-            if (client != null) {
-                String option = ackInfo.getEvent() == AVChatEventType.CALLEE_ONLINE_CLIENT_ACK_AGREE ? "接听！" : "拒绝！";
-                Toast.makeText(AVChatActivity.this, "通话已在" + client + "端被" + option, Toast.LENGTH_SHORT).show();
-            }
-            avChatUI.closeSessions(-1);
         }
     };
 
@@ -422,7 +427,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
     protected void handleWithConnectServerResult(int auth_result) {
         LogUtil.i(TAG, "result code->" + auth_result);
         if (auth_result == 200) {
-            Log.d(TAG, "onConnectServer success");
+            LogUtil.d(TAG, "onConnectServer success");
         } else if (auth_result == 101) { // 连接超时
             avChatUI.closeSessions(AVChatExitCode.PEER_NO_RESPONSE);
         } else if (auth_result == 401) { // 验证失败
@@ -442,6 +447,9 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
      * @param notification
      */
     private void handleCallControl(AVChatControlEvent notification) {
+        if (AVChatManager.getInstance().getCurrentChatId() != notification.getChatId()) {
+            return;
+        }
         switch (notification.getControlCommand()) {
             case AVChatControlCommand.SWITCH_AUDIO_TO_VIDEO:
                 avChatUI.incomingAudioToVideo();
@@ -582,15 +590,15 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onUserJoined(String account) {
-        Log.d(TAG, "onUserJoin -> " + account);
+        LogUtil.d(TAG, "onUserJoin -> " + account);
         avChatUI.setVideoAccount(account);
         avChatUI.initLargeSurfaceView(avChatUI.getVideoAccount());
     }
 
     @Override
     public void onUserLeave(String account, int event) {
-        Log.d(TAG, "onUserLeave -> " + account);
-        avChatUI.closeRtc();
+        LogUtil.d(TAG, "onUserLeave -> " + account);
+        avChatUI.onHangUp();
         avChatUI.closeSessions(AVChatExitCode.HANGUP);
     }
 
@@ -611,7 +619,9 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onCallEstablished() {
-        Log.d(TAG, "onCallEstablished");
+        LogUtil.d(TAG, "onCallEstablished");
+        //移除超时监听
+        AVChatTimeoutObserver.getInstance().observeTimeoutNotification(timeoutObserver, false, mIsInComingCall);
         if (avChatUI.getTimeBase() == 0)
             avChatUI.setTimeBase(SystemClock.elapsedRealtime());
 

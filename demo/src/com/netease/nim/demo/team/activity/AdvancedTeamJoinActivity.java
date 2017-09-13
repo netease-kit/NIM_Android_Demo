@@ -127,6 +127,10 @@ public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener
                         applyJoinButton.setEnabled(false);
                         Toast.makeText(AdvancedTeamJoinActivity.this, R.string.has_exist_in_team,
                                 Toast.LENGTH_SHORT).show();
+                    } else if (code == 806) {
+                        applyJoinButton.setEnabled(false);
+                        Toast.makeText(AdvancedTeamJoinActivity.this, R.string.team_num_limit,
+                                Toast.LENGTH_SHORT).show();
                     } else {
                         Toast.makeText(AdvancedTeamJoinActivity.this, "failed, error code =" + code,
                                 Toast.LENGTH_SHORT).show();

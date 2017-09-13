@@ -1,22 +1,32 @@
 package com.netease.nim.demo.chatroom.module;
 
+import android.content.ActivityNotFoundException;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Handler;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomMsgAdapter;
+import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
+import com.netease.nim.demo.chatroom.viewholder.ChatRoomMsgViewHolderBase;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.UserPreferences;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseFetchLoadAdapter;
+import com.netease.nim.uikit.common.ui.recyclerview.adapter.IRecyclerView;
+import com.netease.nim.uikit.common.ui.recyclerview.listener.OnItemClickListener;
 import com.netease.nim.uikit.common.ui.recyclerview.loadmore.MsgListFetchLoadMoreView;
+import com.netease.nim.uikit.robot.parser.elements.group.LinkElement;
 import com.netease.nim.uikit.session.audio.MessageAudioControl;
 import com.netease.nim.uikit.session.module.Container;
+import com.netease.nim.uikit.session.viewholder.robot.RobotLinkView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -33,6 +43,8 @@ import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.model.AttachmentProgress;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
+import com.netease.nimlib.sdk.robot.model.RobotAttachment;
+import com.netease.nimlib.sdk.robot.model.RobotMsgType;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -121,6 +133,8 @@ public class ChatRoomMsgListPanel {
         adapter.setEventListener(new MsgItemEventListener());
         adapter.setOnFetchMoreListener(new MessageLoader()); // load from start
         messageListView.setAdapter(adapter);
+
+        messageListView.addOnItemTouchListener(listener);
     }
 
     public void onIncomingMessage(List<ChatRoomMessage> messages) {
@@ -342,6 +356,52 @@ public class ChatRoomMsgListPanel {
         return -1;
     }
 
+    private OnItemClickListener listener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(IRecyclerView adapter, View view, int position) {
+
+        }
+
+        @Override
+        public void onItemLongClick(IRecyclerView adapter, View view, int position) {
+        }
+
+        @Override
+        public void onItemChildClick(IRecyclerView adapter2, View view, int position) {
+            if (view != null && view instanceof RobotLinkView) {
+                RobotLinkView robotLinkView = (RobotLinkView) view;
+                LinkElement element = robotLinkView.getElement();
+                if (element != null) {
+                    element.getTarget();
+                    if (LinkElement.TYPE_URL.equals(element.getType())) {
+                        Intent intent = new Intent();
+                        intent.setAction("android.intent.action.VIEW");
+                        Uri content_url = Uri.parse(element.getTarget());
+                        intent.setData(content_url);
+                        try {
+                            container.activity.startActivity(intent);
+                        } catch (ActivityNotFoundException e) {
+                            Toast.makeText(container.activity, "路径错误", Toast.LENGTH_SHORT).show();
+                        }
+
+                    } else if (LinkElement.TYPE_BLOCK.equals(element.getType())) {
+                        // 发送点击的block
+                        ChatRoomMessage message = adapter.getItem(position);
+                        if (message != null) {
+                            String robotAccount = ((RobotAttachment) message.getAttachment()).getFromRobotAccount();
+                            ChatRoomMessage robotMsg = ChatRoomMessageBuilder.createRobotMessage(container.account, robotAccount,
+                                    robotLinkView.getShowContent(), RobotMsgType.LINK, "", element.getTarget(), element.getParams());
+                            ChatRoomHelper.buildMemberTypeInRemoteExt(robotMsg, container.account);
+                            NIMClient.getService(ChatRoomService.class).sendMessage(robotMsg, false);
+                            onMsgSend(robotMsg);
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+
     private class MsgItemEventListener implements ChatRoomMsgAdapter.ViewHolderEventListener {
 
         @Override
@@ -369,6 +429,12 @@ public class ChatRoomMsgListPanel {
         @Override
         public boolean onViewHolderLongClick(View clickView, View viewHolderView, IMMessage item) {
             return true;
+        }
+
+        @Override
+        public void onFooterClick(ChatRoomMsgViewHolderBase viewHolderBase, IMMessage message) {
+            // 与 robot 对话
+            container.proxy.onItemFooterClick(message);
         }
 
         // 重新下载(对话框提示)

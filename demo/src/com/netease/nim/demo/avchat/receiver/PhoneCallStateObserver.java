@@ -27,11 +27,16 @@ public class PhoneCallStateObserver {
     private final String TAG = "PhoneCallStateObserver";
 
     private int phoneState = TelephonyManager.CALL_STATE_IDLE;
-    private PhoneCallStateEnum  stateEnum = PhoneCallStateObserver.PhoneCallStateEnum.IDLE;;
+    private PhoneCallStateEnum stateEnum = PhoneCallStateObserver.PhoneCallStateEnum.IDLE;
+
     private List<Observer<Integer>> autoHangUpObservers = new ArrayList<>(1); // 与本地电话互斥的挂断监听
 
     private static class InstanceHolder {
         public final static PhoneCallStateObserver instance = new PhoneCallStateObserver();
+    }
+
+    private PhoneCallStateObserver() {
+
     }
 
     public static PhoneCallStateObserver getInstance() {
@@ -60,6 +65,7 @@ public class PhoneCallStateObserver {
 
         handleLocalCall();
     }
+
     /**
      * 处理本地电话与网络通话的互斥
      */

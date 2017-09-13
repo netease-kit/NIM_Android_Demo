@@ -440,7 +440,7 @@ public class AVChatSurface {
     }
 
     public void closeSession(int exitCode) {
-        LogUtil.i("AVChatUI", "closeSession,init->" + init);
+        LogUtil.i("AVChatSurface", "closeSession,init->" + init);
         if (init) {
             if (largeRender.getParent() != null) {
                 ((ViewGroup) largeRender.getParent()).removeView(largeRender);

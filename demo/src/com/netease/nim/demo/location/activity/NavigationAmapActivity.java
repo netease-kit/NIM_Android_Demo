@@ -169,7 +169,7 @@ public class NavigationAmapActivity extends UI implements
 		super.onPause();
 		mapView.onPause();
 		if (locationManager != null) {
-			locationManager.deactive();
+			locationManager.stop();
 		}
 	}
 
@@ -177,7 +177,7 @@ public class NavigationAmapActivity extends UI implements
 	protected void onResume() {
 		super.onResume();
 		mapView.onResume();
-		locationManager.activate();
+		locationManager.request();
 	}
 
 	@Override
@@ -185,7 +185,7 @@ public class NavigationAmapActivity extends UI implements
 		super.onDestroy();
 		mapView.onDestroy();
 		if (locationManager != null) {
-			locationManager.deactive();
+			locationManager.stop();
 		}
 	}
 

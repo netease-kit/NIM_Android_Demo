@@ -4,10 +4,7 @@
 
     <solid android:color="@color/color_gray_d9d9d9"/>
 
-    <stroke
-        android:width="1px"
-        android:color="@color/robot_link_element_text_blue" />
     <corners
-        android:radius="16dp">
+        android:radius="20dp">
     </corners>
 </shape>

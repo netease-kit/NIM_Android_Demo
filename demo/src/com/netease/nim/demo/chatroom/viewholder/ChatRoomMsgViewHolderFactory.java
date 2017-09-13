@@ -5,6 +5,7 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomNotificationAttachment;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
+import com.netease.nimlib.sdk.robot.model.RobotAttachment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +23,7 @@ public class ChatRoomMsgViewHolderFactory {
         // built in
         register(ChatRoomNotificationAttachment.class, ChatRoomMsgViewHolderNotification.class);
         register(GuessAttachment.class, ChatRoomMsgViewHolderGuess.class);
+        register(RobotAttachment.class, ChatRoomMsgViewHolderRobot.class);
     }
 
     public static void register(Class<? extends MsgAttachment> attach, Class<? extends ChatRoomMsgViewHolderBase> viewHolder) {

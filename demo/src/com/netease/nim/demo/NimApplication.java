@@ -22,9 +22,9 @@ import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
 import com.netease.nim.demo.event.DemoOnlineStateContentProvider;
 import com.netease.nim.demo.event.OnlineStateEventManager;
+import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
-import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
@@ -212,16 +212,6 @@ public class NimApplication extends Application {
         return config;
     }
 
-    @Override
-    public void onTerminate() {
-        super.onTerminate();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-    }
-
     public boolean inMainProcess() {
         String packageName = getPackageName();
         String processName = SystemUtil.getProcessName(this);
@@ -347,6 +337,4 @@ public class NimApplication extends Application {
             return null; // 采用SDK默认文案
         }
     };
-
-
 }

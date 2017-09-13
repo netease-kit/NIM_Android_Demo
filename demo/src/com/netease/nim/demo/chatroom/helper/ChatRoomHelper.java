@@ -6,6 +6,8 @@ import android.widget.ImageView;
 import com.bumptech.glide.Glide;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
+import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -57,4 +59,14 @@ public class ChatRoomHelper {
                     .into(imageView);
         }
     }
+
+    public static void buildMemberTypeInRemoteExt(ChatRoomMessage message, String roomId) {
+        Map<String, Object> ext = new HashMap<>();
+        ChatRoomMember chatRoomMember = ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount());
+        if (chatRoomMember != null && chatRoomMember.getMemberType() != null) {
+            ext.put("type", chatRoomMember.getMemberType().getValue());
+            message.setRemoteExtension(ext);
+        }
+    }
+
 }

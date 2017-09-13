@@ -24,6 +24,7 @@ import com.netease.nim.uikit.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.friend.FriendService;
+import com.netease.nimlib.sdk.team.model.CreateTeamResult;
 
 import java.util.ArrayList;
 
@@ -77,7 +78,7 @@ public class MessageInfoActivity extends UI {
             }
         });
 
-        ((TextView)findViewById(R.id.create_team_layout).findViewById(R.id.textViewName)).setText(R.string.create_normal_team);
+        ((TextView) findViewById(R.id.create_team_layout).findViewById(R.id.textViewName)).setText(R.string.create_normal_team);
         HeadImageView addImage = (HeadImageView) findViewById(R.id.create_team_layout).findViewById(R.id.imageViewHeader);
         addImage.setBackgroundResource(com.netease.nim.uikit.R.drawable.nim_team_member_add_selector);
         addImage.setOnClickListener(new View.OnClickListener() {
@@ -87,7 +88,7 @@ public class MessageInfoActivity extends UI {
             }
         });
 
-        ((TextView)findViewById(R.id.toggle_layout).findViewById(R.id.user_profile_title)).setText(R.string.msg_notice);
+        ((TextView) findViewById(R.id.toggle_layout).findViewById(R.id.user_profile_title)).setText(R.string.msg_notice);
         switchButton = (SwitchButton) findViewById(R.id.toggle_layout).findViewById(R.id.user_profile_toggle);
         switchButton.setOnChangedListener(onChangedListener);
     }
@@ -155,9 +156,9 @@ public class MessageInfoActivity extends UI {
             if (requestCode == REQUEST_CODE_NORMAL) {
                 final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
                 if (selected != null && !selected.isEmpty()) {
-                    TeamCreateHelper.createNormalTeam(MessageInfoActivity.this, selected, true, new RequestCallback<Void>() {
+                    TeamCreateHelper.createNormalTeam(MessageInfoActivity.this, selected, true, new RequestCallback<CreateTeamResult>() {
                         @Override
-                        public void onSuccess(Void param) {
+                        public void onSuccess(CreateTeamResult param) {
                             finish();
                         }
 

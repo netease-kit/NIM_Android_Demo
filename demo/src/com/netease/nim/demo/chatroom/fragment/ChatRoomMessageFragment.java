@@ -1,6 +1,8 @@
 package com.netease.nim.demo.chatroom.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -8,9 +10,11 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.chatroom.helper.ChatRoomMemberCache;
+import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
 import com.netease.nim.demo.chatroom.module.ChatRoomMsgListPanel;
 import com.netease.nim.demo.session.action.GuessAction;
+import com.netease.nim.uikit.ait.AitManager;
+import com.netease.nim.uikit.cache.RobotInfoCache;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.session.actions.BaseAction;
 import com.netease.nim.uikit.session.module.Container;
@@ -19,17 +23,18 @@ import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.ResponseCode;
+import com.netease.nimlib.sdk.chatroom.ChatRoomMessageBuilder;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
 import com.netease.nimlib.sdk.chatroom.ChatRoomServiceObserver;
-import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.robot.model.NimRobotInfo;
+import com.netease.nimlib.sdk.robot.model.RobotAttachment;
+import com.netease.nimlib.sdk.robot.model.RobotMsgType;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 聊天室直播互动fragment
@@ -42,6 +47,8 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
     protected ChatRoomMsgListPanel messageListPanel;
 
     private String roomId;
+
+    protected AitManager aitManager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -92,6 +99,17 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
         if (messageListPanel != null) {
             messageListPanel.onDestroy();
         }
+        if (aitManager != null) {
+            aitManager.reset();
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (aitManager != null) {
+            aitManager.onActivityResult(requestCode, resultCode, data);
+        }
     }
 
     public void onLeave() {
@@ -119,6 +137,12 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
         } else {
             inputPanel.reload(container, null);
         }
+
+        if (aitManager == null) {
+            aitManager = new AitManager(getContext(), null, true);
+        }
+        inputPanel.addAitTextWatcher(aitManager);
+        aitManager.setTextChangeListener(inputPanel);
     }
 
     private void registerObservers(boolean register) {
@@ -142,12 +166,10 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
     public boolean sendMessage(IMMessage msg) {
         ChatRoomMessage message = (ChatRoomMessage) msg;
 
-        Map<String, Object> ext = new HashMap<>();
-        ChatRoomMember chatRoomMember = ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount());
-        if (chatRoomMember != null && chatRoomMember.getMemberType() != null) {
-            ext.put("type", chatRoomMember.getMemberType().getValue());
-            message.setRemoteExtension(ext);
-        }
+        // 检查是否转换成机器人消息
+        message = changeToRobotMsg(message);
+
+        ChatRoomHelper.buildMemberTypeInRemoteExt(message, roomId);
 
         NIMClient.getService(ChatRoomService.class).sendMessage(message, false)
                 .setCallback(new RequestCallback<Void>() {
@@ -172,7 +194,21 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
                     }
                 });
         messageListPanel.onMsgSend(message);
+        aitManager.reset();
         return true;
+    }
+
+    private ChatRoomMessage changeToRobotMsg(ChatRoomMessage message) {
+        String robotAccount = aitManager.getAitRobot();
+        if (TextUtils.isEmpty(robotAccount)) {
+            return message;
+        }
+        String text = message.getContent();
+        String content = aitManager.removeRobotAitString(text, robotAccount);
+        content = content.equals("") ? " " : content;
+        message = ChatRoomMessageBuilder.createRobotMessage(roomId, robotAccount, text, RobotMsgType.TEXT, content, null, null);
+
+        return message;
     }
 
     @Override
@@ -187,6 +223,9 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
 
     @Override
     public void onItemFooterClick(IMMessage message) {
+        RobotAttachment attachment = (RobotAttachment) message.getAttachment();
+        NimRobotInfo robot = RobotInfoCache.getInstance().getRobotByAccount(attachment.getFromRobotAccount());
+        aitManager.insertAitRobot(robot.getAccount(), robot.getName(), inputPanel.getEditSelectionStart());
     }
 
     @Override

@@ -226,6 +226,9 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
 
         // 发送失败或者多媒体文件下载失败指示按钮点击响应处理
         void onFailedBtnClick(IMMessage resendMessage);
+
+        // viewholder footer按钮点击，如机器人继续会话
+        void onFooterClick(ChatRoomMsgViewHolderBase holderBase, IMMessage message);
     }
 
     public void setUuid(String messageId) {

@@ -76,6 +76,11 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
     // 将消息数据项与内容的view进行绑定
     abstract protected void bindContentView();
 
+    // 在该接口操作BaseViewHolder中的数据，进行事件绑定，可选
+    protected void bindHolder(BaseViewHolder holder) {
+
+    }
+
     // 内容区域点击事件响应处理。
     protected void onItemClick() {
     }
@@ -158,6 +163,7 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
 
         inflate();
         refresh();
+        bindHolder(holder);
     }
 
     protected final void inflate() {

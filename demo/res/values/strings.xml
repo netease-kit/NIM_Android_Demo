@@ -109,6 +109,7 @@
     <string name="team_join_success">成功加入群: %1$s</string>
     <string name="team_apply_to_join_send_success">申请已发出</string>
     <string name="has_exist_in_team">已经在群里</string>
+    <string name="team_num_limit">群数量已达上限</string>
 
     <!-- 消息提醒 -->
     <string name="toolbar_mutli_new_msg_tips">个联系人发来新消息</string>
