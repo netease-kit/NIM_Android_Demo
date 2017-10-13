@@ -1,7 +1,6 @@
 package com.netease.nim.demo.main.fragment;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.chatroom.fragment.ChatRoomsFragment;
 import com.netease.nim.demo.main.model.MainTab;
 
 /**
@@ -9,7 +8,7 @@ import com.netease.nim.demo.main.model.MainTab;
  * Created by huangjun on 2015/12/11.
  */
 public class ChatRoomListFragment extends MainTabFragment {
-    private ChatRoomsFragment fragment;
+    private com.netease.nim.demo.chatroom.fragment.ChatRoomListFragment fragment;
     public ChatRoomListFragment() {
         setContainerId(MainTab.CHAT_ROOM.fragmentId);
     }
@@ -17,7 +16,7 @@ public class ChatRoomListFragment extends MainTabFragment {
     @Override
     protected void onInit() {
         // 采用静态集成，这里不需要做什么了
-        fragment = (ChatRoomsFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.chat_rooms_fragment);
+        fragment = (com.netease.nim.demo.chatroom.fragment.ChatRoomListFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.chat_rooms_fragment);
     }
 
     @Override

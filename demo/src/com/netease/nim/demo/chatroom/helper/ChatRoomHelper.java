@@ -4,10 +4,11 @@ import android.content.Context;
 import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
-import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
+import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
+import com.netease.nim.uikit.glide.NIMGlideModule;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -55,18 +56,8 @@ public class ChatRoomHelper {
             Glide.with(context).load(resId).into(imageView);
         } else {
             Glide.with(context).load(resId)
-                    .bitmapTransform(new BlurTransformation(context, 5))
+                    .apply(new RequestOptions().bitmapTransform(new BlurTransformation(5)))
                     .into(imageView);
         }
     }
-
-    public static void buildMemberTypeInRemoteExt(ChatRoomMessage message, String roomId) {
-        Map<String, Object> ext = new HashMap<>();
-        ChatRoomMember chatRoomMember = ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount());
-        if (chatRoomMember != null && chatRoomMember.getMemberType() != null) {
-            ext.put("type", chatRoomMember.getMemberType().getValue());
-            message.setRemoteExtension(ext);
-        }
-    }
-
 }

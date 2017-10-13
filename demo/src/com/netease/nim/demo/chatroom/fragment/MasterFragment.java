@@ -10,7 +10,7 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
-import com.netease.nim.demo.chatroom.helper.ChatRoomMemberCache;
+import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
 import com.netease.nim.demo.chatroom.widget.ChatRoomImageView;
 import com.netease.nim.uikit.cache.SimpleCallback;
 import com.netease.nim.uikit.common.fragment.TFragment;

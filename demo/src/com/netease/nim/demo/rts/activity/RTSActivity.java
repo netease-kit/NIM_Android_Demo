@@ -215,6 +215,11 @@ public class RTSActivity extends UI implements View.OnClickListener {
         }
 
         super.onDestroy();
+
+        if(needFinish) {
+            return;
+        }
+
         NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, false);
         registerInComingObserver(false);
         registerOutgoingObserver(false);
@@ -451,7 +456,8 @@ public class RTSActivity extends UI implements View.OnClickListener {
 
         @Override
         public void onUserLeave(String sessionId, RTSTunnelType tunType, String account, int event) {
-
+            //双人直接关闭会话
+            endSession();
         }
 
         @Override

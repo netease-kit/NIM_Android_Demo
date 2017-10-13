@@ -4,6 +4,7 @@ import android.content.Context;
 import android.util.AttributeSet;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.ui.imageview.CircleImageView;
@@ -30,10 +31,13 @@ public class ChatRoomImageView extends CircleImageView {
 
     private void loadAvatar(final String url, final int thumbSize) {
         Glide.with(getContext().getApplicationContext())
-                .load(url).asBitmap().centerCrop()
-                .placeholder(NimUIKit.getUserInfoProvider().getDefaultIconResId())
-                .error(NimUIKit.getUserInfoProvider().getDefaultIconResId())
-                .override(thumbSize, thumbSize)
+                .asBitmap()
+                .load(url)
+                .apply(new RequestOptions()
+                        .centerCrop()
+                        .placeholder(NimUIKit.getUserInfoProvider().getDefaultIconResId())
+                        .error(NimUIKit.getUserInfoProvider().getDefaultIconResId())
+                        .override(thumbSize, thumbSize))
                 .into(this);
     }
 }

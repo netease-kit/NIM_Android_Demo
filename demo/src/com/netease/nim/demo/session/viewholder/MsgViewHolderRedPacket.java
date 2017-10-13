@@ -6,7 +6,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.chatroom.adapter.ChatRoomMsgAdapter;
+import com.netease.nim.uikit.chatroom.adapter.ChatRoomMsgAdapter;
 import com.netease.nim.demo.redpacket.NIMOpenRpCallback;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.extension.RedPacketAttachment;

@@ -5,16 +5,17 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.ViewPager;
 
+import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTab;
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTabFragment;
-import com.netease.nim.demo.chatroom.constant.ChatRoomTab;
 import com.netease.nim.demo.common.ui.viewpager.SlidingTabPagerAdapter;
 
 import java.util.List;
 
 /**
+ * 聊天室主TAB适配器
  * Created by hzxuwen on 2015/12/14.
  */
-public class ChatRoomTabPagerAdapter extends SlidingTabPagerAdapter{
+public class ChatRoomTabPagerAdapter extends SlidingTabPagerAdapter {
     public ChatRoomTabPagerAdapter(FragmentManager fm, Context context, ViewPager pager) {
         super(fm, ChatRoomTab.values().length, context.getApplicationContext(), pager);
 

@@ -24,7 +24,7 @@ import com.netease.nim.demo.main.fragment.HomeFragment;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.demo.team.TeamCreateHelper;
 import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
-import com.netease.nim.uikit.LoginSyncDataStatusObserver;
+import com.netease.nim.uikit.plugin.LoginSyncDataStatusObserver;
 import com.netease.nim.uikit.NimUIKit;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
@@ -221,11 +221,11 @@ public class MainActivity extends UI {
                 break;
             case R.id.create_normal_team:
                 ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(null, 50);
-                NimUIKit.startContactSelect(MainActivity.this, option, REQUEST_CODE_NORMAL);
+                NimUIKit.startContactSelector(MainActivity.this, option, REQUEST_CODE_NORMAL);
                 break;
             case R.id.create_regular_team:
                 ContactSelectActivity.Option advancedOption = TeamHelper.getCreateContactSelectOption(null, 50);
-                NimUIKit.startContactSelect(MainActivity.this, advancedOption, REQUEST_CODE_ADVANCED);
+                NimUIKit.startContactSelector(MainActivity.this, advancedOption, REQUEST_CODE_ADVANCED);
                 break;
             case R.id.search_advanced_team:
                 AdvancedTeamSearchActivity.start(MainActivity.this);

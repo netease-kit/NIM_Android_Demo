@@ -144,7 +144,7 @@ public class OnlineStateEventManager {
 
                 // 发布自己的在线状态
                 pubNetState = -1;
-                publishOnlineStateEvent();
+                publishOnlineStateEvent(false);
 
                 // 订阅在线状态，包括好友以及最近联系人
                 OnlineStateEventSubscribe.initSubscribes();
@@ -165,7 +165,7 @@ public class OnlineStateEventManager {
                 }
                 LogUtil.ui("BroadcastReceiver CONNECTIVITY_ACTION " + info.getType() + info.getTypeName() + info.getExtraInfo());
                 if (NIMClient.getStatus() == StatusCode.LOGINED) {
-                    publishOnlineStateEvent();
+                    publishOnlineStateEvent(false);
                 }
             }
         }
@@ -277,9 +277,12 @@ public class OnlineStateEventManager {
     /**
      * 发布自己在线状态
      */
-    public static void publishOnlineStateEvent() {
+    public static void publishOnlineStateEvent(boolean force) {
+        if (!enable) {
+            return;
+        }
         int netState = getNetWorkTypeName(DemoCache.getContext());
-        if (netState == pubNetState) {
+        if (!force && netState == pubNetState) {
             return;
         }
         pubNetState = netState;
@@ -438,7 +441,7 @@ public class OnlineStateEventManager {
     /**
      * 允许在线状态事件,开发者开通在线状态后修改此处直接返回true
      */
-    public static boolean enableOnlineStateEvent() {
+    private static boolean enableOnlineStateEvent() {
         String packageName = DemoCache.getContext().getPackageName();
         return enable = (packageName != null && packageName.equals("com.netease.nim.demo"));
     }

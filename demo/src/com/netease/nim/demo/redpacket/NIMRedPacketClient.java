@@ -52,7 +52,7 @@ public class NIMRedPacketClient {
         @Override
         public void onEvent(StatusCode statusCode) {
             if (statusCode == StatusCode.LOGINED) {
-                getRpAuthToken();
+                getThirdToken();
             }
         }
     };
@@ -110,8 +110,9 @@ public class NIMRedPacketClient {
      */
     private static void initJrmfSDK(Context context) {
         //初始化红包sdk
+        JrmfClient.isDebug(true);
+
         JrmfClient.init(context);
-        JrmfClient.isDebug(false);
         // 设置微信appid，如果不使用微信支付可以不调用，此处需要开发者到微信支付申请appid
         // JrmfClient.setWxAppid("xxxxxx");
     }
@@ -134,6 +135,13 @@ public class NIMRedPacketClient {
             getRpAuthToken();
         }
         return thirdToken;
+    }
+
+    /**
+     * 登出之后，清掉token
+     */
+    public static void clear() {
+        thirdToken = null;
     }
 
     /**

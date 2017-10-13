@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jrmf_rp_background"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical">
+
+    <com.jrmf360.neteaselib.rp.widget.ActionBarView
+        android:id="@+id/actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:content="@string/jrmf_rp_add_card"/>
+
+    <LinearLayout
+        android:id="@+id/ll_cardNum"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_marginTop="10dp"
+        android:background="@color/jrmf_b_white"
+        android:layout_below="@id/actionbar"
+        android:orientation="horizontal"
+        android:paddingStart="@dimen/jrmf_dimen_16"
+        android:paddingLeft="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/jrmf_rp_card_num"
+            android:textColor="@color/color_959595"
+            android:textSize="14sp"/>
+
+        <com.jrmf360.neteaselib.base.view.ClearEditText
+            android:id="@+id/cet_bankCardNum"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/jrmf_rp_input_card_num"
+            android:inputType="number"
+            android:paddingRight="@dimen/jrmf_dimen_16"
+            android:paddingEnd="@dimen/jrmf_dimen_16"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/jrmf_b_color_b7b7b7"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:id="@+id/tv_support"
+        android:layout_below="@id/ll_cardNum"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/jrmf_dimen_16"
+        android:layout_marginEnd="@dimen/jrmf_dimen_16"
+        android:layout_marginTop="@dimen/jrmf_dimen_16"
+        android:gravity="end|right"
+        android:text="@string/jrmf_rp_look_support_card"
+        android:textColor="@color/jrmf_rp_red"
+        android:textSize="14sp"
+        />
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_below="@id/tv_support"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginTop="75dp"
+        android:background="@drawable/jrmf_rp_selector_common_btn"
+        android:text="@string/jrmf_rp_identity_bt_next"
+        android:textColor="@color/jrmf_b_white"
+        android:textSize="16sp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/jrmf_b_ic_shield"
+        android:drawablePadding="@dimen/jrmf_dimen_5"
+        android:gravity="center_vertical"
+        android:text="@string/jrmf_b_shield"
+        android:textColor="@color/color_b7b7b7"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/jrmf_dimen_8"
+        android:textSize="14sp"/>
+</RelativeLayout>

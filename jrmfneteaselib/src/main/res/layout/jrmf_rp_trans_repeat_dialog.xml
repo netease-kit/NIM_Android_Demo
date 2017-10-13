@@ -16,7 +16,7 @@
         android:gravity="center"
         android:lineSpacingMultiplier="1.2"
         android:textColor="@color/color_323232"
-        android:text="@string/trans_repeat_tip"
+        android:text="@string/jrmf_rp_trans_repeat_tip"
         />
 
 
@@ -24,17 +24,16 @@
         android:layout_below="@id/et_trans_money"
         android:layout_width="match_parent"
         android:background="@color/jrmf_rp_background"
-        android:layout_marginTop="@dimen/dimen_16"
+        android:layout_marginTop="@dimen/jrmf_dimen_16"
         android:layout_height="0.5dp"/>
 
     <TextView
         android:id="@+id/tv_continue_trans"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_height"
+        android:layout_height="@dimen/jrmf_b_btn_height"
         android:gravity="center"
-        android:textSize="16sp"
         android:textColor="@color/jrmf_b_title_bar_color"
-        android:text="@string/continue_trans"/>
+        android:text="@string/jrmf_rp_continue_trans"/>
 
     <View
         android:layout_below="@id/et_trans_money"
@@ -45,10 +44,9 @@
     <TextView
         android:id="@+id/tv_quit"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_height"
+        android:layout_height="@dimen/jrmf_rp_btn_height"
         android:gravity="center"
-        android:textSize="16sp"
         android:textColor="@color/jrmf_b_title_bar_color"
-        android:text="@string/jrmf_quit"/>
+        android:text="@string/jrmf_rp_quit"/>
 
 </LinearLayout>

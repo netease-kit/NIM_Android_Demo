@@ -8,7 +8,7 @@ import com.netease.nim.demo.location.activity.LocationAmapActivity;
 import com.netease.nim.demo.location.activity.LocationExtras;
 import com.netease.nim.demo.location.activity.NavigationAmapActivity;
 import com.netease.nim.demo.location.helper.NimLocationManager;
-import com.netease.nim.uikit.LocationProvider;
+import com.netease.nim.uikit.plugin.LocationProvider;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 

@@ -97,7 +97,7 @@ public class TeamAVChatAction extends AVChatAction {
                         transaction = null;
                         Toast.makeText(getActivity(), getActivity().getString(R.string.t_avchat_not_start_with_less_member), Toast.LENGTH_SHORT).show();
                     } else {
-                        NimUIKit.startContactSelect(getActivity(), getContactSelectOption(tid), TeamRequestCode.REQUEST_TEAM_VIDEO);
+                        NimUIKit.startContactSelector(getActivity(), getContactSelectOption(tid), TeamRequestCode.REQUEST_TEAM_VIDEO);
                     }
                 }
             }

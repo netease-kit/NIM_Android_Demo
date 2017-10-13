@@ -18,8 +18,8 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomOnlinePeopleAdapter;
-import com.netease.nim.demo.chatroom.helper.ChatRoomMemberCache;
 import com.netease.nim.uikit.cache.SimpleCallback;
+import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
@@ -666,6 +666,7 @@ public class OnlinePeopleFragment extends TFragment {
         compMap.put(MemberType.NORMAL, 2);
         compMap.put(MemberType.LIMITED, 3);
         compMap.put(MemberType.GUEST, 4);
+        compMap.put(MemberType.ANONYMOUS, 5);
     }
 
     private static Comparator<ChatRoomMember> comp = new Comparator<ChatRoomMember>() {

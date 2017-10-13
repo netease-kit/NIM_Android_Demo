@@ -13,7 +13,7 @@
         android:id="@+id/actionbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:content="银行卡列表"/>
+        app:content="@string/jrmf_rp_bank_list"/>
 
     <ListView
         android:id="@+id/recyclerview"
@@ -29,6 +29,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:gravity="center"
-        android:text="加载失败，点击重试"/>
+        android:text="@string/jrmf_rp_load_fail"/>
 
 </LinearLayout>

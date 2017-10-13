@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jrmf_w_color_bg"
+              android:fitsSystemWindows="true">
+
+    <include
+        android:id="@+id/jrmf_w_titleBar"
+        layout="@layout/jrmf_w_layout_titlebar"/>
+
+    <LinearLayout
+        android:id="@+id/ll_my_change"
+        android:layout_width="match_parent"
+        android:layout_height="150dp"
+        android:layout_below="@id/jrmf_w_titleBar"
+        android:background="@color/jrmf_b_title_bar_color"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="15dp"
+            android:drawableLeft="@drawable/jrmf_w_balance"
+            android:drawablePadding="5dp"
+            android:gravity="center"
+            android:text="@string/jrmf_w_my_balance"
+            android:textColor="@color/jrmf_b_white"
+            android:textSize="14sp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/jrmf_w_rmb_white"/>
+
+            <TextView
+                android:id="@+id/tv_change"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="0.00"
+                android:textColor="@color/jrmf_b_white"
+                android:textSize="22sp"/>
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_rechge_deposit"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/ll_my_change"
+        android:layout_marginBottom="@dimen/jrmf_dimen_8"
+        android:background="@color/jrmf_w_title_bar_dark_color"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:id="@+id/ll_wallet_recharge"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/jrmf_w_selector_forget_pwd"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_recharge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/jrmf_w_recharge"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:text="@string/jrmf_w_recharge"
+                android:textColor="@color/jrmf_b_white"
+                android:textSize="14sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="9dp"
+            android:layout_marginTop="9dp"
+            android:background="@color/jrmf_b_white"/>
+
+        <LinearLayout
+            android:id="@+id/ll_getDeposit"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/jrmf_w_selector_forget_pwd"
+            android:gravity="center">
+
+            <TextView
+                android:id="@+id/tv_getDeposit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:drawableLeft="@drawable/jrmf_w_get_deposit"
+                android:drawablePadding="10dp"
+                android:gravity="center"
+                android:text="@string/jrmf_w_select_get_deposit"
+                android:textColor="@color/jrmf_b_white"
+                android:textSize="14sp"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_my_rp"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/ll_rechge_deposit"
+        android:background="@drawable/jrmf_w_selector_item"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_8"
+        android:paddingRight="@dimen/jrmf_dimen_8"
+        android:visibility="gone"
+        >
+
+        <ImageView
+            android:id="@+id/iv_my_rp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_ic_rp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/jrmf_dimen_8"
+            android:layout_toRightOf="@id/iv_my_rp"
+            android:text="@string/jrmf_w_my_rp_title"
+            android:textColor="@color/color_535353"
+            android:textSize="12sp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_arrow_right"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_accountInfo"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/rl_my_rp"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/jrmf_w_selector_item"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_8"
+        android:paddingRight="@dimen/jrmf_dimen_8"
+        >
+
+        <ImageView
+            android:id="@+id/iv_accountInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_account_info"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/jrmf_dimen_8"
+            android:layout_toRightOf="@id/iv_accountInfo"
+            android:text="@string/jrmf_w_account_info_title"
+            android:textColor="@color/color_535353"
+            android:textSize="12sp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_arrow_right"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_tradeDetail"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/rl_accountInfo"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/jrmf_w_selector_item"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_8"
+        android:paddingRight="@dimen/jrmf_dimen_8"
+        >
+
+        <ImageView
+            android:id="@+id/iv_tradeDetail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_trade_detail"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/jrmf_dimen_8"
+            android:layout_toRightOf="@id/iv_tradeDetail"
+            android:text="@string/jrmf_w_trade_detail_title"
+            android:textColor="@color/color_535353"
+            android:textSize="12sp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_arrow_right"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/rl_secureSetting"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/rl_tradeDetail"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/jrmf_w_selector_item"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_8"
+        android:paddingRight="@dimen/jrmf_dimen_8"
+        >
+
+        <ImageView
+            android:id="@+id/iv_secureSetting"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_secure_setting"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/jrmf_dimen_8"
+            android:layout_toRightOf="@id/iv_secureSetting"
+            android:text="@string/jrmf_w_secure_setting"
+            android:textColor="@color/color_535353"
+            android:textSize="12sp"
+            />
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_arrow_right"
+            />
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/rl_mybank"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_below="@id/rl_secureSetting"
+        android:layout_marginTop="1dp"
+        android:background="@drawable/jrmf_w_selector_item"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_8"
+        android:paddingRight="@dimen/jrmf_dimen_8"
+        >
+
+        <ImageView
+            android:id="@+id/iv_mybank"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_bank_setting"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="@dimen/jrmf_dimen_8"
+            android:layout_toRightOf="@id/iv_mybank"
+            android:text="@string/jrmf_w_my_bank_title"
+            android:textColor="@color/color_535353"
+            android:textSize="12sp"
+            />
+
+        <ImageView
+            android:id="@+id/iv_mycard_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:src="@drawable/jrmf_w_arrow_right"
+            />
+
+        <TextView
+            android:id="@+id/tv_cardNum"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="5dp"
+            android:layout_toLeftOf="@id/iv_mycard_arrow"
+            android:text=""
+            android:textColor="@color/color_b5b5b5"
+            android:textSize="15sp"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:layout_below="@id/rl_mybank"
+        android:layout_width="match_parent"
+        android:visibility="gone"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:background="@color/jrmf_b_white"
+        android:paddingLeft="@dimen/jrmf_dimen_16"
+        android:gravity="center_vertical"
+        android:layout_marginTop="1dp"
+        android:text="我是暂未行"/>
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/jrmf_b_ic_shield"
+        android:drawablePadding="@dimen/jrmf_dimen_5"
+        android:gravity="center_vertical"
+        android:text="@string/jrmf_b_shield"
+        android:textColor="@color/color_b7b7b7"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/jrmf_dimen_8"
+        android:textSize="14sp"/>
+</RelativeLayout>
+
+
+
+
+
+
+

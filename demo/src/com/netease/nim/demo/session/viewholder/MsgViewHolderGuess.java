@@ -1,22 +1,54 @@
 package com.netease.nim.demo.session.viewholder;
 
+import android.widget.ImageView;
+
+import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.GuessAttachment;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderText;
+import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 
 /**
- * Created by zhoujianghua on 2015/8/4.
+ * Created by hzliuxuanlin on 17/9/15.
  */
-public class MsgViewHolderGuess extends MsgViewHolderText {
+
+public class MsgViewHolderGuess extends MsgViewHolderBase{
+
+    private GuessAttachment guessAttachment;
+    private ImageView imageView;
 
     public MsgViewHolderGuess(BaseMultiItemFetchLoadAdapter adapter) {
         super(adapter);
     }
 
     @Override
-    protected String getDisplayText() {
-        GuessAttachment attachment = (GuessAttachment) message.getAttachment();
+    protected int getContentResId() {
+        return R.layout.rock_paper_scissors;
+    }
 
-        return attachment.getValue().getDesc() + "!";
+    @Override
+    protected void inflateContentView() {
+        imageView = (ImageView)view.findViewById(R.id.rock_paper_scissors_text);
+    }
+
+    @Override
+    protected void bindContentView() {
+        if (message.getAttachment() == null) {
+            return;
+        }
+        guessAttachment = (GuessAttachment)message.getAttachment();
+        switch (guessAttachment.getValue().getDesc()){
+            case "石头":
+                imageView.setImageResource(R.drawable.message_view_rock);
+                break;
+            case "剪刀":
+                imageView.setImageResource(R.drawable.message_view_scissors);
+                break;
+            case "布":
+                imageView.setImageResource(R.drawable.message_view_paper);
+                break;
+            default:
+                break;
+        }
+
     }
 }

@@ -193,7 +193,7 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
 
         sendTarget = team ? 1 : 0;
 
-        NimUIKit.startContactSelect(CustomNotificationActivity.this, option, CONTACT_SELECT_REQUEST_CODE);
+        NimUIKit.startContactSelector(CustomNotificationActivity.this, option, CONTACT_SELECT_REQUEST_CODE);
     }
 
     @Override

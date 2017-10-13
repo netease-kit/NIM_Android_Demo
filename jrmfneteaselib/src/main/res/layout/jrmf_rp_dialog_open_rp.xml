@@ -44,7 +44,7 @@
         android:layout_below="@id/tv_name"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:text="发了一个红包"
+        android:text="@string/jrmf_rp_send_one"
         android:textColor="@color/color_ff9893"
         android:textSize="14sp"
         android:visibility="invisible"
@@ -86,7 +86,6 @@
         android:layout_marginTop="20dp"
         android:visibility="invisible"/>
 
-        <!--android:src="@drawable/jrmf_rp_open_rp_anim"-->
 
     <TextView
         android:id="@+id/tv_look_others"
@@ -97,7 +96,7 @@
         android:drawablePadding="5dp"
         android:drawableRight="@drawable/jrmf_rp_open_rp_arrow"
         android:layout_centerHorizontal="true"
-        android:text="看看大家的手气"
+        android:text="@string/jrmf_rp_look_all_luck"
         android:textSize="14sp"
         android:textColor="@color/jrmf_b_white"/>
 </RelativeLayout>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jrmf_rp_background"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical">
+
+    <com.jrmf360.neteaselib.rp.widget.ActionBarView
+        android:id="@+id/actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:content="@string/jrmf_rp_add_card"/>
+
+    <LinearLayout
+        android:id="@+id/ll_conent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@color/jrmf_b_white"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:background="@color/jrmf_b_white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/jrmf_dimen_16"
+            android:paddingLeft="@dimen/jrmf_dimen_16">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/jrmf_rp_card_num"
+                android:textColor="@color/color_959595"
+                android:textSize="14sp"/>
+
+            <TextView
+                android:id="@+id/tv_bankCardNum"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:textColor="@color/jrmf_b_black"
+                tools:text="工商银行(7899)"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="@dimen/jrmf_dimen_16"
+            android:layout_marginStart="@dimen/jrmf_dimen_16"
+            android:background="@color/jrmf_rp_background"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:background="@color/jrmf_b_white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/jrmf_dimen_16"
+            android:paddingLeft="@dimen/jrmf_dimen_16">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/jrmf_rp_username"
+                android:textColor="@color/color_959595"
+                android:textSize="14sp"/>
+
+            <com.jrmf360.neteaselib.base.view.ClearEditText
+                android:id="@+id/cet_name"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/jrmf_rp_name_error"
+                android:paddingRight="@dimen/jrmf_dimen_16"
+                android:paddingEnd="@dimen/jrmf_dimen_16"
+                android:textColor="@color/jrmf_b_black"
+                android:textColorHint="@color/jrmf_b_color_b7b7b7"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tv_name"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                tools:text="刘洪林"
+                android:textColor="@color/jrmf_b_black"
+                android:textSize="16sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="@dimen/jrmf_dimen_16"
+            android:layout_marginStart="@dimen/jrmf_dimen_16"
+            android:background="@color/jrmf_rp_background"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:background="@color/jrmf_b_white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/jrmf_dimen_16"
+            android:paddingLeft="@dimen/jrmf_dimen_16">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/jrmf_rp_user_idcard_num"
+                android:textColor="@color/color_959595"
+                android:textSize="14sp"/>
+
+            <com.jrmf360.neteaselib.base.view.ClearEditText
+                android:id="@+id/cet_idCardNum"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/jrmf_rp_input_id_card_num"
+                android:inputType="number"
+                android:digits="0123456789xyzXYZ"
+                android:paddingRight="@dimen/jrmf_dimen_16"
+                android:paddingEnd="@dimen/jrmf_dimen_16"
+                android:textColor="@color/jrmf_b_black"
+                android:textColorHint="@color/jrmf_b_color_b7b7b7"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tv_idCardNum"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="2137834982894"
+                android:textColor="@color/jrmf_b_black"
+                android:textSize="16sp"
+                android:visibility="gone"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="@dimen/jrmf_dimen_16"
+            android:layout_marginStart="@dimen/jrmf_dimen_16"
+            android:background="@color/jrmf_rp_background"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:layout_marginTop="1dp"
+            android:background="@color/jrmf_b_white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/jrmf_dimen_16"
+            android:paddingLeft="@dimen/jrmf_dimen_16">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/jrmf_rp_user_phone_num"
+                android:textColor="@color/color_959595"
+                android:textSize="14sp"/>
+
+            <com.jrmf360.neteaselib.base.view.ClearEditText
+                android:id="@+id/cet_phone"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/jrmf_rp_user_bank_phone_num"
+                android:inputType="number"
+                android:paddingRight="@dimen/jrmf_dimen_16"
+                android:paddingEnd="@dimen/jrmf_dimen_16"
+                android:textColor="@color/jrmf_b_black"
+                android:textColorHint="@color/jrmf_b_color_b7b7b7"
+                android:textSize="16sp"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dip"
+            android:layout_marginLeft="@dimen/jrmf_dimen_16"
+            android:layout_marginStart="@dimen/jrmf_dimen_16"
+            android:background="@color/jrmf_rp_background"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:layout_marginTop="1dp"
+            android:background="@color/jrmf_b_white"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/jrmf_dimen_16"
+            android:paddingLeft="@dimen/jrmf_dimen_16">
+
+            <TextView
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:text="@string/jrmf_rp_verify_code"
+                android:textColor="@color/color_959595"
+                android:textSize="14sp"/>
+
+            <com.jrmf360.neteaselib.base.view.ClearEditText
+                android:id="@+id/cet_code"
+                android:layout_width="0dip"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="center_vertical"
+                android:hint="@string/jrmf_rp_input_verify_code2"
+                android:inputType="number"
+                android:maxLength="6"
+                android:paddingRight="@dimen/jrmf_dimen_16"
+                android:paddingEnd="@dimen/jrmf_dimen_16"
+                android:textColor="@color/jrmf_b_black"
+                android:textColorHint="@color/jrmf_b_color_b7b7b7"
+                android:textSize="16sp"/>
+
+            <TextView
+                android:id="@+id/tv_send_code"
+                android:layout_width="90dp"
+                android:layout_height="35dp"
+                android:layout_gravity="center_vertical"
+                android:layout_marginRight="@dimen/jrmf_dimen_16"
+                android:layout_marginEnd="@dimen/jrmf_dimen_16"
+                android:background="@drawable/jrmf_rp_shape_code_bg"
+                android:gravity="center"
+                android:text="@string/jrmf_rp_send_code"
+                android:textSize="14sp"
+                android:textColor="@color/color_323232"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dip"
+            android:background="@color/jrmf_rp_background"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_rp_btn_height"
+        android:layout_below="@id/ll_conent"
+        android:layout_marginLeft="@dimen/jrmf_dimen_16"
+        android:layout_marginStart="@dimen/jrmf_dimen_16"
+        android:gravity="center_vertical">
+
+        <ImageView
+            android:id="@+id/iv_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/jrmf_b_icon_checked"/>
+
+        <TextView
+            android:id="@+id/tv_protocol"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/jrmf_rp_pay_protocol"
+            android:textSize="14sp"
+            android:textColor="@color/jrmf_rp_red"/>
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_confirm"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="42dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/jrmf_rp_selector_common_btn"
+        android:text="@string/jrmf_rp_confirm_commit"
+        android:textColor="@color/jrmf_b_white"
+        android:textSize="16sp"/>
+
+</LinearLayout>

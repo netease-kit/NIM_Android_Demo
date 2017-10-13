@@ -34,7 +34,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="收到的红包"
+                android:text="@string/jrmf_rp_receive"
                 android:textColor="@color/jrmf_rp_title_bar"
                 android:textSize="15dp"/>
         </LinearLayout>
@@ -54,7 +54,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="发出的红包"
+                android:text="@string/jrmf_rp_send"
                 android:textColor="@color/color_535353"
                 android:textSize="15dp"/>
         </LinearLayout>

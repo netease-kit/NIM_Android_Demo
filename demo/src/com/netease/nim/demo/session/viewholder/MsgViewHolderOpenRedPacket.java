@@ -18,8 +18,6 @@ import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
-import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 

@@ -119,7 +119,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
                     }
                 }
                 option.itemFilter = new ContactIdFilter(excludeAccounts, true);
-                NimUIKit.startContactSelect(BlackListActivity.this, option, REQUEST_CODE_BLACK);
+                NimUIKit.startContactSelector(BlackListActivity.this, option, REQUEST_CODE_BLACK);
             }
         });
     }

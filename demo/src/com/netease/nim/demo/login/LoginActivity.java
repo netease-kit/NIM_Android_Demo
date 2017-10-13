@@ -281,7 +281,7 @@ public class LoginActivity extends UI implements OnKeyListener {
         final String account = loginAccountEdit.getEditableText().toString().toLowerCase();
         final String token = tokenFromPassword(loginPasswordEdit.getEditableText().toString());
         // 登录
-        loginRequest = NimUIKit.doLogin(new LoginInfo(account, token), new RequestCallback<LoginInfo>() {
+        loginRequest = NimUIKit.login(new LoginInfo(account, token), new RequestCallback<LoginInfo>() {
             @Override
             public void onSuccess(LoginInfo param) {
                 LogUtil.i(TAG, "login success");

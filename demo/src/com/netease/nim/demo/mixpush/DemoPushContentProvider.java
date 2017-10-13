@@ -6,7 +6,7 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
-import com.netease.nim.uikit.CustomPushContentProvider;
+import com.netease.nim.uikit.plugin.CustomPushContentProvider;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;

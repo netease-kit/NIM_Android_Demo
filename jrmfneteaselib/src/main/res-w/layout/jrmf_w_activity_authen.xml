@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jrmf_w_color_bg"
+              android:fitsSystemWindows="true">
+
+    <include layout="@layout/jrmf_w_layout_titlebar"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:background="@color/jrmf_b_white"
+        android:orientation="horizontal"
+        android:layout_marginTop="@dimen/jrmf_dimen_16"
+        android:paddingLeft="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/jrmf_w_user_name"
+            android:textColor="@color/color_959595"
+            android:textSize="14sp"/>
+
+        <com.jrmf360.neteaselib.base.view.ClearEditText
+            android:id="@+id/cet_name"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/jrmf_w_name_error"
+            android:paddingRight="@dimen/jrmf_dimen_8"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/color_b7b7b7"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_name"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            tools:text="刘洪林"
+            android:textColor="@color/jrmf_b_black"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:background="@color/jrmf_b_white"
+        android:orientation="horizontal"
+        android:layout_marginTop="1dp"
+        android:paddingLeft="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/jrmf_w_user_ID"
+            android:textColor="@color/color_959595"
+            android:textSize="14sp"/>
+
+        <com.jrmf360.neteaselib.base.view.ClearEditText
+            android:id="@+id/cet_idCardNum"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/jrmf_w_input_user_ID"
+            android:inputType="number"
+            android:digits="0123456789xyzXYZ"
+            android:paddingRight="@dimen/jrmf_dimen_8"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/color_b7b7b7"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_idCardNum"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            tools:text="2137834982894"
+            android:textColor="@color/jrmf_b_black"
+            android:textSize="16sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_marginTop="@dimen/jrmf_dimen_16"
+        android:background="@color/jrmf_b_white"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/jrmf_w_user_phone_num"
+            android:textColor="@color/color_959595"
+            android:textSize="14sp"/>
+
+        <com.jrmf360.neteaselib.base.view.ClearEditText
+            android:id="@+id/cet_phone"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/jrmf_w_user_phone_num_hint"
+            android:inputType="number"
+            android:paddingRight="@dimen/jrmf_dimen_8"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/color_b7b7b7"
+            android:textSize="16sp"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/jrmf_b_item_height"
+        android:layout_marginTop="1dp"
+        android:background="@color/jrmf_b_white"
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:layout_width="100dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="@string/jrmf_w_verify_code"
+            android:textColor="@color/color_959595"
+            android:textSize="14sp"/>
+
+        <com.jrmf360.neteaselib.base.view.ClearEditText
+            android:id="@+id/cet_code"
+            android:layout_width="0dip"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:gravity="center_vertical"
+            android:hint="@string/jrmf_w_input_verify_code"
+            android:inputType="number"
+            android:maxLength="6"
+            android:paddingRight="@dimen/jrmf_dimen_8"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/color_b7b7b7"
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/tv_send_code"
+            android:layout_width="90dp"
+            android:layout_height="35dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginRight="@dimen/jrmf_dimen_16"
+            android:background="@drawable/jrmf_w_shape_code_bg"
+            android:gravity="center"
+            android:text="@string/jrmf_w_send_verify_code"
+            android:textSize="14sp"
+            android:textColor="@color/jrmf_w_title_bar_color"/>
+    </LinearLayout>
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/jrmf_b_auth_tip"
+        android:layout_marginTop="@dimen/jrmf_dimen_8"
+        android:paddingLeft="@dimen/jrmf_dimen_16"
+        android:textSize="14sp"
+        android:textColor="@color/jrmf_b_color_b7b7b7"/>
+
+
+    <Button
+        android:id="@+id/btn_next"
+        android:layout_width="match_parent"
+        android:layout_height="44dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:layout_marginTop="@dimen/jrmf_dimen_50"
+        android:background="@drawable/jrmf_w_selector_round_btn"
+        android:text="@string/jrmf_w_confirm"
+        android:textColor="@color/jrmf_b_white"
+        android:textSize="16sp" />
+
+</LinearLayout>

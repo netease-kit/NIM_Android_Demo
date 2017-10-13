@@ -8,8 +8,8 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.fragment.ChatRoomFragment;
-import com.netease.nim.demo.chatroom.fragment.ChatRoomMessageFragment;
-import com.netease.nim.demo.chatroom.helper.ChatRoomMemberCache;
+import com.netease.nim.uikit.chatroom.fragment.ChatRoomMessageFragment;
+import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
@@ -107,6 +107,7 @@ public class ChatRoomActivity extends UI {
         }).setCanceledOnTouchOutside(false);
         hasEnterSuccess = false;
         EnterChatRoomData data = new EnterChatRoomData(roomId);
+
         enterRequest = NIMClient.getService(ChatRoomService.class).enterChatRoomEx(data, 1);
         enterRequest.setCallback(new RequestCallback<EnterChatRoomResultData>() {
             @Override
@@ -123,9 +124,6 @@ public class ChatRoomActivity extends UI {
 
             @Override
             public void onFailed(int code) {
-                // test
-                LogUtil.ui("enter chat room failed, callback code=" + code);
-
                 onLoginDone();
                 if (code == ResponseCode.RES_CHATROOM_BLACKLIST) {
                     Toast.makeText(ChatRoomActivity.this, "你已被拉入黑名单，不能再进入", Toast.LENGTH_SHORT).show();

@@ -7,7 +7,7 @@
     android:orientation="vertical">
 
     <fragment
-        android:name="com.netease.nim.demo.chatroom.fragment.ChatRoomMessageFragment"
+        android:name="com.netease.nim.uikit.chatroom.fragment.ChatRoomMessageFragment"
         android:id="@+id/chat_room_message_fragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

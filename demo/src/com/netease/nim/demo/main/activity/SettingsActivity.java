@@ -184,7 +184,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(SettingTemplate.makeSeperator());
 
         items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
-                com.netease.nim.uikit.UserPreferences.isEarPhoneModeEnable()));
+                com.netease.nim.uikit.core.UserPreferences.isEarPhoneModeEnable()));
 
         items.add(SettingTemplate.makeSeperator());
 
@@ -305,7 +305,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 setMessageNotify(checkState);
                 break;
             case TAG_SPEAKER:
-                com.netease.nim.uikit.UserPreferences.setEarPhoneModeEnable(checkState);
+                com.netease.nim.uikit.core.UserPreferences.setEarPhoneModeEnable(checkState);
                 MessageAudioControl.getInstance(SettingsActivity.this).setEarPhoneModeEnable(checkState);
                 break;
             case TAG_MSG_IGNORE:

@@ -6,8 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.chatroom.constant.ChatRoomTab;
-import com.netease.nim.demo.chatroom.fragment.ChatRoomMessageFragment;
+import com.netease.nim.uikit.chatroom.fragment.ChatRoomMessageFragment;
 
 /**
  * 直播互动基类fragment

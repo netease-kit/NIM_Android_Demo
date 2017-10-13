@@ -14,7 +14,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:bankground="@color/jrmf_b_title_bar_color"
-        app:content="转账给朋友"/>
+        app:content="@string/jrmf_rp_trans_to_friend"/>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:layout_marginTop="@dimen/dimen_8"
+            android:layout_marginTop="@dimen/jrmf_dimen_16"
             android:background="@color/jrmf_rp_white"
             android:orientation="vertical"
             >
@@ -44,7 +44,8 @@
                     android:layout_width="45dp"
                     android:layout_height="45dp"
                     android:layout_marginTop="25dp"
-                    app:jrmf_borderRadius="@dimen/dimen_8"
+                    android:src="@drawable/jrmf_default_portrait"
+                    app:jrmf_borderRadius="@dimen/jrmf_dimen_8"
                     app:jrmf_type="round"/>
 
                 <TextView
@@ -70,7 +71,7 @@
                 android:layout_below="@id/ll_userinfo"
                 android:layout_marginLeft="20dp"
                 android:layout_marginTop="26dp"
-                android:text="转账金额"
+                android:text="@string/jrmf_rp_trans_money"
                 android:textColor="@color/color_323232"
                 android:textSize="14sp"/>
 
@@ -115,7 +116,7 @@
                 android:layout_below="@id/ll_trans_money"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
-                android:layout_marginTop="@dimen/dimen_16"
+                android:layout_marginTop="@dimen/jrmf_dimen_16"
                 android:background="@color/jrmf_rp_background"/>
 
 
@@ -124,7 +125,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/line"
-                android:layout_marginTop="@dimen/dimen_16"
+                android:layout_marginTop="@dimen/jrmf_dimen_16"
                 android:orientation="horizontal">
 
                 <TextView
@@ -133,7 +134,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/ll_userinfo"
                     android:layout_marginLeft="20dp"
-                    android:text="@string/add_trans_tip"
+                    android:text="@string/jrmf_rp_add_trans_tip"
                     android:textColor="@color/jrmf_b_title_bar_color"
                     android:textSize="14sp"/>
 
@@ -143,7 +144,7 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@id/ll_userinfo"
                     android:layout_marginLeft="10dp"
-                    android:text="修改"
+                    android:text="@string/jrmf_rp_trans_update_toast"
                     android:textColor="@color/color_5b6a91"
                     android:textSize="14sp"
                     android:visibility="invisible"/>
@@ -153,14 +154,14 @@
             <Button
                 android:id="@+id/btn_trans_account"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/btn_height"
+                android:layout_height="@dimen/jrmf_rp_btn_height"
                 android:layout_below="@id/ll_trans_tip"
                 android:layout_marginBottom="24dp"
                 android:layout_marginLeft="20dp"
                 android:layout_marginRight="20dp"
                 android:layout_marginTop="24dp"
                 android:background="@drawable/jrmf_rp_selector_blue_round_btn"
-                android:text="转账"
+                android:text="@string/jrmf_rp_trans"
                 android:textColor="@color/jrmf_rp_white"
                 android:textSize="16sp"/>
 

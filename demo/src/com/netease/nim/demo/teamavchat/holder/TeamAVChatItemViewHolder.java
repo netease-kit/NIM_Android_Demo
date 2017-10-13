@@ -7,6 +7,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.teamavchat.module.TeamAVChatItem;
@@ -55,16 +56,18 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
         final int defaultResId = R.drawable.t_avchat_avatar_default;
         final String thumbUrl = makeAvatarThumbNosUrl(userInfo != null ? userInfo.getAvatar() : null, DEFAULT_AVATAR_THUMB_SIZE);
         Glide.with(DemoCache.getContext())
-                .load(thumbUrl).asBitmap().centerCrop()
-                .placeholder(defaultResId)
-                .error(defaultResId)
-                .override(DEFAULT_AVATAR_THUMB_SIZE, DEFAULT_AVATAR_THUMB_SIZE)
+                .asBitmap()
+                .load(thumbUrl)
+                .apply(new RequestOptions().centerCrop()
+                        .placeholder(defaultResId)
+                        .error(defaultResId)
+                        .override(DEFAULT_AVATAR_THUMB_SIZE, DEFAULT_AVATAR_THUMB_SIZE))
                 .into(avatarImage);
-
         if (data.state == TeamAVChatItem.STATE.STATE_WAITING) {
             // 等待接听
             Glide.with(DemoCache.getContext())
-                    .load(R.drawable.t_avchat_loading).asGif()
+                    .asGif()
+                    .load(R.drawable.t_avchat_loading)
                     .into(loadingImage);
             loadingImage.setVisibility(View.VISIBLE);
             surfaceView.setVisibility(View.INVISIBLE);

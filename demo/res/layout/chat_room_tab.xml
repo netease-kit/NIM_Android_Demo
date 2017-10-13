@@ -9,7 +9,7 @@
 
     <fragment
         android:id="@+id/chat_rooms_fragment"
-        android:name="com.netease.nim.demo.chatroom.fragment.ChatRoomsFragment"
+        android:name="com.netease.nim.demo.chatroom.fragment.ChatRoomListFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 </LinearLayout>

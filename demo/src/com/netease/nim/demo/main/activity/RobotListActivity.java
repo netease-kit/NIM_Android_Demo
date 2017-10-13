@@ -9,7 +9,7 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.RobotProfileActivity;
 import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.OnlineStateContentProvider;
+import com.netease.nim.uikit.plugin.OnlineStateContentProvider;
 import com.netease.nim.uikit.cache.RobotInfoCache;
 import com.netease.nim.uikit.common.activity.ListActivityBase;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;

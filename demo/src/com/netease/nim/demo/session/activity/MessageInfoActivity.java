@@ -146,7 +146,7 @@ public class MessageInfoActivity extends UI {
         ArrayList<String> memberAccounts = new ArrayList<>();
         memberAccounts.add(account);
         ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(memberAccounts, 50);
-        NimUIKit.startContactSelect(this, option, REQUEST_CODE_NORMAL);// 创建群
+        NimUIKit.startContactSelector(this, option, REQUEST_CODE_NORMAL);// 创建群
     }
 
     @Override

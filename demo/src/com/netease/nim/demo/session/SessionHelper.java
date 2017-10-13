@@ -49,7 +49,10 @@ import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
 import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
+import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.custom.DefaultRecentCustomization;
+import com.netease.nim.uikit.session.RecentCustomization;
 import com.netease.nim.uikit.session.SessionCustomization;
 import com.netease.nim.uikit.session.SessionEventListener;
 import com.netease.nim.uikit.session.actions.BaseAction;
@@ -62,6 +65,7 @@ import com.netease.nim.uikit.team.model.TeamExtras;
 import com.netease.nim.uikit.team.model.TeamRequestCode;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.avchat.constant.AVChatRecordState;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -73,6 +77,7 @@ import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.nimlib.sdk.robot.model.RobotAttachment;
 import com.netease.nimlib.sdk.team.model.Team;
 
@@ -92,6 +97,7 @@ public class SessionHelper {
     private static SessionCustomization teamCustomization;
     private static SessionCustomization myP2pCustomization;
     private static SessionCustomization robotCustomization;
+    private static RecentCustomization recentCustomization;
 
     private static NIMPopupMenu popupMenu;
     private static List<PopupMenuItem> menuItemList;
@@ -118,6 +124,8 @@ public class SessionHelper {
         NimUIKit.setCommonP2PSessionCustomization(getP2pCustomization());
 
         NimUIKit.setCommonTeamSessionCustomization(getTeamCustomization());
+
+        NimUIKit.setRecentCustomization(getRecentCustomization());
     }
 
     public static void startP2PSession(Context context, String account) {
@@ -320,6 +328,49 @@ public class SessionHelper {
         }
 
         return robotCustomization;
+    }
+
+    private static RecentCustomization getRecentCustomization() {
+        if (recentCustomization == null) {
+            recentCustomization = new DefaultRecentCustomization() {
+                @Override
+                public String getDefaultDigest(RecentContact recent) {
+                    switch (recent.getMsgType()) {
+                        case avchat:
+                            MsgAttachment attachment = recent.getAttachment();
+                            AVChatAttachment avchat = (AVChatAttachment) attachment;
+                            if (avchat.getState() == AVChatRecordState.Missed && !recent.getFromAccount().equals(NimUIKit.getAccount())) {
+                                // 未接通话请求
+                                StringBuilder sb = new StringBuilder("[未接");
+                                if (avchat.getType() == AVChatType.VIDEO) {
+                                    sb.append("视频电话]");
+                                } else {
+                                    sb.append("音频电话]");
+                                }
+                                return sb.toString();
+                            } else if (avchat.getState() == AVChatRecordState.Success) {
+                                StringBuilder sb = new StringBuilder();
+                                if (avchat.getType() == AVChatType.VIDEO) {
+                                    sb.append("[视频电话]: ");
+                                } else {
+                                    sb.append("[音频电话]: ");
+                                }
+                                sb.append(TimeUtil.secToTime(avchat.getDuration()));
+                                return sb.toString();
+                            } else {
+                                if (avchat.getType() == AVChatType.VIDEO) {
+                                    return ("[视频电话]");
+                                } else {
+                                    return ("[音频电话]");
+                                }
+                            }
+                    }
+                    return super.getDefaultDigest(recent);
+                }
+            };
+        }
+
+        return recentCustomization;
     }
 
     private static SessionCustomization getTeamCustomization() {

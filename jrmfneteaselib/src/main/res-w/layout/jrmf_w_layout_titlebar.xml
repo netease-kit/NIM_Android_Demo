@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.jrmf360.neteaselib.base.view.TitleBar
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/jrmf_w_titleBar"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/jrmf_b_titlebar_height"
+    app:backgroud="@color/jrmf_b_title_bar_color"
+    app:title_color="@color/jrmf_b_white"
+    app:title_size="@dimen/title_bar_text_size"
+    >
+
+</com.jrmf360.neteaselib.base.view.TitleBar>

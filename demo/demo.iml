@@ -37,13 +37,6 @@
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/androidTest/common/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/androidTest/common/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/androidTest/common/debug" isTestSource="true" generated="true" />
@@ -51,6 +44,13 @@
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/androidTest/common/debug" isTestSource="true" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/androidTest/common/debug" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/androidTest/common/debug" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/testCommonDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/assets" type="java-resource" />
@@ -132,6 +132,7 @@
     <orderEntry type="library" exported="" name="design-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="constraint-layout-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="AMap2DMap_3.0.0_AMapSearch_3.6.1_AMapLocation_3.2.1_20161228" level="project" />
+    <orderEntry type="library" exported="" name="glide-transformations-3.0.1" level="project" />
     <orderEntry type="library" exported="" name="transition-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-compat-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-fragment-25.0.1" level="project" />
@@ -140,8 +141,8 @@
     <orderEntry type="library" exported="" name="overscroll-decor-android-1.0.4" level="project" />
     <orderEntry type="library" exported="" name="ShortcutBadger-1.1.17" level="project" />
     <orderEntry type="library" exported="" name="multidex-1.0.1" level="project" />
+    <orderEntry type="library" exported="" name="nrtc-4.3.0" level="project" />
     <orderEntry type="library" exported="" name="support-core-ui-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="nrtc-4.2.0" level="project" />
     <orderEntry type="library" exported="" name="mi_push_sdk_3.2.2" level="project" />
     <orderEntry type="library" exported="" name="support-media-compat-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="HMS-SDK-2.4.0.300-" level="project" />
@@ -151,7 +152,6 @@
     <orderEntry type="library" exported="" name="recyclerview-v7-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="discrete-seekbar-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="support-core-utils-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="glide-transformations-2.0.2" level="project" />
     <orderEntry type="module" module-name="rts" exported="" />
     <orderEntry type="module" module-name="uikit" exported="" />
     <orderEntry type="module" module-name="avchat" exported="" />
@@ -162,17 +162,22 @@
     <orderEntry type="module" module-name="basesdk" exported="" />
     <orderEntry type="library" exported="" name="bm" level="project" />
     <orderEntry type="library" exported="" name="am" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-25.0.1" level="project" />
-    <orderEntry type="library" exported="" name="constraint-layout-solver-1.0.2" level="project" />
+    <orderEntry type="library" exported="" name="glide-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="java-json" level="project" />
+    <orderEntry type="library" exported="" name="annotations-4.0.0" level="project" />
     <orderEntry type="library" exported="" name="renderscript-v8" level="project" />
+    <orderEntry type="library" exported="" name="gifdecoder-4.0.0" level="project" />
+    <orderEntry type="library" exported="" name="constraint-layout-solver-1.0.2" level="project" />
     <orderEntry type="library" exported="" name="fastjson-1.1.34.android" level="project" />
-    <orderEntry type="library" exported="" name="glide-3.7.0" level="project" />
-    <orderEntry type="library" exported="" name="jrmfrp-2.1.0" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-25.3.1" level="project" />
+    <orderEntry type="library" exported="" name="disklrucache-4.0.0" level="project" />
+    <orderEntry type="library" exported="" name="gson-2.2.4" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-25.0.1" level="project" />
     <orderEntry type="library" exported="" name="libammsdk" level="project" />
-    <orderEntry type="library" exported="" name="okio-1.13.0" level="project" />
     <orderEntry type="library" exported="" name="wftsdk5.0" level="project" />
-    <orderEntry type="library" exported="" name="okhttp-3.8.0" level="project" />
+    <orderEntry type="library" exported="" name="okio-1.11.0" level="project" />
+    <orderEntry type="library" exported="" name="okhttp-3.6.0" level="project" />
+    <orderEntry type="library" exported="" name="JrmfNetease-2.1.1" level="project" />
     <orderEntry type="library" exported="" name="alipaySingle-20170510" level="project" />
     <orderEntry type="library" exported="" name="nama" level="project" />
   </component>

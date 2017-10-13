@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.netease.nim.demo"
-    android:installLocation="auto"
-    android:versionCode="38"
-    android:versionName="4.2.0">
+    android:installLocation="auto">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
@@ -19,7 +17,7 @@
     <!-- 定位相关 -->
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS"/>
+    <uses-permission android:name="android.permission.ACCESS_LOCATION_EXTRA_COMMANDS" />
 
     <!-- 多媒体 -->
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
@@ -76,20 +74,17 @@
 
         <!-- 金融魔方SDK 渠道id以及红包名称-->
         <meta-data
-            android:name="JRMF_PARTNER_ID"
-			android:value="45c6af3c98409b18a84451215d0bdd6e"/>
-        <meta-data
             android:name="JRMF_PARTNER_NAME"
-            android:value="云信红包"/>
+            android:value="云信红包" />
         <!--微信配置开始-->
         <activity
             android:name=".wxapi.WXPayEntryActivity"
             android:exported="true"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
         <activity
             android:name="com.switfpass.pay.activity.PayResultActivity"
             android:exported="true"
-            android:launchMode="singleTop"/>
+            android:launchMode="singleTop" />
 
         <!--微信配置结束-->
 
@@ -119,7 +114,7 @@
             android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
 
         <!-- 多端登录管理 -->
         <activity
@@ -127,7 +122,7 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize|stateHidden"/>
+            android:windowSoftInputMode="adjustResize|stateHidden" />
 
         <!-- 登录界面 -->
         <activity
@@ -257,19 +252,19 @@
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
             android:theme="@style/global_search_bg"
-            android:windowSoftInputMode="stateUnspecified"/>
+            android:windowSoftInputMode="stateUnspecified" />
 
         <activity
             android:name=".main.activity.GlobalSearchDetailActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".main.activity.GlobalSearchDetailActivity2"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 查看阅后即焚 -->
         <activity
@@ -489,7 +484,7 @@
             android:name="com.huawei.hms.update.provider.UpdateProvider"
             android:authorities="com.netease.nim.demo.hms.update.provider"
             android:exported="false"
-            android:grantUriPermissions="true"/>
+            android:grantUriPermissions="true" />
 
         <!-- 第三方相关 :接收Push消息（注册、Push消息、Push连接状态）广播 -->
         <receiver android:name="com.netease.nimlib.mixpush.hw.HWPushReceiver">

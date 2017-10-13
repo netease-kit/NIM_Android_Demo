@@ -27,8 +27,6 @@ import com.netease.nimlib.sdk.msg.SystemMessageService;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 
-import java.util.List;
-
 /**
  * 云信主界面（导航页）
  */
@@ -251,31 +249,26 @@ public class HomeFragment extends TFragment implements OnPageChangeListener, Rem
     private void initUnreadCover() {
         DropManager.getInstance().init(getContext(), (DropCover) findView(R.id.unread_cover),
                 new DropCover.IDropCompletedListener() {
-            @Override
-            public void onCompleted(Object id, boolean explosive) {
-                if (id == null || !explosive) {
-                    return;
-                }
+                    @Override
+                    public void onCompleted(Object id, boolean explosive) {
+                        if (id == null || !explosive) {
+                            return;
+                        }
 
-                if (id instanceof RecentContact) {
-                    RecentContact r = (RecentContact) id;
-                    NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(), r.getSessionType());
-                    LogUtil.i("HomeFragment", "clearUnreadCount, sessionId=" + r.getContactId());
-                } else if (id instanceof String) {
-                    if (((String) id).contentEquals("0")) {
-                        List<RecentContact> recentContacts = NIMClient.getService(MsgService.class).queryRecentContactsBlock();
-                        for (RecentContact r : recentContacts) {
-                            if (r.getUnreadCount() > 0) {
-                                NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(), r.getSessionType());
+                        if (id instanceof RecentContact) {
+                            RecentContact r = (RecentContact) id;
+                            NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(), r.getSessionType());
+                            LogUtil.i("HomeFragment", "clearUnreadCount, sessionId=" + r.getContactId());
+                        } else if (id instanceof String) {
+                            if (((String) id).contentEquals("0")) {
+                                NIMClient.getService(MsgService.class).clearAllUnreadCount();
+                                LogUtil.i("HomeFragment", "clearAllUnreadCount");
+                            } else if (((String) id).contentEquals("1")) {
+                                NIMClient.getService(SystemMessageService.class).resetSystemMessageUnreadCount();
+                                LogUtil.i("HomeFragment", "clearAllSystemUnreadCount");
                             }
                         }
-                        LogUtil.i("HomeFragment", "clearAllUnreadCount");
-                    } else if (((String) id).contentEquals("1")) {
-                        NIMClient.getService(SystemMessageService.class).resetSystemMessageUnreadCount();
-                        LogUtil.i("HomeFragment", "clearAllSystemUnreadCount");
                     }
-                }
-            }
-        });
+                });
     }
 }

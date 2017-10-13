@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:tools="http://schemas.android.com/tools"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@color/jrmf_rp_background"
+              android:fitsSystemWindows="true"
+              android:orientation="vertical"
+              tools:context=".rp.ui.SsRpActivity">
+
+    <com.jrmf360.neteaselib.rp.widget.ActionBarView
+        android:id="@+id/actionbar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:content="@string/jrmf_rp_send_rp"/>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/actionbar"
+        android:orientation="vertical"
+        android:paddingLeft="@dimen/jrmf_dimen_16"
+        android:paddingRight="@dimen/jrmf_dimen_16">
+
+        <TextView
+            android:id="@+id/pop_message"
+            android:layout_width="match_parent"
+            android:layout_height="20dip"
+            android:layout_marginTop="3dip"
+            android:background="@color/jrmf_rp_red"
+            android:gravity="center"
+            android:textSize="14sp"
+            tools:text="提示信息"
+            android:textColor="@color/jrmf_rp_title_bar"/>
+
+        <LinearLayout
+            android:id="@+id/ll_amount_layout"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:background="@drawable/jrmf_rp_bg_white_round"
+            android:orientation="horizontal">
+
+            <TextView
+                style="@style/text_black_16"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/jrmf_dimen_16"
+                android:layout_marginRight="@dimen/jrmf_dimen_16"
+                android:gravity="center_vertical"
+                android:text="@string/jrmf_rp_single_amount"/>
+
+            <EditText
+                android:id="@+id/et_amount"
+                style="@style/text_black_16"
+                android:layout_width="0dip"
+                android:layout_height="@dimen/jrmf_b_item_height"
+                android:layout_weight="1"
+                android:background="@null"
+                android:gravity="right|end|center_vertical"
+                android:inputType="numberDecimal"
+                android:maxLength="6"/>
+
+            <TextView
+                style="@style/text_black_16"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="@dimen/jrmf_dimen_16"
+                android:layout_marginStart="@dimen/jrmf_dimen_16"
+                android:layout_marginRight="@dimen/jrmf_dimen_16"
+                android:layout_marginEnd="@dimen/jrmf_dimen_16"
+                android:gravity="center_vertical"
+                android:text="@string/jrmf_rp_yuan"/>
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/et_message"
+            style="@style/text_black_16"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_b_item_height"
+            android:layout_marginTop="@dimen/jrmf_dimen_16"
+            android:background="@drawable/jrmf_rp_bg_white_round"
+            android:gravity="left|start|center_vertical"
+            android:textColor="@color/jrmf_b_black"
+            android:textColorHint="@color/jrmf_b_color_b7b7b7"
+            android:textSize="14sp"
+            android:hint="@string/jrmf_rp_bribery_message"
+            android:maxLength="25"
+            android:paddingLeft="@dimen/jrmf_dimen_16"
+            android:paddingRight="@dimen/jrmf_dimen_16"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/jrmf_dimen_16"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_marginTop="2dp"
+                android:background="@drawable/jrmf_rp_rmb"/>
+            <TextView
+                android:id="@+id/tv_amount"
+                style="@style/text_black_28"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/jrmf_rp_actionbar_height"
+                android:gravity="center"
+                android:textStyle="normal"
+                android:typeface="serif"
+                tools:text="0.01" />
+
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/btn_putin"
+            style="@style/text_white_16"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/jrmf_rp_btn_height"
+            android:layout_marginTop="@dimen/jrmf_dimen_16"
+            android:background="@drawable/jrmf_rp_selector_common_btn"
+            android:text="@string/jrmf_rp_btn_put"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:drawableLeft="@drawable/jrmf_b_ic_shield"
+        android:drawablePadding="@dimen/jrmf_dimen_5"
+        android:gravity="center_vertical"
+        android:text="@string/jrmf_b_shield"
+        android:textColor="@color/color_b7b7b7"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="@dimen/jrmf_dimen_8"
+        android:textSize="14sp"/>
+
+
+</RelativeLayout>

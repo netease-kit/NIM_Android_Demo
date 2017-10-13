@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:bankground="@color/jrmf_b_title_bar_color"
-        app:content="转账详情"/>
+        app:content="@string/jrmf_rp_trans_detail"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -33,7 +33,7 @@
             android:layout_marginTop="15dp"
             android:textSize="16sp"
             android:textColor="@color/color_22ac38"
-            android:text="@string/jrmf_pay_succ"/>
+            android:text="@string/jrmf_rp_pay_succ"/>
 
         <TextView
             android:id="@+id/tv_username"
@@ -42,8 +42,8 @@
             android:layout_marginTop="15dp"
             android:textSize="16sp"
             android:textColor="@color/color_818181"
-            android:layout_marginRight="@dimen/dimen_16"
-            android:layout_marginLeft="@dimen/dimen_16"
+            android:layout_marginRight="@dimen/jrmf_dimen_16"
+            android:layout_marginLeft="@dimen/jrmf_dimen_16"
             android:maxLines="1"
             android:ellipsize="end"
             tools:text="待刘备确认收款"/>
@@ -79,12 +79,12 @@
         android:id="@+id/btn_trans_finish"
         android:layout_below="@id/ll_trans_tip"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/btn_height"
+        android:layout_height="@dimen/jrmf_rp_btn_height"
         android:layout_marginTop="30dp"
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/jrmf_rp_selector_blue_round_btn"
-        android:text="完成"
+        android:text="@string/jrmf_rp_trans_finish"
         android:textColor="@color/jrmf_rp_white"
         android:textSize="16sp"/>
 

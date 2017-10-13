@@ -15,6 +15,7 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
 import java.util.List;
 
 /**
+ * 聊天室在线用户数据适配器
  * Created by huangjun on 2016/12/29.
  */
 public class ChatRoomOnlinePeopleAdapter extends BaseQuickAdapter<ChatRoomMember, BaseViewHolder> {

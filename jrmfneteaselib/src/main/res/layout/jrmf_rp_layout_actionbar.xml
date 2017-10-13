@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
              android:id="@+id/layout"
              android:layout_width="match_parent"
-             android:layout_height="@dimen/actionbar_height"
+             android:layout_height="@dimen/jrmf_rp_actionbar_height"
              android:background="@color/jrmf_rp_title_bar">
 
 
@@ -12,7 +12,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:gravity="center"
-        android:text="发红包"
+        android:text="@string/jrmf_rp_send_rp"
+        android:layout_centerInParent="true"
         android:textColor="@color/jrmf_b_white"
         android:textSize="18dip"/>
 
@@ -20,7 +21,7 @@
         android:id="@+id/iv_back"
         android:layout_width="45dp"
         android:layout_height="45dp"
-        android:layout_gravity="center_vertical"
+        android:layout_centerVertical="true"
         android:background="@drawable/jrmf_rp_top_back"
         />
-</FrameLayout>
+</RelativeLayout>

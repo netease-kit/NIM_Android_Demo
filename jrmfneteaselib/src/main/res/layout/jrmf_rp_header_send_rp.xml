@@ -12,6 +12,7 @@
         android:layout_height="45dp"
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="15dp"
+        android:src="@drawable/jrmf_default_portrait"
         />
 
     <LinearLayout
@@ -36,6 +37,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
+            android:layout_marginStart="5dp"
             android:text="共发出"
             android:textColor="@color/color_a0a0a0"
             android:textSize="10sp"/>
@@ -59,7 +61,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="元"
+            android:text="@string/jrmf_rp_yuan"
             android:textColor="@color/color_a0a0a0"
             android:textSize="10sp"/>
     </LinearLayout>
@@ -67,8 +69,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="@dimen/dimen_16"
-        android:layout_marginTop="@dimen/dimen_16"
+        android:layout_marginBottom="@dimen/jrmf_dimen_16"
+        android:layout_marginTop="@dimen/jrmf_dimen_16"
         android:gravity="center"
         android:orientation="horizontal">
 
@@ -83,7 +85,7 @@
 
     <View
         android:layout_width="match_parent"
-        android:layout_height="@dimen/dimen_16"
+        android:layout_height="@dimen/jrmf_dimen_16"
         android:background="@color/jrmf_rp_background"
         />
 

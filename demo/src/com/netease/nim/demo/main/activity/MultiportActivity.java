@@ -3,12 +3,16 @@ package com.netease.nim.demo.main.activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.event.OnlineStateEventManager;
 import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.uikit.model.ToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -98,11 +102,21 @@ public class MultiportActivity extends UI {
         return clientName;
     }
 
-    private void kickOtherOut(OnlineClient client, final View layout, final int finished) {
+    private void kickOtherOut(final OnlineClient client, final View layout, final int finished) {
         NIMClient.getService(AuthService.class).kickOtherClient(client).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
                 hideLayout(layout, finished);
+                // 如果双发都是aos，踢掉其他端之后，服务端下发状态不带多端信息，因此这里再次发布一次
+                if (client.getClientType() == ClientType.Android) {
+                    Handler handler = Handlers.sharedHandler(DemoCache.getContext());
+                    handler.postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            OnlineStateEventManager.publishOnlineStateEvent(true);
+                        }
+                    }, 2500);
+                }
             }
 
             @Override
