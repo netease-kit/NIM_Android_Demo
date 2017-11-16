@@ -42,8 +42,8 @@ public class AVChatExitCode {
 
     public static final int LOCAL_CALL_BUSY = 21; // 正在进行本地通话
 
-    public static String getExitString(int code){
-        switch (code){
+    public static String getExitString(int code) {
+        switch (code) {
             case PEER_HANGUP:
                 return "PEER_HANGUP";
             case PEER_REJECT:

@@ -17,7 +17,7 @@ public class SettingTemplate {
     }
 
     public SettingTemplate(int id, int type) {
-        this(id, null ,type, 0);
+        this(id, null, type, 0);
     }
 
     public SettingTemplate(int id, String title, String detail) {
@@ -30,11 +30,11 @@ public class SettingTemplate {
     }
 
     public SettingTemplate(int id, String title, int type, boolean checked) {
-        this(id, title ,type, 0);
+        this(id, title, type, 0);
         this.checked = checked;
     }
 
-    public SettingTemplate (int id,  String title, int type, int icon) {
+    public SettingTemplate(int id, String title, int type, int icon) {
         this.id = id;
         this.icon = icon;
         this.title = title;

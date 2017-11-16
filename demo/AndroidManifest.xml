@@ -88,6 +88,11 @@
 
         <!--微信配置结束-->
 
+        <!-- 全面屏配置 -->
+        <meta-data
+            android:name="android.max_aspect"
+            android:value="2.1" />
+
         <!-- 导航页 -->
         <activity
             android:name=".main.activity.WelcomeActivity"
@@ -394,6 +399,14 @@
         <!-- 云信进程间通信service -->
         <service android:name="com.netease.nimlib.service.ResponseService" />
 
+        <!-- 云信进程间通信provider -->
+        <!-- android:authorities="{包名}.ipc.provider", 请将com.netease.nim.demo替换为自己的包名 -->
+        <provider
+            android:name="com.netease.nimlib.ipc.NIMContentProvider"
+            android:authorities="com.netease.nim.demo.ipc.provider"
+            android:exported="false"
+            android:process=":core" />
+
         <!-- 申明自定义通知的广播接收器，第三方APP集成时，action中的com.netease.nim.demo请替换为自己的包名 -->
         <!-- 需要权限申明 <uses-permission android:name="com.netease.nim.demo.permission.RECEIVE_MSG"/> -->
         <receiver
@@ -450,7 +463,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
-
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>

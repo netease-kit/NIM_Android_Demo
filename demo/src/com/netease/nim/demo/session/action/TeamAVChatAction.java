@@ -10,17 +10,17 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.AVChatProfile;
 import com.netease.nim.demo.team.TeamAVChatHelper;
 import com.netease.nim.demo.teamavchat.activity.TeamAVChatActivity;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.SimpleCallback;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.contact.core.item.AbsContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ContactItemFilter;
+import com.netease.nim.uikit.business.contact.core.model.IContact;
+import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nim.uikit.business.team.model.TeamRequestCode;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.uikit.contact.core.item.AbsContactItem;
-import com.netease.nim.uikit.contact.core.item.ContactItem;
-import com.netease.nim.uikit.contact.core.item.ContactItemFilter;
-import com.netease.nim.uikit.contact.core.model.IContact;
-import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
-import com.netease.nim.uikit.team.model.TeamRequestCode;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
@@ -85,9 +85,9 @@ public class TeamAVChatAction extends AVChatAction {
         transaction.setTeamID(tid);
 
         // load 一把群成员
-        TeamDataCache.getInstance().fetchTeamMemberList(tid, new SimpleCallback<List<TeamMember>>() {
+        NimUIKit.getTeamProvider().fetchTeamMemberList(tid, new SimpleCallback<List<TeamMember>>() {
             @Override
-            public void onResult(boolean success, List<TeamMember> result) {
+            public void onResult(boolean success, List<TeamMember> result, int code) {
                 // 检查下 tid 是否相等
                 if (!checkTransactionValid()) {
                     return;
@@ -129,7 +129,7 @@ public class TeamAVChatAction extends AVChatAction {
                 onCreateRoomSuccess(roomName, accounts);
                 transaction.setRoomName(roomName);
 
-                String teamName = TeamDataCache.getInstance().getTeamName(transaction.getTeamID());
+                String teamName = TeamHelper.getTeamName(transaction.getTeamID());
 
                 TeamAVChatHelper.sharedInstance().setTeamAVChatting(true);
                 TeamAVChatActivity.startActivity(getActivity(), false, transaction.getTeamID(), roomName, accounts, teamName);
@@ -193,12 +193,12 @@ public class TeamAVChatAction extends AVChatAction {
         tipConfig.enableHistory = false;
         tipConfig.enableRoaming = false;
         tipConfig.enablePush = false;
-        String teamNick = TeamDataCache.getInstance().getDisplayNameWithoutMe(teamID, DemoCache.getAccount());
+        String teamNick = TeamHelper.getDisplayNameWithoutMe(teamID, DemoCache.getAccount());
         message.setContent(teamNick + getActivity().getString(R.string.t_avchat_start));
         message.setConfig(tipConfig);
         sendMessage(message);
         // 对各个成员发送点对点自定义通知
-        String teamName = TeamDataCache.getInstance().getTeamName(transaction.getTeamID());
+        String teamName = TeamHelper.getTeamName(transaction.getTeamID());
         String content = TeamAVChatHelper.sharedInstance().buildContent(roomName, teamID, accounts, teamName);
         CustomNotificationConfig config = new CustomNotificationConfig();
         config.enablePush = true;

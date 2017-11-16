@@ -13,7 +13,7 @@ import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
 import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 
@@ -181,7 +181,7 @@ public class AVChatVideo implements View.OnClickListener, ToggleListener {
     private void showProfile() {
         String account = manager.getAccount();
         headImg.loadBuddyAvatar(account);
-        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
+        nickNameTV.setText(UserInfoHelper.getUserDisplayName(account));
     }
 
     /**

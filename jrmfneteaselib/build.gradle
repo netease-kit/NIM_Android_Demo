@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         minSdkVersion rootProject.ext.minSdkVersion
-        targetSdkVersion rootProject.ext.targetSdkVersion
+        targetSdkVersion rootProject.ext.appTargetSdkVersion
         versionCode 20170914
         versionName "2.1.1"
     }
@@ -33,11 +33,16 @@ android {
     lintOptions {
         abortOnError false
     }
+
+    compileOptions {
+        sourceCompatibility rootProject.ext.appSourceCompatibility
+        targetCompatibility rootProject.ext.appTargetCompatibility
+    }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:support-v4:25.0.1'
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly("com.android.support:support-v4:${V4_SUPPORT_VERSION}")
 }
 
 

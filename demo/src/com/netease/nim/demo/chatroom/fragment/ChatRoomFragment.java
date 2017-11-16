@@ -14,9 +14,9 @@ import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomTabPagerAdapter;
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTabFragment;
 import com.netease.nim.demo.chatroom.helper.ChatRoomHelper;
-import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.uikit.common.ui.barrage.BarrageConfig;
 import com.netease.nim.uikit.common.ui.barrage.BarrageSurfaceView;
 import com.netease.nimlib.sdk.NIMClient;
@@ -82,7 +82,7 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
             @Override
             public void onClick(View v) {
                 NIMClient.getService(ChatRoomService.class).exitChatRoom(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId());
-                ((ChatRoomActivity) getActivity()).clearChatRoom();
+                ((ChatRoomActivity) getActivity()).onExitedChatRoom();
             }
         });
 

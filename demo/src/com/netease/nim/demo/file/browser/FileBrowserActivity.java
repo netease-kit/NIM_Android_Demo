@@ -12,10 +12,11 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.file_browser_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         setToolBar(R.id.toolbar, options);
 
         findViews();
@@ -62,9 +63,10 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
 
     /**
      * 显示文件列表
+     *
      * @param path 根路径
      */
-    private void showFileDir(String path){
+    private void showFileDir(String path) {
         names = new ArrayList<>();
         paths = new ArrayList<>();
         File file = new File(path);

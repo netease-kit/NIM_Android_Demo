@@ -15,7 +15,7 @@
     <string name="jrmf_w_send_rp_count">发出红包%1$d个</string>
     <string name="jrmf_w_some_yuan">%1$s元</string>
     <string name="jrmf_w_yuan">元</string>
-    <string name="jrmf_w_timeout">已过期</string>
+    <string name="jrmf_w_timeout">已过期%1$s/%2$s</string>
     <string name="jrmf_w_receive_rp">收到的红包</string>
     <string name="jrmf_w_most_luck">手气最佳</string>
     <string name="jrmf_w_send_rp">发出的红包</string>

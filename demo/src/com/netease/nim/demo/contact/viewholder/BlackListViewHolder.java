@@ -6,11 +6,11 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.BlackListAdapter;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
+import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 
 /**
  * Created by huangjun on 2015/9/22.
@@ -19,7 +19,7 @@ public class BlackListViewHolder extends TViewHolder {
     private HeadImageView headImageView;
     private TextView accountText;
     private Button removeBtn;
-    private UserInfoProvider.UserInfo user;
+    private UserInfo user;
 
     @Override
     protected int getResId() {
@@ -37,7 +37,7 @@ public class BlackListViewHolder extends TViewHolder {
     protected void refresh(Object item) {
         user = (NimUserInfo) item;
 
-        accountText.setText(NimUserInfoCache.getInstance().getUserDisplayName(user.getAccount()));
+        accountText.setText(UserInfoHelper.getUserDisplayName(user.getAccount()));
         headImageView.loadBuddyAvatar(user.getAccount());
 
         view.setOnClickListener(new View.OnClickListener() {

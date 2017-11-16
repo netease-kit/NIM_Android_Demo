@@ -56,7 +56,7 @@ public class RpOpenedMessageFilter {
                     if (delete.containsKey(recentContact.getRecentMessageId())) {
                         // 等待删除该消息之后再通知该 recentContact
                         iterator.remove();
-                    }else if (delete.isEmpty() && emptyCheck.containsKey(recentContact.getContactId())) {
+                    } else if (delete.isEmpty() && emptyCheck.containsKey(recentContact.getContactId())) {
                         // deleteChattingHistory 之后再次回调，判断是否 remove
                         if (recentContact.getRecentMessageId().isEmpty()) {
                             iterator.remove();

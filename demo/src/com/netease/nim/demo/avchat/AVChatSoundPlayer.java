@@ -25,9 +25,9 @@ public class AVChatSoundPlayer {
         NO_RESPONSE,
         PEER_BUSY,
         PEER_REJECT,
-        RING,
-        ;
+        RING,;
     }
+
     private Context context;
 
     private SoundPool soundPool;
@@ -43,9 +43,9 @@ public class AVChatSoundPlayer {
     private RingModeChangeReceiver ringModeChangeReceiver;
 
     public static AVChatSoundPlayer instance() {
-        if(instance == null) {
+        if (instance == null) {
             synchronized (AVChatSoundPlayer.class) {
-                if(instance == null) {
+                if (instance == null) {
                     instance = new AVChatSoundPlayer();
                 }
             }
@@ -62,29 +62,29 @@ public class AVChatSoundPlayer {
         this.ringerTypeEnum = type;
         int ringId = 0;
         switch (type) {
-        case NO_RESPONSE:
-            ringId = R.raw.avchat_no_response;
-            loop = false;
-            break;
-        case PEER_BUSY:
-            ringId = R.raw.avchat_peer_busy;
-            loop = false;
-            break;
-        case PEER_REJECT:
-            ringId = R.raw.avchat_peer_reject;
-            loop = false;
-            break;
-        case CONNECTING:
-            ringId = R.raw.avchat_connecting;
-            loop = true;
-            break;
-        case RING:
-            ringId = R.raw.avchat_ring;
-            loop = true;
-            break;
+            case NO_RESPONSE:
+                ringId = R.raw.avchat_no_response;
+                loop = false;
+                break;
+            case PEER_BUSY:
+                ringId = R.raw.avchat_peer_busy;
+                loop = false;
+                break;
+            case PEER_REJECT:
+                ringId = R.raw.avchat_peer_reject;
+                loop = false;
+                break;
+            case CONNECTING:
+                ringId = R.raw.avchat_connecting;
+                loop = true;
+                break;
+            case RING:
+                ringId = R.raw.avchat_ring;
+                loop = true;
+                break;
         }
 
-        if(ringId != 0) {
+        if (ringId != 0) {
             play(ringId);
         }
 
@@ -138,16 +138,16 @@ public class AVChatSoundPlayer {
         }
     };
 
-    private void registerVolumeReceiver(boolean register){
+    private void registerVolumeReceiver(boolean register) {
         if (ringModeChangeReceiver == null) {
-            ringModeChangeReceiver = new RingModeChangeReceiver() ;
+            ringModeChangeReceiver = new RingModeChangeReceiver();
         }
 
         if (register) {
             isRingModeRegister = true;
-            IntentFilter filter = new IntentFilter() ;
-            filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION) ;
-            context.registerReceiver(ringModeChangeReceiver, filter) ;
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(AudioManager.RINGER_MODE_CHANGED_ACTION);
+            context.registerReceiver(ringModeChangeReceiver, filter);
         } else {
             context.unregisterReceiver(ringModeChangeReceiver);
             isRingModeRegister = false;

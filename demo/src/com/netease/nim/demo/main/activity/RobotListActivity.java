@@ -8,12 +8,11 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.RobotProfileActivity;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.plugin.OnlineStateContentProvider;
-import com.netease.nim.uikit.cache.RobotInfoCache;
 import com.netease.nim.uikit.common.activity.ListActivityBase;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.main.OnlineStateContentProvider;
 import com.netease.nimlib.sdk.robot.model.NimRobotInfo;
 
 import java.util.List;
@@ -51,7 +50,7 @@ public class RobotListActivity extends ListActivityBase<NimRobotInfo> {
 
     @Override
     protected List<NimRobotInfo> onLoadData() {
-        return RobotInfoCache.getInstance().getAllRobotAccounts();
+        return NimUIKit.getRobotInfoProvider().getAllRobotAccounts();
     }
 
     @Override

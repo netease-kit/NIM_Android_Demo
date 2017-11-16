@@ -105,7 +105,7 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
     }
 
     @Override
-    public boolean onVideoFrameFilter(AVChatVideoFrame frame,boolean maybeDualInput) {
+    public boolean onVideoFrameFilter(AVChatVideoFrame frame, boolean maybeDualInput) {
         return false;
     }
 

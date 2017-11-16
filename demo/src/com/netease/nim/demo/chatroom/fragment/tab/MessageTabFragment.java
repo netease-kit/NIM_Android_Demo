@@ -6,7 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.chatroom.fragment.ChatRoomMessageFragment;
+import com.netease.nim.uikit.business.chatroom.fragment.ChatRoomMessageFragment;
 
 /**
  * 直播互动基类fragment
@@ -23,6 +23,7 @@ public class MessageTabFragment extends ChatRoomTabFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);

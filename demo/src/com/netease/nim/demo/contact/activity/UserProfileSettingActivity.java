@@ -16,17 +16,18 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
 import com.netease.nim.demo.main.model.Extras;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.session.actions.PickImageAction;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.media.picker.PickImageHelper;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.model.ToolBarOptions;
-import com.netease.nim.uikit.session.actions.PickImageAction;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.nos.NosService;
@@ -81,7 +82,7 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_set_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.user_information;
         setToolBar(R.id.toolbar, options);
 
@@ -128,23 +129,18 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
     }
 
     private void getUserInfo() {
-        userInfo = NimUserInfoCache.getInstance().getUserInfo(account);
+        userInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(account);
         if (userInfo == null) {
-            NimUserInfoCache.getInstance().getUserInfoFromRemote(account, new RequestCallback<NimUserInfo>() {
-                @Override
-                public void onSuccess(NimUserInfo param) {
-                    userInfo = param;
-                    updateUI();
-                }
+            NimUIKit.getUserInfoProvider().getUserInfoAsync(account, new SimpleCallback<NimUserInfo>() {
 
                 @Override
-                public void onFailed(int code) {
-                    Toast.makeText(UserProfileSettingActivity.this, "getUserInfoFromRemote failed:" + code, Toast.LENGTH_SHORT).show();
-                }
-
-                @Override
-                public void onException(Throwable exception) {
-                    Toast.makeText(UserProfileSettingActivity.this, "getUserInfoFromRemote exception:" + exception, Toast.LENGTH_SHORT).show();
+                public void onResult(boolean success, NimUserInfo result, int code) {
+                    if (success) {
+                        userInfo = result;
+                        updateUI();
+                    } else {
+                        Toast.makeText(UserProfileSettingActivity.this, "getUserInfoFromRemote failed:" + code, Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         } else {
@@ -223,7 +219,7 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK && requestCode == PICK_AVATAR_REQUEST) {
-            String path = data.getStringExtra(com.netease.nim.uikit.session.constant.Extras.EXTRA_FILE_PATH);
+            String path = data.getStringExtra(com.netease.nim.uikit.business.session.constant.Extras.EXTRA_FILE_PATH);
             updateAvatar(path);
         }
     }

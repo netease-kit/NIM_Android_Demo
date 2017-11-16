@@ -174,7 +174,7 @@ public class WatchSnapChatPictureActivity extends UI {
 
     private void onDownloadStart(final IMMessage msg) {
         setThumbnail();
-        if(TextUtils.isEmpty(((SnapChatAttachment) msg.getAttachment()).getPath())){
+        if (TextUtils.isEmpty(((SnapChatAttachment) msg.getAttachment()).getPath())) {
             loadingLayout.setVisibility(View.VISIBLE);
         } else {
             loadingLayout.setVisibility(View.GONE);

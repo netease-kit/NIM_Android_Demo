@@ -4,8 +4,7 @@ import android.widget.ImageView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.GuessAttachment;
-import com.netease.nim.uikit.chatroom.viewholder.ChatRoomMsgViewHolderBase;
-import com.netease.nim.uikit.chatroom.viewholder.ChatRoomViewHolderHelper;
+import com.netease.nim.uikit.business.chatroom.viewholder.ChatRoomMsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 
@@ -62,11 +61,5 @@ public class ChatRoomMsgViewHolderGuess extends ChatRoomMsgViewHolderBase {
         }
         imageView.setPadding(ScreenUtil.dip2px(6), 0, 0, 0);
 
-    }
-
-    @Override
-    public void setNameTextView() {
-        nameContainer.setPadding(ScreenUtil.dip2px(6), 0, 0, 0);
-        ChatRoomViewHolderHelper.setNameTextView(message, nameTextView, nameIconView, context);
     }
 }

@@ -22,9 +22,5 @@
     <string name="chatroom_fetch_member_failed">获取用户资料失败</string>
     <string name="cancel_muted">取消禁言</string>
     <string name="set_success">设置成功</string>
-    <string name="mark_member_level">设置成员等级</string>
-    <string name="set_level">设置等级</string>
-    <string name="cancel_level">取消等级</string>
-    <string name="no_data">暂无数据</string>
     <string name="internet_broken">网络断开</string>
 </resources>

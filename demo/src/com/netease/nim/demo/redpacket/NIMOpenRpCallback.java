@@ -1,10 +1,10 @@
 package com.netease.nim.demo.redpacket;
 
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.session.module.ModuleProxy;
+import com.netease.nim.uikit.business.session.module.ModuleProxy;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.CustomMessageConfig;
@@ -34,7 +34,7 @@ public class NIMOpenRpCallback {
         }
 
         IMMessage imMessage;
-        final NimUserInfo selfInfo = NimUserInfoCache.getInstance().getUserInfo(NimUIKit.getAccount());
+        final NimUserInfo selfInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(DemoCache.getAccount());
         if (selfInfo == null) {
             return;
         }

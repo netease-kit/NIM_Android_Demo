@@ -9,10 +9,10 @@ import android.net.NetworkInfo;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.FriendDataCache;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.contact.ContactChangedObserver;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -64,11 +64,12 @@ public class OnlineStateEventManager {
         }
         registerEventObserver(true);
         registerOnlineStatusObserver();
-        FriendDataCache.getInstance().registerFriendDataChangedObserver(observer, true);
+
+        NimUIKit.getContactChangedObservable().registerObserver(observer, true);
         registerNetTypeChangeObserver();
     }
 
-    private static FriendDataCache.FriendDataChangedObserver observer = new FriendDataCache.FriendDataChangedObserver() {
+    private static ContactChangedObserver observer = new ContactChangedObserver() {
         @Override
         public void onAddedOrUpdatedFriends(List<String> accounts) {
             if (accounts == null || accounts.isEmpty()) {
@@ -270,7 +271,7 @@ public class OnlineStateEventManager {
         }
         // 如果 UIKit 使用在线状态功能，则通知在线状态变化
         if (NimUIKit.enableOnlineState()) {
-            NimUIKit.notifyOnlineStateChange(changed);
+            NimUIKit.getOnlineStateChangeObservable().notifyOnlineStateChange(changed);
         }
     }
 

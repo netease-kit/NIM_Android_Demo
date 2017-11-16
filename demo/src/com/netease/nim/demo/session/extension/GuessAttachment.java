@@ -12,8 +12,7 @@ public class GuessAttachment extends CustomAttachment {
     public enum Guess {
         Shitou(1, "石头"),
         Jiandao(2, "剪刀"),
-        Bu(3, "布"),
-        ;
+        Bu(3, "布"),;
 
         private int value;
         private String desc;
@@ -24,7 +23,7 @@ public class GuessAttachment extends CustomAttachment {
         }
 
         static Guess enumOfValue(int value) {
-            for (Guess direction : values()){
+            for (Guess direction : values()) {
                 if (direction.getValue() == value) {
                     return direction;
                 }

@@ -70,7 +70,7 @@ public class MultiSelectDialog extends Dialog {
 
     private boolean isPositiveBtnVisible = true, isNegativeBtnVisible = false;
 
-    private boolean isTitleVisible = false , isMessageVisble = true, isTitleBtnVisible = false;
+    private boolean isTitleVisible = false, isMessageVisble = true, isTitleBtnVisible = false;
 
     private View.OnClickListener positiveBtnListener, negativeBtnListener;
 
@@ -89,6 +89,7 @@ public class MultiSelectDialog extends Dialog {
         getWindow().setAttributes((WindowManager.LayoutParams) Params);
         initAdapter();
     }
+
     public void setTitle(CharSequence title) {
         isTitleVisible = TextUtils.isEmpty(title) ? false : true;
         setTitleVisible(isTitleVisible);
@@ -99,9 +100,9 @@ public class MultiSelectDialog extends Dialog {
         }
     }
 
-    public void setTitleVisible(boolean visible){
+    public void setTitleVisible(boolean visible) {
         isTitleVisible = visible;
-        if(titleView != null){
+        if (titleView != null) {
             titleView.setVisibility(isTitleVisible ? View.VISIBLE : View.GONE);
         }
     }
@@ -138,9 +139,9 @@ public class MultiSelectDialog extends Dialog {
             titleTV.setTextSize(size);
     }
 
-    public void setMessageVisible(boolean visible){
+    public void setMessageVisible(boolean visible) {
         isMessageVisble = visible;
-        if(messageTV != null){
+        if (messageTV != null) {
             messageTV.setVisibility(visible ? View.VISIBLE : View.GONE);
         }
     }
@@ -154,9 +155,9 @@ public class MultiSelectDialog extends Dialog {
     }
 
     public void setMessage2(CharSequence message) {
-        if(!TextUtils.isEmpty(message)) {
+        if (!TextUtils.isEmpty(message)) {
             this.message2 = message;
-            if(null != message2TV) {
+            if (null != message2TV) {
                 message2TV.setText(message);
             }
         }
@@ -248,7 +249,7 @@ public class MultiSelectDialog extends Dialog {
             }
 
             message2TV = (TextView) findViewById(R.id.multi_select_dialog_message_2);
-            if(message2TV != null && !TextUtils.isEmpty(message2)) {
+            if (message2TV != null && !TextUtils.isEmpty(message2)) {
                 message2TV.setVisibility(View.VISIBLE);
                 message2TV.setText(message2);
             }
@@ -267,8 +268,8 @@ public class MultiSelectDialog extends Dialog {
             }
 
             boolean hasChecked = false;
-            for(Pair<String, Boolean> pair:itemTextList) {
-                if(pair.second == true) {
+            for (Pair<String, Boolean> pair : itemTextList) {
+                if (pair.second == true) {
                     hasChecked = true;
                 }
             }
@@ -296,7 +297,7 @@ public class MultiSelectDialog extends Dialog {
                 while (iter.hasNext()) {
                     Map.Entry<Integer, View.OnClickListener> entry = (Map.Entry) iter.next();
                     view = findViewById(entry.getKey());
-                    if(view != null && entry.getValue() != null) {
+                    if (view != null && entry.getValue() != null) {
                         view.setOnClickListener(entry.getValue());
                     }
                 }
@@ -331,7 +332,6 @@ public class MultiSelectDialog extends Dialog {
     }
 
 
-
     private void initAdapter() {
         listAdapter = new TAdapter<>(context, itemTextList, new TAdapterDelegate() {
             @Override
@@ -352,10 +352,10 @@ public class MultiSelectDialog extends Dialog {
         itemListener = new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                itemTextList.set(position,new Pair<String, Boolean>(itemTextList.get(position).first,!itemTextList.get(position).second));
+                itemTextList.set(position, new Pair<String, Boolean>(itemTextList.get(position).first, !itemTextList.get(position).second));
                 boolean hasChecked = false;
-                for(Pair<String, Boolean> pair:itemTextList) {
-                    if(pair.second == true) {
+                for (Pair<String, Boolean> pair : itemTextList) {
+                    if (pair.second == true) {
                         hasChecked = true;
                     }
                 }

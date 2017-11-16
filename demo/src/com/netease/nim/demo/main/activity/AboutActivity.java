@@ -5,8 +5,9 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.BuildConfig;
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 
 public class AboutActivity extends UI {
 
@@ -18,7 +19,7 @@ public class AboutActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.about_layout);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         setToolBar(R.id.toolbar, options);
 
         findViews();
@@ -31,8 +32,8 @@ public class AboutActivity extends UI {
     }
 
     private void findViews() {
-        versionGit = (TextView) findViewById(R.id.version_detail_git);
-        versionDate = (TextView) findViewById(R.id.version_detail_date);
+        versionGit = findViewById(R.id.version_detail_git);
+        versionDate = findViewById(R.id.version_detail_date);
     }
 
     private void initViewData() {

@@ -7,8 +7,8 @@ import android.widget.Toast;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.demo.main.helper.CustomNotificationCache;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.msg.model.CustomNotification;
 

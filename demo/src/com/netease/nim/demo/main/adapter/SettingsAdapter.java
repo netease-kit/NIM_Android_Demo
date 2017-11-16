@@ -14,7 +14,7 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.model.SettingTemplate;
 import com.netease.nim.demo.main.model.SettingType;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 
@@ -51,17 +51,17 @@ public class SettingsAdapter extends BaseAdapter {
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder viewHolder = null;
-        if(convertView == null) {
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(context);
             convertView = inflater.inflate(layoutID, parent, false);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        if(viewHolder == null) {
+        if (viewHolder == null) {
             viewHolder = new ViewHolder();
             viewHolder.root = convertView;
             viewHolder.headImageView = (HeadImageView) convertView.findViewById(R.id.head_image);
-            viewHolder.titleView = (TextView)  convertView.findViewById(R.id.title_label);
+            viewHolder.titleView = (TextView) convertView.findViewById(R.id.title_label);
             viewHolder.detailView = (TextView) convertView.findViewById(R.id.detail_label);
             viewHolder.switchButton = (SwitchButton) convertView.findViewById(R.id.setting_item_toggle);
             viewHolder.line = convertView.findViewById(R.id.line);
@@ -73,7 +73,7 @@ public class SettingsAdapter extends BaseAdapter {
 
 
         ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
-        if(lp != null) {
+        if (lp != null) {
             lp.height = itemHeight;
             viewHolder.root.setLayoutParams(lp);
         }
@@ -89,13 +89,13 @@ public class SettingsAdapter extends BaseAdapter {
 
 
         SettingTemplate item = items.get(position);
-        if(item.getType() == SettingType.TYPE_TOGGLE) {
+        if (item.getType() == SettingType.TYPE_TOGGLE) {
             updateToggleItem(viewHolder, item, position);
-        } else if(item.getType() == SettingType.TYPE_HEAD) {
+        } else if (item.getType() == SettingType.TYPE_HEAD) {
             updateHeadItem(viewHolder);
-        } else if(item.getType() == SettingType.TYPE_SEPERATOR) {
+        } else if (item.getType() == SettingType.TYPE_SEPERATOR) {
             updateSeperatorItem(viewHolder);
-        } else if(item.getType() == SettingType.TYPE_LINE) {
+        } else if (item.getType() == SettingType.TYPE_LINE) {
             addLineItem(viewHolder);
         } else {
             updateDefaultItem(viewHolder, item, position);
@@ -106,13 +106,14 @@ public class SettingsAdapter extends BaseAdapter {
 
     /**
      * 设置默认格式item
+     *
      * @param viewHolder
      * @param item
      * @param position
      */
     private void updateDefaultItem(ViewHolder viewHolder, SettingTemplate item, int position) {
         ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
-        if(lp != null) {
+        if (lp != null) {
             if (itemHeight > 0) {
                 lp.height = itemHeight;
             } else {
@@ -126,6 +127,7 @@ public class SettingsAdapter extends BaseAdapter {
 
     /**
      * 设置带toggle button item
+     *
      * @param viewHolder
      * @param item
      * @param position
@@ -137,18 +139,19 @@ public class SettingsAdapter extends BaseAdapter {
 
     /**
      * 设置头像和名字item
+     *
      * @param viewHolder
      */
     private void updateHeadItem(ViewHolder viewHolder) {
         ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
-        if(lp != null) {
+        if (lp != null) {
             lp.height = 200;
             viewHolder.root.setLayoutParams(lp);
             viewHolder.root.setBackgroundColor(Color.TRANSPARENT);
         }
         viewHolder.headImageView.setVisibility(View.VISIBLE);
         viewHolder.headTitleView.setVisibility(View.VISIBLE);
-        viewHolder.headTitleView.setText(NimUserInfoCache.getInstance().getUserDisplayName(DemoCache.getAccount()));
+        viewHolder.headTitleView.setText(UserInfoHelper.getUserDisplayName(DemoCache.getAccount()));
         viewHolder.headDetailView.setVisibility(View.VISIBLE);
         viewHolder.headDetailView.setText(String.format("帐号:%s", DemoCache.getAccount()));
         viewHolder.titleView.setVisibility(View.GONE);
@@ -162,7 +165,7 @@ public class SettingsAdapter extends BaseAdapter {
      */
     private void updateSeperatorItem(ViewHolder viewHolder) {
         ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
-        if(lp != null) {
+        if (lp != null) {
             lp.height = 50;
             viewHolder.root.setLayoutParams(lp);
             viewHolder.root.setBackgroundColor(Color.TRANSPARENT);
@@ -175,11 +178,12 @@ public class SettingsAdapter extends BaseAdapter {
 
     /**
      * 添加分割线
+     *
      * @param viewHolder
      */
     private void addLineItem(ViewHolder viewHolder) {
         ViewGroup.LayoutParams lp = viewHolder.root.getLayoutParams();
-        if(lp != null) {
+        if (lp != null) {
             lp.height = 2;
             viewHolder.root.setLayoutParams(lp);
         }
@@ -191,7 +195,7 @@ public class SettingsAdapter extends BaseAdapter {
     }
 
     private void setToggleView(ViewHolder viewHolder, SettingTemplate item) {
-        if(viewHolder.switchButton != null) {
+        if (viewHolder.switchButton != null) {
             viewHolder.switchButton.setVisibility(View.VISIBLE);
             viewHolder.switchButton.setCheck(item.getChekced());
             createSwitchListener(item);
@@ -200,10 +204,10 @@ public class SettingsAdapter extends BaseAdapter {
     }
 
     private void setTextView(TextView textView, String value) {
-        if(textView == null || TextUtils.isEmpty(value)) {
+        if (textView == null || TextUtils.isEmpty(value)) {
             return;
         }
-        if(textView.getVisibility() != View.VISIBLE) {
+        if (textView.getVisibility() != View.VISIBLE) {
             textView.setVisibility(View.VISIBLE);
         }
         textView.setText(value);

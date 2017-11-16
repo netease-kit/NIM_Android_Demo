@@ -17,8 +17,6 @@
 
 package com.netease.nim.demo.location.adapter;
 
-import java.util.List;
-
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
@@ -30,6 +28,8 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 
+import java.util.List;
+
 
 /**
  * An adapter to store icons.
@@ -39,7 +39,7 @@ public class IconListAdapter extends ArrayAdapter<IconListAdapter.IconListItem> 
     private static final int mResource = R.layout.icon_list_item;
 
     public IconListAdapter(Context context,
-            List<IconListItem> items) {
+                           List<IconListItem> items) {
         super(context, mResource, items);
         mInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
@@ -85,9 +85,9 @@ public class IconListAdapter extends ArrayAdapter<IconListAdapter.IconListItem> 
         public Drawable getResource() {
             return mResource;
         }
-        
-        public Object getAttach(){
-        	return mAttach;
+
+        public Object getAttach() {
+            return mAttach;
         }
     }
 }

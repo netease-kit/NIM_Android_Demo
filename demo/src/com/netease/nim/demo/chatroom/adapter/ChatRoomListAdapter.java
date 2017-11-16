@@ -24,7 +24,7 @@ public class ChatRoomListAdapter extends BaseQuickAdapter<ChatRoomInfo, BaseView
     @Override
     protected void convert(BaseViewHolder holder, ChatRoomInfo room, int position, boolean isScrolling) {
         // bg
-        holder.getConvertView().setBackgroundResource(R.drawable.list_item_bg_selecter);
+        holder.getConvertView().setBackgroundResource(R.drawable.nim_list_item_bg_selecter);
         // cover
         ImageView coverImage = holder.getView(R.id.cover_image);
         ChatRoomHelper.setCoverImage(room.getRoomId(), coverImage, false);

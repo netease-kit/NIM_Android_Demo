@@ -7,7 +7,6 @@ import android.text.TextUtils;
 
 import com.netease.nim.demo.chatroom.ChatRoomSessionHelper;
 import com.netease.nim.demo.common.util.crash.AppCrashHandler;
-import com.netease.nim.demo.common.util.sys.SystemUtil;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
@@ -16,19 +15,23 @@ import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.contact.core.query.PinYin;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.UIKitOptions;
+import com.netease.nim.uikit.business.contact.core.query.PinYin;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.NIMPushClient;
+import com.netease.nimlib.sdk.util.NIMUtil;
 
 public class NimApplication extends Application {
 
+    @Override
     protected void attachBaseContext(Context newBase) {
         super.attachBaseContext(newBase);
         MultiDex.install(this);
     }
 
+    @Override
     public void onCreate() {
         super.onCreate();
 
@@ -40,13 +43,13 @@ public class NimApplication extends Application {
 
         // 注册自定义推送消息处理，这个是可选项
         NIMPushClient.registerMixPushMessageHandler(new DemoMixPushMessageHandler());
-        NIMClient.init(this, getLoginInfo(), NimSDKOptionConfig.getSDKOptions());
+        NIMClient.init(this, getLoginInfo(), NimSDKOptionConfig.getSDKOptions(this));
 
         // crash handler
         AppCrashHandler.getInstance(this);
 
         // 以下逻辑只在主进程初始化时执行
-        if (inMainProcess()) {
+        if (NIMUtil.isMainProcess(this)) {
             // 初始化红包模块，在初始化UIKit模块之前执行
             NIMRedPacketClient.init(this);
             // init pinyin
@@ -57,7 +60,7 @@ public class NimApplication extends Application {
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
             // 云信sdk相关业务初始化
-            NimInitManager.getInstance().init(true);
+            NIMInitManager.getInstance().init(true);
         }
     }
 
@@ -73,15 +76,9 @@ public class NimApplication extends Application {
         }
     }
 
-    public boolean inMainProcess() {
-        String packageName = getPackageName();
-        String processName = SystemUtil.getProcessName(this);
-        return packageName.equals(processName);
-    }
-
     private void initUIKit() {
-        // 初始化，使用 uikit 默认的用户信息提供者
-        NimUIKit.init(this);
+        // 初始化
+        NimUIKit.init(this, buildUIKitOptions());
 
         // 设置地理位置提供者。如果需要发送地理位置消息，该参数必须提供。如果不需要，可以忽略。
         NimUIKit.setLocationProvider(new NimDemoLocationProvider());
@@ -99,5 +96,12 @@ public class NimApplication extends Application {
         //NimUIKit.setCustomPushContentProvider(new DemoPushContentProvider());
 
         NimUIKit.setOnlineStateContentProvider(new DemoOnlineStateContentProvider());
+    }
+
+    private UIKitOptions buildUIKitOptions() {
+        UIKitOptions options = new UIKitOptions();
+        // 设置app图片/音频/日志等缓存目录
+        options.appCacheDir = NimSDKOptionConfig.getAppCacheDir(this) + "/app";
+        return options;
     }
 }

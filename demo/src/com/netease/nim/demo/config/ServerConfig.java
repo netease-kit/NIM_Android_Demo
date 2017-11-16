@@ -5,9 +5,7 @@ public final class ServerConfig {
     public enum ServerEnv {
         TEST("t"),
         PRE_REL("p"),
-        REL("r"),
-
-        ;
+        REL("r"),;
         String tag;
 
         ServerEnv(String tag) {

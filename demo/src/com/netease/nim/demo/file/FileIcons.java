@@ -10,6 +10,7 @@ import java.util.Map;
 public class FileIcons {
 
     private static final Map<String, Integer> smallIconMap = new HashMap<String, Integer>();
+
     static {
         smallIconMap.put("xls", R.drawable.file_ic_session_excel);
         smallIconMap.put("ppt", R.drawable.file_ic_session_ppt);
@@ -33,6 +34,7 @@ public class FileIcons {
     }
 
     private static final Map<String, Integer> bigIconMap = new HashMap<String, Integer>();
+
     static {
         bigIconMap.put("xls", R.drawable.file_ic_detail_excel);
         bigIconMap.put("ppt", R.drawable.file_ic_detail_ppt);

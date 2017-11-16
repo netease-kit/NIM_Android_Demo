@@ -3,7 +3,7 @@ package com.netease.nim.demo.event;
 import android.text.TextUtils;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.plugin.OnlineStateContentProvider;
+import com.netease.nim.uikit.api.model.main.OnlineStateContentProvider;
 
 /**
  * Created by hzchenkang on 2017/3/31.

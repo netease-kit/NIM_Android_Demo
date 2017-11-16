@@ -2,8 +2,9 @@ package com.netease.nim.demo.main.helper;
 
 import android.text.TextUtils;
 
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SystemMessageStatus;
@@ -17,17 +18,17 @@ import com.netease.nimlib.sdk.team.model.Team;
 public class MessageHelper {
     public static String getName(String account, SessionTypeEnum sessionType) {
         if (sessionType == SessionTypeEnum.P2P) {
-            return NimUserInfoCache.getInstance().getUserDisplayName(account);
+            return UserInfoHelper.getUserDisplayName(account);
         } else if (sessionType == SessionTypeEnum.Team) {
-            return TeamDataCache.getInstance().getTeamName(account);
+            return TeamHelper.getTeamName(account);
         }
         return account;
     }
 
     public static String getVerifyNotificationText(SystemMessage message) {
         StringBuilder sb = new StringBuilder();
-        String fromAccount = NimUserInfoCache.getInstance().getUserDisplayNameYou(message.getFromAccount());
-        Team team = TeamDataCache.getInstance().getTeamById(message.getTargetId());
+        String fromAccount = UserInfoHelper.getUserDisplayNameEx(message.getFromAccount(), "你");
+        Team team = NimUIKit.getTeamProvider().getTeamById(message.getTargetId());
         if (team == null && message.getAttachObject() instanceof Team) {
             team = (Team) message.getAttachObject();
         }

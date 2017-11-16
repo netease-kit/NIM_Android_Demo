@@ -11,21 +11,21 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.contact.core.item.ContactIdFilter;
+import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
-import com.netease.nim.uikit.contact.core.item.ContactIdFilter;
-import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
-import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
-import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
+import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +39,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
     private static final int REQUEST_CODE_BLACK = 1;
 
     private ListView listView;
-    private List<UserInfoProvider.UserInfo> data = new ArrayList<>();
+    private List<UserInfo> data = new ArrayList<>();
     private BlackListAdapter adapter;
 
     public static void start(Context context) {
@@ -54,7 +54,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.black_list_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.black_list;
         setToolBar(R.id.toolbar, options);
 
@@ -83,19 +83,21 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
         List<String> unknownAccounts = new ArrayList<>();
 
         for (String account : accounts) {
-            if (!NimUserInfoCache.getInstance().hasUser(account)) {
+            UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
+            if (userInfo == null) {
                 unknownAccounts.add(account);
             } else {
-                data.add(NimUserInfoCache.getInstance().getUserInfo(account));
+                data.add(userInfo);
             }
         }
 
         if (!unknownAccounts.isEmpty()) {
-            NimUserInfoCache.getInstance().getUserInfoFromRemote(unknownAccounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
+            NimUIKit.getUserInfoProvider().getUserInfoAsync(unknownAccounts, new SimpleCallback<List<NimUserInfo>>() {
+
                 @Override
-                public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
+                public void onResult(boolean success, List<NimUserInfo> result, int code) {
                     if (code == ResponseCode.RES_SUCCESS) {
-                        data.addAll(users);
+                        data.addAll(result);
                         adapter.notifyDataSetChanged();
                     }
                 }
@@ -113,7 +115,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
                 option.title = "选择黑名单";
                 option.maxSelectNum = 1;
                 ArrayList<String> excludeAccounts = new ArrayList<>();
-                for (UserInfoProvider.UserInfo user : data) {
+                for (UserInfo user : data) {
                     if (user != null) {
                         excludeAccounts.add(user.getAccount());
                     }
@@ -136,7 +138,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
 
     private BlackListAdapter.ViewHolderEventListener viewHolderEventListener = new BlackListAdapter.ViewHolderEventListener() {
         @Override
-        public void onRemove(final UserInfoProvider.UserInfo user) {
+        public void onRemove(final UserInfo user) {
             NIMClient.getService(FriendService.class).removeFromBlackList(user.getAccount()).setCallback(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void param) {
@@ -158,7 +160,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
         }
 
         @Override
-        public void onItemClick(UserInfoProvider.UserInfo userInfo) {
+        public void onItemClick(UserInfo userInfo) {
             Log.i(TAG, "onItemClick, user account=" + userInfo.getAccount());
         }
     };
@@ -168,7 +170,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
             NIMClient.getService(FriendService.class).addToBlackList(account).setCallback(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void param) {
-                    data.add(NimUserInfoCache.getInstance().getUserInfo(account));
+                    data.add(NimUIKit.getUserInfoProvider().getUserInfo(account));
                     adapter.notifyDataSetChanged();
                 }
 
@@ -182,9 +184,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
 
                 }
             });
-
         }
-
     }
 
     @Override

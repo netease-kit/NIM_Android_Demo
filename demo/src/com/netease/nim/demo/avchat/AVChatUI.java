@@ -9,7 +9,6 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
@@ -19,7 +18,7 @@ import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.MultiSelectDialog;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.permission.BaseMPermission;
+import com.netease.nim.uikit.support.permission.BaseMPermission;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
@@ -348,7 +347,7 @@ public class AVChatUI implements AVChatUIListener {
     }
 
     public void closeRtc() {
-        if(destroyRTC) {
+        if (destroyRTC) {
             return;
         }
         if (callingState == CallStateEnum.OUTGOING_VIDEO_CALLING || callingState == CallStateEnum.VIDEO) {
@@ -380,7 +379,7 @@ public class AVChatUI implements AVChatUIListener {
      * @param type 音视频类型
      */
     private void hangUp(final int type) {
-        if(destroyRTC) {
+        if (destroyRTC) {
             return;
         }
         if (callingState == CallStateEnum.OUTGOING_VIDEO_CALLING || callingState == CallStateEnum.VIDEO) {
@@ -585,7 +584,7 @@ public class AVChatUI implements AVChatUIListener {
     }
 
     private void handleAcceptFailed() {
-        if(destroyRTC) {
+        if (destroyRTC) {
             return;
         }
         if (callingState == CallStateEnum.VIDEO_CONNECTING) {

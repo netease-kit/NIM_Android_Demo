@@ -10,10 +10,10 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.activity.WatchSnapChatPictureActivity;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.util.file.AttachmentStore;
 import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.AttachStatusEnum;
@@ -67,7 +67,11 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
         }
 
         progressLabel.setText(StringUtil.getPercentString(getMsgAdapter().getProgress(message)));
-        readReceiptTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected boolean shouldDisplayReceipt() {
+        return false;
     }
 
     protected View.OnTouchListener onTouchListener = new View.OnTouchListener() {

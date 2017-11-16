@@ -7,10 +7,10 @@ import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.bumptech.glide.request.RequestOptions;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.StickerAttachment;
+import com.netease.nim.uikit.business.session.emoji.StickerManager;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.session.emoji.StickerManager;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderThumbBase;
 
 /**
  * Created by zhoujianghua on 2015/8/7.

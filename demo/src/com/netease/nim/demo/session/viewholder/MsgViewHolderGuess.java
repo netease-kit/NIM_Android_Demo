@@ -4,14 +4,14 @@ import android.widget.ImageView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.GuessAttachment;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 
 /**
  * Created by hzliuxuanlin on 17/9/15.
  */
 
-public class MsgViewHolderGuess extends MsgViewHolderBase{
+public class MsgViewHolderGuess extends MsgViewHolderBase {
 
     private GuessAttachment guessAttachment;
     private ImageView imageView;
@@ -27,7 +27,7 @@ public class MsgViewHolderGuess extends MsgViewHolderBase{
 
     @Override
     protected void inflateContentView() {
-        imageView = (ImageView)view.findViewById(R.id.rock_paper_scissors_text);
+        imageView = (ImageView) view.findViewById(R.id.rock_paper_scissors_text);
     }
 
     @Override
@@ -35,8 +35,8 @@ public class MsgViewHolderGuess extends MsgViewHolderBase{
         if (message.getAttachment() == null) {
             return;
         }
-        guessAttachment = (GuessAttachment)message.getAttachment();
-        switch (guessAttachment.getValue().getDesc()){
+        guessAttachment = (GuessAttachment) message.getAttachment();
+        switch (guessAttachment.getValue().getDesc()) {
             case "石头":
                 imageView.setImageResource(R.drawable.message_view_rock);
                 break;

@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">云信 Demo</string>
-    <string name="title_activity_main">MainActivity</string>
-    <string name="hello_world">Hello world!</string>
     <string name="empty"></string>
     <string name="main_tab_session">会话</string>
     <string name="main_tab_contact">通讯录</string>
@@ -26,20 +24,13 @@
     <string name="register_failed">注册失败,错误码%1$s:%2$s</string>
     <string name="login_has_account">已有帐号？直接登录</string>
     <string name="done">完成</string>
-    <string name="latest_message_draft_prefix">[草稿] </string>
-    <string name="main_msg_unread_msg_count">[%d条]</string>
-    <string name="out_time">超时</string>
     <string name="prepare_data">正在准备数据...</string>
 
     <string name="readed">已读</string>
     <string name="about">关于</string>
     <string name="logout">注销</string>
-    <string name="version">版本号:</string>
-    <string name="account">帐号:</string>
-    <string name="chat">聊天</string>
     <string name="add">添加</string>
     <string name="remove">移除</string>
-    <string name="network_forbidden_login">你被服务器禁止登录，详询客服</string>
     <string name="menu">菜单</string>
     <string name="verify_reminder">验证提醒</string>
     <string name="without_content">暂无</string>
@@ -50,16 +41,10 @@
     <string name="clear_all_success">清空成功</string>
     <string name="login_failed">帐号或密码错误</string>
     <string name="login_exception">无效输入</string>
-    <string name="kick_out">帐号在其它设备登录</string>
-    <string name="edittext_length_tips">你输入的字数已经超过了限制！</string>
-    <string name="file_transfer">文件云存储</string>
     <string name="file_browser">文件浏览器</string>
     <string name="upload_text">上传</string>
     <string name="download_text">下载</string>
     <string name="now_allow_space">不能含有空格</string>
-    <string name="how_to_get_account">如何获取帐号</string>
-    <string name="multi_client_management">多端登录管理</string>
-    <string name="kick_other_client_prompt">踢掉 %1$s</string>
     <string name="open">开启</string>
     <string name="close">关闭</string>
     <string name="search_advanced_team">搜索高级群</string>
@@ -68,7 +53,6 @@
     <string name="nim_status_connecting">连接中...</string>
     <string name="nim_status_logining">登录中...</string>
     <string name="copyright">Copyright ©1997-2017 网易公司版权所有</string>
-    <string name="edit_nick">修改昵称</string>
     <string name="user_not_exsit">该用户不存在</string>
     <string name="user_tips">请检查你输入的帐号是否正确</string>
     <string name="edit">编辑</string>
@@ -97,7 +81,6 @@
     <string name="black_list_tip">你不会接收到列表中联系人的任何消息</string>
 
     <!-- 群 -->
-    <string name="create_team_activity">创建群聊</string>
     <string name="add_buddy">添加好友</string>
     <string name="create_normal_team">创建讨论组</string>
     <string name="team_apply_sending">发送中…</string>
@@ -112,12 +95,6 @@
     <string name="team_num_limit">群数量已达上限</string>
 
     <!-- 消息提醒 -->
-    <string name="toolbar_mutli_new_msg_tips">个联系人发来新消息</string>
-    <string name="toolbar_new_msg_coming_ticker_text"> 有新消息</string>
-    <string name="toolbar_new_msg_general_tips">你收到一条新消息</string>
-    <string name="toolbar_add_buddy_request_tips">请求添加你为好友</string>
-    <string name="toolbar_add_buddy_verify_tips">通过了你的好友请求</string>
-    <string name="toolbar_new_notification_general_tips">你收到一条新通知</string>
 
     <!-- 自定义通知 -->
     <string name="custom_notification">自定义通知</string>
@@ -131,13 +108,9 @@
     <!-- 消息类型 -->
     <string name="msg_type_image">图片</string>
     <string name="msg_type_audio">语音</string>
-    <string name="title_activity_add_buddy">添加好友</string>
 
     <!-- location -->
-    <string name="location_init_map_error">初始化地图服务失败</string>
     <string name="location_navigate">导航</string>
-    <string name="self_location">我在这个位置</string>
-    <string name="location_unable_to_get_you">暂时无法获取您的位置</string>
     <string name="location_loading">正在定位</string>
     <string name="location_map">地图定位</string>
     <string name="my_location">我的位置</string>
@@ -149,7 +122,6 @@
     <string name="location_open_map_error">打开地图出错</string>
 
     <!-- about -->
-    <string name="about_custom_button1">自定义1</string>
     <string name="about_clear_msg_history">清空所有聊天记录</string>
     <string name="clear_msg_history_success">聊天记录已清空</string>
 
@@ -167,7 +139,6 @@
     <string name="nim_status_bar_hidden_msg_content">你收到一条新消息</string>
 
     <!--RTS白板-->
-    <string name="doodle">白板</string>
     <string name="start_session">正在邀请对方，请稍后</string>
     <string name="callee_reject">对方拒绝了本次请求</string>
     <string name="callee_ack_timeout">对方未接受请求</string>
@@ -176,7 +147,6 @@
     <string name="session_end_record">白板演示已结束</string>
     <string name="end_session_tip_head">退出白板演示</string>
     <string name="end_session_tip_content">退出后，你将不再接收白板演示的消息内容</string>
-    <string name="target_has_leave_session">对方已离开</string>
     <string name="target_has_end_session">对方结束白板演示</string>
     <string name="accept_session">接受</string>
     <string name="reject_session">拒绝</string>
@@ -200,13 +170,8 @@
     <string name="ring">响铃模式</string>
     <string name="led">自定义呼吸灯</string>
     <string name="notice_content">通知栏标题定制</string>
-    <string name="mass_message">批量消息测试</string>
-    <string name="sqlite_fts">SQLite FTS4</string>
-    <string name="sqlite_like">SQLite LIKE</string>
-    <string name="luc">Lucene</string>
     <string name="clear_index">清理全文检索缓存</string>
     <string name="operation_too_frequent">操作太频繁</string>
-    <string name="notification_folded">通知栏折叠</string>
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
     <string name="multiport_logout">下线</string>
@@ -229,7 +194,6 @@
 
     <!-- 阅后即焚 -->
     <string name="snapchat_longclick_to_view">按住查看</string>
-    <string name="snapchat_title">阅后即焚</string>
 
     <!-- 个人名片 -->
     <string name="birthday">生 日</string>
@@ -263,7 +227,6 @@
 
     <!-- NRTC -->
     <string name="nrtc_settings">网络通话设置</string>
-    <string name="nrtc_setting_net">网络</string>
     <string name="nrtc_setting_voe">语音通话</string>
     <string name="nrtc_setting_vie">视频通话</string>
     <string name="nrtc_setting_other">其它</string>
@@ -367,10 +330,6 @@
     <string name="nrtc_setting_other_server_record_video">视频服务器录制</string>
     <string name="nrtc_setting_voe_call_proximity_key">nrtc_setting_voe_call_proximity_key</string>
     <string name="nrtc_setting_voe_call_proximity">通话期间关闭屏幕</string>
-    <string name="nrtc_setting_voe_muted_key">nrtc_setting_voe_muted_key</string>
-    <string name="nrtc_setting_voe_muted">语音流静音处理</string>
-    <string name="nrtc_setting_vie_muted_key">nrtc_setting_vie_muted_key</string>
-    <string name="nrtc_setting_vie_muted">视频流静音处理</string>
     <string name="nrtc_setting_vie_fps_reported_key">nrtc_setting_vie_fps_reported_key</string>
     <string name="nrtc_setting_vie_fps_reported">帧率汇报</string>
     <string name="nrtc_setting_vie_max_bitrate_key">nrtc_setting_vie_max_bitrate_key</string>

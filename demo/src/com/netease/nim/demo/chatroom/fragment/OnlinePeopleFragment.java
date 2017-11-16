@@ -18,8 +18,9 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomOnlinePeopleAdapter;
-import com.netease.nim.uikit.cache.SimpleCallback;
-import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.model.chatroom.RoomMemberChangedObserver;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
@@ -154,7 +155,7 @@ public class OnlinePeopleFragment extends TFragment {
         adapter.setEnableLoadMore(false);
         getData(true, new SimpleCallback<List<ChatRoomMember>>() {
             @Override
-            public void onResult(final boolean success, final List<ChatRoomMember> result) {
+            public void onResult(final boolean success, final List<ChatRoomMember> result, int code) {
                 final Activity context = getActivity();
                 if (context == null) {
                     return;
@@ -189,7 +190,7 @@ public class OnlinePeopleFragment extends TFragment {
     private void loadMoreData() {
         getData(false, new SimpleCallback<List<ChatRoomMember>>() {
             @Override
-            public void onResult(final boolean success, final List<ChatRoomMember> result) {
+            public void onResult(final boolean success, final List<ChatRoomMember> result, int code) {
                 Activity context = getActivity();
                 if (context == null) {
                     return;
@@ -225,10 +226,10 @@ public class OnlinePeopleFragment extends TFragment {
         final long time = isNormalEmpty ? enterTime : updateTime;
         final int expectNum = LIMIT;
         final List<ChatRoomMember> resultList = new ArrayList<>();
-        ChatRoomMemberCache.getInstance().fetchRoomMembers(roomId, memberQueryType, time, expectNum, new
+        NimUIKit.getChatRoomProvider().fetchRoomMembers(roomId, memberQueryType, time, expectNum, new
                 SimpleCallback<List<ChatRoomMember>>() {
                     @Override
-                    public void onResult(boolean success, List<ChatRoomMember> result) {
+                    public void onResult(boolean success, List<ChatRoomMember> result, int code) {
                         if (success) {
                             // 结果集
                             resultList.addAll(result);
@@ -237,25 +238,25 @@ public class OnlinePeopleFragment extends TFragment {
                             if (memberQueryType == MemberQueryType.ONLINE_NORMAL && result.size() < expectNum) {
                                 isNormalEmpty = true;
                                 final int expectNum2 = expectNum - result.size();
-                                ChatRoomMemberCache.getInstance().fetchRoomMembers(roomId, MemberQueryType.GUEST, enterTime, expectNum2, new
+                                NimUIKit.getChatRoomProvider().fetchRoomMembers(roomId, MemberQueryType.GUEST, enterTime, expectNum2, new
                                         SimpleCallback<List<ChatRoomMember>>() {
                                             @Override
-                                            public void onResult(boolean success, List<ChatRoomMember> result) {
+                                            public void onResult(boolean success, List<ChatRoomMember> result, int code) {
                                                 if (success) {
                                                     // 结果集
                                                     resultList.addAll(result);
-                                                    callback.onResult(true, resultList);
+                                                    callback.onResult(true, resultList, code);
                                                 } else {
-                                                    callback.onResult(false, null);
+                                                    callback.onResult(false, null, code);
                                                 }
                                             }
                                         });
                             } else {
                                 // 固定成员拉取到位或者拉取游客成功
-                                callback.onResult(true, resultList);
+                                callback.onResult(true, resultList, code);
                             }
                         } else {
-                            callback.onResult(false, null);
+                            callback.onResult(false, null, code);
                         }
                     }
                 });
@@ -271,10 +272,10 @@ public class OnlinePeopleFragment extends TFragment {
      * *************************** 成员操作监听 ****************************
      */
     private void registerObservers(boolean register) {
-        ChatRoomMemberCache.getInstance().registerRoomMemberChangedObserver(roomMemberChangedObserver, register);
+        NimUIKit.getChatRoomMemberChangedObservable().registerObserver(roomMemberChangedObserver, register);
     }
 
-    ChatRoomMemberCache.RoomMemberChangedObserver roomMemberChangedObserver = new ChatRoomMemberCache.RoomMemberChangedObserver() {
+    RoomMemberChangedObserver roomMemberChangedObserver = new RoomMemberChangedObserver() {
         @Override
         public void onRoomMemberIn(ChatRoomMember member) {
         }
@@ -313,9 +314,9 @@ public class OnlinePeopleFragment extends TFragment {
 
     // 弹出菜单前，获取成员最新数据
     private void fetchMemberInfo(final ChatRoomMember member) {
-        ChatRoomMemberCache.getInstance().fetchMember(roomId, member.getAccount(), new SimpleCallback<ChatRoomMember>() {
+        NimUIKit.getChatRoomProvider().fetchMember(roomId, member.getAccount(), new SimpleCallback<ChatRoomMember>() {
             @Override
-            public void onResult(boolean success, ChatRoomMember result) {
+            public void onResult(boolean success, ChatRoomMember result, int code) {
                 if (success) {
                     showLongClickMenu(result);
                 } else {
@@ -333,11 +334,13 @@ public class OnlinePeopleFragment extends TFragment {
         // 3、用户自己是普通成员
         // 4、用户自己是受限用户
         // 5、用户自己是游客
+        MemberType memberType = NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType();
+
         if (currentMember.getMemberType() == MemberType.CREATOR
                 || currentMember.getAccount().equals(DemoCache.getAccount())
-                || ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() == MemberType.NORMAL
-                || ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() == MemberType.LIMITED
-                || ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() == MemberType.GUEST) {
+                || memberType == MemberType.NORMAL
+                || memberType == MemberType.LIMITED
+                || memberType == MemberType.GUEST) {
             return;
         }
         CustomAlertDialog alertDialog = new CustomAlertDialog(getActivity());
@@ -395,7 +398,7 @@ public class OnlinePeopleFragment extends TFragment {
     private void addAdminItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
         // 被操作者比操作者权限大, 则返回
         if (chatRoomMember.getMemberType() == MemberType.ADMIN
-                && ChatRoomMemberCache.getInstance().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() != MemberType.CREATOR) {
+                && NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() != MemberType.CREATOR) {
             return;
         }
         final boolean isAdmin = chatRoomMember.getMemberType() == MemberType.ADMIN;

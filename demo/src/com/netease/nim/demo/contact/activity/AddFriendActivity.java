@@ -10,13 +10,15 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.uikit.model.ToolBarOptions;
-import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 /**
@@ -38,7 +40,7 @@ public class AddFriendActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_friend_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.add_buddy;
         setToolBar(R.id.toolbar, options);
 
@@ -71,32 +73,24 @@ public class AddFriendActivity extends UI {
     private void query() {
         DialogMaker.showProgressDialog(this, null, false);
         final String account = searchEdit.getText().toString().toLowerCase();
-        NimUserInfoCache.getInstance().getUserInfoFromRemote(account, new RequestCallback<NimUserInfo>() {
+        NimUIKit.getUserInfoProvider().getUserInfoAsync(account, new SimpleCallback<NimUserInfo>() {
             @Override
-            public void onSuccess(NimUserInfo user) {
+            public void onResult(boolean success, NimUserInfo result, int code) {
                 DialogMaker.dismissProgressDialog();
-                if (user == null) {
-                    EasyAlertDialogHelper.showOneButtonDiolag(AddFriendActivity.this, R.string.user_not_exsit,
-                            R.string.user_tips, R.string.ok, false, null);
-                } else {
-                    UserProfileActivity.start(AddFriendActivity.this, account);
-                }
-            }
-
-            @Override
-            public void onFailed(int code) {
-                DialogMaker.dismissProgressDialog();
-                if (code == 408) {
+                if (success) {
+                    if (result == null) {
+                        EasyAlertDialogHelper.showOneButtonDiolag(AddFriendActivity.this, R.string.user_not_exsit,
+                                R.string.user_tips, R.string.ok, false, null);
+                    } else {
+                        UserProfileActivity.start(AddFriendActivity.this, account);
+                    }
+                } else if (code == 408) {
                     Toast.makeText(AddFriendActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                } else if (code == ResponseCode.RES_EXCEPTION) {
+                    Toast.makeText(AddFriendActivity.this, "on exception", Toast.LENGTH_SHORT).show();
                 } else {
                     Toast.makeText(AddFriendActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
                 }
-            }
-
-            @Override
-            public void onException(Throwable exception) {
-                DialogMaker.dismissProgressDialog();
-                Toast.makeText(AddFriendActivity.this, "on exception:" + exception.getMessage(), Toast.LENGTH_SHORT).show();
             }
         });
     }

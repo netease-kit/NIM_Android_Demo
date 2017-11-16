@@ -16,14 +16,15 @@ import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
-import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.jsbridge.JsBridgeActivity;
 import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.model.SettingTemplate;
 import com.netease.nim.demo.main.model.SettingType;
+import com.netease.nim.demo.redpacket.NIMRedPacketClient;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.model.ToolBarOptions;
-import com.netease.nim.uikit.session.audio.MessageAudioControl;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -80,7 +81,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.settings;
         setToolBar(R.id.toolbar, options);
 
@@ -93,14 +94,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     @Override
     protected void onResume() {
         super.onResume();
-        // android2.3以下版本 布局混乱的问题
-        if (Build.VERSION.SDK_INT <= 10) {
-            adapter = null;
-            initAdapter();
-            adapter.notifyDataSetChanged();
-        } else {
-            adapter.notifyDataSetChanged();
-        }
+        adapter.notifyDataSetChanged();
     }
 
     @Override
@@ -184,7 +178,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(SettingTemplate.makeSeperator());
 
         items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
-                com.netease.nim.uikit.core.UserPreferences.isEarPhoneModeEnable()));
+                NimUIKit.isEarPhoneModeEnable()));
 
         items.add(SettingTemplate.makeSeperator());
 
@@ -305,8 +299,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 setMessageNotify(checkState);
                 break;
             case TAG_SPEAKER:
-                com.netease.nim.uikit.core.UserPreferences.setEarPhoneModeEnable(checkState);
-                MessageAudioControl.getInstance(SettingsActivity.this).setEarPhoneModeEnable(checkState);
+                NimUIKit.setEarPhoneModeEnable(checkState);
                 break;
             case TAG_MSG_IGNORE:
                 UserPreferences.setMsgIgnore(checkState);

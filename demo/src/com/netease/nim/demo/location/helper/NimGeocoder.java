@@ -1,14 +1,5 @@
 package com.netease.nim.demo.location.helper;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
@@ -27,6 +18,15 @@ import com.netease.nim.uikit.common.framework.infra.ManagedTask;
 import com.netease.nim.uikit.common.framework.infra.TaskExecutor;
 import com.netease.nim.uikit.common.framework.infra.TaskManager;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 public class NimGeocoder {
 
@@ -63,26 +63,27 @@ public class NimGeocoder {
     }
 
     public void queryAddress(double latitude, double longitude) {
-    	queryAddress(latitude, longitude, false);
+        queryAddress(latitude, longitude, false);
     }
-    
+
     /**
      * 是否来次定位坐标（用于缓存）
+     *
      * @param latitude
      * @param longitude
      * @param fromLocation
      */
     public void queryAddress(double latitude, double longitude, boolean fromLocation) {
-    	NimLocation location = new NimLocation(latitude, longitude);
+        NimLocation location = new NimLocation(latitude, longitude);
         location.setFromLocation(fromLocation);
         queryList.add(location);
         query();
     }
 
     public void queryAddressNow(double latitude, double longitude) {
-    	queryAddressNow(latitude, longitude, false);
+        queryAddressNow(latitude, longitude, false);
     }
-    
+
     /**
      * @param latitude
      * @param longitude

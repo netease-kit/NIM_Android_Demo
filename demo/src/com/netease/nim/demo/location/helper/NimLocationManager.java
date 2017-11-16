@@ -28,8 +28,8 @@ public class NimLocationManager implements AMapLocationListener {
         void onLocationChanged(NimLocation location);
     }
 
-	private static final String TAG = "NimLocationManager";
-	private Context mContext;
+    private static final String TAG = "NimLocationManager";
+    private Context mContext;
     private NimLocationListener mListener;
     private Criteria criteria;
 
@@ -50,21 +50,21 @@ public class NimLocationManager implements AMapLocationListener {
 
     private Geocoder mGeocoder;
 
-	public NimLocationManager(Context context, NimLocationListener oneShotListener) {
-		mContext = context;
+    public NimLocationManager(Context context, NimLocationListener oneShotListener) {
+        mContext = context;
         mGeocoder = new Geocoder(mContext, Locale.getDefault());
-		mListener = oneShotListener;
-	}
-	
-	public static boolean isLocationEnable(Context context) {
-		LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
-		Criteria cri = new Criteria();
-		cri.setAccuracy(Criteria.ACCURACY_COARSE);
-		cri.setAltitudeRequired(false);
-		cri.setBearingRequired(false);
-		cri.setCostAllowed(false);
-		String bestProvider = locationManager.getBestProvider(cri, true);
-		return !TextUtils.isEmpty(bestProvider);
+        mListener = oneShotListener;
+    }
+
+    public static boolean isLocationEnable(Context context) {
+        LocationManager locationManager = (LocationManager) context.getSystemService(Context.LOCATION_SERVICE);
+        Criteria cri = new Criteria();
+        cri.setAccuracy(Criteria.ACCURACY_COARSE);
+        cri.setAltitudeRequired(false);
+        cri.setBearingRequired(false);
+        cri.setCostAllowed(false);
+        String bestProvider = locationManager.getBestProvider(cri, true);
+        return !TextUtils.isEmpty(bestProvider);
     }
 
     public Location getLastKnownLocation() {
@@ -115,7 +115,7 @@ public class NimLocationManager implements AMapLocationListener {
                     getAMapLocationAddress(aMapLocation);
                 }
             });
-        }else {
+        } else {
             onLocation(null, MSG_LOCATION_ERROR);
         }
     }
@@ -126,55 +126,55 @@ public class NimLocationManager implements AMapLocationListener {
         msg.obj = location;
         mMsgHandler.sendMessage(msg);
     }
-	
-	private class MsgHandler extends Handler {
 
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case MSG_LOCATION_WITH_ADDRESS_OK:
-				if (mListener != null && msg.obj != null) {
-                    if(msg.obj != null) {
-                        NimLocation loc = (NimLocation) msg.obj;
-                        loc.setStatus(NimLocation.Status.HAS_LOCATION_ADDRESS);
-                        
-                        // 记录地址信息
-                        loc.setFromLocation(true);
-                        
-                        mListener.onLocationChanged(loc);
-                    } else {
-                    	NimLocation loc = new NimLocation();
+    private class MsgHandler extends Handler {
+
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case MSG_LOCATION_WITH_ADDRESS_OK:
+                    if (mListener != null && msg.obj != null) {
+                        if (msg.obj != null) {
+                            NimLocation loc = (NimLocation) msg.obj;
+                            loc.setStatus(NimLocation.Status.HAS_LOCATION_ADDRESS);
+
+                            // 记录地址信息
+                            loc.setFromLocation(true);
+
+                            mListener.onLocationChanged(loc);
+                        } else {
+                            NimLocation loc = new NimLocation();
+                            mListener.onLocationChanged(loc);
+                        }
+                    }
+                    break;
+                case MSG_LOCATION_POINT_OK:
+                    if (mListener != null) {
+                        if (msg.obj != null) {
+                            NimLocation loc = (NimLocation) msg.obj;
+                            loc.setStatus(NimLocation.Status.HAS_LOCATION);
+                            mListener.onLocationChanged(loc);
+                        } else {
+                            NimLocation loc = new NimLocation();
+                            mListener.onLocationChanged(loc);
+                        }
+                    }
+                    break;
+                case MSG_LOCATION_ERROR:
+                    if (mListener != null) {
+                        NimLocation loc = new NimLocation();
                         mListener.onLocationChanged(loc);
                     }
-                }
-				break;
-			case MSG_LOCATION_POINT_OK:
-				if (mListener != null) {
-                    if(msg.obj != null) {
-                    	NimLocation loc = (NimLocation) msg.obj;
-                        loc.setStatus(NimLocation.Status.HAS_LOCATION);
-                        mListener.onLocationChanged(loc);
-                    } else {
-                    	NimLocation loc = new NimLocation();
-                        mListener.onLocationChanged(loc);
-                    }
-                }
-				break;
-            case MSG_LOCATION_ERROR:
-                if(mListener != null) {
-                	NimLocation loc = new NimLocation();
-                    mListener.onLocationChanged(loc);
-                }
-                break;
-			default:
-				break;
-			}
-			super.handleMessage(msg);
-		}
+                    break;
+                default:
+                    break;
+            }
+            super.handleMessage(msg);
+        }
 
-	}
-	
-	private void getAMapLocationAddress(final AMapLocation loc) {
+    }
+
+    private void getAMapLocationAddress(final AMapLocation loc) {
         if (TextUtils.isEmpty(loc.getAddress())) {
             executor.execute(new Runnable() {
                 @Override
@@ -195,8 +195,8 @@ public class NimLocationManager implements AMapLocationListener {
             onLocation(location, MSG_LOCATION_WITH_ADDRESS_OK);
         }
     }
-	
-	private boolean getLocationAddress(NimLocation location) {
+
+    private boolean getLocationAddress(NimLocation location) {
         List<Address> list;
         boolean ret = false;
         try {

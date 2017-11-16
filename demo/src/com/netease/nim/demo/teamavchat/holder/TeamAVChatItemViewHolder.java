@@ -11,14 +11,14 @@ import com.bumptech.glide.request.RequestOptions;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.teamavchat.module.TeamAVChatItem;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 import com.netease.nimlib.sdk.nos.model.NosThumbParam;
 import com.netease.nimlib.sdk.nos.util.NosThumbImageUtil;
-import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
+import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 
 import static android.view.View.GONE;
 
@@ -50,9 +50,9 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
     }
 
     protected void refresh(final TeamAVChatItem data) {
-        nickNameText.setText(TeamDataCache.getInstance().getDisplayNameWithoutMe(data.teamId, data.account));
+        nickNameText.setText(TeamHelper.getDisplayNameWithoutMe(data.teamId, data.account));
 
-        final UserInfoProvider.UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(data.account);
+        final UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(data.account);
         final int defaultResId = R.drawable.t_avchat_avatar_default;
         final String thumbUrl = makeAvatarThumbNosUrl(userInfo != null ? userInfo.getAvatar() : null, DEFAULT_AVATAR_THUMB_SIZE);
         Glide.with(DemoCache.getContext())

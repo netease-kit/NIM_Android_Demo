@@ -10,7 +10,7 @@ import android.widget.LinearLayout;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.teamavchat.adapter.TeamAVChatVoiceMuteAdapter;
 import com.netease.nim.demo.teamavchat.module.TeamAVChatVoiceMuteItem;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public class TeamAVChatVoiceMuteDialog extends CustomAlertDialog {
             TeamAVChatVoiceMuteItem item = new TeamAVChatVoiceMuteItem();
             item.setAccount(voiceMute.first);
             item.setMute(voiceMute.second);
-            item.setDisplayName(TeamDataCache.getInstance().getTeamMemberDisplayName(teamId, item.getAccount()));
+            item.setDisplayName(TeamHelper.getTeamMemberDisplayName(teamId, item.getAccount()));
             data.add(item);
         }
         adapter = new TeamAVChatVoiceMuteAdapter(context, data);

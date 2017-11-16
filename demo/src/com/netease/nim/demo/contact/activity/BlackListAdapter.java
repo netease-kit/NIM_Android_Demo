@@ -4,17 +4,16 @@ import android.content.Context;
 
 import com.netease.nim.uikit.common.adapter.TAdapter;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
-import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
+import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 
 import java.util.List;
 
 /**
  * Created by huangjun on 2015/8/12.
  */
-public class BlackListAdapter extends TAdapter<UserInfoProvider.UserInfo> {
+public class BlackListAdapter extends TAdapter<UserInfo> {
 
-    public BlackListAdapter(Context context, List<UserInfoProvider.UserInfo> items, TAdapterDelegate delegate, ViewHolderEventListener
+    BlackListAdapter(Context context, List<UserInfo> items, TAdapterDelegate delegate, ViewHolderEventListener
             viewHolderEventListener) {
         super(context, items, delegate);
 
@@ -22,9 +21,9 @@ public class BlackListAdapter extends TAdapter<UserInfoProvider.UserInfo> {
     }
 
     public interface ViewHolderEventListener {
-        void onItemClick(UserInfoProvider.UserInfo user);
+        void onItemClick(UserInfo user);
 
-        void onRemove(UserInfoProvider.UserInfo user);
+        void onRemove(UserInfo user);
     }
 
     private ViewHolderEventListener viewHolderEventListener;

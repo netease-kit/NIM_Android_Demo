@@ -6,21 +6,22 @@ buildscript {
 
 allprojects {
     repositories {
-//        maven {
-//        url 'http://maven.oschina.net/content/groups/public/'
-//    }
+        google()
         jcenter()
-
+        mavenCentral()
     }
 }
 
 ext {
-    compileSdkVersion = 25
-    buildToolsVersion = '25.0.3'
+    compileSdkVersion = 26
+    buildToolsVersion = '26.0.2'
     minSdkVersion = 14
-    targetSdkVersion = 25
-    versionCode = 39
-    versionName = '4.3.0'
-    targetCompatibility = 1.7
-    sourceCompatibility = 1.7
+    targetSdkVersion = 26
+    appTargetSdkVersion = 26
+    versionCode = 40
+    versionName = '4.4.0'
+    sdkSourceCompatibility = 1.7
+    sdkTargetCompatibility = 1.7
+    appSourceCompatibility = 1.7
+    appTargetCompatibility = 1.7
 }

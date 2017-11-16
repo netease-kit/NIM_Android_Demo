@@ -10,12 +10,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.business.session.emoji.MoonUtil;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
-import com.netease.nim.uikit.session.emoji.MoonUtil;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -29,18 +29,18 @@ public class SearchMessageAdapter extends BaseAdapter {
     private Context context;
     private List<IMMessage> messages;
     private String keyword;
-    
+
     public SearchMessageAdapter(Context context, List<IMMessage> messages) {
         this.context = context;
         this.messages = messages;
-        
+
         this.keyword = "";
     }
 
     public void setKeyword(String keyword) {
         this.keyword = keyword;
     }
-    
+
     @Override
     public int getCount() {
         return messages.size();
@@ -98,29 +98,29 @@ public class SearchMessageAdapter extends BaseAdapter {
         }
 
         private void refreshNickname(IMMessage message) {
-        	int labelWidth = ScreenUtil.screenWidth;
-        	// 减去固定的头像和时间宽度
-        	labelWidth -= ScreenUtil.dip2px(70 + 70);
-        	tvNickname.setMaxWidth(labelWidth);
+            int labelWidth = ScreenUtil.screenWidth;
+            // 减去固定的头像和时间宽度
+            labelWidth -= ScreenUtil.dip2px(70 + 70);
+            tvNickname.setMaxWidth(labelWidth);
             if (message.getSessionType() == SessionTypeEnum.Team) {
-                tvNickname.setText(TeamDataCache.getInstance().getTeamMemberDisplayName(message.getSessionId(), message.getFromAccount()));
+                tvNickname.setText(TeamHelper.getTeamMemberDisplayName(message.getSessionId(), message.getFromAccount()));
             } else {
-                tvNickname.setText(NimUserInfoCache.getInstance().getUserDisplayName(message.getFromAccount()));
+                tvNickname.setText(UserInfoHelper.getUserDisplayName(message.getFromAccount()));
             }
         }
 
         private void refreshContent(IMMessage message) {
             MoonUtil.identifyFaceExpressionAndTags(context, tvMessage, message.getContent(), ImageSpan.ALIGN_BOTTOM, 0.45f);
 //            SpanUtil.makeKeywordSpan(context, tvMessage, keyword);
-            
+
             switch (message.getStatus()) {
-            case fail:
-                imgMsgStatus.setImageResource(R.drawable.nim_g_ic_failed_small);
-                imgMsgStatus.setVisibility(View.VISIBLE);
-                break;
-            default:
-                imgMsgStatus.setVisibility(View.GONE);
-                break;
+                case fail:
+                    imgMsgStatus.setImageResource(R.drawable.nim_g_ic_failed_small);
+                    imgMsgStatus.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    imgMsgStatus.setVisibility(View.GONE);
+                    break;
             }
         }
 

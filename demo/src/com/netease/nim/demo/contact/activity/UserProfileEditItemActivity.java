@@ -18,19 +18,19 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
-import com.netease.nim.uikit.cache.FriendDataCache;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.constant.FriendFieldEnum;
-import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.constant.UserInfoFieldEnum;
 
@@ -96,7 +96,7 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
             setContentView(R.layout.user_profile_birth_layout);
             findBirthViews();
         }
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         setToolBar(R.id.toolbar, options);
         initActionbar();
         setTitles();
@@ -152,9 +152,9 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
             editText.setFilters(new InputFilter[]{new InputFilter.LengthFilter(16)});
         }
         if (key == UserConstant.KEY_ALIAS) {
-            Friend friend = FriendDataCache.getInstance().getFriendByAccount(data);
-            if (friend != null && !TextUtils.isEmpty(friend.getAlias())) {
-                editText.setText(friend.getAlias());
+            String alias = NimUIKit.getContactProvider().getAlias(data);
+            if (!TextUtils.isEmpty(alias)) {
+                editText.setText(alias);
             } else {
                 editText.setHint("请输入备注名...");
             }
@@ -328,7 +328,7 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
 
         @Override
         public void onDateChanged(DatePicker view, int year, int month, int day) {
-            if(year >= minYear && year <= maxYear){
+            if (year >= minYear && year <= maxYear) {
                 currYear = year;
                 currMonthOfYear = month;
                 currDayOfMonth = day;
@@ -342,11 +342,11 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
             }
         }
 
-        public void setMaxYear(int year){
+        public void setMaxYear(int year) {
             maxYear = year;
         }
 
-        public void setMinYear(int year){
+        public void setMinYear(int year) {
             minYear = year;
         }
 

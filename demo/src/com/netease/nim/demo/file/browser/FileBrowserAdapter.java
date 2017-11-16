@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/4/17.
  */
-public class FileBrowserAdapter extends TAdapter{
+public class FileBrowserAdapter extends TAdapter {
 
     public static class FileManagerItem {
         private String name;

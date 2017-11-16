@@ -580,6 +580,7 @@ public class AVChatActivity extends UI implements AVChatUI.AVChatListener, AVCha
 
     @Override
     public void onJoinedChannel(int code, String audioFile, String videoFile, int i) {
+        LogUtil.d(TAG, "audioFile -> " + audioFile+" videoFile -> " + videoFile);
         handleWithConnectServerResult(code);
     }
 

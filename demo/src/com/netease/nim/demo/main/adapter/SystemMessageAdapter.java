@@ -4,9 +4,9 @@ import android.content.Context;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
 import com.netease.nim.uikit.common.adapter.TAdapter;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
-import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
 
 import java.util.List;
 

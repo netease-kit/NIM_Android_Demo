@@ -14,7 +14,7 @@ import android.support.v4.app.NotificationCompat;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.teamavchat.activity.TeamAVChatActivity;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
 
 /**
  * 群视频聊天通知栏
@@ -35,7 +35,7 @@ public class TeamAVChatNotification {
 
     public void init(String tid) {
         this.tid = tid;
-        this.displayName = TeamDataCache.getInstance().getTeamName(tid);
+        this.displayName = TeamHelper.getTeamName(tid);
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
     }
 

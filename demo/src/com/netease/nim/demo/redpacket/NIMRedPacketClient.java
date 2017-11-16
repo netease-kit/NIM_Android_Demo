@@ -12,9 +12,8 @@ import com.jrmf360.neteaselib.rp.JrmfRpClient;
 import com.jrmf360.neteaselib.rp.utils.callback.GrabRpCallBack;
 import com.jrmf360.neteaselib.wallet.JrmfWalletClient;
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -110,9 +109,11 @@ public class NIMRedPacketClient {
      */
     private static void initJrmfSDK(Context context) {
         //初始化红包sdk
-        JrmfClient.isDebug(true);
+        JrmfClient.isDebug(false);
 
         JrmfClient.init(context);
+
+        // com.jrmf360.neteaselib.base.utils.LogUtil.init(true);
         // 设置微信appid，如果不使用微信支付可以不调用，此处需要开发者到微信支付申请appid
         // JrmfClient.setWxAppid("xxxxxx");
     }
@@ -122,7 +123,7 @@ public class NIMRedPacketClient {
     }
 
     private static boolean checkValid() {
-        return init && (selfInfo = NimUserInfoCache.getInstance().getUserInfo(DemoCache.getAccount())) != null;
+        return init && (selfInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(DemoCache.getAccount())) != null;
     }
 
     /**
@@ -170,7 +171,7 @@ public class NIMRedPacketClient {
 
         if (sessionTypeEnum == SessionTypeEnum.Team) { // 群聊红包
             // 调用群聊红包接口
-            Team team = TeamDataCache.getInstance().getTeamById(targetAccount);
+            Team team = NimUIKit.getTeamProvider().getTeamById(targetAccount);
             int count = team == null ? 0 : team.getMemberCount();
             JrmfRpClient.sendGroupEnvelopeForResult(activity, targetAccount, selfInfo.getAccount(), thirdToken, count, selfInfo.getName(), selfInfo.getAvatar(), requestCode);
         } else { // 单聊红包

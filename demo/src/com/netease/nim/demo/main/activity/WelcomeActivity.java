@@ -13,6 +13,7 @@ import com.netease.nim.demo.common.util.sys.SysInfoUtil;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.main.model.Extras;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NimIntent;
@@ -39,9 +40,11 @@ public class WelcomeActivity extends UI {
         setContentView(R.layout.activity_welcome);
 
         DemoCache.setMainTaskLaunching(true);
+
         if (savedInstanceState != null) {
             setIntent(new Intent()); // 从堆栈恢复，不再重复解析之前的intent
         }
+
         if (!firstEnter) {
             onIntent();
         } else {
@@ -58,6 +61,12 @@ public class WelcomeActivity extends UI {
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    if (!NimUIKit.isInitComplete()) {
+                        LogUtil.i(TAG, "wait for uikit cache!");
+                        new Handler().postDelayed(this, 100);
+                        return;
+                    }
+
                     customSplash = false;
                     if (canAutoLogin()) {
                         onIntent();
@@ -84,7 +93,7 @@ public class WelcomeActivity extends UI {
          * 场景：点击通知栏跳转到此，会收到Intent
          */
         setIntent(intent);
-        if(!customSplash){
+        if (!customSplash) {
             onIntent();
         }
     }
@@ -103,6 +112,7 @@ public class WelcomeActivity extends UI {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
         outState.clear();
     }
 

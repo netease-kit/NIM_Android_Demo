@@ -6,14 +6,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.chatroom.adapter.ChatRoomMsgAdapter;
 import com.netease.nim.demo.redpacket.NIMOpenRpCallback;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.extension.RedPacketAttachment;
+import com.netease.nim.uikit.business.chatroom.adapter.ChatRoomMsgAdapter;
+import com.netease.nim.uikit.business.session.module.ModuleProxy;
+import com.netease.nim.uikit.business.session.module.list.MsgAdapter;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.session.module.ModuleProxy;
-import com.netease.nim.uikit.session.module.list.MsgAdapter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
 
 public class MsgViewHolderRedPacket extends MsgViewHolderBase {
 

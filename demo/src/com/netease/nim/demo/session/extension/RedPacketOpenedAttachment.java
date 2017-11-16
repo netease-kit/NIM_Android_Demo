@@ -2,8 +2,8 @@ package com.netease.nim.demo.session.extension;
 
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 
 public class RedPacketOpenedAttachment extends CustomAttachment {
@@ -42,9 +42,9 @@ public class RedPacketOpenedAttachment extends CustomAttachment {
 
     private String getDisplayName(SessionTypeEnum sessionTypeEnum, String targetId, String account) {
         if (sessionTypeEnum == SessionTypeEnum.Team) {
-            return TeamDataCache.getInstance().getTeamMemberDisplayNameYou(targetId, account);
+            return TeamHelper.getTeamMemberDisplayNameYou(targetId, account);
         } else if (sessionTypeEnum == SessionTypeEnum.P2P) {
-            return NimUserInfoCache.getInstance().getUserDisplayNameYou(account);
+            return UserInfoHelper.getUserDisplayNameEx(account, "你");
         } else {
             return "";
         }

@@ -12,8 +12,8 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.activity.AVChatActivity;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.main.model.Extras;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.session.activity.P2PMessageActivity;
+import com.netease.nim.uikit.business.session.activity.P2PMessageActivity;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 
 /**
  * 音视频聊天通知栏
@@ -37,9 +37,10 @@ public class AVChatNotification {
 
     public void init(String account) {
         this.account = account;
-        this.displayName = NimUserInfoCache.getInstance().getUserDisplayName(account);
+        this.displayName = UserInfoHelper.getUserDisplayName(account);
 
         notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        AVChatNotificationChannelCompat26.createNIMMessageNotificationChannel(context);
     }
 
     private void buildCallingNotification() {
@@ -73,7 +74,7 @@ public class AVChatNotification {
                     .FLAG_UPDATE_CURRENT);
 
             String title = context.getString(R.string.avchat_no_pickup_call);
-            String tickerText = NimUserInfoCache.getInstance().getUserDisplayName(account) + ": 【网络通话】";
+            String tickerText = UserInfoHelper.getUserDisplayName(account) + ": 【网络通话】";
             int iconId = R.drawable.avchat_no_pickup;
 
             missCallNotification = makeNotification(pendingIntent, title, tickerText, tickerText, iconId, true, true);
@@ -82,7 +83,7 @@ public class AVChatNotification {
 
     private Notification makeNotification(PendingIntent pendingIntent, String title, String content, String tickerText,
                                           int iconId, boolean ring, boolean vibrate) {
-        NotificationCompat.Builder builder = new NotificationCompat.Builder(context);
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AVChatNotificationChannelCompat26.getNIMChannelId(context));
         builder.setContentTitle(title)
                 .setContentText(content)
                 .setAutoCancel(true)

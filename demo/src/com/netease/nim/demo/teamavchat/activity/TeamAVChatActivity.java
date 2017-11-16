@@ -25,15 +25,15 @@ import com.netease.nim.demo.teamavchat.TeamAVChatVoiceMuteDialog;
 import com.netease.nim.demo.teamavchat.adapter.TeamAVChatAdapter;
 import com.netease.nim.demo.teamavchat.module.SimpleAVChatStateObserver;
 import com.netease.nim.demo.teamavchat.module.TeamAVChatItem;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.recyclerview.decoration.SpacingDecoration;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
-import com.netease.nim.uikit.permission.MPermission;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionDenied;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionGranted;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionNeverAskAgain;
+import com.netease.nim.uikit.support.permission.MPermission;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionDenied;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionGranted;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionNeverAskAgain;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.ResponseCode;
@@ -238,9 +238,9 @@ public class TeamAVChatActivity extends UI {
     // 设置窗口flag，亮屏并且解锁/覆盖在锁屏界面上
     private void dismissKeyguard() {
         getWindow().addFlags(
-                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED|
-                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD|
-                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON|
+                WindowManager.LayoutParams.FLAG_SHOW_WHEN_LOCKED |
+                        WindowManager.LayoutParams.FLAG_DISMISS_KEYGUARD |
+                        WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON |
                         WindowManager.LayoutParams.FLAG_TURN_SCREEN_ON
         );
     }
@@ -298,7 +298,7 @@ public class TeamAVChatActivity extends UI {
         // 提示
         TextView textView = (TextView) callLayout.findViewById(R.id.received_call_tip);
         if (teamName == null) {
-            teamName = TeamDataCache.getInstance().getTeamName(teamId);
+            teamName = TeamHelper.getTeamName(teamId);
         }
         textView.setText(teamName + " 的视频通话");
 

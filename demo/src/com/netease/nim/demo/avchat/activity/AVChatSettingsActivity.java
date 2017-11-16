@@ -1,9 +1,11 @@
 package com.netease.nim.demo.avchat.activity;
 
 import android.os.Bundle;
+
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 
 /**
  * Created by liuqijun on 7/19/16.
@@ -17,7 +19,7 @@ public class AVChatSettingsActivity extends UI {
 
         setContentView(R.layout.avchat_settings_layout);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.nrtc_settings;
         setToolBar(R.id.toolbar, options);
 

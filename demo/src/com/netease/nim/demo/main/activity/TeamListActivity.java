@@ -11,18 +11,20 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.contact.core.item.AbsContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ItemTypes;
+import com.netease.nim.uikit.business.contact.core.model.ContactDataAdapter;
+import com.netease.nim.uikit.business.contact.core.model.ContactGroupStrategy;
+import com.netease.nim.uikit.business.contact.core.provider.ContactDataProvider;
+import com.netease.nim.uikit.business.contact.core.query.IContactDataProvider;
+import com.netease.nim.uikit.business.contact.core.viewholder.ContactHolder;
+import com.netease.nim.uikit.business.contact.core.viewholder.LabelHolder;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.contact.core.item.AbsContactItem;
-import com.netease.nim.uikit.contact.core.item.ContactItem;
-import com.netease.nim.uikit.contact.core.item.ItemTypes;
-import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
-import com.netease.nim.uikit.contact.core.model.ContactGroupStrategy;
-import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
-import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
-import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
-import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.team.TeamDataChangedObserver;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
@@ -61,7 +63,7 @@ public class TeamListActivity extends UI implements AdapterView.OnItemClickListe
 
         setContentView(R.layout.group_list_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = itemType == ItemTypes.TEAMS.ADVANCED_TEAM ? R.string.advanced_team : R.string.normal_team;
         setToolBar(R.id.toolbar, options);
 
@@ -135,14 +137,10 @@ public class TeamListActivity extends UI implements AdapterView.OnItemClickListe
     }
 
     private void registerTeamUpdateObserver(boolean register) {
-        if (register) {
-            TeamDataCache.getInstance().registerTeamDataChangedObserver(teamDataChangedObserver);
-        } else {
-            TeamDataCache.getInstance().unregisterTeamDataChangedObserver(teamDataChangedObserver);
-        }
+        NimUIKit.getTeamChangedObservable().registerTeamDataChangedObserver(teamDataChangedObserver, register);
     }
 
-    TeamDataCache.TeamDataChangedObserver teamDataChangedObserver = new TeamDataCache.TeamDataChangedObserver() {
+    TeamDataChangedObserver teamDataChangedObserver = new TeamDataChangedObserver() {
         @Override
         public void onUpdateTeams(List<Team> teams) {
             adapter.load(true);

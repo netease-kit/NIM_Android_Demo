@@ -4,8 +4,8 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.rts.activity.RTSActivity;
+import com.netease.nim.uikit.business.session.actions.BaseAction;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nim.uikit.session.actions.BaseAction;
 
 /**
  * Created by huangjun on 2015/7/7.

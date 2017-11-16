@@ -3,10 +3,9 @@ package com.netease.nim.demo.chatroom;
 import com.netease.nim.demo.chatroom.viewholder.ChatRoomMsgViewHolderGuess;
 import com.netease.nim.demo.session.action.GuessAction;
 import com.netease.nim.demo.session.extension.GuessAttachment;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.chatroom.ChatRoomSessionCustomization;
-import com.netease.nim.uikit.session.actions.BaseAction;
-import com.netease.nim.uikit.session.actions.ImageAction;
+import com.netease.nim.uikit.business.session.actions.BaseAction;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.chatroom.ChatRoomSessionCustomization;
 
 import java.util.ArrayList;
 

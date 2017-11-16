@@ -10,9 +10,11 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.business.session.constant.Extras;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.media.picker.PickImageHelper;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.jsbridge.core.NIMJsBridge;
 import com.netease.nimlib.jsbridge.core.NIMJsBridgeBuilder;
 import com.netease.nimlib.jsbridge.extension.ImageInfo;
@@ -41,7 +43,7 @@ public class JsBridgeActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.js_bridge_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.js_bridge_demonstration;
         setToolBar(R.id.toolbar, options);
 
@@ -96,7 +98,7 @@ public class JsBridgeActivity extends UI {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (resultCode == Activity.RESULT_OK && requestCode == IMAGE_PICKER_REQUEST_ID) {
             ImageInfo pictureInfo = new ImageInfo();
-            pictureInfo.path = data.getStringExtra(com.netease.nim.uikit.session.constant.Extras.EXTRA_FILE_PATH);
+            pictureInfo.path = data.getStringExtra(Extras.EXTRA_FILE_PATH);
 
             if (!TextUtils.isEmpty(pictureInfo.path)) {
                 pictureInfo.base64 = Base64.encodeFile(pictureInfo.path);

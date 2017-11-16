@@ -21,15 +21,15 @@ public class ToggleView {
         init();
     }
 
-    private void init(){
-        if(parentView != null){
-            parentView.setOnClickListener( new View.OnClickListener() {
+    private void init() {
+        if (parentView != null) {
+            parentView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     onToggleStateChange();
                 }
             });
-            if(parentView instanceof ViewGroup){
+            if (parentView instanceof ViewGroup) {
                 ViewGroup viewGroup = (ViewGroup) parentView;
                 childView = viewGroup.getChildAt(0);
             }
@@ -37,8 +37,8 @@ public class ToggleView {
         }
     }
 
-    public void toggle(ToggleState state){
-        switch (state){
+    public void toggle(ToggleState state) {
+        switch (state) {
             case DISABLE:
                 disable(false);
                 break;
@@ -51,8 +51,8 @@ public class ToggleView {
         }
     }
 
-    private void onToggleStateChange(){
-        switch (state){
+    private void onToggleStateChange() {
+        switch (state) {
             case DISABLE:
                 disable(true);
                 break;
@@ -65,56 +65,56 @@ public class ToggleView {
         }
     }
 
-    public void on(boolean callback){
+    public void on(boolean callback) {
         state = ToggleState.ON;
 
         parentView.setEnabled(true);
         parentView.setSelected(true);
 
-        if(childView != null){
+        if (childView != null) {
             childView.setEnabled(true);
             childView.setSelected(true);
         }
 
-        if(listener != null && callback)
+        if (listener != null && callback)
             listener.toggleOn(parentView);
     }
 
-    public void off(boolean callback){
+    public void off(boolean callback) {
         state = ToggleState.OFF;
 
         parentView.setEnabled(true);
         parentView.setSelected(false);
 
-        if(childView != null){
+        if (childView != null) {
             childView.setEnabled(true);
             childView.setSelected(false);
         }
 
-        if(listener != null && callback)
+        if (listener != null && callback)
             listener.toggleOff(parentView);
     }
 
-    public void disable(boolean callback){
+    public void disable(boolean callback) {
         state = ToggleState.DISABLE;
 
         parentView.setSelected(false);
         parentView.setEnabled(false);
 
-        if(childView != null){
+        if (childView != null) {
             childView.setSelected(false);
             childView.setEnabled(false);
         }
 
-        if(listener != null && callback)
+        if (listener != null && callback)
             listener.toggleDisable(parentView);
     }
 
-    public void enable(){
+    public void enable() {
         off(false);
     }
 
-    public boolean isEnable(){
+    public boolean isEnable() {
         return state != ToggleState.DISABLE;
     }
 

@@ -6,7 +6,7 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.helper.MessageHelper;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
@@ -52,7 +52,7 @@ public class SystemMessageViewHolder extends TViewHolder {
         agreeButton = (Button) view.findViewById(R.id.agree);
         rejectButton = (Button) view.findViewById(R.id.reject);
         operatorResultText = (TextView) view.findViewById(R.id.operator_result);
-        view.setBackgroundResource(R.drawable.list_item_bg_selecter);
+        view.setBackgroundResource(R.drawable.nim_list_item_bg_selecter);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class SystemMessageViewHolder extends TViewHolder {
             }
         });
         headImageView.loadBuddyAvatar(message.getFromAccount());
-        fromAccountText.setText(NimUserInfoCache.getInstance().getUserDisplayNameEx(message.getFromAccount()));
+        fromAccountText.setText(UserInfoHelper.getUserDisplayNameEx(message.getFromAccount(), "我"));
         contentText.setText(MessageHelper.getVerifyNotificationText(message));
         timeText.setText(TimeUtil.getTimeShowString(message.getTime(), false));
         if (!MessageHelper.isVerifyMessageNeedDeal(message)) {

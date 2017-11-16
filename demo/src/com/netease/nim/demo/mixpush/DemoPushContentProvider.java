@@ -3,10 +3,10 @@ package com.netease.nim.demo.mixpush;
 import android.text.TextUtils;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.main.CustomPushContentProvider;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
-import com.netease.nim.uikit.plugin.CustomPushContentProvider;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -41,10 +41,7 @@ public class DemoPushContentProvider implements CustomPushContentProvider {
         if (message == null) {
             return null;
         }
-        NimUserInfo userInfo = NimUserInfoCache.getInstance().getUserInfo(DemoCache.getAccount());
-        if (userInfo == null) {
-            NimUserInfoCache.getInstance().getUserInfoFromRemote(DemoCache.getAccount(), null);
-        }
+        NimUserInfo userInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(DemoCache.getAccount());
         String nick = userInfo == null ? "" : userInfo.getName();
         if (message.getSessionType() == SessionTypeEnum.Team) {
             Team team = NIMClient.getService(TeamService.class).queryTeamBlock(message.getSessionId());

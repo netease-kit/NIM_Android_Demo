@@ -19,20 +19,21 @@ import android.widget.ListView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.demo.session.search.DisplayMessageActivity;
+import com.netease.nim.uikit.business.contact.core.item.AbsContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ContactItem;
+import com.netease.nim.uikit.business.contact.core.item.ItemTypes;
+import com.netease.nim.uikit.business.contact.core.item.MsgItem;
+import com.netease.nim.uikit.business.contact.core.model.ContactDataAdapter;
+import com.netease.nim.uikit.business.contact.core.model.ContactGroupStrategy;
+import com.netease.nim.uikit.business.contact.core.provider.ContactDataProvider;
+import com.netease.nim.uikit.business.contact.core.query.IContactDataProvider;
+import com.netease.nim.uikit.business.contact.core.viewholder.ContactHolder;
+import com.netease.nim.uikit.business.contact.core.viewholder.LabelHolder;
+import com.netease.nim.uikit.business.contact.core.viewholder.MsgHolder;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.uikit.contact.core.item.AbsContactItem;
-import com.netease.nim.uikit.contact.core.item.ContactItem;
-import com.netease.nim.uikit.contact.core.item.ItemTypes;
-import com.netease.nim.uikit.contact.core.item.MsgItem;
-import com.netease.nim.uikit.contact.core.model.ContactDataAdapter;
-import com.netease.nim.uikit.contact.core.model.ContactGroupStrategy;
-import com.netease.nim.uikit.contact.core.provider.ContactDataProvider;
-import com.netease.nim.uikit.contact.core.query.IContactDataProvider;
-import com.netease.nim.uikit.contact.core.viewholder.ContactHolder;
-import com.netease.nim.uikit.contact.core.viewholder.LabelHolder;
-import com.netease.nim.uikit.contact.core.viewholder.MsgHolder;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.search.model.MsgIndexRecord;
 
 /**
@@ -110,7 +111,7 @@ public class GlobalSearchActivity extends UI implements OnItemClickListener {
 
         setContentView(R.layout.global_search_result);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         setToolBar(R.id.toolbar, options);
 
         lvContacts = (ListView) findViewById(R.id.searchResultList);

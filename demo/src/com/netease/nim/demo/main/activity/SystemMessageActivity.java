@@ -13,7 +13,7 @@ import android.widget.Toast;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
 import com.netease.nim.demo.main.viewholder.SystemMessageViewHolder;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
@@ -21,11 +21,12 @@ import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.common.ui.listview.ListViewUtil;
 import com.netease.nim.uikit.common.ui.listview.MessageListView;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
-import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.model.AddFriendNotify;
@@ -113,7 +114,7 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
 
         setContentView(R.layout.system_notification_message_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.verify_reminder;
         setToolBar(R.id.toolbar, options);
 
@@ -328,7 +329,7 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
     private void collectAndRequestUnknownUserInfo(List<String> messageFromAccounts) {
         List<String> unknownAccounts = new ArrayList<>();
         for (String account : messageFromAccounts) {
-            if (!NimUserInfoCache.getInstance().hasUser(account)) {
+            if (NimUIKit.getUserInfoProvider().getUserInfo(account) == null) {
                 unknownAccounts.add(account);
             }
         }
@@ -465,11 +466,11 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
     };
 
     private void requestUnknownUser(List<String> accounts) {
-        NimUserInfoCache.getInstance().getUserInfoFromRemote(accounts, new RequestCallbackWrapper<List<NimUserInfo>>() {
+        NimUIKit.getUserInfoProvider().getUserInfoAsync(accounts, new SimpleCallback<List<NimUserInfo>>() {
             @Override
-            public void onResult(int code, List<NimUserInfo> users, Throwable exception) {
+            public void onResult(boolean success, List<NimUserInfo> result, int code) {
                 if (code == ResponseCode.RES_SUCCESS) {
-                    if (users != null && !users.isEmpty()) {
+                    if (result != null && !result.isEmpty()) {
                         refresh();
                     }
                 }

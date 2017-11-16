@@ -19,8 +19,8 @@ import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.cache.FriendDataCache;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
@@ -30,16 +30,17 @@ import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.model.contact.ContactChangedObserver;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
-import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.friend.FriendService;
 import com.netease.nimlib.sdk.friend.FriendServiceObserve;
 import com.netease.nimlib.sdk.friend.constant.VerifyType;
 import com.netease.nimlib.sdk.friend.model.AddFriendData;
-import com.netease.nimlib.sdk.friend.model.Friend;
 import com.netease.nimlib.sdk.friend.model.MuteListChangedNotify;
 import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
@@ -100,7 +101,7 @@ public class UserProfileActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.user_profile;
         setToolBar(R.id.toolbar, options);
 
@@ -127,7 +128,7 @@ public class UserProfileActivity extends UI {
     }
 
     private void registerObserver(boolean register) {
-        FriendDataCache.getInstance().registerFriendDataChangedObserver(friendDataChangedObserver, register);
+        NimUIKit.getContactChangedObservable().registerObserver(friendDataChangedObserver, register);
         NIMClient.getService(FriendServiceObserve.class).observeMuteListChangedNotify(muteListChangedNotifyObserver, register);
     }
 
@@ -138,7 +139,7 @@ public class UserProfileActivity extends UI {
         }
     };
 
-    FriendDataCache.FriendDataChangedObserver friendDataChangedObserver = new FriendDataCache.FriendDataChangedObserver() {
+    ContactChangedObserver friendDataChangedObserver = new ContactChangedObserver() {
         @Override
         public void onAddedOrUpdatedFriends(List<String> account) {
             updateUserOperatorView();
@@ -223,14 +224,15 @@ public class UserProfileActivity extends UI {
     }
 
     private void updateUserInfo() {
-        if (NimUserInfoCache.getInstance().hasUser(account)) {
+        if (NimUIKit.getUserInfoProvider().getUserInfo(account) != null) {
             updateUserInfoView();
             return;
         }
 
-        NimUserInfoCache.getInstance().getUserInfoFromRemote(account, new RequestCallbackWrapper<NimUserInfo>() {
+        NimUIKit.getUserInfoProvider().getUserInfoAsync(account, new SimpleCallback<NimUserInfo>() {
+
             @Override
-            public void onResult(int code, NimUserInfo result, Throwable exception) {
+            public void onResult(boolean success, NimUserInfo result, int code) {
                 updateUserInfoView();
             }
         });
@@ -241,10 +243,10 @@ public class UserProfileActivity extends UI {
         headImageView.loadBuddyAvatar(account);
 
         if (DemoCache.getAccount().equals(account)) {
-            nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+            nameText.setText(UserInfoHelper.getUserName(account));
         }
 
-        final NimUserInfo userInfo = NimUserInfoCache.getInstance().getUserInfo(account);
+        final NimUserInfo userInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(account);
         if (userInfo == null) {
             LogUtil.e(TAG, "userInfo is null when updateUserInfoView");
             return;
@@ -345,20 +347,21 @@ public class UserProfileActivity extends UI {
         if (isFriend) {
             aliasLayout.setVisibility(View.VISIBLE);
             aliasLayout.findViewById(R.id.arrow_right).setVisibility(View.VISIBLE);
-            Friend friend = FriendDataCache.getInstance().getFriendByAccount(account);
-            if (friend != null && !TextUtils.isEmpty(friend.getAlias())) {
+            String alias = NimUIKit.getContactProvider().getAlias(account);
+            String name = UserInfoHelper.getUserName(account);
+            if (!TextUtils.isEmpty(alias)) {
                 nickText.setVisibility(View.VISIBLE);
-                nameText.setText(friend.getAlias());
-                nickText.setText("昵称：" + NimUserInfoCache.getInstance().getUserName(account));
+                nameText.setText(alias);
+                nickText.setText("昵称：" + name);
             } else {
                 nickText.setVisibility(View.GONE);
-                nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+                nameText.setText(name);
             }
         } else {
             aliasLayout.setVisibility(View.GONE);
             aliasLayout.findViewById(R.id.arrow_right).setVisibility(View.GONE);
             nickText.setVisibility(View.GONE);
-            nameText.setText(NimUserInfoCache.getInstance().getUserName(account));
+            nameText.setText(UserInfoHelper.getUserName(account));
         }
     }
 

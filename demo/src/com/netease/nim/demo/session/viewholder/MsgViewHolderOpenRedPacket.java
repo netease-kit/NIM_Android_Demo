@@ -15,9 +15,9 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderBase;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 
@@ -33,7 +33,7 @@ public class MsgViewHolderOpenRedPacket extends MsgViewHolderBase {
 
     public MsgViewHolderOpenRedPacket(BaseMultiItemFetchLoadAdapter adapter) {
         super(adapter);
-        userInfo = NimUserInfoCache.getInstance().getUserInfo(DemoCache.getAccount());
+        userInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(DemoCache.getAccount());
     }
 
     @Override
@@ -60,8 +60,11 @@ public class MsgViewHolderOpenRedPacket extends MsgViewHolderBase {
         } else if (userInfo.getAccount().equals(attachment.getSendAccount())) {
             othersOpenedRp();
         }
-        // 不显示已读
-        readReceiptTextView.setVisibility(View.GONE);
+    }
+
+    @Override
+    protected boolean shouldDisplayReceipt() {
+        return false;
     }
 
     private void openedRp(boolean myself) {

@@ -9,12 +9,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.avchat.constant.CallStateEnum;
 import com.netease.nim.demo.avchat.widgets.ToggleListener;
 import com.netease.nim.demo.avchat.widgets.ToggleState;
 import com.netease.nim.demo.avchat.widgets.ToggleView;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 
@@ -22,14 +22,14 @@ import com.netease.nim.uikit.common.util.sys.NetworkUtil;
  * 音频管理器， 音频界面初始化和管理
  * Created by hzxuwen on 2015/4/24.
  */
-public class AVChatAudio implements View.OnClickListener, ToggleListener{
+public class AVChatAudio implements View.OnClickListener, ToggleListener {
     // constant
-    private static final int[] NETWORK_GRADE_DRAWABLE = new int[]{R.drawable.network_grade_0,R.drawable.network_grade_1,R.drawable.network_grade_2,R.drawable.network_grade_3};
-    private static final int[] NETWORK_GRADE_LABEL = new int[]{R.string.avchat_network_grade_0,R.string.avchat_network_grade_1,R.string.avchat_network_grade_2,R.string.avchat_network_grade_3};
+    private static final int[] NETWORK_GRADE_DRAWABLE = new int[]{R.drawable.network_grade_0, R.drawable.network_grade_1, R.drawable.network_grade_2, R.drawable.network_grade_3};
+    private static final int[] NETWORK_GRADE_LABEL = new int[]{R.string.avchat_network_grade_0, R.string.avchat_network_grade_1, R.string.avchat_network_grade_2, R.string.avchat_network_grade_3};
 
     private Context context;
     // view
-    private View rootView ;
+    private View rootView;
     private View switchVideo;
     private HeadImageView headImg;
     private TextView nickNameTV;
@@ -73,12 +73,13 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     /**
      * 音视频状态变化及界面刷新
+     *
      * @param state
      */
-    public void onCallStateChange(CallStateEnum state){
-        if(CallStateEnum.isAudioMode(state))
+    public void onCallStateChange(CallStateEnum state) {
+        if (CallStateEnum.isAudioMode(state))
             findViews();
-        switch (state){
+        switch (state) {
             case OUTGOING_AUDIO_CALLING: //拨打出的免费通话
                 setSwitchVideo(false);
                 showProfile();//对方的详细信息
@@ -126,7 +127,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     private boolean isEnabled = false;
 
     private void enableToggle() {
-        if(!isEnabled) {
+        if (!isEnabled) {
             recordToggle.setEnabled(true);
         }
         isEnabled = true;
@@ -136,7 +137,7 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
      * 界面初始化
      */
     private void findViews() {
-        if(init || rootView == null){
+        if (init || rootView == null) {
             return;
         }
         switchVideo = rootView.findViewById(R.id.avchat_audio_switch_video);
@@ -182,14 +183,15 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     /**
      * 个人信息设置
      */
-    private void showProfile(){
+    private void showProfile() {
         String account = manager.getAccount();
         headImg.loadBuddyAvatar(account);
-        nickNameTV.setText(NimUserInfoCache.getInstance().getUserDisplayName(account));
+        nickNameTV.setText(UserInfoHelper.getUserDisplayName(account));
     }
 
     /**
      * 界面状态文案设置
+     *
      * @param resId 文案
      */
     private void showNotify(int resId) {
@@ -200,17 +202,17 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
     /**
      * 隐藏界面文案
      */
-    private void hideNotify(){
+    private void hideNotify() {
         notifyTV.setVisibility(View.GONE);
     }
 
     public void showRecordView(boolean show, boolean warning) {
-        if(show) {
+        if (show) {
             recordToggle.setSelected(true);
             recordToggleButton.setText("结束");
             recordView.setVisibility(View.VISIBLE);
             recordTip.setVisibility(View.VISIBLE);
-            if(warning) {
+            if (warning) {
                 recordWarning.setVisibility(View.VISIBLE);
             } else {
                 recordWarning.setVisibility(View.GONE);
@@ -226,15 +228,16 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     /**
      * 显示网络状态
+     *
      * @param grade
      */
-    public void showNetworkCondition(int grade){
-        if(grade >= 0 && grade < NETWORK_GRADE_DRAWABLE.length){
+    public void showNetworkCondition(int grade) {
+        if (grade >= 0 && grade < NETWORK_GRADE_DRAWABLE.length) {
             netUnstableTV.setText(NETWORK_GRADE_LABEL[grade]);
             Drawable drawable = DemoCache.getContext().getResources().getDrawable(NETWORK_GRADE_DRAWABLE[grade]);
-            if(drawable != null){
-                drawable.setBounds(0,0,drawable.getIntrinsicWidth(),drawable.getIntrinsicHeight());
-                netUnstableTV.setCompoundDrawables(null,null,drawable,null);
+            if (drawable != null) {
+                drawable.setBounds(0, 0, drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight());
+                netUnstableTV.setCompoundDrawables(null, null, drawable, null);
             }
             netUnstableTV.setVisibility(View.VISIBLE);
         }
@@ -244,53 +247,58 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
      * ***************************** 布局显隐设置 ***********************************
      */
 
-    private void setRoot(boolean visible){
+    private void setRoot(boolean visible) {
         rootView.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * 显示或隐藏音视频切换
+     *
      * @param visible
      */
-    private void setSwitchVideo(boolean visible){
+    private void setSwitchVideo(boolean visible) {
         switchVideo.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * 显示或者隐藏是否为wifi的提示
+     *
      * @param show
      */
-    private void setWifiUnavailableNotifyTV(boolean show){
-        if(show && !NetworkUtil.isWifi(DemoCache.getContext())){
+    private void setWifiUnavailableNotifyTV(boolean show) {
+        if (show && !NetworkUtil.isWifi(DemoCache.getContext())) {
             wifiUnavailableNotifyTV.setVisibility(View.VISIBLE);
-        }else {
+        } else {
             wifiUnavailableNotifyTV.setVisibility(View.GONE);
         }
     }
 
     /**
      * 显示或隐藏禁音，结束通话布局
+     *
      * @param visible
      */
-    private void setMuteSpeakerHangupControl(boolean visible){
+    private void setMuteSpeakerHangupControl(boolean visible) {
         mute_speaker_hangup.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * 显示或隐藏拒绝，开启布局
+     *
      * @param visible
      */
-    private void setRefuseReceive(boolean visible){
+    private void setRefuseReceive(boolean visible) {
         refuse_receive.setVisibility(visible ? View.VISIBLE : View.GONE);
     }
 
     /**
      * 设置通话时间显示
+     *
      * @param visible
      */
-    private void setTime(boolean visible){
+    private void setTime(boolean visible) {
         time.setVisibility(visible ? View.VISIBLE : View.GONE);
-        if(visible){
+        if (visible) {
             time.setBase(manager.getTimeBase());
             time.start();
         }
@@ -298,10 +306,11 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
 
     /**
      * 视频切换为音频时，禁音与扬声器按钮状态
+     *
      * @param muteOn
      * @param speakerOn
      */
-    public void onVideoToAudio(boolean muteOn , boolean speakerOn, boolean recordOn, boolean recordWarning) {
+    public void onVideoToAudio(boolean muteOn, boolean speakerOn, boolean recordOn, boolean recordWarning) {
 
         muteToggle.toggle(muteOn ? ToggleState.ON : ToggleState.OFF);
         speakerToggle.toggle(speakerOn ? ToggleState.ON : ToggleState.OFF);
@@ -328,9 +337,9 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
                 listener.toggleSpeaker();
                 break;
             case R.id.avchat_audio_switch_video:
-                if(isInSwitch) {
+                if (isInSwitch) {
                     Toast.makeText(context, R.string.avchat_in_switch, Toast.LENGTH_SHORT).show();
-                }else {
+                } else {
                     listener.audioSwitchVideo();
                 }
                 break;
@@ -342,8 +351,8 @@ public class AVChatAudio implements View.OnClickListener, ToggleListener{
         }
     }
 
-    public void closeSession(int exitCode){
-        if(init){
+    public void closeSession(int exitCode) {
+        if (init) {
             time.stop();
             muteToggle.disable(false);
             speakerToggle.disable(false);

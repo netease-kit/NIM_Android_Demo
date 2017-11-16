@@ -9,10 +9,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.cache.SimpleCallback;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.team.TeamService;
@@ -48,7 +49,7 @@ public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener
 
         setContentView(R.layout.nim_advanced_team_join_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.team_join;
         setToolBar(R.id.toolbar, options);
 
@@ -70,13 +71,13 @@ public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener
     }
 
     private void requestTeamInfo() {
-        Team t = TeamDataCache.getInstance().getTeamById(teamId);
+        Team t = NimUIKit.getTeamProvider().getTeamById(teamId);
         if (t != null) {
             updateTeamInfo(t);
         } else {
-            TeamDataCache.getInstance().fetchTeamById(teamId, new SimpleCallback<Team>() {
+            NimUIKit.getTeamProvider().fetchTeamById(teamId, new SimpleCallback<Team>() {
                 @Override
-                public void onResult(boolean success, Team result) {
+                public void onResult(boolean success, Team result, int code) {
                     if (success && result != null) {
                         updateTeamInfo(result);
                     }

@@ -44,7 +44,7 @@ public class CustomNotificationViewHolder extends TViewHolder {
     private void updateBackground() {
         topLine.setVisibility(isFirstItem() ? View.GONE : View.VISIBLE);
         bottomLine.setVisibility(isLastItem() ? View.VISIBLE : View.GONE);
-        view.setBackgroundResource(R.drawable.list_item_bg_selecter);
+        view.setBackgroundResource(R.drawable.nim_list_item_bg_selecter);
     }
 
     protected void loadPortrait() {

@@ -43,28 +43,25 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderTip;
 import com.netease.nim.demo.team.TeamAVChatHelper;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.RobotInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.business.session.actions.BaseAction;
+import com.netease.nim.uikit.business.session.helper.MessageListPanelHelper;
+import com.netease.nim.uikit.business.session.module.MsgForwardFilter;
+import com.netease.nim.uikit.business.session.module.MsgRevokeFilter;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderUnknown;
+import com.netease.nim.uikit.business.team.model.TeamExtras;
+import com.netease.nim.uikit.business.team.model.TeamRequestCode;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
 import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.uikit.contact_selector.activity.ContactSelectActivity;
-import com.netease.nim.uikit.custom.DefaultRecentCustomization;
-import com.netease.nim.uikit.session.RecentCustomization;
-import com.netease.nim.uikit.session.SessionCustomization;
-import com.netease.nim.uikit.session.SessionEventListener;
-import com.netease.nim.uikit.session.actions.BaseAction;
-import com.netease.nim.uikit.session.helper.MessageHelper;
-import com.netease.nim.uikit.session.helper.MessageListPanelHelper;
-import com.netease.nim.uikit.session.module.MsgForwardFilter;
-import com.netease.nim.uikit.session.module.MsgRevokeFilter;
-import com.netease.nim.uikit.session.viewholder.MsgViewHolderUnknown;
-import com.netease.nim.uikit.team.model.TeamExtras;
-import com.netease.nim.uikit.team.model.TeamRequestCode;
+import com.netease.nim.uikit.impl.customization.DefaultRecentCustomization;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.recent.RecentCustomization;
+import com.netease.nim.uikit.api.wrapper.NimMessageRevokeObserver;
+import com.netease.nim.uikit.api.model.session.SessionCustomization;
+import com.netease.nim.uikit.api.model.session.SessionEventListener;
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.avchat.constant.AVChatRecordState;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
@@ -134,7 +131,7 @@ public class SessionHelper {
 
     public static void startP2PSession(Context context, String account, IMMessage anchor) {
         if (!DemoCache.getAccount().equals(account)) {
-            if (RobotInfoCache.getInstance().getRobotByAccount(account) != null) {
+            if (NimUIKit.getRobotInfoProvider().getRobotByAccount(account) != null) {
                 NimUIKit.startChatting(context, account, SessionTypeEnum.P2P, getRobotCustomization(), anchor);
             } else {
                 NimUIKit.startP2PSession(context, account, anchor);
@@ -432,7 +429,7 @@ public class SessionHelper {
             SessionCustomization.OptionsButton infoButton = new SessionCustomization.OptionsButton() {
                 @Override
                 public void onClick(Context context, View view, String sessionId) {
-                    Team team = TeamDataCache.getInstance().getTeamById(sessionId);
+                    Team team = NimUIKit.getTeamProvider().getTeamById(sessionId);
                     if (team != null && team.isMyTeam()) {
                         NimUIKit.startTeamInfo(context, sessionId);
                     } else {
@@ -547,16 +544,7 @@ public class SessionHelper {
     }
 
     private static void registerMsgRevokeObserver() {
-        NIMClient.getService(MsgServiceObserve.class).observeRevokeMessage(new Observer<IMMessage>() {
-            @Override
-            public void onEvent(IMMessage message) {
-                if (message == null) {
-                    return;
-                }
-
-                MessageHelper.getInstance().onRevokeMessage(message);
-            }
-        }, true);
+        NIMClient.getService(MsgServiceObserve.class).observeRevokeMessage(new NimMessageRevokeObserver(), true);
     }
 
 

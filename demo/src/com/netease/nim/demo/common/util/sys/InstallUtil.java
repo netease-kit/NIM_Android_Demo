@@ -8,7 +8,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.net.Uri;
 import android.text.TextUtils;
 
-import com.netease.nim.uikit.NimUIKit;
+import com.netease.nim.uikit.api.NimUIKit;
 
 import java.io.File;
 

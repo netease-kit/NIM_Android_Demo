@@ -14,4 +14,11 @@ class PrivatizationConfig {
     static String getAppKey() {
         return null;
     }
+
+    private static ServerAddresses get() {
+        ServerAddresses addresses = new ServerAddresses();
+        addresses.nosDownload = "nos.netease.com";
+        addresses.nosAccess = "{bucket}.nosdn.127.net/{object}";
+        return addresses;
+    }
 }

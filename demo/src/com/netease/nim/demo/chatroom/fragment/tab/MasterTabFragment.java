@@ -9,6 +9,7 @@ import com.netease.nim.demo.chatroom.fragment.MasterFragment;
  */
 public class MasterTabFragment extends ChatRoomTabFragment {
     private MasterFragment fragment;
+
     @Override
     protected void onInit() {
         fragment = (MasterFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.master_fragment);

@@ -24,8 +24,9 @@ import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHttpClient;
 import com.netease.nim.demo.main.activity.MainActivity;
-import com.netease.nim.uikit.NimUIKit;
-import com.netease.nim.uikit.cache.DataCacheManager;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
@@ -34,11 +35,10 @@ import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.MD5;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
-import com.netease.nim.uikit.model.ToolBarOptions;
-import com.netease.nim.uikit.permission.MPermission;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionDenied;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionGranted;
-import com.netease.nim.uikit.permission.annotation.OnMPermissionNeverAskAgain;
+import com.netease.nim.uikit.support.permission.MPermission;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionDenied;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionGranted;
+import com.netease.nim.uikit.support.permission.annotation.OnMPermissionNeverAskAgain;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -103,7 +103,7 @@ public class LoginActivity extends UI implements OnKeyListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.login_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.isNeedNavigate = false;
         options.logoId = R.drawable.actionbar_white_logo_space;
         setToolBar(R.id.toolbar, options);
@@ -517,9 +517,8 @@ public class LoginActivity extends UI implements OnKeyListener {
         // 初始化消息提醒配置
         initNotificationConfig();
 
-        // 构建缓存
-        DataCacheManager.buildDataCacheAsync();
-        NimUIKit.getImageLoaderKit().buildImageCache();
+        // 设置uikit
+        NimUIKit.loginSuccess(account);
 
         // 进入主界面，此时可以查询数据（最近联系人列表、本地消息历史、群资料等都可以查询，但当云信服务器发起请求会返回408超时）
         MainActivity.start(LoginActivity.this, null);

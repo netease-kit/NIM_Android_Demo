@@ -14,11 +14,12 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.cache.NimUserInfoCache;
-import com.netease.nim.uikit.cache.TeamDataCache;
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
@@ -70,7 +71,7 @@ public class SearchMessageActivity extends UI {
 
         setContentView(R.layout.message_search_activity);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         setToolBar(R.id.toolbar, options);
 
         findViewById(R.id.global_search_root).setOnTouchListener(new View.OnTouchListener() {
@@ -276,7 +277,7 @@ public class SearchMessageActivity extends UI {
         ArrayList<String> filter = new ArrayList<String>();
         if (sessionType == SessionTypeEnum.Team) {
             if (members == null) {
-                members = TeamDataCache.getInstance().getTeamMemberList(sessionId);
+                members = NimUIKit.getTeamProvider().getTeamMemberList(sessionId);
             }
 
             if (members != null) {
@@ -289,7 +290,7 @@ public class SearchMessageActivity extends UI {
                         filter.add(account);
                         continue;
                     }
-                    if (match(NimUserInfoCache.getInstance().getUserName(account), query)) {
+                    if (match(UserInfoHelper.getUserName(account), query)) {
                         filter.add(account);
                         continue;
                     }

@@ -10,11 +10,11 @@ import android.widget.TextView;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
-import com.netease.nim.uikit.chatroom.helper.ChatRoomMemberCache;
 import com.netease.nim.demo.chatroom.widget.ChatRoomImageView;
-import com.netease.nim.uikit.cache.SimpleCallback;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
@@ -57,12 +57,13 @@ public class MasterFragment extends TFragment {
 
     /**
      * 频率控制，至少间隔一分钟
+     *
      * @return
      */
     private boolean isFastClick() {
         long current = System.currentTimeMillis();
         long time = current - lastClickTime;
-        if ( 0 < time && time < 60000) {
+        if (0 < time && time < 60000) {
             return true;
         }
         lastClickTime = current;
@@ -100,14 +101,14 @@ public class MasterFragment extends TFragment {
     }
 
     private void getChatRoomMaster(final ChatRoomInfo roomInfo) {
-        master = ChatRoomMemberCache.getInstance().getChatRoomMember(roomInfo.getRoomId(), roomInfo.getCreator());
+        master = NimUIKit.getChatRoomProvider().getChatRoomMember(roomInfo.getRoomId(), roomInfo.getCreator());
         if (master != null) {
             updateView(roomInfo);
         } else {
-            ChatRoomMemberCache.getInstance().fetchMember(roomInfo.getRoomId(), roomInfo.getCreator(),
+            NimUIKit.getChatRoomProvider().fetchMember(roomInfo.getRoomId(), roomInfo.getCreator(),
                     new SimpleCallback<ChatRoomMember>() {
                         @Override
-                        public void onResult(boolean success, ChatRoomMember result) {
+                        public void onResult(boolean success, ChatRoomMember result, int code) {
                             if (success) {
                                 master = result;
                                 updateView(roomInfo);

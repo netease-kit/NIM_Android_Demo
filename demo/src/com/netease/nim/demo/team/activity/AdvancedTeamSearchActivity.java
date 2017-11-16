@@ -9,9 +9,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.team.TeamService;
@@ -37,7 +38,7 @@ public class AdvancedTeamSearchActivity extends UI {
         setContentView(R.layout.nim_advanced_team_search_activity);
         setTitle(R.string.search_join_team);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.search_join_team;
         setToolBar(R.id.toolbar, options);
 
@@ -46,7 +47,7 @@ public class AdvancedTeamSearchActivity extends UI {
     }
 
     private void findViews() {
-        searchEditText = (ClearableEditTextWithIcon) findViewById(R.id.team_search_edittext);
+        searchEditText = findViewById(R.id.team_search_edittext);
         searchEditText.setDeleteImage(R.drawable.nim_grey_delete_icon);
     }
 
@@ -74,10 +75,10 @@ public class AdvancedTeamSearchActivity extends UI {
 
             @Override
             public void onFailed(int code) {
-                if(code == 803) {
+                if (code == 803) {
                     Toast.makeText(AdvancedTeamSearchActivity.this, R.string.team_number_not_exist, Toast.LENGTH_LONG).show();
                 } else {
-                    Toast.makeText(AdvancedTeamSearchActivity.this,"search team failed: " + code, Toast.LENGTH_LONG).show();
+                    Toast.makeText(AdvancedTeamSearchActivity.this, "search team failed: " + code, Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -90,6 +91,7 @@ public class AdvancedTeamSearchActivity extends UI {
 
     /**
      * 搜索群组成功的回调
+     *
      * @param team 群
      */
     private void updateTeamInfo(Team team) {

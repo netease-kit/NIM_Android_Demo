@@ -9,10 +9,11 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
-import com.netease.nim.uikit.cache.RobotInfoCache;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.model.ToolBarOptions;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.robot.model.NimRobotInfo;
 
 /**
@@ -46,7 +47,7 @@ public class RobotProfileActivity extends UI {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_robot_profile);
 
-        ToolBarOptions options = new ToolBarOptions();
+        ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.nim_robot_title;
         setToolBar(R.id.toolbar, options);
 
@@ -62,7 +63,7 @@ public class RobotProfileActivity extends UI {
 
     private void parseIntent() {
         robotAccount = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
-        robotInfo = RobotInfoCache.getInstance().getRobotByAccount(robotAccount);
+        robotInfo = NimUIKit.getRobotInfoProvider().getRobotByAccount(robotAccount);
     }
 
     private void findViews() {
