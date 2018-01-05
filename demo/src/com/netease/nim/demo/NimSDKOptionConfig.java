@@ -7,11 +7,13 @@ import android.text.TextUtils;
 
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.main.activity.WelcomeActivity;
-import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderThumbBase;
+import com.netease.nim.uikit.api.wrapper.MessageRevokeTip;
 import com.netease.nim.uikit.api.wrapper.NimUserInfoProvider;
+import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.ServerAddresses;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
+import com.netease.nimlib.sdk.mixpush.MixPushConfig;
 import com.netease.nimlib.sdk.msg.MessageNotifierCustomization;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -63,6 +65,9 @@ class NimSDKOptionConfig {
 
         // 是否检查manifest 配置，调试阶段打开，调试通过之后请关掉
         options.checkManifestConfig = false;
+
+        // 配置第三方推送
+        options.mixPushConfig = buildMixPushConfig();
 
         // 云信私有化配置项
         configServerAddress(options);
@@ -159,5 +164,34 @@ class NimSDKOptionConfig {
         public String makeTicker(String nick, IMMessage message) {
             return null; // 采用SDK默认文案
         }
+
+        @Override
+        public String makeRevokeMsgTip(String revokeAccount, IMMessage item) {
+            return MessageRevokeTip.getRevokeTipContent(item, revokeAccount);
+        }
     };
+
+    private static MixPushConfig buildMixPushConfig() {
+
+        // 第三方推送配置
+        MixPushConfig config = new MixPushConfig();
+
+        // 小米推送
+        config.xmAppId = "2882303761517502883";
+        config.xmAppKey = "5671750254883";
+        config.xmCertificateName = "DEMO_MI_PUSH";
+
+        // 华为推送
+        config.hwCertificateName = "DEMO_HW_PUSH";
+
+        // 魅族推送
+        config.mzAppId = "111710";
+        config.mzAppKey = "282bdd3a37ec4f898f47c5bbbf9d2369";
+        config.mzCertificateName = "DEMO_MZ_PUSH";
+
+        // fcm 推送，适用于海外用户
+        config.fcmCertificateName = "DEMO_FCM_PUSH";
+
+        return config;
+    }
 }

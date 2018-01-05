@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.util.SparseArray;
 
+import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NimIntent;
@@ -26,14 +27,18 @@ import java.util.Map;
 
 public class DemoMixPushMessageHandler implements MixPushMessageHandler {
 
+
+    public static final String PAYLOAD_SESSION_ID = "sessionID";
+    public static final String PAYLOAD_SESSION_TYPE = "sessionType";
+
     // 对于华为推送，这个方法并不能保证一定会回调
     @Override
     public boolean onNotificationClicked(Context context, Map<String, String> payload) {
 
         LogUtil.i(DemoMixPushMessageHandler.class.getSimpleName(), "rev pushMessage payload " + payload);
 
-        String sessionId = payload.get("sessionID");
-        String type = payload.get("sessionType");
+        String sessionId = payload.get(PAYLOAD_SESSION_ID);
+        String type = payload.get(PAYLOAD_SESSION_TYPE);
         //
         if (sessionId != null && type != null) {
             int typeValue = Integer.valueOf(type);
@@ -68,12 +73,12 @@ public class DemoMixPushMessageHandler implements MixPushMessageHandler {
 
     // 将音视频通知 Notification 缓存，清除所有通知后再次弹出 Notification，避免清除之后找不到打开正在进行音视频通话界面的入口
     @Override
-    public boolean cleanHuaWeiNotifications() {
+    public boolean cleanMixPushNotifications(int pushType) {
         Context context = DemoCache.getContext();
         NotificationManager manager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (manager != null) {
             manager.cancelAll();
-            SparseArray<Notification> nos = DemoCache.getNotifications();
+            SparseArray<Notification> nos = AVChatKit.getNotifications();
             if (nos != null) {
                 int key = 0;
                 for (int i = 0; i < nos.size(); i++) {

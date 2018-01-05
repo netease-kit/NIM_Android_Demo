@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <color name="transparent">#00000000</color>
+
+    <color name="black">#000000</color>
+    <color name="color_f2f7fc">#F2F7FC</color>
+    <color name="color_c2364b">#C2364B</color>
+    <color name="color_f5455e">#F5455E</color>
+    <color name="color_grey_d0d0d0">#d0d0d0</color>
+    <color name="video_call_peer_close_cameral_text_shadow">#484848</color>
+    <color name="video_call_peer_close_cameral_text_color">#f1f1f1</color>
+    <color name="t_av_chat_setting_bar">#3C4149</color>
+
+    <color name="color_red_f04c62">#f04c62</color>
+    <color name="color_gray_alpha40">#66000000</color>
+    <color name="color_b3b3b3">#b3b3b3</color>
+    <color name="split_line_grey_color_d9d9d9">#d9d9d9</color>
+    <color name="color_black_333333">#333333</color>
+    <color name="color_grey_999999">#999999</color>
+    <color name="color_gray_d9d9d9">#d9d9d9</color>
+    <color name="color_blue_0888ff">#0888ff</color>
+    <color name="white">#ffffff</color>
+
+    <color name="color_activity_blue_bg">#f7389fff</color>
+</resources>

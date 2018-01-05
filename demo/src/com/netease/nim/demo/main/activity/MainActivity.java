@@ -12,9 +12,11 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.netease.nim.avchatkit.AVChatProfile;
+import com.netease.nim.avchatkit.activity.AVChatActivity;
+import com.netease.nim.avchatkit.constant.AVChatExtras;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.avchat.AVChatProfile;
-import com.netease.nim.demo.avchat.activity.AVChatActivity;
+import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
 import com.netease.nim.demo.login.LoginActivity;
@@ -272,9 +274,8 @@ public class MainActivity extends UI {
                 localIntent.setClass(this, AVChatActivity.class);
                 startActivity(localIntent);
             }
-        } else if (intent.hasExtra(com.netease.nim.demo.main.model.Extras.EXTRA_JUMP_P2P)) {
-            Intent data = intent.getParcelableExtra(com.netease.nim.demo.main.model.Extras.EXTRA_DATA);
-            String account = data.getStringExtra(com.netease.nim.demo.main.model.Extras.EXTRA_ACCOUNT);
+        } else if (intent.hasExtra(AVChatExtras.EXTRA_FROM_NOTIFICATION)) {
+            String account = intent.getStringExtra(AVChatExtras.EXTRA_ACCOUNT);
             if (!TextUtils.isEmpty(account)) {
                 SessionHelper.startP2PSession(this, account);
             }
@@ -309,6 +310,7 @@ public class MainActivity extends UI {
 
     // 注销
     private void onLogout() {
+        Preferences.saveUserToken("");
         // 清理缓存&注销监听
         LogoutHelper.logout();
 

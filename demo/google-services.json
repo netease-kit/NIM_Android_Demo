@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "900632994543",
+    "firebase_url": "https://nim-sdk.firebaseio.com",
+    "project_id": "nim-sdk",
+    "storage_bucket": "nim-sdk.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900632994543:android:76b9643af8e5a4ce",
+        "android_client_info": {
+          "package_name": "com.netease.nim.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900632994543-rh9lldpckuenprfat1cva20pfcapi61t.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.netease.nim.demo",
+            "certificate_hash": "b6f474d0fd4e624c015c7396d837c926d9e109bb"
+          }
+        },
+        {
+          "client_id": "900632994543-n576ppsbafpa0el1qhvfaqgfmk2anfo8.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCL6S3DSVG3nTZjDr4UwKZQMB8NwL3Lgog"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900632994543-n576ppsbafpa0el1qhvfaqgfmk2anfo8.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

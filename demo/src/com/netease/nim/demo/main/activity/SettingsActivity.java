@@ -10,10 +10,9 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.avchat.activity.AVChatSettingsActivity;
-import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.activity.UserProfileSettingActivity;
 import com.netease.nim.demo.jsbridge.JsBridgeActivity;
@@ -21,10 +20,10 @@ import com.netease.nim.demo.main.adapter.SettingsAdapter;
 import com.netease.nim.demo.main.model.SettingTemplate;
 import com.netease.nim.demo.main.model.SettingType;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
-import com.netease.nim.uikit.common.activity.ToolBarOptions;
-import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
+import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -239,7 +238,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 clearIndex();
                 break;
             case TAG_NRTC_SETTINGS:
-                startActivity(new Intent(SettingsActivity.this, AVChatSettingsActivity.class));
+                AVChatKit.startAVChatSettings(SettingsActivity.this);
                 break;
             case TAG_NRTC_NET_DETECT:
                 netDetectForNrtc();
@@ -278,18 +277,10 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
      * 注销
      */
     private void logout() {
-        removeLoginState();
         MainActivity.logout(SettingsActivity.this, false);
 
         finish();
         NIMClient.getService(AuthService.class).logout();
-    }
-
-    /**
-     * 清除登陆状态
-     */
-    private void removeLoginState() {
-        Preferences.saveUserToken("");
     }
 
     @Override

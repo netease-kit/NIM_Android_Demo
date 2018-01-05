@@ -5,11 +5,14 @@ import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
+import com.netease.nim.avchatkit.AVChatKit;
+import com.netease.nim.avchatkit.AVChatProfile;
+import com.netease.nim.avchatkit.TeamAVChatProfile;
+import com.netease.nim.avchatkit.teamavchat.activity.TeamAVChatActivity;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.avchat.AVChatProfile;
-import com.netease.nim.demo.team.TeamAVChatHelper;
-import com.netease.nim.demo.teamavchat.activity.TeamAVChatActivity;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nim.uikit.business.contact.core.item.AbsContactItem;
 import com.netease.nim.uikit.business.contact.core.item.ContactItem;
 import com.netease.nim.uikit.business.contact.core.item.ContactItemFilter;
@@ -19,8 +22,6 @@ import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.business.team.model.TeamRequestCode;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.string.StringUtil;
-import com.netease.nim.uikit.api.NimUIKit;
-import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
@@ -64,7 +65,7 @@ public class TeamAVChatAction extends AVChatAction {
             return;
         }
 
-        if (TeamAVChatHelper.sharedInstance().isTeamAVChatting()) {
+        if (TeamAVChatProfile.sharedInstance().isTeamAVChatting()) {
             // 视频通话界面正在运行，singleTop所以直接调起来
             Intent localIntent = new Intent();
             localIntent.setClass(getActivity(), TeamAVChatActivity.class);
@@ -131,8 +132,8 @@ public class TeamAVChatAction extends AVChatAction {
 
                 String teamName = TeamHelper.getTeamName(transaction.getTeamID());
 
-                TeamAVChatHelper.sharedInstance().setTeamAVChatting(true);
-                TeamAVChatActivity.startActivity(getActivity(), false, transaction.getTeamID(), roomName, accounts, teamName);
+                TeamAVChatProfile.sharedInstance().setTeamAVChatting(true);
+                AVChatKit.outgoingTeamCall(getActivity(), false, transaction.getTeamID(), roomName, accounts, teamName);
                 transaction = null;
             }
 
@@ -199,7 +200,7 @@ public class TeamAVChatAction extends AVChatAction {
         sendMessage(message);
         // 对各个成员发送点对点自定义通知
         String teamName = TeamHelper.getTeamName(transaction.getTeamID());
-        String content = TeamAVChatHelper.sharedInstance().buildContent(roomName, teamID, accounts, teamName);
+        String content = TeamAVChatProfile.sharedInstance().buildContent(roomName, teamID, accounts, teamName);
         CustomNotificationConfig config = new CustomNotificationConfig();
         config.enablePush = true;
         config.enablePushNick = false;

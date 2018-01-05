@@ -52,6 +52,19 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="com.netease.nim.demo.permission.MIPUSH_RECEIVE" />
 
+    <!--魅族推送-->
+
+    <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
+    <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE" />
+    <permission android:name="com.netease.nim.demo.push.permission.MESSAGE"
+        android:protectionLevel="signature"/>
+    <uses-permission android:name="com.netease.nim.demo.push.permission.MESSAGE" />
+    <!--  兼容flyme3.0配置权限-->
+    <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
+    <permission android:name="com.netease.nim.demo.permission.C2D_MESSAGE"
+        android:protectionLevel="signature" />
+    <uses-permission android:name="com.netease.nim.demo.permission.C2D_MESSAGE"/>
+
     <application
         android:name=".NimApplication"
         android:allowBackup="true"
@@ -297,21 +310,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <!-- 音视频 -->
-        <activity
-            android:name=".avchat.activity.AVChatActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullScreenTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
-        <activity
-            android:name=".teamavchat.activity.TeamAVChatActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@style/FullScreenTheme"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
         <!-- 白板 -->
         <activity
             android:name=".rts.activity.RTSActivity"
@@ -359,11 +357,6 @@
             android:name=".contact.activity.RobotProfileActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-
-        <!-- NRTC Settings -->
-        <activity
-            android:name=".avchat.activity.AVChatSettingsActivity"
-            android:screenOrientation="portrait" />
 
         <!-- 声明云信后台服务 -->
         <service
@@ -425,14 +418,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.netease.nim.demo.ACTION.RECEIVE_RTS_NOTIFICATION" />
-            </intent-filter>
-        </receiver>
-
-        <!-- 申明本地电话状态（通话状态）的广播接收器，第三方APP集成时音视频模块时，如果需要在App中处理网络通话与本地电话的交互请加上此接收器 -->
-        <!-- 在Demo的示例代码中是在Application进行了网络通话与本地电话的互斥处理 -->
-        <receiver android:name="com.netease.nim.demo.avchat.receiver.IncomingCallReceiver">
-            <intent-filter>
-                <action android:name="android.intent.action.PHONE_STATE" />
             </intent-filter>
         </receiver>
 
@@ -524,6 +509,41 @@
 
         <!-- 高德地图 -->
         <service android:name="com.amap.api.location.APSService" />
+
+        <!-- fcm -->
+        <service android:name="com.netease.nimlib.mixpush.fcm.FCMTokenService">
+            <intent-filter>
+                <action android:name="com.google.firebase.INSTANCE_ID_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!--设置收到 fcm 通知展示的图标和颜色-->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_notify_msg" />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/color_blue_3a9efb" />
+
+        <!--meizu-->
+        <receiver android:name="com.netease.nimlib.mixpush.mz.MZPushReceiver">
+            <intent-filter android:priority="0x7fffffff">
+                <!-- 接收push消息 -->
+                <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
+                <!-- 接收register消息 -->
+                <action android:name="com.meizu.flyme.push.intent.REGISTER.FEEDBACK" />
+                <!-- 接收unregister消息-->
+                <action android:name="com.meizu.flyme.push.intent.UNREGISTER.FEEDBACK" />
+                <!-- 兼容低版本Flyme3推送服务配置 -->
+                <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
+                <action android:name="com.meizu.c2dm.intent.RECEIVE" />
+                <category android:name="com.netease.nim.demo" />
+            </intent-filter>
+        </receiver>
+
+        <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c3b7877640734c92138bf0a8becce1df29155681" />
     </application>
 
 </manifest>

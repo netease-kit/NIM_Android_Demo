@@ -15,19 +15,21 @@
           <task>generateCommonDebugSources</task>
         </afterSyncTasks>
         <option name="ALLOW_USER_CONFIGURATION" value="false" />
-        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res;file://$MODULE_DIR$/res-avchat;file://$MODULE_DIR$/res-chatroom;file://$MODULE_DIR$/res-rp" />
+        <option name="RES_FOLDERS_RELATIVE_PATH" value="file://$MODULE_DIR$/res;file://$MODULE_DIR$/res-chatroom;file://$MODULE_DIR$/res-rp" />
       </configuration>
     </facet>
   </component>
   <component name="NewModuleRootManager" LANGUAGE_LEVEL="JDK_1_7">
     <output url="file://$MODULE_DIR$/build/intermediates/classes/common/debug" />
     <output-test url="file://$MODULE_DIR$/build/intermediates/classes/test/common/debug" />
+    <exclude-output />
     <content url="file://$MODULE_DIR$">
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/apt/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/r/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/aidl/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/buildConfig/common/debug" isTestSource="false" generated="true" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/source/rs/common/debug" isTestSource="false" generated="true" />
+      <sourceFolder url="file://$MODULE_DIR$/build/generated/res/google-services/common/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/rs/common/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/build/generated/res/resValues/common/debug" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/commonDebug/res" type="java-resource" />
@@ -67,13 +69,6 @@
       <sourceFolder url="file://$MODULE_DIR$/common" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/rs" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/common/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/assets" type="java-test-resource" />
@@ -81,6 +76,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/testCommon/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/androidTestCommon/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/res" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/resources" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/debug/assets" type="java-resource" />
@@ -103,20 +105,12 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestDebug/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTestDebug/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/res" type="java-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/res-avchat" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/res-chatroom" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/res-rp" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/assets" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/shaders" isTestSource="false" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/aidl" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
-      <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/res" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/assets" type="java-test-resource" />
@@ -124,6 +118,13 @@
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/rs" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/androidTest/shaders" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/res" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/assets" type="java-test-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/aidl" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/rs" isTestSource="true" />
+      <sourceFolder url="file://$MODULE_DIR$/src/test/shaders" isTestSource="true" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/assets" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/blame" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/check-manifest" />
@@ -133,12 +134,9 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/lint" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/merged-not-compiled-resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/prebuild" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-rules" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res_stripped" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/splits-support" />
@@ -150,52 +148,76 @@
     </content>
     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\okhttp-3.6.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="com.android.support:multidex-1.0.2" level="project" />
     <orderEntry type="library" name="com.android.support:support-media-compat-26.1.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\alipaySingle-20170510.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="com.android.support:recyclerview-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="com.netease.nimlib:nrtc-4.6.0" level="project" />
     <orderEntry type="library" name="com.github.bumptech.glide:annotations:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="com.netease.nimlib:nrtc-4.4.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\gson-2.2.4.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.meizu.flyme.internet:push-internal-3.4.2" level="project" />
     <orderEntry type="library" name="android.arch.lifecycle:common:1.0.0@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\demo\libs\mi_push_sdk_3.2.2.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-fragment-26.1.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\uikit\libs\java-json.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-base-license-11.6.0" level="project" />
     <orderEntry type="library" name="jp.wasabeef:glide-transformations-3.0.1" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\libammsdk.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="android.arch.lifecycle:runtime-1.0.0" level="project" />
     <orderEntry type="library" name="com.android.support:appcompat-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-basement-license-11.6.0" level="project" />
     <orderEntry type="library" name="com.android.support:support-annotations:26.1.0@jar" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-utils-26.1.0" level="project" />
     <orderEntry type="library" name="com.android.support.constraint:constraint-layout-1.0.2" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\wftsdk5.0.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.github.bumptech.glide:disklrucache:4.2.0@jar" level="project" />
     <orderEntry type="library" name="com.android.support:support-core-ui-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-iid-11.6.0" level="project" />
     <orderEntry type="library" name="com.github.bumptech.glide:gifdecoder:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\JrmfNetease-2.1.1.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\okio-1.11.0.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="HMS-SDK-2.4.0.300:@aar" level="project" />
     <orderEntry type="library" name="com.android.support:support-compat-26.1.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\gson-2.2.4.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="me.leolin:ShortcutBadger-1.1.17" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-common-11.6.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\demo\libs\mi_push_sdk_3.2.2.jar:unspecified@jar" level="project" />
     <orderEntry type="library" name="android.arch.core:common:1.0.0@jar" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-11.6.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\libammsdk.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.crashlytics.sdk.android:crashlytics-core-2.5.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-core-11.6.0" level="project" />
     <orderEntry type="library" name="org.adw.library:discrete-seekbar-1.0.1" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\alipaySingle-20170510.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-v4-26.1.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\demo\libs\AMap2DMap_3.0.0_AMapSearch_3.6.1_AMapLocation_3.2.1_20161228.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\uikit\libs\fastjson-1.1.34.android.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\uikit\libs\java-json.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-messaging-license-11.6.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-common-license-11.6.0" level="project" />
     <orderEntry type="library" scope="TEST" name="com.android.support:multidex-instrumentation-1.0.2" level="project" />
-    <orderEntry type="library" name="com.android.support:animated-vector-drawable-26.1.0" level="project" />
     <orderEntry type="library" name="me.everything:overscroll-decor-android-1.0.4" level="project" />
-    <orderEntry type="library" name="org.aspectj:aspectjrt:1.8.13@jar" level="project" />
     <orderEntry type="library" name="com.android.support:transition-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-base-11.6.0" level="project" />
     <orderEntry type="library" name="com.android.support:design-26.1.0" level="project" />
+    <orderEntry type="library" name="com.crashlytics.sdk.android:answers-1.4.1" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-11.6.0" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-license-11.6.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-iid-license-11.6.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\okio-1.11.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:support-fragment-26.1.0" level="project" />
+    <orderEntry type="library" name="com.android.support:support-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.android.gms:play-services-basement-11.6.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-analytics-11.6.0" level="project" />
+    <orderEntry type="library" name="com.android.support:support-core-utils-26.1.0" level="project" />
+    <orderEntry type="library" name="com.github.bumptech.glide:disklrucache:4.2.0@jar" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\demo\libs\AMap2DMap_3.0.0_AMapSearch_3.6.1_AMapLocation_3.2.1_20161228.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\JrmfNetease-2.1.1.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="io.fabric.sdk.android:fabric-1.4.1" level="project" />
+    <orderEntry type="library" name="com.android.support:support-v4-26.1.0" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-messaging-11.6.0" level="project" />
+    <orderEntry type="library" name="com.crashlytics.sdk.android:beta-1.2.7" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\uikit\libs\fastjson-1.1.34.android.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.android.support:animated-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="com.crashlytics.sdk.android:crashlytics-2.8.0" level="project" />
+    <orderEntry type="library" name="__local_aars__:F.\develop\nim\jrmfneteaselib\libs\wftsdk5.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="org.aspectj:aspectjrt:1.8.13@jar" level="project" />
     <orderEntry type="library" name="com.netease.nimlib:jsbridge-1.3.1" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-license-11.6.0" level="project" />
     <orderEntry type="library" name="com.github.bumptech.glide:glide:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:F.\develop\nim_new\nim\jrmfneteaselib\libs\okhttp-3.6.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="com.google.firebase:firebase-analytics-license-11.6.0" level="project" />
     <orderEntry type="module" module-name="rts" />
     <orderEntry type="module" module-name="uikit" />
     <orderEntry type="module" module-name="avchat" />
+    <orderEntry type="module" module-name="avchatkit" />
     <orderEntry type="module" module-name="jrmfneteaselib" />
     <orderEntry type="module" module-name="chatroom" />
     <orderEntry type="module" module-name="aop-lib" />

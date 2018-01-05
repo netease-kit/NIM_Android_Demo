@@ -1,18 +1,8 @@
 package com.netease.nim.demo.mixpush;
 
-import android.text.TextUtils;
-
-import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.model.main.CustomPushContentProvider;
-import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.NimStrings;
-import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-import com.netease.nimlib.sdk.team.TeamService;
-import com.netease.nimlib.sdk.team.model.Team;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -29,27 +19,12 @@ public class DemoPushContentProvider implements CustomPushContentProvider {
 
     @Override
     public String getPushContent(IMMessage message) {
-        return getContent(message);
+        return null;
     }
 
     @Override
     public Map<String, Object> getPushPayload(IMMessage message) {
         return getPayload(message);
-    }
-
-    private String getContent(IMMessage message) {
-        if (message == null) {
-            return null;
-        }
-        NimUserInfo userInfo = (NimUserInfo) NimUIKit.getUserInfoProvider().getUserInfo(DemoCache.getAccount());
-        String nick = userInfo == null ? "" : userInfo.getName();
-        if (message.getSessionType() == SessionTypeEnum.Team) {
-            Team team = NIMClient.getService(TeamService.class).queryTeamBlock(message.getSessionId());
-            String teamName = team == null ? "" : team.getName();
-            return String.format("(群：%s) ", teamName) + createDefaultContent(nick, message);
-        } else {
-            return createDefaultContent(nick, message);
-        }
     }
 
     private Map<String, Object> getPayload(IMMessage message) {
@@ -65,36 +40,5 @@ public class DemoPushContentProvider implements CustomPushContentProvider {
         }
 
         return payload;
-    }
-
-    private String createDefaultContent(String nick, IMMessage message) {
-        if (message == null) {
-            return null;
-        }
-        if (message.getMsgType() == MsgTypeEnum.text || !TextUtils.isEmpty(message.getContent())) {
-            if (message.getSessionType() == SessionTypeEnum.Team) {
-                return nick + ": " + message.getContent();
-            } else {
-                return message.getContent();
-            }
-        }
-
-        NimStrings strings = new NimStrings();
-        switch (message.getMsgType()) {
-            case image:
-                return String.format(strings.status_bar_image_message, nick);
-            case audio:
-                return String.format(strings.status_bar_audio_message, nick);
-            case video:
-                return String.format(strings.status_bar_video_message, nick);
-            case file:
-                return String.format(strings.status_bar_file_message, nick);
-            case location:
-                return String.format(strings.status_bar_location_message, nick);
-            case custom:
-                return String.format(strings.status_bar_custom_message, nick);
-            default:
-                return String.format(strings.status_bar_unsupported_message, nick);
-        }
     }
 }

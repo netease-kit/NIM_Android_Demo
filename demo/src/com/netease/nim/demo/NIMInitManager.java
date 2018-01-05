@@ -4,24 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.util.Log;
 import android.widget.Toast;
 
-import com.netease.nim.demo.avchat.AVChatProfile;
-import com.netease.nim.demo.avchat.activity.AVChatActivity;
-import com.netease.nim.demo.avchat.receiver.PhoneCallStateObserver;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.event.OnlineStateEventManager;
 import com.netease.nim.demo.rts.activity.RTSActivity;
-import com.netease.nim.demo.team.TeamAVChatHelper;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
-import com.netease.nimlib.sdk.avchat.AVChatManager;
-import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
-import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.model.BroadcastMessage;
@@ -69,40 +60,11 @@ public class NIMInitManager {
     }
 
     private void registerGlobalObservers(boolean register) {
-        // 注册网络通话来电
-        registerAVChatIncomingCallObserver(register);
-
         // 注册白板会话
         registerRTSIncomingObserver(register);
 
         // 注册云信全员广播
         registerBroadcastMessages(register);
-    }
-
-    /**
-     * 注册音视频来电观察者
-     *
-     * @param register
-     */
-    private void registerAVChatIncomingCallObserver(boolean register) {
-        AVChatManager.getInstance().observeIncomingCall(new Observer<AVChatData>() {
-            @Override
-            public void onEvent(AVChatData data) {
-                String extra = data.getExtra();
-                Log.e("Extra", "Extra Message->" + extra);
-                if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE
-                        || AVChatProfile.getInstance().isAVChatting()
-                        || TeamAVChatHelper.sharedInstance().isTeamAVChatting()
-                        || AVChatManager.getInstance().getCurrentChatId() != 0) {
-                    LogUtil.i(TAG, "reject incoming call data =" + data.toString() + " as local phone is not idle");
-                    AVChatManager.getInstance().sendControlCommand(data.getChatId(), AVChatControlCommand.BUSY, null);
-                    return;
-                }
-                // 有网络来电打开AVChatActivity
-                AVChatProfile.getInstance().setAVChatting(true);
-                AVChatProfile.getInstance().launchActivity(data, AVChatActivity.FROM_BROADCASTRECEIVER);
-            }
-        }, register);
     }
 
     /**
@@ -188,7 +150,7 @@ public class NIMInitManager {
         NIMClient.getService(MsgServiceObserve.class).observeBroadcastMessage(new Observer<BroadcastMessage>() {
             @Override
             public void onEvent(BroadcastMessage broadcastMessage) {
-                Toast.makeText(DemoCache.getContext(), broadcastMessage.getContent(), Toast.LENGTH_SHORT).show();
+                Toast.makeText(DemoCache.getContext(), "收到全员广播 ：" +  broadcastMessage.getContent(), Toast.LENGTH_SHORT).show();
             }
         }, register);
     }

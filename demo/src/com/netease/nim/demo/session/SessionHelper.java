@@ -8,6 +8,7 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Toast;
 
+import com.netease.nim.avchatkit.TeamAVChatProfile;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.activity.RobotProfileActivity;
@@ -42,7 +43,11 @@ import com.netease.nim.demo.session.viewholder.MsgViewHolderRedPacket;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSnapChat;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderSticker;
 import com.netease.nim.demo.session.viewholder.MsgViewHolderTip;
-import com.netease.nim.demo.team.TeamAVChatHelper;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.model.recent.RecentCustomization;
+import com.netease.nim.uikit.api.model.session.SessionCustomization;
+import com.netease.nim.uikit.api.model.session.SessionEventListener;
+import com.netease.nim.uikit.api.wrapper.NimMessageRevokeObserver;
 import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.business.session.actions.BaseAction;
 import com.netease.nim.uikit.business.session.helper.MessageListPanelHelper;
@@ -56,11 +61,6 @@ import com.netease.nim.uikit.common.ui.popupmenu.NIMPopupMenu;
 import com.netease.nim.uikit.common.ui.popupmenu.PopupMenuItem;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nim.uikit.impl.customization.DefaultRecentCustomization;
-import com.netease.nim.uikit.api.NimUIKit;
-import com.netease.nim.uikit.api.model.recent.RecentCustomization;
-import com.netease.nim.uikit.api.wrapper.NimMessageRevokeObserver;
-import com.netease.nim.uikit.api.model.session.SessionCustomization;
-import com.netease.nim.uikit.api.model.session.SessionEventListener;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.avchat.constant.AVChatRecordState;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
@@ -375,7 +375,7 @@ public class SessionHelper {
 
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
             final TeamAVChatAction avChatAction = new TeamAVChatAction(AVChatType.VIDEO);
-            TeamAVChatHelper.sharedInstance().registerObserver(true);
+            TeamAVChatProfile.sharedInstance().registerObserver(true);
 
             ArrayList<BaseAction> actions = new ArrayList<>();
             actions.add(avChatAction);

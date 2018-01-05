@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.demo.rts.ActionTypeEnum;
 import com.netease.nim.demo.rts.doodle.DoodleView;
 import com.netease.nim.demo.rts.doodle.SupportActionType;
@@ -29,7 +30,6 @@ import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -237,6 +237,7 @@ public class RTSActivity extends UI implements View.OnClickListener {
         @Override
         public void onEvent(StatusCode code) {
             if (code.wontAutoLogin()) {
+                MainActivity.logout(RTSActivity.this, true);
                 finish();
             }
         }
