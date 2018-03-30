@@ -66,6 +66,9 @@ class NimSDKOptionConfig {
         // 是否检查manifest 配置，调试阶段打开，调试通过之后请关掉
         options.checkManifestConfig = false;
 
+        // 是否启用群消息已读功能，默认关闭
+        options.enableTeamMsgAck = true;
+
         // 配置第三方推送
         options.mixPushConfig = buildMixPushConfig();
 

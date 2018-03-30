@@ -8,7 +8,6 @@ import android.widget.Toast;
 
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.event.OnlineStateEventManager;
-import com.netease.nim.demo.rts.activity.RTSActivity;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
@@ -17,8 +16,6 @@ import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.model.BroadcastMessage;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-import com.netease.nimlib.sdk.rts.RTSManager;
-import com.netease.nimlib.sdk.rts.model.RTSData;
 import com.netease.nimlib.sdk.team.constant.TeamFieldEnum;
 import com.netease.nimlib.sdk.team.model.IMMessageFilter;
 import com.netease.nimlib.sdk.team.model.UpdateTeamAttachment;
@@ -60,25 +57,8 @@ public class NIMInitManager {
     }
 
     private void registerGlobalObservers(boolean register) {
-        // 注册白板会话
-        registerRTSIncomingObserver(register);
-
         // 注册云信全员广播
         registerBroadcastMessages(register);
-    }
-
-    /**
-     * 注册白板来电观察者
-     *
-     * @param register
-     */
-    private void registerRTSIncomingObserver(boolean register) {
-        RTSManager.getInstance().observeIncomingSession(new Observer<RTSData>() {
-            @Override
-            public void onEvent(RTSData rtsData) {
-                RTSActivity.incomingSession(DemoCache.getContext(), rtsData, RTSActivity.FROM_BROADCAST_RECEIVER);
-            }
-        }, register);
     }
 
     private void registerLocaleReceiver(boolean register) {

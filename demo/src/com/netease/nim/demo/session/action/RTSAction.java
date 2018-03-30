@@ -3,7 +3,7 @@ package com.netease.nim.demo.session.action;
 import android.widget.Toast;
 
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.rts.activity.RTSActivity;
+import com.netease.nim.rtskit.RTSKit;
 import com.netease.nim.uikit.business.session.actions.BaseAction;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 
@@ -19,7 +19,7 @@ public class RTSAction extends BaseAction {
     @Override
     public void onClick() {
         if (NetworkUtil.isNetAvailable(getActivity())) {
-            RTSActivity.startSession(getActivity(), getAccount(), RTSActivity.FROM_INTERNAL);
+            RTSKit.startRTSSession(getActivity(), getAccount());
         } else {
             Toast.makeText(getActivity(), R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
         }

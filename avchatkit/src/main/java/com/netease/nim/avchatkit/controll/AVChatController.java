@@ -105,7 +105,6 @@ public class AVChatController {
     public void doCalling(String account, final AVChatType avChatType, final AVChatControllerCallback<AVChatData> callback) {
         AVChatNotifyOption notifyOption = new AVChatNotifyOption();
         notifyOption.extendMessage = "extra_data";
-        notifyOption.webRTCCompat = avChatConfigs.isWebrtcCompat();
         // 默认forceKeepCalling为true，开发者如果不需要离线持续呼叫功能可以将forceKeepCalling设为false
         // notifyOption.forceKeepCalling = false;
 

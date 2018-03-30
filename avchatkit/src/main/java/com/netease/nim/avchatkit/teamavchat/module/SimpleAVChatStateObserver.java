@@ -74,7 +74,7 @@ public class SimpleAVChatStateObserver implements AVChatStateObserver {
     }
 
     @Override
-    public void onDisconnectServer() {
+    public void onDisconnectServer(int code) {
 
     }
 

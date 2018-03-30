@@ -5,15 +5,16 @@ import android.content.Context;
 import android.text.TextUtils;
 import android.widget.Toast;
 
-import com.jrmf360.neteaselib.JrmfClient;
-import com.jrmf360.neteaselib.base.http.OkHttpModelCallBack;
-import com.jrmf360.neteaselib.base.model.BaseModel;
-import com.jrmf360.neteaselib.rp.JrmfRpClient;
-import com.jrmf360.neteaselib.rp.utils.callback.GrabRpCallBack;
-import com.jrmf360.neteaselib.wallet.JrmfWalletClient;
+import com.jrmf360.normallib.JrmfClient;
+import com.jrmf360.normallib.base.http.OkHttpModelCallBack;
+import com.jrmf360.normallib.rp.JrmfRpClient;
+import com.jrmf360.normallib.rp.bean.GrabRpBean;
+import com.jrmf360.normallib.rp.http.model.BaseModel;
+import com.jrmf360.normallib.rp.utils.callback.GrabRpCallBack;
+import com.jrmf360.normallib.wallet.JrmfWalletClient;
 import com.netease.nim.demo.DemoCache;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -193,9 +194,10 @@ public class NIMRedPacketClient {
         }
         GrabRpCallBack callBack = new GrabRpCallBack() {
             @Override
-            public void grabRpResult(int rpStatus) {
-                // 只有抢到红包才会回调这个方法,返回0,表示抢到了最后一个红包;返回1,表示抢到了一个红包,但不是最后一个。
-                cb.sendMessage(selfInfo.getAccount(), briberyId, rpStatus == 0);
+            public void grabRpResult(GrabRpBean grabRpBean) {
+                if (grabRpBean.isHadGrabRp()) {
+                    cb.sendMessage(selfInfo.getAccount(), briberyId, grabRpBean.getHasLeft() == 0);
+                }
             }
         };
         if (sessionTypeEnum == SessionTypeEnum.Team) {

@@ -1,0 +1,94 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+          package="com.jrmf360.normallib">
+
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
+    <!-- 要检查用户权限 -->
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
+
+    <application>
+
+        <!--红包页面-->
+        <activity
+            android:name=".rp.ui.OpenRpActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/Jrmf_b_DialogTheme"/>
+
+        <activity
+            android:name=".rp.ui.PayTypeActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/jrmf_b_dialog"/>
+        <activity
+            android:name=".rp.ui.TransPayActivity"
+            android:launchMode="singleTask"
+            android:theme="@style/jrmf_b_dialog"
+            android:windowSoftInputMode="adjustResize"/>
+        <activity android:name=".rp.ui.SendGroupEnvelopesActivity"/>
+        <activity android:name=".rp.ui.SendSingleEnvelopesActivity"/>
+        <activity android:name=".rp.ui.RpDetailActivity"/>
+        <activity android:name=".rp.ui.MyRpActivity"/>
+        <activity android:name=".rp.ui.ResetPwdActivity"/>
+        <activity android:name=".rp.ui.CertificationActivity"/>
+        <activity android:name=".rp.ui.CheckAuthActivity"/>
+        <activity android:name=".rp.ui.CheckUserInfoActivity"/>
+        <activity android:name=".rp.ui.EnBrowserActivity"/>
+        <activity android:name=".rp.ui.SettingPswdActivity"/>
+        <activity android:name=".rp.ui.TradeDetailActivity"/>
+        <activity android:name=".rp.ui.TradeHistoryActivity"/>
+        <activity android:name=".rp.ui.TransAccountActivity"/>
+
+        <activity android:name=".rp.ui.BankCardListActivity"/>
+        <activity android:name=".rp.ui.AddCardActivity"/>
+        <activity android:name=".rp.ui.AddCardFirsstActivity"/>
+        <activity android:name=".rp.ui.AddCardSecondActivity"/>
+
+        <activity android:name=".rp.ui.TransDetailActivity"/>
+        <activity android:name=".rp.ui.TransSuccActivity"/>
+        <activity android:name=".rp.ui.WebViewActivity"/>
+
+        <!--钱包页面-->
+        <activity android:name="com.jrmf360.normallib.wallet.ui.MyWalletActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.AccountInfoActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.TradeHistoryActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.SecureSettingActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.SupportBankCardActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.BankSettingActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.AddCardSecondActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.AddCardFirstActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.GetDepositActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.IdentityAuthenActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.MyRpActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.RechargeActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.TradeDetailActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.WebViewActivity"/>
+
+        <activity android:name="com.jrmf360.normallib.wallet.ui.RpDetailActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.GetPwdActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.PwdCheckActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.UpdatePwdActivity"/>
+        <activity android:name="com.jrmf360.normallib.wallet.ui.SetPayPwdActivity"/>
+
+
+        <!-- 支付宝配置开始 -->
+        <activity
+            android:name="com.alipay.sdk.app.H5PayActivity"
+            android:configChanges="orientation|keyboardHidden|navigation|screenSize"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+        <activity
+            android:name="com.alipay.sdk.app.H5AuthActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:exported="false"
+            android:screenOrientation="behind"
+            android:windowSoftInputMode="adjustResize|stateHidden"/>
+
+        <!-- 支付宝 配置结束 -->
+
+    </application>
+
+</manifest>

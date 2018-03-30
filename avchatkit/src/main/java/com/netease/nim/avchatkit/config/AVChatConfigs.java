@@ -39,7 +39,6 @@ public class AVChatConfigs {
     private int deviceRotationOffset;
     private boolean audioHighQuality;
     private boolean audioDtx;
-    private boolean webrtcCompat;
 
     public AVChatConfigs(Context context) {
         this.context = context;
@@ -69,7 +68,6 @@ public class AVChatConfigs {
         deviceRotationOffset = Integer.parseInt(TextUtils.isDigitsOnly(value3) && !TextUtils.isEmpty(value3) ? value3 : 0 + "");
         audioHighQuality = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_high_quality_key), false);
         audioDtx = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_dtx_key), true);
-        webrtcCompat = preferences.getBoolean(context.getString(R.string.nrtc_setting_other_webrtc_compat_key), true);
     }
 
     /**
@@ -162,9 +160,5 @@ public class AVChatConfigs {
 
     public AVChatParameters getAvChatParameters() {
         return avChatParameters;
-    }
-
-    public boolean isWebrtcCompat() {
-        return webrtcCompat;
     }
 }

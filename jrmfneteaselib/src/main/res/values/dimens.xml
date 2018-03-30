@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <!--标题栏的高度-->
-    <dimen name="jrmf_rp_actionbar_height">56dp</dimen>
-
-    <!--底部按钮高度-->
-    <dimen name="jrmf_rp_btn_height">44dp</dimen>
-    <dimen name="jrmf_rp_round_radius">6dip</dimen>
-</resources>

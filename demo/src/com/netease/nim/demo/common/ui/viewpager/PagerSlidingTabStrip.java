@@ -111,6 +111,12 @@ public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPage
 
     private OnCustomTabListener onCustomTabListener = null;
 
+    private boolean isFakeDropOpen = true;
+
+    public void setFakeDropOpen(boolean isFakeDropOpen) {
+        this.isFakeDropOpen = isFakeDropOpen;
+    }
+
     public PagerSlidingTabStrip(Context context) {
         this(context, null);
     }
@@ -294,7 +300,7 @@ public class PagerSlidingTabStrip extends HorizontalScrollView implements OnPage
         }
 
         final DropFake unreadTV = ((DropFake) tabView.findViewById(R.id.tab_new_msg_label));
-        if (unreadTV != null) {
+        if (unreadTV != null && isFakeDropOpen) {
             unreadTV.setTouchListener(new DropFake.ITouchListener() {
                 @Override
                 public void onDown() {

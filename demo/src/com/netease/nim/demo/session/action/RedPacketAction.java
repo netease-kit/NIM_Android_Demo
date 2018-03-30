@@ -3,8 +3,9 @@ package com.netease.nim.demo.session.action;
 import android.app.Activity;
 import android.content.Intent;
 
-import com.jrmf360.neteaselib.rp.JrmfRpClient;
-import com.jrmf360.neteaselib.rp.bean.EnvelopeBean;
+
+import com.jrmf360.normallib.rp.JrmfRpClient;
+import com.jrmf360.normallib.rp.bean.EnvelopeBean;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.extension.RedPacketAttachment;

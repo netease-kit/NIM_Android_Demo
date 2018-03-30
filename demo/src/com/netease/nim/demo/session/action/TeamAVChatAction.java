@@ -1,7 +1,6 @@
 package com.netease.nim.demo.session.action;
 
 import android.content.Intent;
-import android.preference.PreferenceManager;
 import android.text.TextUtils;
 import android.widget.Toast;
 
@@ -119,8 +118,7 @@ public class TeamAVChatAction extends AVChatAction {
         final String roomName = StringUtil.get32UUID();
         LogUtil.ui("create room " + roomName);
         // 创建房间
-        boolean webRTCCompat = PreferenceManager.getDefaultSharedPreferences(getActivity()).getBoolean(getActivity().getString(R.string.nrtc_setting_other_webrtc_compat_key), true);
-        AVChatManager.getInstance().createRoom(roomName, null, webRTCCompat, new AVChatCallback<AVChatChannelInfo>() {
+        AVChatManager.getInstance().createRoom(roomName, null, new AVChatCallback<AVChatChannelInfo>() {
             @Override
             public void onSuccess(AVChatChannelInfo avChatChannelInfo) {
                 LogUtil.ui("create room " + roomName + " success !");
@@ -223,6 +221,7 @@ public class TeamAVChatAction extends AVChatAction {
         // 本地插一条tip消息
         IMMessage message = MessageBuilder.createTipMessage(transaction.getTeamID(), SessionTypeEnum.Team);
         message.setContent(getActivity().getString(R.string.t_avchat_create_room_fail));
+        LogUtil.i("status", "team action set:" + MsgStatusEnum.success);
         message.setStatus(MsgStatusEnum.success);
         NIMClient.getService(MsgService.class).saveMessageToLocal(message, true);
     }

@@ -126,12 +126,6 @@
             android:summary="在服务器录制通话内容(需要额外配置)"
             android:title="@string/nrtc_setting_other_server_record_video"/>
 
-        <SwitchPreference
-            android:defaultValue="false"
-            android:key="@string/nrtc_setting_other_webrtc_compat_key"
-            android:summary="支持Web端通过WebRTC模式互通"
-            android:title="@string/nrtc_setting_other_webrtc_compat"/>
-
     </PreferenceCategory>
 
 </PreferenceScreen>

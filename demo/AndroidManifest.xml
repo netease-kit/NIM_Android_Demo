@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.netease.nim.demo"
-    android:installLocation="auto">
+          xmlns:tools="http://schemas.android.com/tools"
+          package="com.netease.nim.demo"
+          android:installLocation="auto">
 
     <!-- 加入应用需要的权限 -->
     <!-- 网络相关 -->
@@ -52,6 +53,7 @@
         android:protectionLevel="signature" />
     <uses-permission android:name="com.netease.nim.demo.permission.MIPUSH_RECEIVE" />
 
+    <uses-sdk tools:overrideLibrary="com.huawei.android.hms.base,com.huawei.android.hms.push" />
     <!--魅族推送-->
 
     <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
@@ -89,17 +91,6 @@
         <meta-data
             android:name="JRMF_PARTNER_NAME"
             android:value="云信红包" />
-        <!--微信配置开始-->
-        <activity
-            android:name=".wxapi.WXPayEntryActivity"
-            android:exported="true"
-            android:launchMode="singleTop" />
-        <activity
-            android:name="com.switfpass.pay.activity.PayResultActivity"
-            android:exported="true"
-            android:launchMode="singleTop" />
-
-        <!--微信配置结束-->
 
         <!-- 全面屏配置 -->
         <meta-data
@@ -310,14 +301,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
-        <!-- 白板 -->
-        <activity
-            android:name=".rts.activity.RTSActivity"
-            android:launchMode="singleInstance"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateAlwaysHidden" />
-
         <!-- 消息历史搜索 -->
         <activity
             android:name=".session.search.SearchMessageActivity"
@@ -350,6 +333,16 @@
         <!-- 机器人 -->
         <activity
             android:name=".main.activity.RobotListActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- 已读回执 -->
+        <activity android:name=".session.activity.SendAckMsgActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+        <!-- 已读回执详情 -->
+        <activity android:name=".session.activity.AckMsgInfoActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -408,16 +401,6 @@
             android:exported="false">
             <intent-filter>
                 <action android:name="com.netease.nim.demo.ACTION.RECEIVE_CUSTOM_NOTIFICATION" />
-            </intent-filter>
-        </receiver>
-
-        <!-- 申明白板会话的广播接收器，第三方APP集成时，action中的com.netease.nim.demo请替换为自己的包名 -->
-        <receiver
-            android:name="com.netease.nimlib.receiver.RTSBroadcastReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.netease.nim.demo.ACTION.RECEIVE_RTS_NOTIFICATION" />
             </intent-filter>
         </receiver>
 
@@ -540,10 +523,6 @@
                 <category android:name="com.netease.nim.demo" />
             </intent-filter>
         </receiver>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c3b7877640734c92138bf0a8becce1df29155681" />
     </application>
 
 </manifest>

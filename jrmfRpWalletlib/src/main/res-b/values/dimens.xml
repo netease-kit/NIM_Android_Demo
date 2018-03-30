@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="titlebar_height">56dp</dimen>
+
+    <dimen name="item_mywallet_height">48dp</dimen>
+    <dimen name="item_trade_detail_height">80dp</dimen>
+    <!--<dimen name="btn_height">44dp</dimen>-->
+    <dimen name="jrmf_dimen_1">1dp</dimen>
+    <dimen name="jrmf_dimen_2">2dp</dimen>
+    <dimen name="jrmf_dimen_5">5dp</dimen>
+    <dimen name="jrmf_dimen_8">8dp</dimen>
+    <dimen name="jrmf_dimen_10">10dp</dimen>
+    <dimen name="jrmf_dimen_12">12dp</dimen>
+    <dimen name="jrmf_dimen_16">16dp</dimen>
+    <dimen name="jrmf_dimen_28">28dp</dimen>
+    <dimen name="jrmf_dimen_30">30dp</dimen>
+    <dimen name="jrmf_dimen_32">32dp</dimen>
+    <dimen name="jrmf_dimen_50">50dp</dimen>
+    <dimen name="jrmf_dimen_80">80dp</dimen>
+    <dimen name="jrmf_btn_radius">5dp</dimen>
+
+
+    <!--titleBar-->
+    <dimen name="jrmf_b_title_bar_text_size">17sp</dimen>
+</resources>

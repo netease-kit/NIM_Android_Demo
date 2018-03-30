@@ -158,8 +158,6 @@
     <string name="nrtc_setting_vie_hw_decoder">硬件解码(仅部分设备支持)</string>
     <string name="nrtc_setting_other_server_record_audio_key">nrtc_setting_other_server_record_audio_key</string>
     <string name="nrtc_setting_other_server_record_audio">音频服务器录制</string>
-    <string name="nrtc_setting_other_webrtc_compat_key">setting_other_webrtc_compat_key</string>
-    <string name="nrtc_setting_other_webrtc_compat">WebRTC兼容</string>
     <string name="nrtc_setting_other_server_record_video_key">nrtc_setting_other_server_record_video_key</string>
     <string name="nrtc_setting_other_server_record_video">视频服务器录制</string>
     <string name="nrtc_setting_voe_call_proximity_key">nrtc_setting_voe_call_proximity_key</string>

@@ -27,6 +27,7 @@
     <string name="prepare_data">正在准备数据...</string>
 
     <string name="readed">已读</string>
+    <string name="unread">未读</string>
     <string name="about">关于</string>
     <string name="logout">注销</string>
     <string name="add">添加</string>
@@ -65,6 +66,7 @@
     <string name="input_panel_RTS">白 板</string>
     <string name="input_panel_snapchat">阅后即焚</string>
     <string name="input_panel_tip">Tip</string>
+    <string name="input_panel_ack_msg">已读回执</string>
     <string name="message_history_query">云消息记录</string>
     <string name="message_search_title">搜索本地消息记录</string>
     <string name="message_clear">清空本地消息记录</string>
@@ -138,21 +140,6 @@
     <string name="nim_status_bar_unsupported_message">%1$s: 无法显示该内容</string>
     <string name="nim_status_bar_hidden_msg_content">你收到一条新消息</string>
 
-    <!--RTS白板-->
-    <string name="start_session">正在邀请对方，请稍后</string>
-    <string name="callee_reject">对方拒绝了本次请求</string>
-    <string name="callee_ack_timeout">对方未接受请求</string>
-    <string name="receive_session">对方发起白板演示</string>
-    <string name="start_session_record">我发起了白板演示</string>
-    <string name="session_end_record">白板演示已结束</string>
-    <string name="end_session_tip_head">退出白板演示</string>
-    <string name="end_session_tip_content">退出后，你将不再接收白板演示的消息内容</string>
-    <string name="target_has_end_session">对方结束白板演示</string>
-    <string name="accept_session">接受</string>
-    <string name="reject_session">拒绝</string>
-    <string name="doodle_back">上一步</string>
-    <string name="doodle_clear">清屏</string>
-
     <!-- setting -->
     <string name="settings">设置</string>
     <string name="no_disturb">免打扰</string>
@@ -171,6 +158,8 @@
     <string name="led">自定义呼吸灯</string>
     <string name="notice_content">通知栏标题定制</string>
     <string name="clear_index">清理全文检索缓存</string>
+    <string name="clear_sdk_cache">清理SDK文件缓存</string>
+    <string name="push_no_detail">推送不展示消息详情</string>
     <string name="operation_too_frequent">操作太频繁</string>
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
@@ -224,5 +213,10 @@
     <!--机器人-->
     <string name="nim_robot_title">云小信机器人</string>
     <string name="robot_start_chat">开始对话</string>
+
+    <!-- 已读回执 -->
+    <string name="send_ack_msg">发送已读回执消息</string>
+    <string name="ack_msg_info">消息已读详情</string>
+    <string name="ack_msg_tip">已读回执能力支持文本、图片、音频、视频、文件、自定义等消息类型。此处仅以文本消息作为演示，开发者可以根据具体业务场景进行功能设计。</string>
 
 </resources>

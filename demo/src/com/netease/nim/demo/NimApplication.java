@@ -5,8 +5,6 @@ import android.content.Context;
 import android.support.multidex.MultiDex;
 import android.text.TextUtils;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.config.AVChatOptions;
 import com.netease.nim.avchatkit.model.ITeamDataProvider;
@@ -23,8 +21,11 @@ import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.demo.mixpush.DemoPushContentProvider;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
+import com.netease.nim.demo.rts.RTSHelper;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.rtskit.RTSKit;
+import com.netease.nim.rtskit.api.config.RTSOptions;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.UIKitOptions;
 import com.netease.nim.uikit.business.contact.core.query.PinYin;
@@ -36,7 +37,6 @@ import com.netease.nimlib.sdk.mixpush.NIMPushClient;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 import com.netease.nimlib.sdk.util.NIMUtil;
 
-import io.fabric.sdk.android.Fabric;
 
 public class NimApplication extends Application {
 
@@ -77,14 +77,9 @@ public class NimApplication extends Application {
             NIMInitManager.getInstance().init(true);
             // 初始化音视频模块
             initAVChatKit();
+            // 初始化rts模块
+            initRTSKit();
         }
-
-        Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                .build();
-
-        // Initialize Fabric with the debug-disabled crashlytics.
-        Fabric.with(this, crashlyticsKit);
     }
 
     private LoginInfo getLoginInfo() {
@@ -165,5 +160,16 @@ public class NimApplication extends Application {
                 return TeamHelper.getTeamMemberDisplayName(teamId, account);
             }
         });
+    }
+
+    private void initRTSKit() {
+        RTSOptions rtsOptions = new RTSOptions() {
+            @Override
+            public void logout(Context context) {
+                MainActivity.logout(context, true);
+            }
+        };
+        RTSKit.init(rtsOptions);
+        RTSHelper.init();
     }
 }
