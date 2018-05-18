@@ -14,6 +14,7 @@ import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.ServerAddresses;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.mixpush.MixPushConfig;
+import com.netease.nimlib.sdk.mixpush.NIMPushClient;
 import com.netease.nimlib.sdk.msg.MessageNotifierCustomization;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
@@ -69,12 +70,14 @@ class NimSDKOptionConfig {
         // 是否启用群消息已读功能，默认关闭
         options.enableTeamMsgAck = true;
 
-        // 配置第三方推送
-        options.mixPushConfig = buildMixPushConfig();
+
+        // 打开消息撤回未读数-1的开关
+        options.shouldConsiderRevokedMessageUnreadCount = true;
 
         // 云信私有化配置项
         configServerAddress(options);
 
+        options.mixPushConfig = buildMixPushConfig();
         return options;
     }
 
@@ -192,7 +195,7 @@ class NimSDKOptionConfig {
         config.mzAppKey = "282bdd3a37ec4f898f47c5bbbf9d2369";
         config.mzCertificateName = "DEMO_MZ_PUSH";
 
-        // fcm 推送，适用于海外用户
+        // fcm 推送，适用于海外用户，不使用fcm请不要配置
         config.fcmCertificateName = "DEMO_FCM_PUSH";
 
         return config;

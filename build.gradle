@@ -10,6 +10,7 @@ allprojects {
         jcenter()
         mavenCentral()
         maven {url 'http://developer.huawei.com/repo'}
+        maven { url 'https://fabric-artifacts.s3.amazonaws.com/public' }
     }
 }
 
@@ -19,8 +20,8 @@ ext {
     minSdkVersion = 14
     targetSdkVersion = 26
     appTargetSdkVersion = 26
-    versionCode = 47
-    versionName = '5.0.0'
+    versionCode = 48
+    versionName = '5.1.0'
     sdkSourceCompatibility = 1.7
     sdkTargetCompatibility = 1.7
     appSourceCompatibility = 1.7

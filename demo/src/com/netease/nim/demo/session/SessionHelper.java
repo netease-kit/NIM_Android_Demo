@@ -75,6 +75,7 @@ import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.msg.model.LocalAntiSpamResult;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.nimlib.sdk.robot.model.RobotAttachment;
 import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
@@ -101,6 +102,9 @@ public class SessionHelper {
 
     private static NIMPopupMenu popupMenu;
     private static List<PopupMenuItem> menuItemList;
+
+    public static final boolean USE_LOCAL_ANTISPAM = true;
+
 
     public static void init() {
         // 注册自定义消息附件解析器
@@ -166,6 +170,11 @@ public class SessionHelper {
                 public void onActivityResult(final Activity activity, int requestCode, int resultCode, Intent data) {
                     super.onActivityResult(activity, requestCode, resultCode, data);
 
+                }
+
+                @Override
+                public boolean isAllowSendMessage(IMMessage message) {
+                    return checkLocalAntiSpam(message);
                 }
 
                 @Override
@@ -250,16 +259,15 @@ public class SessionHelper {
                 }
 
                 @Override
+                public boolean isAllowSendMessage(IMMessage message) {
+                    return checkLocalAntiSpam(message);
+                }
+
+                @Override
                 public MsgAttachment createStickerAttachment(String category, String item) {
                     return new StickerAttachment(category, item);
                 }
             };
-
-            // 背景
-//            p2pCustomization.backgroundColor = Color.BLUE;
-//            p2pCustomization.backgroundUri = "file:///android_asset/xx/bk.jpg";
-//            p2pCustomization.backgroundUri = "file:///sdcard/Pictures/bk.png";
-//            p2pCustomization.backgroundUri = "android.resource://com.netease.nim.demo/drawable/bk"
 
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
             ArrayList<BaseAction> actions = new ArrayList<>();
@@ -283,6 +291,30 @@ public class SessionHelper {
             myP2pCustomization.buttons = buttons;
         }
         return myP2pCustomization;
+    }
+
+    private static boolean checkLocalAntiSpam(IMMessage message) {
+        if (!USE_LOCAL_ANTISPAM) {
+            return true;
+        }
+        LocalAntiSpamResult result = NIMClient.getService(MsgService.class).checkLocalAntiSpam(message.getContent(), "**");
+        int operator = result == null ? 0 : result.getOperator();
+
+        switch (operator) {
+            case 1: // 替换，允许发送
+                message.setContent(result.getContent());
+                return true;
+            case 2: // 拦截，不允许发送
+                return false;
+            case 3: // 允许发送，交给服务器
+                message.setClientAntiSpam(true);
+                return true;
+            case 0:
+            default:
+                break;
+        }
+
+        return true;
     }
 
     private static SessionCustomization getRobotCustomization() {
@@ -389,7 +421,8 @@ public class SessionHelper {
             }
             actions.add(new TipAction());
 
-            normalTeamCustomization = new SessionTeamCustomization(new SessionTeamCustomization.SessionTeamCustomListener() {
+
+            SessionTeamCustomization.SessionTeamCustomListener listener = new SessionTeamCustomization.SessionTeamCustomListener() {
                 @Override
                 public void initPopupWindow(Context context, View view, String sessionId, SessionTypeEnum sessionTypeEnum) {
                     initPopuptWindow(context, view, sessionId, sessionTypeEnum);
@@ -404,7 +437,13 @@ public class SessionHelper {
                 public void onSelectedAccountFail() {
                     avChatAction.onSelectedAccountFail();
                 }
-            });
+            };
+            normalTeamCustomization = new SessionTeamCustomization(listener) {
+                @Override
+                public boolean isAllowSendMessage(IMMessage message) {
+                    return checkLocalAntiSpam(message);
+                }
+            };
 
             normalTeamCustomization.actions = actions;
         }
@@ -424,11 +463,13 @@ public class SessionHelper {
             }
             actions.add(new TipAction());
 
-            advancedTeamCustomization = new SessionTeamCustomization(new SessionTeamCustomization.SessionTeamCustomListener() {
+            SessionTeamCustomization.SessionTeamCustomListener listener = new SessionTeamCustomization.SessionTeamCustomListener() {
+
                 @Override
                 public void initPopupWindow(Context context, View view, String sessionId, SessionTypeEnum sessionTypeEnum) {
                     initPopuptWindow(context, view, sessionId, sessionTypeEnum);
                 }
+
 
                 @Override
                 public void onSelectedAccountsResult(ArrayList<String> selectedAccounts) {
@@ -439,7 +480,14 @@ public class SessionHelper {
                 public void onSelectedAccountFail() {
                     avChatAction.onSelectedAccountFail();
                 }
-            });
+            };
+
+            advancedTeamCustomization = new SessionTeamCustomization(listener){
+                @Override
+                public boolean isAllowSendMessage(IMMessage message) {
+                    return checkLocalAntiSpam(message);
+                }
+            };
 
             advancedTeamCustomization.actions = actions;
         }

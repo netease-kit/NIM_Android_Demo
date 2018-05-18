@@ -13,10 +13,11 @@ import com.netease.nim.avchatkit.R;
 import com.netease.nim.avchatkit.common.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.avchatkit.common.recyclerview.holder.BaseViewHolder;
 import com.netease.nim.avchatkit.teamavchat.module.TeamAVChatItem;
-import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
+import com.netease.nimlib.sdk.avchat.model.AVChatTextureViewRenderer;
 import com.netease.nimlib.sdk.nos.model.NosThumbParam;
 import com.netease.nimlib.sdk.nos.util.NosThumbImageUtil;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
+import com.netease.nrtc.video.render.IVideoRender;
 
 import static android.view.View.GONE;
 
@@ -28,7 +29,7 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
     private static final int DEFAULT_AVATAR_THUMB_SIZE = (int) AVChatKit.getContext().getResources().getDimension(R.dimen.avatar_max_size);
     private ImageView avatarImage;
     private ImageView loadingImage;
-    private AVChatSurfaceViewRenderer surfaceView;
+    private AVChatTextureViewRenderer surfaceView;
     private TextView nickNameText;
     private TextView stateText;
     private ProgressBar volumeBar;
@@ -97,7 +98,7 @@ public class TeamAVChatItemViewHolder extends TeamAVChatItemViewHolderBase {
         return thumbSize > 0 ? NosThumbImageUtil.makeImageThumbUrl(url, NosThumbParam.ThumbType.Crop, thumbSize, thumbSize) : url;
     }
 
-    public AVChatSurfaceViewRenderer getSurfaceView() {
+    public IVideoRender getSurfaceView() {
         return surfaceView;
     }
 

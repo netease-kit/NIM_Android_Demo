@@ -51,7 +51,6 @@ import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
-import com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
 import com.netease.nrtc.video.render.IVideoRender;
@@ -467,7 +466,7 @@ public class TeamAVChatActivity extends UI {
         int index = getItemIndex(account);
         if (index >= 0) {
             TeamAVChatItem item = data.get(index);
-            AVChatSurfaceViewRenderer surfaceView = adapter.getViewHolderSurfaceView(item);
+            IVideoRender surfaceView = adapter.getViewHolderSurfaceView(item);
             if (surfaceView != null) {
                 item.state = TeamAVChatItem.STATE.STATE_PLAYING;
                 item.videoLive = true;
@@ -495,7 +494,7 @@ public class TeamAVChatActivity extends UI {
 
     private void startLocalPreview() {
         if (data.size() > 1 && data.get(0).account.equals(AVChatKit.getAccount())) {
-            AVChatSurfaceViewRenderer surfaceView = adapter.getViewHolderSurfaceView(data.get(0));
+            IVideoRender surfaceView = adapter.getViewHolderSurfaceView(data.get(0));
             if (surfaceView != null) {
                 AVChatManager.getInstance().setupLocalVideoRender(surfaceView, false, AVChatVideoScalingType.SCALE_ASPECT_FIT);
                 AVChatManager.getInstance().startVideoPreview();

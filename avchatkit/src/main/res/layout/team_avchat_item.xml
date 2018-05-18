@@ -40,7 +40,7 @@
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <com.netease.nimlib.sdk.avchat.model.AVChatSurfaceViewRenderer
+    <com.netease.nimlib.sdk.avchat.model.AVChatTextureViewRenderer
         android:id="@+id/surface"
         android:layout_width="0dip"
         android:layout_height="0dip"
