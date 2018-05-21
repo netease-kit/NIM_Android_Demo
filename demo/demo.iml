@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<module external.linked.project.id=":demo" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" external.system.module.group="nim" external.system.module.version="unspecified" type="JAVA_MODULE" version="4">
+<module external.linked.project.id=":demo" external.linked.project.path="$MODULE_DIR$" external.root.project.path="$MODULE_DIR$/.." external.system.id="GRADLE" type="JAVA_MODULE" version="4">
   <component name="FacetManager">
     <facet type="android-gradle" name="Android-Gradle">
       <configuration>
@@ -133,91 +133,93 @@
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/javaPrecompile" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/jniLibs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/manifests" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/merged-not-compiled-resources" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/multi-dex" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/prebuild" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/proguard-rules" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res" />
+      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/res_stripped" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/rs" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/shaders" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/splits-support" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/symbols" />
-      <excludeFolder url="file://$MODULE_DIR$/build/intermediates/tmp" />
       <excludeFolder url="file://$MODULE_DIR$/build/intermediates/transforms" />
       <excludeFolder url="file://$MODULE_DIR$/build/outputs" />
       <excludeFolder url="file://$MODULE_DIR$/build/tmp" />
     </content>
     <orderEntry type="jdk" jdkName="Android API 26 Platform" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="com.android.support:multidex-1.0.2" level="project" />
-    <orderEntry type="library" name="com.meizu.flyme.internet:push-internal-3.6.3" level="project" />
-    <orderEntry type="library" name="com.android.support:support-media-compat-26.1.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\demo\libs\MiPush_SDK_Client_3_6_2.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:recyclerview-v7-26.1.0" level="project" />
-    <orderEntry type="library" name="com.github.bumptech.glide:annotations:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-base-license-11.6.0" level="project" />
-    <orderEntry type="library" name="jp.wasabeef:glide-transformations-3.0.1" level="project" />
-    <orderEntry type="library" name="com.android.support:appcompat-v7-26.1.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\uikit\libs\java-json.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-basement-license-11.6.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-annotations:26.1.0@jar" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:livedata-1.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
-    <orderEntry type="library" name="com.android.support.constraint:constraint-layout-1.0.2" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-ui-26.1.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-iid-11.6.0" level="project" />
-    <orderEntry type="library" name="com.github.bumptech.glide:gifdecoder:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-compat-26.1.0" level="project" />
-    <orderEntry type="library" name="me.leolin:ShortcutBadger-1.1.17" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-common-11.6.0" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-11.6.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:viewmodel-1.1.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\alipaySingle-20170510.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.crashlytics.sdk.android:crashlytics-core-2.5.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-core-11.6.0" level="project" />
-    <orderEntry type="library" name="org.adw.library:discrete-seekbar-1.0.1" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-messaging-license-11.6.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-common-license-11.6.0" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\uikit\libs\fastjson-1.1.34.android.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="org.aspectj:aspectjrt:1.9.1@jar" level="project" />
-    <orderEntry type="library" scope="TEST" name="com.android.support:multidex-instrumentation-1.0.2" level="project" />
-    <orderEntry type="library" name="me.everything:overscroll-decor-android-1.0.4" level="project" />
-    <orderEntry type="library" name="com.android.support:transition-26.1.0" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-base-11.6.0" level="project" />
-    <orderEntry type="library" name="com.android.support:design-26.1.0" level="project" />
-    <orderEntry type="library" name="com.crashlytics.sdk.android:answers-1.4.1" level="project" />
-    <orderEntry type="library" name="com.netease.nimlib:nrtc-5.1.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-11.6.0" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-tasks-license-11.6.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-iid-license-11.6.0" level="project" />
-    <orderEntry type="library" name="com.huawei.android.hms:push-2.6.0.301" level="project" />
-    <orderEntry type="library" name="android.arch.core:common:1.1.0@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:support-fragment-26.1.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:extensions-1.1.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-vector-drawable-26.1.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:common-java8:1.1.0@jar" level="project" />
-    <orderEntry type="library" name="com.google.android.gms:play-services-basement-11.6.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-analytics-11.6.0" level="project" />
-    <orderEntry type="library" name="com.android.support:support-core-utils-26.1.0" level="project" />
-    <orderEntry type="library" name="com.huawei.android.hms:base-2.6.0.301" level="project" />
-    <orderEntry type="library" name="com.github.bumptech.glide:disklrucache:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\JrmfRpWallet-2.2.0.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\gson-2.2.4.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:runtime-1.1.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:common:1.1.0@jar" level="project" />
-    <orderEntry type="library" name="io.fabric.sdk.android:fabric-1.4.1" level="project" />
-    <orderEntry type="library" name="com.android.support:support-v4-26.1.0" level="project" />
-    <orderEntry type="library" name="android.arch.lifecycle:livedata-core-1.1.0" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-messaging-11.6.0" level="project" />
-    <orderEntry type="library" name="com.crashlytics.sdk.android:beta-1.2.7" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\demo\libs\AMap2DMap_3.0.0_AMapSearch_3.6.1_AMapLocation_3.2.1_20161228.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\okio-1.11.0.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.android.support:animated-vector-drawable-26.1.0" level="project" />
-    <orderEntry type="library" name="com.crashlytics.sdk.android:crashlytics-2.8.0" level="project" />
-    <orderEntry type="library" name="com.netease.nimlib:jsbridge-1.3.1" level="project" />
-    <orderEntry type="library" name="__local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\okhttp-3.6.0.jar:unspecified@jar" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-analytics-impl-license-11.6.0" level="project" />
-    <orderEntry type="library" name="com.github.bumptech.glide:glide:4.2.0@jar" level="project" />
-    <orderEntry type="library" name="com.google.firebase:firebase-analytics-license-11.6.0" level="project" />
-    <orderEntry type="library" name="android.arch.core:runtime-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout-solver:1.0.2@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.bumptech.glide:annotations:4.2.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:common:1.1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: io.fabric.sdk.android:fabric-1.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:crashlytics-2.8.0" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\alipaySingle-20170510.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tasks-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:multidex-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-media-compat-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-annotations:26.1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.huawei.android.hms:push-2.6.0.301" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-v4-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.bumptech.glide:gifdecoder:4.2.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-messaging-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.meizu.flyme.internet:push-internal-3.6.3" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:recyclerview-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.netease.nimlib:nrtc-5.1.1" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\demo\libs\AMap2DMap_3.0.0_AMapSearch_3.6.1_AMapLocation_3.2.1_20161228.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-iid-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.core:runtime-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-core-ui-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-basement-license-11.6.0" level="project" />
+    <orderEntry type="library" scope="TEST" name="Gradle: com.android.support:multidex-instrumentation-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\okhttp-3.6.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-core-utils-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.huawei.android.hms:base-2.6.0.301" level="project" />
+    <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:beta-1.2.7" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\demo\libs\MiPush_SDK_Client_3_6_2.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-messaging-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-common-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.bumptech.glide:glide:4.2.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-impl-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-common-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:design-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:common-java8:1.1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:runtime-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: me.leolin:ShortcutBadger-1.1.17" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:animated-vector-drawable-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-core-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: org.adw.library:discrete-seekbar-1.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: com.netease.nimlib:jsbridge-1.3.1" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\uikit\libs\fastjson-1.1.34.android.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:transition-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:viewmodel-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:appcompat-v7-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-fragment-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\uikit\libs\java-json.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:crashlytics-core-2.5.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-impl-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-iid-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-basement-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support:support-compat-26.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\gson-2.2.4.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\JrmfRpWallet-2.2.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:extensions-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: jp.wasabeef:glide-transformations-3.0.1" level="project" />
+    <orderEntry type="library" name="Gradle: org.aspectj:aspectjrt:1.9.1@jar" level="project" />
+    <orderEntry type="library" name="Gradle: __local_aars__:E.\workspace\nim\jrmfRpWalletlib\libs\okio-1.11.0.jar:unspecified@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.android.support.constraint:constraint-layout-1.0.2" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-base-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.github.bumptech.glide:disklrucache:4.2.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-base-license-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.lifecycle:livedata-core-1.1.0" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.firebase:firebase-analytics-11.6.0" level="project" />
+    <orderEntry type="library" name="Gradle: android.arch.core:common:1.1.0@jar" level="project" />
+    <orderEntry type="library" name="Gradle: com.crashlytics.sdk.android:answers-1.4.1" level="project" />
+    <orderEntry type="library" name="Gradle: me.everything:overscroll-decor-android-1.0.4" level="project" />
+    <orderEntry type="library" name="Gradle: com.google.android.gms:play-services-tasks-11.6.0" level="project" />
     <orderEntry type="module" module-name="rts" />
     <orderEntry type="module" module-name="avchat" />
     <orderEntry type="module" module-name="avchatkit" />
