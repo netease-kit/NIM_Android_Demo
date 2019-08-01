@@ -13,7 +13,8 @@ import android.widget.DatePicker;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
@@ -171,11 +172,11 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
             @Override
             public void onClick(View v) {
                 if (!NetworkUtil.isNetAvailable(UserProfileEditItemActivity.this)) {
-                    Toast.makeText(UserProfileEditItemActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(UserProfileEditItemActivity.this, R.string.network_is_not_available);
                     return;
                 }
                 if (key == UserConstant.KEY_NICKNAME && TextUtils.isEmpty(editText.getText().toString().trim())) {
-                    Toast.makeText(UserProfileEditItemActivity.this, R.string.nickname_empty, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(UserProfileEditItemActivity.this, R.string.nickname_empty);
                     return;
                 }
                 if (key == UserConstant.KEY_BIRTH) {
@@ -282,7 +283,7 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
                 if (code == ResponseCode.RES_SUCCESS) {
                     onUpdateCompleted();
                 } else if (code == ResponseCode.RES_ETIMEOUT) {
-                    Toast.makeText(UserProfileEditItemActivity.this, R.string.user_info_update_failed, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(UserProfileEditItemActivity.this, R.string.user_info_update_failed);
                 }
             }
         };
@@ -308,7 +309,7 @@ public class UserProfileEditItemActivity extends UI implements View.OnClickListe
 
     private void onUpdateCompleted() {
         showKeyboard(false);
-        Toast.makeText(UserProfileEditItemActivity.this, R.string.user_info_update_success, Toast.LENGTH_SHORT).show();
+        ToastHelper.showToast(UserProfileEditItemActivity.this, R.string.user_info_update_success);
         finish();
     }
 

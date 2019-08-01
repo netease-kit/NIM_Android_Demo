@@ -3,7 +3,8 @@ package com.netease.nim.demo.redpacket;
 import android.app.Activity;
 import android.content.Context;
 import android.text.TextUtils;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.jrmf360.normallib.JrmfClient;
 import com.jrmf360.normallib.base.http.OkHttpModelCallBack;
@@ -79,10 +80,10 @@ public class NIMRedPacketClient {
                     thirdToken = result;
                 } else if (code == ResponseCode.RES_RP_INVALID) {
                     // 红包功能不可用
-                    Toast.makeText(DemoCache.getContext(), "红包功能不可用", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(DemoCache.getContext(), "红包功能不可用");
                 } else if (code == ResponseCode.RES_FORBIDDEN) {
                     // 应用没开通红包功能
-                    Toast.makeText(DemoCache.getContext(), "应用没开通红包功能", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(DemoCache.getContext(), "应用没开通红包功能");
                 }
             }
         });

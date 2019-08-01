@@ -5,7 +5,8 @@ import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.text.TextUtils;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.location.model.NimLocation;
@@ -54,7 +55,7 @@ public class MapHelper {
                 context.startActivity(intent);
             } catch (Exception e) {
                 LogUtil.e("mapHelper", "navigate error");
-                Toast.makeText(context, R.string.location_open_map_error, Toast.LENGTH_LONG).show();
+                ToastHelper.showToast(context, R.string.location_open_map_error);
             }
         }
     }

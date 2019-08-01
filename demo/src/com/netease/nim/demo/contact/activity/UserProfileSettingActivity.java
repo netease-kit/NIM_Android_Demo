@@ -10,22 +10,24 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.contact.helper.UserUpdateHelper;
 import com.netease.nim.demo.main.model.Extras;
-import com.netease.nim.uikit.business.session.actions.PickImageAction;
-import com.netease.nim.uikit.common.activity.ToolBarOptions;
-import com.netease.nim.uikit.common.activity.UI;
-import com.netease.nim.uikit.common.media.picker.PickImageHelper;
-import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
-import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
-import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.business.session.actions.PickImageAction;
+import com.netease.nim.uikit.common.ToastHelper;
+import com.netease.nim.uikit.common.activity.ToolBarOptions;
+import com.netease.nim.uikit.common.activity.UI;
+import com.netease.nim.uikit.common.media.imagepicker.Constants;
+import com.netease.nim.uikit.common.media.imagepicker.ImagePickerLauncher;
+import com.netease.nim.uikit.common.media.model.GLImage;
+import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
+import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
+import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -36,6 +38,7 @@ import com.netease.nimlib.sdk.uinfo.constant.UserInfoFieldEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * Created by hzxuwen on 2015/9/14.
@@ -139,7 +142,7 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
                         userInfo = result;
                         updateUI();
                     } else {
-                        Toast.makeText(UserProfileSettingActivity.this, "getUserInfoFromRemote failed:" + code, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(UserProfileSettingActivity.this, "getUserInfoFromRemote failed:" + code);
                     }
                 }
             });
@@ -179,13 +182,7 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.head_layout:
-                PickImageHelper.PickImageOption option = new PickImageHelper.PickImageOption();
-                option.titleResId = R.string.set_head_image;
-                option.crop = true;
-                option.multiSelect = false;
-                option.cropOutputImageWidth = 720;
-                option.cropOutputImageHeight = 720;
-                PickImageHelper.pickImage(UserProfileSettingActivity.this, PICK_AVATAR_REQUEST, option);
+                ImagePickerLauncher.pickImage(UserProfileSettingActivity.this, PICK_AVATAR_REQUEST, R.string.set_head_image);
                 break;
             case R.id.nick_layout:
                 UserProfileEditItemActivity.startActivity(UserProfileSettingActivity.this, UserConstant.KEY_NICKNAME,
@@ -219,9 +216,20 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
         super.onActivityResult(requestCode, resultCode, data);
 
         if (resultCode == Activity.RESULT_OK && requestCode == PICK_AVATAR_REQUEST) {
-            String path = data.getStringExtra(com.netease.nim.uikit.business.session.constant.Extras.EXTRA_FILE_PATH);
-            updateAvatar(path);
+            onPicked(data);
         }
+    }
+
+    private void onPicked(Intent data) {
+        if (data == null) {
+            return;
+        }
+        ArrayList<GLImage> images = (ArrayList<GLImage>) data.getSerializableExtra(Constants.EXTRA_RESULT_ITEMS);
+        if (images == null || images.isEmpty()) {
+            return;
+        }
+        GLImage image = images.get(0);
+        updateAvatar(image.getPath());
     }
 
     /**
@@ -257,16 +265,15 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
                         @Override
                         public void onResult(int code, Void result, Throwable exception) {
                             if (code == ResponseCode.RES_SUCCESS) {
-                                Toast.makeText(UserProfileSettingActivity.this, R.string.head_update_success, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileSettingActivity.this, R.string.head_update_success);
                                 onUpdateDone();
                             } else {
-                                Toast.makeText(UserProfileSettingActivity.this, R.string.head_update_failed, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileSettingActivity.this, R.string.head_update_failed);
                             }
                         }
                     }); // 更新资料
                 } else {
-                    Toast.makeText(UserProfileSettingActivity.this, R.string.user_info_update_failed, Toast
-                            .LENGTH_SHORT).show();
+                    ToastHelper.showToast(UserProfileSettingActivity.this, R.string.user_info_update_failed);
                     onUpdateDone();
                 }
             }
@@ -276,7 +283,7 @@ public class UserProfileSettingActivity extends UI implements View.OnClickListen
     private void cancelUpload(int resId) {
         if (uploadAvatarFuture != null) {
             uploadAvatarFuture.abort();
-            Toast.makeText(UserProfileSettingActivity.this, resId, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(UserProfileSettingActivity.this, resId);
             onUpdateDone();
         }
     }

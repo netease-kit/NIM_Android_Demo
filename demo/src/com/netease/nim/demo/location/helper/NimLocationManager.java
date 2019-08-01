@@ -17,9 +17,6 @@ import com.amap.api.location.AMapLocationListener;
 import com.netease.nim.demo.location.model.NimLocation;
 import com.netease.nim.uikit.common.framework.infra.TaskExecutor;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nimlib.dc.sdk.model.NIMCoordinateType;
-import com.netease.nimlib.dc.sdk.model.NIMLocation;
-import com.netease.nimlib.dc.sdk.model.NIMLocationType;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.test.MockTestService;
 
@@ -200,15 +197,6 @@ public class NimLocationManager implements AMapLocationListener {
             onLocation(location, MSG_LOCATION_WITH_ADDRESS_OK);
         }
 
-        // 测试
-        NIMLocation gps = new NIMLocation(NIMLocationType.AMap.getValue(),
-                NIMCoordinateType.AMAP.toString(),
-                loc.getLatitude(),
-                loc.getLongitude(),
-                loc.getAltitude(),
-                loc.getAccuracy(),
-                loc.getTime());
-        NIMClient.getService(MockTestService.class).l(gps);
     }
 
     private boolean getLocationAddress(NimLocation location) {

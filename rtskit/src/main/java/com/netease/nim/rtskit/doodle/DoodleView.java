@@ -210,7 +210,7 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
     }
 
     /**
-     *
+     * 清除
      */
     public synchronized void clear() {
         clearAll();
@@ -311,10 +311,12 @@ public class DoodleView extends SurfaceView implements SurfaceHolder.Callback, T
                 if (t.isRevoke()) {
                     back(false);
                 } else if (t.isClearSelf()) {
+                    //收到对方clear 数据的请求
                     clearAll();
                     transactionManager.sendClearAckTransaction();
                 } else if (t.isClearAck()) {
-                    clearAll();
+                    //对方收到了你的 clear 请求
+//                    clearAll();
                 }
             }
         }

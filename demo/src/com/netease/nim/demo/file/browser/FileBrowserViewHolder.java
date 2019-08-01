@@ -1,11 +1,8 @@
 package com.netease.nim.demo.file.browser;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
@@ -20,8 +17,6 @@ public class FileBrowserViewHolder extends TViewHolder {
     private TextView fileName;
     private FileManagerItem fileItem;
 
-    private Bitmap directoryBitmap;
-    private Bitmap fileBitmap;
 
     @Override
     protected int getResId() {
@@ -30,10 +25,8 @@ public class FileBrowserViewHolder extends TViewHolder {
 
     @Override
     protected void inflate() {
-        directoryBitmap = BitmapFactory.decodeResource(DemoCache.getContext().getResources(), R.drawable.directory);
-        fileBitmap = BitmapFactory.decodeResource(DemoCache.getContext().getResources(), R.drawable.file);
-        fileImage = (ImageView) view.findViewById(R.id.file_image);
-        fileName = (TextView) view.findViewById(R.id.file_name);
+        fileImage = view.findViewById(R.id.file_image);
+        fileName = view.findViewById(R.id.file_name);
     }
 
     @Override
@@ -42,17 +35,17 @@ public class FileBrowserViewHolder extends TViewHolder {
 
         File f = new File(fileItem.getPath());
         if (fileItem.getName().equals("@1")) {
-            fileName.setText("/");
-            fileImage.setImageBitmap(directoryBitmap);
+            fileName.setText("/返回根目录");
+            fileImage.setImageResource(R.drawable.directory);
         } else if (fileItem.getName().equals("@2")) {
-            fileName.setText("..");
-            fileImage.setImageBitmap(directoryBitmap);
+            fileName.setText("..返回上一级目录");
+            fileImage.setImageResource(R.drawable.directory);
         } else {
             fileName.setText(fileItem.getName());
             if (f.isDirectory()) {
-                fileImage.setImageBitmap(directoryBitmap);
+                fileImage.setImageResource(R.drawable.directory);
             } else if (f.isFile()) {
-                fileImage.setImageBitmap(fileBitmap);
+                fileImage.setImageResource(R.drawable.file);
             }
         }
 

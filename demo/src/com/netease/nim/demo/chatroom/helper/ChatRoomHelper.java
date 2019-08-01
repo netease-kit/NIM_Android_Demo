@@ -28,11 +28,8 @@ public class ChatRoomHelper {
         if (roomCoverMap.containsKey(roomId)) {
             blurCoverImage(blur, coverImage, roomCoverMap.get(roomId));
         } else {
-            if (index > imageRes.length) {
-                index = 0;
-            }
-            roomCoverMap.put(roomId, imageRes[index]);
-            blurCoverImage(blur, coverImage, imageRes[index]);
+            roomCoverMap.put(roomId, imageRes[index % imageRes.length]);
+            blurCoverImage(blur, coverImage, imageRes[index % imageRes.length]);
             index++;
         }
     }

@@ -5,10 +5,6 @@ import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.os.Build;
 import android.os.PowerManager;
-import android.telephony.TelephonyManager;
-import android.text.TextUtils;
-
-import java.lang.reflect.Method;
 import java.util.Iterator;
 import java.util.List;
 
@@ -69,85 +65,4 @@ public class SysInfoUtil {
         return false;
     }
 
-    public static final boolean mayOnEmulator(Context context) {
-        if (mayOnEmulatorViaBuild()) {
-            return true;
-        }
-
-        if (mayOnEmulatorViaTelephonyDeviceId(context)) {
-            return true;
-        }
-
-        if (mayOnEmulatorViaQEMU(context)) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static final boolean mayOnEmulatorViaBuild() {
-        /**
-         * ro.product.model likes sdk
-         */
-        if (!TextUtils.isEmpty(Build.MODEL) && Build.MODEL.toLowerCase().contains("sdk")) {
-            return true;
-        }
-
-        /**
-         * ro.product.manufacturer likes unknown
-         */
-        if (!TextUtils.isEmpty(Build.MANUFACTURER) && Build.MANUFACTURER.toLowerCase().contains("unknown")) {
-            return true;
-        }
-
-        /**
-         * ro.product.device likes generic
-         */
-        if (!TextUtils.isEmpty(Build.DEVICE) && Build.DEVICE.toLowerCase().contains("generic")) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private static final boolean mayOnEmulatorViaTelephonyDeviceId(Context context) {
-        TelephonyManager tm = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
-        if (tm == null) {
-            return false;
-        }
-
-        String deviceId = tm.getDeviceId();
-        if (TextUtils.isEmpty(deviceId)) {
-            return false;
-        }
-
-        /**
-         * device id of telephony likes '0*'
-         */
-        for (int i = 0; i < deviceId.length(); i++) {
-            if (deviceId.charAt(i) != '0') {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static final boolean mayOnEmulatorViaQEMU(Context context) {
-        String qemu = getProp(context, "ro.kernel.qemu");
-        return "1".equals(qemu);
-    }
-
-    private static final String getProp(Context context, String property) {
-        try {
-            ClassLoader cl = context.getClassLoader();
-            Class<?> SystemProperties = cl.loadClass("android.os.SystemProperties");
-            Method method = SystemProperties.getMethod("get", String.class);
-            Object[] params = new Object[1];
-            params[0] = property;
-            return (String) method.invoke(SystemProperties, params);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 }

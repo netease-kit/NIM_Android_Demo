@@ -1,5 +1,7 @@
 package com.netease.nim.avchatkit;
 
+import android.os.Handler;
+
 import com.netease.nim.avchatkit.activity.AVChatActivity;
 import com.netease.nim.avchatkit.common.Handlers;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
@@ -35,7 +37,7 @@ public class AVChatProfile {
             public void run() {
                 // 启动，如果 task正在启动，则稍等一下
                 if (!AVChatKit.isMainTaskLaunching()) {
-
+                    launchActivityTimeout();
                     AVChatActivity.incomingCall(AVChatKit.getContext(), data, displayName, source);
                 } else {
                     launchActivity(data, displayName, source);
@@ -44,4 +46,25 @@ public class AVChatProfile {
         };
         Handlers.sharedHandler(AVChatKit.getContext()).postDelayed(runnable, 200);
     }
+
+    public void activityLaunched() {
+        Handler handler = Handlers.sharedHandler(AVChatKit.getContext());
+        handler.removeCallbacks(launchTimeout);
+    }
+
+    // 有些设备（比如OPPO、VIVO）默认不允许从后台broadcast receiver启动activity
+    // 增加启动activity超时机制
+    private void launchActivityTimeout() {
+        Handler handler = Handlers.sharedHandler(AVChatKit.getContext());
+        handler.removeCallbacks(launchTimeout);
+        handler.postDelayed(launchTimeout, 3000);
+    }
+
+    private Runnable launchTimeout = new Runnable() {
+        @Override
+        public void run() {
+            // 如果未成功启动，就恢复av chatting -> false
+            setAVChatting(false);
+        }
+    };
 }

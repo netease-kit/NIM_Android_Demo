@@ -8,10 +8,10 @@ import android.widget.Toast;
 
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.R;
-import com.netease.nim.avchatkit.common.dialog.DialogMaker;
 import com.netease.nim.avchatkit.common.log.LogUtil;
 import com.netease.nim.avchatkit.common.widgets.MultiSelectDialog;
 import com.netease.nim.avchatkit.config.AVChatConfigs;
+import com.netease.nim.avchatkit.config.AVPrivatizationConfig;
 import com.netease.nim.avchatkit.constant.AVChatExitCode;
 import com.netease.nim.avchatkit.constant.CallStateEnum;
 import com.netease.nim.avchatkit.module.AVChatControllerCallback;
@@ -21,11 +21,11 @@ import com.netease.nimlib.sdk.avchat.AVChatCallback;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
-import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatNotifyOption;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
+import com.netease.nimlib.sdk.avchat.video.AVChatCameraCapturer;
+import com.netease.nimlib.sdk.avchat.video.AVChatVideoCapturerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -103,31 +103,29 @@ public class AVChatController {
      */
 
     public void doCalling(String account, final AVChatType avChatType, final AVChatControllerCallback<AVChatData> callback) {
-        AVChatNotifyOption notifyOption = new AVChatNotifyOption();
-        notifyOption.extendMessage = "extra_data";
-        // 默认forceKeepCalling为true，开发者如果不需要离线持续呼叫功能可以将forceKeepCalling设为false
-        // notifyOption.forceKeepCalling = false;
 
-        AVChatManager.getInstance().enableRtc();
+        AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(context));
+        AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
 
         if (mVideoCapturer == null) {
-            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer(true);
             AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
         }
-
-        AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
 
         if (avChatType == AVChatType.VIDEO) {
             AVChatManager.getInstance().enableVideo();
             AVChatManager.getInstance().startVideoPreview();
         }
 
-        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
+        AVChatNotifyOption notifyOption = new AVChatNotifyOption();
+        notifyOption.extendMessage = "extra_data";
+        // 默认forceKeepCalling为true，开发者如果不需要离线持续呼叫功能可以将forceKeepCalling设为false
+        // notifyOption.forceKeepCalling = false;
         AVChatManager.getInstance().call2(account, avChatType, notifyOption, new AVChatCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData data) {
                 avChatData = data;
-                DialogMaker.dismissProgressDialog();
                 callback.onSuccess(data);
             }
 
@@ -154,20 +152,19 @@ public class AVChatController {
     }
 
     public void receive(final AVChatType avChatType, final AVChatControllerCallback<Void> callback) {
-        AVChatManager.getInstance().enableRtc();
 
+        AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(context));
+        AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
         if (mVideoCapturer == null) {
-            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+            mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer(true);
             AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
-            AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
         }
-
         if (avChatType == AVChatType.VIDEO) {
             AVChatManager.getInstance().enableVideo();
             AVChatManager.getInstance().startVideoPreview();
         }
 
-        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
         AVChatManager.getInstance().accept2(avChatData.getChatId(), new AVChatCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
@@ -291,7 +288,7 @@ public class AVChatController {
      */
 
     // 录制暂停和开始
-    public void toggleRecord(int type,final String receiverId, final RecordCallback callback) {
+    public void toggleRecord(int type, final String receiverId, final RecordCallback callback) {
         if (isRecording) {
             //停止录制
             isRecording = false;

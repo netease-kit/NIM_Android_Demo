@@ -7,7 +7,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.SessionHelper;
@@ -108,9 +108,9 @@ public class TeamListActivity extends UI implements AdapterView.OnItemClickListe
                 .ADVANCED_TEAM ? TeamTypeEnum.Advanced : TeamTypeEnum.Normal);
         if (count == 0) {
             if (itemType == ItemTypes.TEAMS.ADVANCED_TEAM) {
-                Toast.makeText(TeamListActivity.this, R.string.no_team, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(TeamListActivity.this, R.string.no_team);
             } else if (itemType == ItemTypes.TEAMS.NORMAL_TEAM) {
-                Toast.makeText(TeamListActivity.this, R.string.no_normal_team, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(TeamListActivity.this, R.string.no_normal_team);
             }
         }
 

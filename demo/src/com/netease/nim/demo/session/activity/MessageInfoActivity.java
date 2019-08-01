@@ -6,7 +6,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -103,7 +104,7 @@ public class MessageInfoActivity extends UI {
         @Override
         public void OnChanged(View v, final boolean checkState) {
             if (!NetworkUtil.isNetAvailable(MessageInfoActivity.this)) {
-                Toast.makeText(MessageInfoActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(MessageInfoActivity.this, R.string.network_is_not_available);
                 switchButton.setCheck(!checkState);
                 return;
             }
@@ -112,18 +113,18 @@ public class MessageInfoActivity extends UI {
                 @Override
                 public void onSuccess(Void param) {
                     if (checkState) {
-                        Toast.makeText(MessageInfoActivity.this, "开启消息提醒成功", Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(MessageInfoActivity.this, "开启消息提醒成功");
                     } else {
-                        Toast.makeText(MessageInfoActivity.this, "关闭消息提醒成功", Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(MessageInfoActivity.this, "关闭消息提醒成功");
                     }
                 }
 
                 @Override
                 public void onFailed(int code) {
                     if (code == 408) {
-                        Toast.makeText(MessageInfoActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(MessageInfoActivity.this, R.string.network_is_not_available);
                     } else {
-                        Toast.makeText(MessageInfoActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(MessageInfoActivity.this, "on failed:" + code);
                     }
                     switchButton.setCheck(!checkState);
                 }
@@ -174,7 +175,7 @@ public class MessageInfoActivity extends UI {
                         }
                     });
                 } else {
-                    Toast.makeText(DemoCache.getContext(), "请选择至少一个联系人！", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(DemoCache.getContext(), "请选择至少一个联系人！");
                 }
             }
         }

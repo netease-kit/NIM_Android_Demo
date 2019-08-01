@@ -8,7 +8,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.demo.DemoCache;
@@ -22,6 +21,7 @@ import com.netease.nim.demo.main.model.SettingType;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nimlib.sdk.NIMClient;
@@ -74,9 +74,18 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_CLEAR_SDK_CACHE = 23; // 清除 sdk 文件缓存
 
     private static final int TAG_PUSH_SHOW_NO_DETAIL = 24; // 推送消息不展示详情
+
+    private static final int TAG_VIBRATE = 25; // 推送消息不展示详情
+
+    private static final int TAG_PRIVATE_CONFIG = 26; // 私有化开关
+    private static final int TAG_MSG_MIGRATION = 27; // 本地消息迁移
+
+    private static final int TAG_DELETE_FRIEND_ALIAS = 28; // 本地消息迁移
+
+
     ListView listView;
     SettingsAdapter adapter;
-    private List<SettingTemplate> items = new ArrayList<SettingTemplate>();
+    private List<SettingTemplate> items = new ArrayList<>();
     private String noDisturbTime;
     private SettingTemplate disturbItem;
     private SettingTemplate clearIndexItem;
@@ -118,7 +127,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     Observer<Boolean> pushConfigObserver = new Observer<Boolean>() {
         @Override
         public void onEvent(Boolean aBoolean) {
-            Toast.makeText(SettingsActivity.this, "收到multiport push config：" + aBoolean, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(SettingsActivity.this, "收到multiport push config：" + aBoolean);
         }
     };
 
@@ -134,7 +143,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
 
     private void initUI() {
         initItems();
-        listView = (ListView) findViewById(R.id.settings_listview);
+        listView = findViewById(R.id.settings_listview);
         View footer = LayoutInflater.from(this).inflate(R.layout.settings_logout_footer, null);
         listView.addFooterView(footer);
 
@@ -172,13 +181,15 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(pushShowNoDetailItem);
         items.add(new SettingTemplate(TAG_RING, getString(R.string.ring), SettingType.TYPE_TOGGLE,
                 UserPreferences.getRingToggle()));
+
+        items.add(new SettingTemplate(TAG_VIBRATE, getString(R.string.vibrate), SettingType.TYPE_TOGGLE,
+                UserPreferences.getVibrateToggle()));
+
         items.add(new SettingTemplate(TAG_LED, getString(R.string.led), SettingType.TYPE_TOGGLE,
                 UserPreferences.getLedToggle()));
         items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_NOTICE_CONTENT, getString(R.string.notice_content), SettingType.TYPE_TOGGLE,
                 UserPreferences.getNoticeContentToggle()));
-//        items.add(new SettingTemplate(TAG_NOTIFICATION_STYLE, getString(R.string.notification_folded), SettingType.TYPE_TOGGLE,
-//                UserPreferences.getNotificationFoldedToggle()));
         items.add(SettingTemplate.addLine());
         disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
         items.add(disturbItem);
@@ -224,9 +235,15 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             items.add(new SettingTemplate(TAG_JRMFWAllET, "我的钱包"));
             items.add(SettingTemplate.makeSeperator());
         }
+        items.add(new SettingTemplate(TAG_PRIVATE_CONFIG, getString(R.string.setting_private_config)));
 
+        items.add(SettingTemplate.makeSeperator());
+        items.add(new SettingTemplate(TAG_MSG_MIGRATION, getString(R.string.local_db_migration)));
+        items.add(SettingTemplate.makeSeperator());
         items.add(new SettingTemplate(TAG_ABOUT, getString(R.string.setting_about)));
-
+        items.add(SettingTemplate.makeSeperator());
+        items.add(new SettingTemplate(TAG_DELETE_FRIEND_ALIAS, getString(R.string.delete_friend_is_delete_alias), SettingType.TYPE_TOGGLE,
+                                      UserPreferences.isDeleteFriendAndDeleteAlias()));
     }
 
     private void onListItemClick(SettingTemplate item) {
@@ -247,7 +264,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 break;
             case TAG_CLEAR:
                 NIMClient.getService(MsgService.class).clearMsgDatabase(true);
-                Toast.makeText(SettingsActivity.this, R.string.clear_msg_history_success, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(SettingsActivity.this, R.string.clear_msg_history_success);
                 break;
             case TAG_CLEAR_INDEX:
                 clearIndex();
@@ -266,6 +283,14 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 break;
             case TAG_JRMFWAllET:
                 NIMRedPacketClient.startWalletActivity(this);
+                break;
+
+            case TAG_PRIVATE_CONFIG:
+                startActivity(new Intent(this, PrivatizationConfigActivity.class));
+                break;
+
+            case TAG_MSG_MIGRATION:
+                startActivity(new Intent(this, MsgMigrationActivity.class));
                 break;
             default:
                 break;
@@ -319,7 +344,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 String msg = code == 200 ?
                         ("loss:" + loss + ", rtt min/avg/max/mdev = " + rttMin + "/" + rttAvg + "/" + rttMax + "/" + mdev + " ms")
                         : ("error:" + code);
-                Toast.makeText(SettingsActivity.this, msg, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(SettingsActivity.this, msg);
             }
         });
     }
@@ -346,11 +371,11 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                     config.hideContent = showNoDetail;
                     UserPreferences.setStatusConfig(config);
                     NIMClient.updateStatusBarNotificationConfig(config);
-                    Toast.makeText(SettingsActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(SettingsActivity.this, "设置成功");
                 } else {
                     pushShowNoDetailItem.setChecked(!showNoDetail);
                     adapter.notifyDataSetChanged();
-                    Toast.makeText(SettingsActivity.this, "设置失败", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(SettingsActivity.this, "设置失败");
                 }
             }
         });
@@ -378,29 +403,39 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_MSG_IGNORE:
                 UserPreferences.setMsgIgnore(checkState);
                 break;
-            case TAG_RING:
+            case TAG_RING: {
                 UserPreferences.setRingToggle(checkState);
                 StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
                 config.ring = checkState;
                 UserPreferences.setStatusConfig(config);
                 NIMClient.updateStatusBarNotificationConfig(config);
                 break;
-            case TAG_LED:
+            }
+            case TAG_VIBRATE: {
+                UserPreferences.setVibrateToggle(checkState);
+                StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
+                config.vibrate = checkState;
+                UserPreferences.setStatusConfig(config);
+                NIMClient.updateStatusBarNotificationConfig(config);
+            }
+            break;
+            case TAG_LED: {
                 UserPreferences.setLedToggle(checkState);
-                StatusBarNotificationConfig config1 = UserPreferences.getStatusConfig();
+                StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
                 StatusBarNotificationConfig demoConfig = DemoCache.getNotificationConfig();
                 if (checkState && demoConfig != null) {
-                    config1.ledARGB = demoConfig.ledARGB;
-                    config1.ledOnMs = demoConfig.ledOnMs;
-                    config1.ledOffMs = demoConfig.ledOffMs;
+                    config.ledARGB = demoConfig.ledARGB;
+                    config.ledOnMs = demoConfig.ledOnMs;
+                    config.ledOffMs = demoConfig.ledOffMs;
                 } else {
-                    config1.ledARGB = -1;
-                    config1.ledOnMs = -1;
-                    config1.ledOffMs = -1;
+                    config.ledARGB = -1;
+                    config.ledOnMs = -1;
+                    config.ledOffMs = -1;
                 }
-                UserPreferences.setStatusConfig(config1);
-                NIMClient.updateStatusBarNotificationConfig(config1);
-                break;
+                UserPreferences.setStatusConfig(config);
+                NIMClient.updateStatusBarNotificationConfig(config);
+            }
+            break;
             case TAG_NOTICE_CONTENT:
                 UserPreferences.setNoticeContentToggle(checkState);
                 StatusBarNotificationConfig config2 = UserPreferences.getStatusConfig();
@@ -411,20 +446,28 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_MULTIPORT_PUSH:
                 updateMultiportPushConfig(!checkState);
                 break;
-            case TAG_NOTIFICATION_STYLE:
+            case TAG_NOTIFICATION_STYLE: {
                 UserPreferences.setNotificationFoldedToggle(checkState);
-                config = UserPreferences.getStatusConfig();
+                StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
                 config.notificationFolded = checkState;
                 UserPreferences.setStatusConfig(config);
                 NIMClient.updateStatusBarNotificationConfig(config);
                 break;
+            }
             case TAG_PUSH_SHOW_NO_DETAIL:
                 updateShowPushNoDetail(checkState);
+                break;
+            case TAG_DELETE_FRIEND_ALIAS:
+                updateDeleteFriendAndAlias(checkState);
                 break;
             default:
                 break;
         }
         item.setChecked(checkState);
+    }
+
+    private void updateDeleteFriendAndAlias(boolean checkState) {
+        UserPreferences.setDeleteFriendAndDeleteAlias(checkState);
     }
 
     private void setMessageNotify(final boolean checkState) {
@@ -434,7 +477,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         NIMClient.getService(MixPushService.class).enable(checkState).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
-                Toast.makeText(SettingsActivity.this, R.string.user_info_update_success, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(SettingsActivity.this, R.string.user_info_update_success);
                 notificationItem.setChecked(checkState);
                 setToggleNotification(checkState);
             }
@@ -447,9 +490,9 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                     notificationItem.setChecked(checkState);
                     setToggleNotification(checkState);
                 } else if (code == ResponseCode.RES_EFREQUENTLY) {
-                    Toast.makeText(SettingsActivity.this, R.string.operation_too_frequent, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(SettingsActivity.this, R.string.operation_too_frequent);
                 } else {
-                    Toast.makeText(SettingsActivity.this, R.string.user_info_update_failed, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(SettingsActivity.this, R.string.user_info_update_failed);
                 }
                 adapter.notifyDataSetChanged();
             }
@@ -493,12 +536,12 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         NIMClient.getService(SettingsService.class).updateMultiportPushConfig(checkState).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
-                Toast.makeText(SettingsActivity.this, "设置成功", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(SettingsActivity.this, "设置成功");
             }
 
             @Override
             public void onFailed(int code) {
-                Toast.makeText(SettingsActivity.this, "设置失败,code:" + code, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(SettingsActivity.this, "设置失败,code:" + code);
                 adapter.notifyDataSetChanged();
             }
 

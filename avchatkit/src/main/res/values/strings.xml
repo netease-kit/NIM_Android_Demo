@@ -43,6 +43,9 @@
     <string name="avchat_audio_to_video_wait">正在等待对方开启摄像头…</string>
     <string name="avchat_no_pick_up">未接听</string>
     <string name="avchat_has_hangup">已挂断</string>
+    <string name="avchat_has_reject">已拒绝</string>
+    <string name="avchat_be_rejected">被拒绝</string>
+    <string name="avchat_cancel">已取消</string>
     <string name="avchat_switch_video_reject">对方不同意音频切换为视频！</string>
     <string name="avchat_notification">正在与%1$s通话中，点击继续</string>
     <string name="avchat_call">网络通话</string>
@@ -68,81 +71,81 @@
     <string name="nrtc_setting_vie_crop_ratio_key">nrtc_setting_vie_crop_ratio_key</string>
     <string name="nrtc_setting_vie_crop_ratio">画面裁剪比例</string>
 
-    <string-array name="nrtc_setting_vie_crop_ratio_entries"> 
-        <item>原始比例</item> 
-        <item>16:9</item> 
-        <item>4:3</item> 
-        <item>3:2</item> 
-        <item>1:1</item> 
+    <string-array name="nrtc_setting_vie_crop_ratio_entries">
+        <item>原始比例</item>
+        <item>16:9</item>
+        <item>4:3</item>
+        <item>3:2</item>
+        <item>1:1</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_crop_ratio_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
-        <item>3</item> 
-        <item>4</item> 
+    <string-array name="nrtc_setting_vie_crop_ratio_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
     </string-array>
 
 
     <string name="nrtc_setting_vie_quality_key">nrtc_setting_vie_quality_key</string>
     <string name="nrtc_setting_vie_quality">视频清晰度</string>
-    <string-array name="nrtc_setting_vie_quality_entries"> 
-        <item>Default</item> 
-        <item>Low</item> 
-        <item>Medium</item> 
-        <item>High</item> 
-        <item>480P</item> 
+    <string-array name="nrtc_setting_vie_quality_entries">
+        <item>Default</item>
+        <item>Low</item>
+        <item>Medium</item>
+        <item>High</item>
+        <item>480P</item>
         <item>720P</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_quality_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
-        <item>3</item> 
-        <item>4</item> 
-        <item>5</item> 
+    <string-array name="nrtc_setting_vie_quality_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>4</item>
+        <item>5</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_hw_encoder_entries"> 
-        <item>自动</item> 
-        <item>禁用</item> 
-        <item>强制</item> 
+    <string-array name="nrtc_setting_vie_hw_encoder_entries">
+        <item>自动</item>
+        <item>禁用</item>
+        <item>强制</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_hw_encoder_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
+    <string-array name="nrtc_setting_vie_hw_encoder_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
-    <string-array name="nrtc_setting_other_device_rotation_entries"> 
-        <item>0</item> 
-        <item>90</item> 
-        <item>180</item> 
-        <item>270</item> 
+    <string-array name="nrtc_setting_other_device_rotation_entries">
+        <item>0</item>
+        <item>90</item>
+        <item>180</item>
+        <item>270</item>
     </string-array>
-    <string-array name="nrtc_setting_other_device_rotation_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
-        <item>3</item> 
+    <string-array name="nrtc_setting_other_device_rotation_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_hw_decoder_entries"> 
-        <item>自动</item> 
-        <item>禁用</item> 
-        <item>强制</item> 
+    <string-array name="nrtc_setting_vie_hw_decoder_entries">
+        <item>自动</item>
+        <item>禁用</item>
+        <item>强制</item>
     </string-array>
-    <string-array name="nrtc_setting_vie_hw_decoder_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
+    <string-array name="nrtc_setting_vie_hw_decoder_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
-    <string-array name="nrtc_setting_voe_audio_effect_entries"> 
-        <item>Disable</item> 
-        <item>SDK Built-In</item> 
-        <item>Platform Built-In</item> 
+    <string-array name="nrtc_setting_voe_audio_effect_entries">
+        <item>Disable</item>
+        <item>SDK Built-In</item>
+        <item>Platform Built-In</item>
     </string-array>
-    <string-array name="nrtc_setting_voe_audio_effect_values"> 
-        <item>0</item> 
-        <item>1</item> 
-        <item>2</item> 
+    <string-array name="nrtc_setting_voe_audio_effect_values">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
     </string-array>
     <string name="nrtc_setting_other_device_default_rotation_key">nrtc_setting_other_device_default_rotation_key</string>
     <string name="nrtc_setting_other_device_default_rotation">设备默认旋转角度(特殊设备使用)</string>
@@ -172,7 +175,5 @@
     <string name="nrtc_setting_voe_audio_ns">降噪</string>
     <string name="nrtc_setting_voe_high_quality_key">nrtc_setting_voe_high_quality_key</string>
     <string name="nrtc_setting_voe_high_quality">高清语音</string>
-    <string name="nrtc_setting_voe_dtx_key">nrtc_setting_voe_dtx_key</string>
-    <string name="nrtc_setting_voe_dtx">人声检测</string>
 
 </resources>

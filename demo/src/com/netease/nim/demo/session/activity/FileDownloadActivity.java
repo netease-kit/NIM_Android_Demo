@@ -7,7 +7,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.activity.UI;
@@ -123,7 +124,7 @@ public class FileDownloadActivity extends UI {
                 onDownloadSuccess();
             } else if (msg.getAttachStatus() == AttachStatusEnum.fail) {
                 DialogMaker.dismissProgressDialog();
-                Toast.makeText(FileDownloadActivity.this, "download failed", Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(FileDownloadActivity.this, "download failed");
                 onDownloadFailed();
             }
         }

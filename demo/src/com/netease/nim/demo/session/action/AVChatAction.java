@@ -1,6 +1,7 @@
 package com.netease.nim.demo.session.action;
 
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.activity.AVChatActivity;
@@ -27,7 +28,7 @@ public class AVChatAction extends BaseAction {
         if (NetworkUtil.isNetAvailable(getActivity())) {
             startAudioVideoCall(avChatType);
         } else {
-            Toast.makeText(getActivity(), R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(getActivity(), R.string.network_is_not_available);
         }
     }
 

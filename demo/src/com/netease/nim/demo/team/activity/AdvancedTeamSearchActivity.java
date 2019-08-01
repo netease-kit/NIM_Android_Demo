@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
@@ -15,6 +16,7 @@ import com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.model.Team;
 
@@ -58,7 +60,7 @@ public class AdvancedTeamSearchActivity extends UI {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(searchEditText.getText().toString())) {
-                    Toast.makeText(AdvancedTeamSearchActivity.this, R.string.not_allow_empty, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AdvancedTeamSearchActivity.this, R.string.not_allow_empty);
                 } else {
                     queryTeamById();
                 }
@@ -75,16 +77,16 @@ public class AdvancedTeamSearchActivity extends UI {
 
             @Override
             public void onFailed(int code) {
-                if (code == 803) {
-                    Toast.makeText(AdvancedTeamSearchActivity.this, R.string.team_number_not_exist, Toast.LENGTH_LONG).show();
+                if (code == ResponseCode.RES_TEAM_ENOTEXIST) {
+                    ToastHelper.showToast(AdvancedTeamSearchActivity.this, R.string.team_number_not_exist);
                 } else {
-                    Toast.makeText(AdvancedTeamSearchActivity.this, "search team failed: " + code, Toast.LENGTH_LONG).show();
+                    ToastHelper.showToast(AdvancedTeamSearchActivity.this, "search team failed: " + code);
                 }
             }
 
             @Override
             public void onException(Throwable exception) {
-                Toast.makeText(AdvancedTeamSearchActivity.this, "search team exception：" + exception.getMessage(), Toast.LENGTH_LONG).show();
+                ToastHelper.showToast(AdvancedTeamSearchActivity.this, "search team exception：" + exception.getMessage());
             }
         });
     }

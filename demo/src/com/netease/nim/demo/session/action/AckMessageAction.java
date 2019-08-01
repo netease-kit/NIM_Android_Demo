@@ -1,7 +1,8 @@
 package com.netease.nim.demo.session.action;
 
 import android.content.Intent;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.activity.SendAckMsgActivity;
@@ -29,7 +30,7 @@ public class AckMessageAction extends BaseAction {
         // 只在小于100人的群里有效
         Team team = TeamDataCache.getInstance().getTeamById(getContainer().account);
         if (team != null && team.getMemberCount() > 100) {
-            Toast.makeText(getContainer().activity, "已读回执适用于小于100人的群", Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(getContainer().activity, "已读回执适用于小于100人的群");
             return;
         }
         SendAckMsgActivity.startActivity(getContainer().activity, getContainer().account, makeRequestCode(RequestCode.SEND_ACK_MESSAGE));

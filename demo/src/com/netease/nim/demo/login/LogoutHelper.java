@@ -14,7 +14,6 @@ public class LogoutHelper {
         // 清理缓存&注销监听&清除状态
         NimUIKit.logout();
         DemoCache.clear();
-        DropManager.getInstance().destroy();
         NIMRedPacketClient.clear();
     }
 }

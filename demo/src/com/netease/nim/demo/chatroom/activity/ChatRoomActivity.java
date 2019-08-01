@@ -4,7 +4,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.fragment.ChatRoomFragment;
@@ -123,11 +124,11 @@ public class ChatRoomActivity extends UI {
             public void onFailed(int code) {
                 onLoginDone();
                 if (code == ResponseCode.RES_CHATROOM_BLACKLIST) {
-                    Toast.makeText(ChatRoomActivity.this, "你已被拉入黑名单，不能再进入", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(ChatRoomActivity.this, "你已被拉入黑名单，不能再进入");
                 } else if (code == ResponseCode.RES_ENONEXIST) {
-                    Toast.makeText(ChatRoomActivity.this, "聊天室不存在", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(ChatRoomActivity.this, "聊天室不存在");
                 } else {
-                    Toast.makeText(ChatRoomActivity.this, "enter chat room failed, code=" + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(ChatRoomActivity.this, "enter chat room failed, code=" + code);
                 }
                 finish();
             }
@@ -135,7 +136,7 @@ public class ChatRoomActivity extends UI {
             @Override
             public void onException(Throwable exception) {
                 onLoginDone();
-                Toast.makeText(ChatRoomActivity.this, "enter chat room exception, e=" + exception.getMessage(), Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(ChatRoomActivity.this, "enter chat room exception, e=" + exception.getMessage());
                 finish();
             }
         });
@@ -178,14 +179,14 @@ public class ChatRoomActivity extends UI {
                 // 登录成功后，断网重连交给云信SDK，如果重连失败，可以查询具体失败的原因
                 if (hasEnterSuccess) {
                     int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
-                    Toast.makeText(ChatRoomActivity.this, "getEnterErrorCode=" + code, Toast.LENGTH_LONG).show();
+                    ToastHelper.showToast(ChatRoomActivity.this, "getEnterErrorCode=" + code);
                     LogUtil.d(TAG, "chat room enter error code:" + code);
                 }
             } else if (chatRoomStatusChangeData.status == StatusCode.NET_BROKEN) {
                 if (fragment != null) {
                     fragment.updateOnlineStatus(false);
                 }
-                Toast.makeText(ChatRoomActivity.this, R.string.net_broken, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(ChatRoomActivity.this, R.string.net_broken);
             }
 
             LogUtil.i(TAG, "chat room online status changed to " + chatRoomStatusChangeData.status.name());
@@ -195,7 +196,7 @@ public class ChatRoomActivity extends UI {
     Observer<ChatRoomKickOutEvent> kickOutObserver = new Observer<ChatRoomKickOutEvent>() {
         @Override
         public void onEvent(ChatRoomKickOutEvent chatRoomKickOutEvent) {
-            Toast.makeText(ChatRoomActivity.this, "被踢出聊天室，原因:" + chatRoomKickOutEvent.getReason(), Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(ChatRoomActivity.this, "被踢出聊天室，原因:" + chatRoomKickOutEvent.getReason());
             onExitedChatRoom();
         }
     };

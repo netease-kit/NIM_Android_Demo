@@ -1,6 +1,7 @@
 package com.netease.nim.demo.contact.helper;
 
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -38,7 +39,7 @@ public class UserUpdateHelper {
                     LogUtil.i(TAG, "update userInfo success, update fields count=" + fields.size());
                 } else {
                     if (exception != null) {
-                        Toast.makeText(DemoCache.getContext(), R.string.user_info_update_failed, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(DemoCache.getContext(), R.string.user_info_update_failed);
                         LogUtil.i(TAG, "update userInfo failed, exception=" + exception.getMessage());
                     }
                 }

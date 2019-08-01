@@ -1,6 +1,7 @@
 package com.netease.nim.demo.session.action;
 
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.rtskit.RTSKit;
@@ -21,7 +22,7 @@ public class RTSAction extends BaseAction {
         if (NetworkUtil.isNetAvailable(getActivity())) {
             RTSKit.startRTSSession(getActivity(), getAccount());
         } else {
-            Toast.makeText(getActivity(), R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(getActivity(), R.string.network_is_not_available);
         }
 
     }

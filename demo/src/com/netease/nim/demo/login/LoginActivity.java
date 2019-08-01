@@ -16,7 +16,9 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.demo.DemoPrivatizationConfig;
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -119,7 +121,6 @@ public class LoginActivity extends UI implements OnKeyListener {
     /**
      * 基本权限管理
      */
-
     private final String[] BASIC_PERMISSIONS = new String[]{
             Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -139,37 +140,43 @@ public class LoginActivity extends UI implements OnKeyListener {
 
     @OnMPermissionGranted(BASIC_PERMISSION_REQUEST_CODE)
     public void onBasicPermissionSuccess() {
-        Toast.makeText(this, "授权成功", Toast.LENGTH_SHORT).show();
+        ToastHelper.showToast(this, "授权成功");
     }
 
     @OnMPermissionDenied(BASIC_PERMISSION_REQUEST_CODE)
     @OnMPermissionNeverAskAgain(BASIC_PERMISSION_REQUEST_CODE)
     public void onBasicPermissionFailed() {
-        Toast.makeText(this, "授权失败", Toast.LENGTH_SHORT).show();
+        ToastHelper.showToast(this, "授权失败");
     }
 
     private void onParseIntent() {
-        if (getIntent().getBooleanExtra(KICK_OUT, false)) {
-            int type = NIMClient.getService(AuthService.class).getKickedClientType();
-            String client;
-            switch (type) {
-                case ClientType.Web:
-                    client = "网页端";
-                    break;
-                case ClientType.Windows:
-                case ClientType.MAC:
-                    client = "电脑端";
-                    break;
-                case ClientType.REST:
-                    client = "服务端";
-                    break;
-                default:
-                    client = "移动端";
-                    break;
-            }
-            EasyAlertDialogHelper.showOneButtonDiolag(LoginActivity.this, getString(R.string.kickout_notify),
-                    String.format(getString(R.string.kickout_content), client), getString(R.string.ok), true, null);
+        if (!getIntent().getBooleanExtra(KICK_OUT, false)) {
+            return;
         }
+        int type = NIMClient.getService(AuthService.class).getKickedClientType();
+        String client;
+        switch (type) {
+            case ClientType.Web:
+                client = "网页端";
+                break;
+            case ClientType.Windows:
+            case ClientType.MAC:
+                client = "电脑端";
+                break;
+            case ClientType.REST:
+                client = "服务端";
+                break;
+            default:
+                client = "移动端";
+                break;
+        }
+        EasyAlertDialogHelper.showOneButtonDiolag(LoginActivity.this,
+                getString(R.string.kickout_notify),
+                String.format(getString(R.string.kickout_content), client),
+                getString(R.string.ok),
+                true,
+                null);
+
     }
 
     /**
@@ -219,6 +226,8 @@ public class LoginActivity extends UI implements OnKeyListener {
         registerLayout = findView(R.id.register_layout);
         switchModeBtn = findView(R.id.register_login_tip);
 
+        switchModeBtn.setVisibility(DemoPrivatizationConfig.isPrivateDisable(this) ? View.VISIBLE : View.GONE);
+
         switchModeBtn.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -228,7 +237,6 @@ public class LoginActivity extends UI implements OnKeyListener {
     }
 
     private TextWatcher textWatcher = new TextWatcher() {
-
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
 
@@ -241,28 +249,27 @@ public class LoginActivity extends UI implements OnKeyListener {
 
         @Override
         public void afterTextChanged(Editable s) {
-            // 更新右上角按钮状态
-            if (!registerMode) {
-                // 登录模式
-                boolean isEnable = loginAccountEdit.getText().length() > 0
-                        && loginPasswordEdit.getText().length() > 0;
-                updateRightTopBtn(LoginActivity.this, rightTopBtn, isEnable);
+            if (registerMode) {
+                return;
             }
+            // 登录模式  ，更新右上角按钮状态
+            boolean isEnable = loginAccountEdit.getText().length() > 0 &&
+                    loginPasswordEdit.getText().length() > 0;
+            updateRightTopBtn(rightTopBtn, isEnable);
         }
     };
 
-    private void updateRightTopBtn(Context context, TextView rightTopBtn, boolean isEnable) {
+    private void updateRightTopBtn(TextView rightTopBtn, boolean isEnable) {
         rightTopBtn.setText(R.string.done);
         rightTopBtn.setBackgroundResource(R.drawable.g_white_btn_selector);
         rightTopBtn.setEnabled(isEnable);
-        rightTopBtn.setTextColor(context.getResources().getColor(R.color.color_blue_0888ff));
+        rightTopBtn.setTextColor(getResources().getColor(R.color.color_blue_0888ff));
         rightTopBtn.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
     }
 
     /**
      * ***************************************** 登录 **************************************
      */
-
     private void login() {
         DialogMaker.showProgressDialog(this, null, getString(R.string.logining), true, new DialogInterface.OnCancelListener() {
             @Override
@@ -285,15 +292,11 @@ public class LoginActivity extends UI implements OnKeyListener {
             @Override
             public void onSuccess(LoginInfo param) {
                 LogUtil.i(TAG, "login success");
-
                 onLoginDone();
-
                 DemoCache.setAccount(account);
                 saveLoginInfo(account, token);
-
                 // 初始化消息提醒配置
                 initNotificationConfig();
-
                 // 进入主界面
                 MainActivity.start(LoginActivity.this, null);
                 finish();
@@ -303,15 +306,15 @@ public class LoginActivity extends UI implements OnKeyListener {
             public void onFailed(int code) {
                 onLoginDone();
                 if (code == 302 || code == 404) {
-                    Toast.makeText(LoginActivity.this, R.string.login_failed, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(LoginActivity.this, R.string.login_failed);
                 } else {
-                    Toast.makeText(LoginActivity.this, "登录失败: " + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(LoginActivity.this, "登录失败: " + code);
                 }
             }
 
             @Override
             public void onException(Throwable exception) {
-                Toast.makeText(LoginActivity.this, R.string.login_exception, Toast.LENGTH_LONG).show();
+                ToastHelper.showToast(LoginActivity.this, R.string.login_exception);
                 onLoginDone();
             }
         });
@@ -320,7 +323,6 @@ public class LoginActivity extends UI implements OnKeyListener {
     private void initNotificationConfig() {
         // 初始化消息提醒
         NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
-
         // 加载状态栏配置
         StatusBarNotificationConfig statusBarNotificationConfig = UserPreferences.getStatusConfig();
         if (statusBarNotificationConfig == null) {
@@ -345,8 +347,8 @@ public class LoginActivity extends UI implements OnKeyListener {
     //开发者需要根据自己的实际情况配置自身用户系统和 NIM 用户系统的关系
     private String tokenFromPassword(String password) {
         String appKey = readAppKey(this);
-        boolean isDemo = "45c6af3c98409b18a84451215d0bdd6e".equals(appKey)
-                || "fe416640c8e8a72734219e1847ad2547".equals(appKey);
+        boolean isDemo = "45c6af3c98409b18a84451215d0bdd6e".equals(appKey) ||
+                "fe416640c8e8a72734219e1847ad2547".equals(appKey);
 
         return isDemo ? MD5.getStringMD5(password) : password;
     }
@@ -366,18 +368,16 @@ public class LoginActivity extends UI implements OnKeyListener {
     /**
      * ***************************************** 注册 **************************************
      */
-
     private void register() {
         if (!registerMode || !registerPanelInited) {
             return;
         }
-
         if (!checkRegisterContentValid()) {
             return;
         }
 
         if (!NetworkUtil.isNetAvailable(LoginActivity.this)) {
-            Toast.makeText(LoginActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(LoginActivity.this, R.string.network_is_not_available);
             return;
         }
 
@@ -391,7 +391,7 @@ public class LoginActivity extends UI implements OnKeyListener {
         ContactHttpClient.getInstance().register(account, nickName, password, new ContactHttpClient.ContactHttpCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Toast.makeText(LoginActivity.this, R.string.register_success, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(LoginActivity.this, R.string.register_success);
                 switchMode();  // 切换回登录
                 loginAccountEdit.setText(account);
                 loginPasswordEdit.setText(password);
@@ -405,9 +405,7 @@ public class LoginActivity extends UI implements OnKeyListener {
 
             @Override
             public void onFailed(int code, String errorMsg) {
-                Toast.makeText(LoginActivity.this, getString(R.string.register_failed, String.valueOf(code), errorMsg), Toast.LENGTH_SHORT)
-                        .show();
-
+                ToastHelper.showToast(LoginActivity.this, getString(R.string.register_failed, String.valueOf(code), errorMsg));
                 DialogMaker.dismissProgressDialog();
             }
         });
@@ -421,24 +419,21 @@ public class LoginActivity extends UI implements OnKeyListener {
         // 帐号检查
         String account = registerAccountEdit.getText().toString().trim();
         if (account.length() <= 0 || account.length() > 20) {
-            Toast.makeText(this, R.string.register_account_tip, Toast.LENGTH_SHORT).show();
-
+            ToastHelper.showToast(this, R.string.register_account_tip);
             return false;
         }
 
         // 昵称检查
         String nick = registerNickNameEdit.getText().toString().trim();
         if (nick.length() <= 0 || nick.length() > 10) {
-            Toast.makeText(this, R.string.register_nick_name_tip, Toast.LENGTH_SHORT).show();
-
+            ToastHelper.showToast(this, R.string.register_nick_name_tip);
             return false;
         }
 
         // 密码检查
         String password = registerPasswordEdit.getText().toString().trim();
         if (password.length() < 6 || password.length() > 20) {
-            Toast.makeText(this, R.string.register_password_tip, Toast.LENGTH_SHORT).show();
-
+            ToastHelper.showToast(this, R.string.register_password_tip);
             return false;
         }
 
@@ -488,10 +483,8 @@ public class LoginActivity extends UI implements OnKeyListener {
         String text = activity.getResources().getString(strResId);
         TextView textView = findView(R.id.action_bar_right_clickable_textview);
         textView.setText(text);
-        if (textView != null) {
-            textView.setBackgroundResource(R.drawable.register_right_top_btn_selector);
-            textView.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
-        }
+        textView.setBackgroundResource(R.drawable.register_right_top_btn_selector);
+        textView.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
         return textView;
     }
 

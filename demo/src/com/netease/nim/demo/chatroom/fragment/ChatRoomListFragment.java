@@ -7,7 +7,8 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
@@ -99,7 +100,7 @@ public class ChatRoomListFragment extends TFragment {
             public void onFailed(int code, String errorMsg) {
                 onFetchDataDone(false, null);
                 if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "fetch chat room list failed, code=" + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(getActivity(), "fetch chat room list failed, code=" + code);
                 }
             }
         });

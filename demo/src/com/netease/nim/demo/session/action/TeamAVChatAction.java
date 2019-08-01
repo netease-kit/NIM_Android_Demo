@@ -2,7 +2,8 @@ package com.netease.nim.demo.session.action;
 
 import android.content.Intent;
 import android.text.TextUtils;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.AVChatProfile;
@@ -60,7 +61,7 @@ public class TeamAVChatAction extends AVChatAction {
     public void startAudioVideoCall(AVChatType avChatType) {
 
         if (AVChatProfile.getInstance().isAVChatting()) {
-            Toast.makeText(getActivity(), "正在进行P2P视频通话，请先退出", Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(getActivity(), "正在进行P2P视频通话，请先退出");
             return;
         }
 
@@ -95,7 +96,7 @@ public class TeamAVChatAction extends AVChatAction {
                 if (success && result != null) {
                     if (result.size() < 2) {
                         transaction = null;
-                        Toast.makeText(getActivity(), getActivity().getString(R.string.t_avchat_not_start_with_less_member), Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), getActivity().getString(R.string.t_avchat_not_start_with_less_member));
                     } else {
                         NimUIKit.startContactSelector(getActivity(), getContactSelectOption(tid), TeamRequestCode.REQUEST_TEAM_VIDEO);
                     }

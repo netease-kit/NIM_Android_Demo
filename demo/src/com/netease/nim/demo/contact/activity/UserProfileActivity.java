@@ -12,14 +12,18 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.demo.config.preference.UserPreferences;
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.constant.UserConstant;
 import com.netease.nim.demo.main.model.Extras;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.uikit.business.recent.RecentContactsFragment;
 import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
@@ -42,12 +46,13 @@ import com.netease.nimlib.sdk.friend.FriendServiceObserve;
 import com.netease.nimlib.sdk.friend.constant.VerifyType;
 import com.netease.nimlib.sdk.friend.model.AddFriendData;
 import com.netease.nimlib.sdk.friend.model.MuteListChangedNotify;
+import com.netease.nimlib.sdk.msg.MsgService;
+import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.nimlib.sdk.uinfo.constant.GenderEnum;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 用户资料页面
@@ -60,6 +65,7 @@ public class UserProfileActivity extends UI {
     private final boolean FLAG_ADD_FRIEND_DIRECTLY = true; // 是否直接加为好友开关，false为需要好友申请
     private final String KEY_BLACK_LIST = "black_list";
     private final String KEY_MSG_NOTICE = "msg_notice";
+    private final String KEY_RECENT_STICKY = "recent_contacts_sticky";
 
     private String account;
 
@@ -86,7 +92,7 @@ public class UserProfileActivity extends UI {
     private Button chatBtn;
     private SwitchButton blackSwitch;
     private SwitchButton noticeSwitch;
-    private Map<String, Boolean> toggleStateMap;
+    private SwitchButton stickySwitch;
 
     public static void start(Context context, String account) {
         Intent intent = new Intent();
@@ -100,15 +106,17 @@ public class UserProfileActivity extends UI {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.user_profile_activity);
+        account = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
+        if (TextUtils.isEmpty(account)) {
+            ToastHelper.showToast(UserProfileActivity.this, "传入的帐号为空");
+            finish();
+            return;
+        }
 
         ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.user_profile;
         setToolBar(R.id.toolbar, options);
-
-        account = getIntent().getStringExtra(Extras.EXTRA_ACCOUNT);
-
         initActionbar();
-
         findViews();
         registerObserver(true);
     }
@@ -172,13 +180,13 @@ public class UserProfileActivity extends UI {
         removeFriendBtn = findView(R.id.remove_buddy);
         birthdayLayout = findView(R.id.birthday);
         nickText = findView(R.id.user_nick);
-        birthdayText = (TextView) birthdayLayout.findViewById(R.id.value);
+        birthdayText = birthdayLayout.findViewById(R.id.value);
         phoneLayout = findView(R.id.phone);
-        mobileText = (TextView) phoneLayout.findViewById(R.id.value);
+        mobileText = phoneLayout.findViewById(R.id.value);
         emailLayout = findView(R.id.email);
-        emailText = (TextView) emailLayout.findViewById(R.id.value);
+        emailText = emailLayout.findViewById(R.id.value);
         signatureLayout = findView(R.id.signature);
-        signatureText = (TextView) signatureLayout.findViewById(R.id.value);
+        signatureText = signatureLayout.findViewById(R.id.value);
         aliasLayout = findView(R.id.alias);
         ((TextView) birthdayLayout.findViewById(R.id.attribute)).setText(R.string.birthday);
         ((TextView) phoneLayout.findViewById(R.id.attribute)).setText(R.string.phone);
@@ -199,7 +207,7 @@ public class UserProfileActivity extends UI {
 
     private void initActionbar() {
         TextView toolbarView = findView(R.id.action_bar_right_clickable_textview);
-        if (!DemoCache.getAccount().equals(account)) {
+        if (!TextUtils.equals(account, DemoCache.getAccount())) {
             toolbarView.setVisibility(View.GONE);
             return;
         } else {
@@ -212,11 +220,6 @@ public class UserProfileActivity extends UI {
                 UserProfileSettingActivity.start(UserProfileActivity.this, account);
             }
         });
-    }
-
-    private void addToggleBtn(boolean black, boolean notice) {
-        blackSwitch = addToggleItemView(KEY_BLACK_LIST, R.string.black_list, black);
-        noticeSwitch = addToggleItemView(KEY_MSG_NOTICE, R.string.msg_notice, notice);
     }
 
     private void setToggleBtn(SwitchButton btn, boolean isChecked) {
@@ -242,7 +245,7 @@ public class UserProfileActivity extends UI {
         accountText.setText("帐号：" + account);
         headImageView.loadBuddyAvatar(account);
 
-        if (DemoCache.getAccount().equals(account)) {
+        if (TextUtils.equals(account, DemoCache.getAccount())) {
             nameText.setText(UserInfoHelper.getUserName(account));
         }
 
@@ -309,37 +312,47 @@ public class UserProfileActivity extends UI {
         if (DemoCache.getAccount() != null && !DemoCache.getAccount().equals(account)) {
             boolean black = NIMClient.getService(FriendService.class).isInBlackList(account);
             boolean notice = NIMClient.getService(FriendService.class).isNeedMessageNotify(account);
-            if (blackSwitch == null || noticeSwitch == null) {
-                addToggleBtn(black, notice);
+
+            if (blackSwitch == null) {
+                blackSwitch = addToggleItemView(KEY_BLACK_LIST, R.string.black_list, black);
             } else {
                 setToggleBtn(blackSwitch, black);
+            }
+
+            if (noticeSwitch == null) {
+                noticeSwitch = addToggleItemView(KEY_MSG_NOTICE, R.string.msg_notice, notice);
+            } else {
                 setToggleBtn(noticeSwitch, notice);
             }
-            Log.i(TAG, "black=" + black + ", notice=" + notice);
+
+            if (NIMClient.getService(FriendService.class).isMyFriend(account)) {
+                RecentContact recentContact = NIMClient.getService(MsgService.class).queryRecentContact(account, SessionTypeEnum.P2P);
+                boolean isSticky = recentContact != null && CommonUtil.isTagSet(recentContact, RecentContactsFragment.RECENT_TAG_STICKY);
+                if (stickySwitch == null) {
+                    stickySwitch = addToggleItemView(KEY_RECENT_STICKY, R.string.recent_sticky, isSticky);
+                } else {
+                    setToggleBtn(stickySwitch, isSticky);
+                }
+            }
             updateUserOperatorView();
         }
     }
 
+
     private SwitchButton addToggleItemView(String key, int titleResId, boolean initState) {
         ViewGroup vp = (ViewGroup) getLayoutInflater().inflate(R.layout.nim_user_profile_toggle_item, null);
-        ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(
-                ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.isetting_item_height));
+        ViewGroup.LayoutParams vlp = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, (int) getResources().getDimension(R.dimen.isetting_item_height));
         vp.setLayoutParams(vlp);
 
-        TextView titleText = ((TextView) vp.findViewById(R.id.user_profile_title));
+        TextView titleText = vp.findViewById(R.id.user_profile_title);
         titleText.setText(titleResId);
 
-        SwitchButton switchButton = (SwitchButton) vp.findViewById(R.id.user_profile_toggle);
+        SwitchButton switchButton = vp.findViewById(R.id.user_profile_toggle);
         switchButton.setCheck(initState);
         switchButton.setOnChangedListener(onChangedListener);
         switchButton.setTag(key);
 
         toggleLayout.addView(vp);
-
-        if (toggleStateMap == null) {
-            toggleStateMap = new HashMap<>();
-        }
-        toggleStateMap.put(key, initState);
         return switchButton;
     }
 
@@ -369,8 +382,38 @@ public class UserProfileActivity extends UI {
         @Override
         public void OnChanged(View v, final boolean checkState) {
             final String key = (String) v.getTag();
+            if (KEY_RECENT_STICKY.equals(key)) {
+                //查询之前是不是存在会话记录
+                RecentContact recentContact = NIMClient.getService(MsgService.class).queryRecentContact(account, SessionTypeEnum.P2P);
+                //置顶
+                if (checkState) {
+                    //如果之前不存在，创建一条空的会话记录
+                    if (recentContact == null) {
+                        // RecentContactsFragment 的 MsgServiceObserve#observeRecentContact 观察者会收到通知
+                        NIMClient.getService(MsgService.class).createEmptyRecentContact(account,
+                                SessionTypeEnum.P2P,
+                                RecentContactsFragment.RECENT_TAG_STICKY,
+                                System.currentTimeMillis(),
+                                true);
+                    }
+                    // 之前存在，更新置顶flag
+                    else {
+                        CommonUtil.addTag(recentContact, RecentContactsFragment.RECENT_TAG_STICKY);
+                        NIMClient.getService(MsgService.class).updateRecentAndNotify(recentContact);
+                    }
+                }
+                //取消置顶
+                else {
+                    if (recentContact != null) {
+                        CommonUtil.removeTag(recentContact, RecentContactsFragment.RECENT_TAG_STICKY);
+                        NIMClient.getService(MsgService.class).updateRecentAndNotify(recentContact);
+                    }
+                }
+                return;
+            }
+
             if (!NetworkUtil.isNetAvailable(UserProfileActivity.this)) {
-                Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                 if (key.equals(KEY_BLACK_LIST)) {
                     blackSwitch.setCheck(!checkState);
                 } else if (key.equals(KEY_MSG_NOTICE)) {
@@ -379,24 +422,21 @@ public class UserProfileActivity extends UI {
                 return;
             }
 
-            updateStateMap(checkState, key);
-
             if (key.equals(KEY_BLACK_LIST)) {
                 if (checkState) {
                     NIMClient.getService(FriendService.class).addToBlackList(account).setCallback(new RequestCallback<Void>() {
                         @Override
                         public void onSuccess(Void param) {
-                            Toast.makeText(UserProfileActivity.this, "加入黑名单成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "加入黑名单成功");
                         }
 
                         @Override
                         public void onFailed(int code) {
                             if (code == 408) {
-                                Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                             } else {
-                                Toast.makeText(UserProfileActivity.this, "on failed：" + code, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileActivity.this, "on failed：" + code);
                             }
-                            updateStateMap(!checkState, key);
                             blackSwitch.setCheck(!checkState);
                         }
 
@@ -409,17 +449,16 @@ public class UserProfileActivity extends UI {
                     NIMClient.getService(FriendService.class).removeFromBlackList(account).setCallback(new RequestCallback<Void>() {
                         @Override
                         public void onSuccess(Void param) {
-                            Toast.makeText(UserProfileActivity.this, "移除黑名单成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "移除黑名单成功");
                         }
 
                         @Override
                         public void onFailed(int code) {
                             if (code == 408) {
-                                Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                             } else {
-                                Toast.makeText(UserProfileActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileActivity.this, "on failed:" + code);
                             }
-                            updateStateMap(!checkState, key);
                             blackSwitch.setCheck(!checkState);
                         }
 
@@ -434,20 +473,19 @@ public class UserProfileActivity extends UI {
                     @Override
                     public void onSuccess(Void param) {
                         if (checkState) {
-                            Toast.makeText(UserProfileActivity.this, "开启消息提醒成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "开启消息提醒成功");
                         } else {
-                            Toast.makeText(UserProfileActivity.this, "关闭消息提醒成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "关闭消息提醒成功");
                         }
                     }
 
                     @Override
                     public void onFailed(int code) {
                         if (code == 408) {
-                            Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                         } else {
-                            Toast.makeText(UserProfileActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "on failed:" + code);
                         }
-                        updateStateMap(!checkState, key);
                         noticeSwitch.setCheck(!checkState);
                     }
 
@@ -460,12 +498,6 @@ public class UserProfileActivity extends UI {
         }
     };
 
-    private void updateStateMap(boolean checkState, String key) {
-        if (toggleStateMap.containsKey(key)) {
-            toggleStateMap.put(key, checkState);  // update state
-            Log.i(TAG, "toggle " + key + "to " + checkState);
-        }
-    }
 
     private View.OnClickListener onClickListener = new View.OnClickListener() {
         @Override
@@ -516,11 +548,11 @@ public class UserProfileActivity extends UI {
 
     private void doAddFriend(String msg, boolean addDirectly) {
         if (!NetworkUtil.isNetAvailable(this)) {
-            Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
             return;
         }
         if (!TextUtils.isEmpty(account) && account.equals(DemoCache.getAccount())) {
-            Toast.makeText(UserProfileActivity.this, "不能加自己为好友", Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(UserProfileActivity.this, "不能加自己为好友");
             return;
         }
         final VerifyType verifyType = addDirectly ? VerifyType.DIRECT_ADD : VerifyType.VERIFY_REQUEST;
@@ -532,9 +564,9 @@ public class UserProfileActivity extends UI {
                         DialogMaker.dismissProgressDialog();
                         updateUserOperatorView();
                         if (VerifyType.DIRECT_ADD == verifyType) {
-                            Toast.makeText(UserProfileActivity.this, "添加好友成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "添加好友成功");
                         } else {
-                            Toast.makeText(UserProfileActivity.this, "添加好友请求发送成功", Toast.LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "添加好友请求发送成功");
                         }
                     }
 
@@ -542,11 +574,9 @@ public class UserProfileActivity extends UI {
                     public void onFailed(int code) {
                         DialogMaker.dismissProgressDialog();
                         if (code == 408) {
-                            Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast
-                                    .LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                         } else {
-                            Toast.makeText(UserProfileActivity.this, "on failed:" + code, Toast
-                                    .LENGTH_SHORT).show();
+                            ToastHelper.showToast(UserProfileActivity.this, "on failed:" + code);
                         }
                     }
 
@@ -562,7 +592,7 @@ public class UserProfileActivity extends UI {
     private void onRemoveFriend() {
         Log.i(TAG, "onRemoveFriend");
         if (!NetworkUtil.isNetAvailable(this)) {
-            Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+            ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
             return;
         }
         EasyAlertDialog dialog = EasyAlertDialogHelper.createOkCancelDiolag(this, getString(R.string.remove_friend),
@@ -577,11 +607,12 @@ public class UserProfileActivity extends UI {
                     @Override
                     public void doOkAction() {
                         DialogMaker.showProgressDialog(UserProfileActivity.this, "", true);
-                        NIMClient.getService(FriendService.class).deleteFriend(account).setCallback(new RequestCallback<Void>() {
+                        boolean deleteAlias = UserPreferences.isDeleteFriendAndDeleteAlias();
+                        NIMClient.getService(FriendService.class).deleteFriend(account, deleteAlias).setCallback(new RequestCallback<Void>() {
                             @Override
                             public void onSuccess(Void param) {
                                 DialogMaker.dismissProgressDialog();
-                                Toast.makeText(UserProfileActivity.this, R.string.remove_friend_success, Toast.LENGTH_SHORT).show();
+                                ToastHelper.showToast(UserProfileActivity.this, R.string.remove_friend_success);
                                 finish();
                             }
 
@@ -589,9 +620,9 @@ public class UserProfileActivity extends UI {
                             public void onFailed(int code) {
                                 DialogMaker.dismissProgressDialog();
                                 if (code == 408) {
-                                    Toast.makeText(UserProfileActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                                    ToastHelper.showToast(UserProfileActivity.this, R.string.network_is_not_available);
                                 } else {
-                                    Toast.makeText(UserProfileActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
+                                    ToastHelper.showToast(UserProfileActivity.this, "on failed:" + code);
                                 }
                             }
 

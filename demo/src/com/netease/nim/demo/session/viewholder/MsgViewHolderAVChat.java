@@ -10,6 +10,7 @@ import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLo
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
+import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
 
 /**
  * Created by zhoujianghua on 2015/8/6.
@@ -74,9 +75,14 @@ public class MsgViewHolderAVChat extends MsgViewHolderBase {
                 textString = TimeUtil.secToTime(attachment.getDuration());
                 break;
             case Missed: //未接听
-            case Rejected: //主动拒绝
                 textString = context.getString(R.string.avchat_no_pick_up);
                 break;
+            case Rejected: // "被拨打方" 拒绝接听电话或者正忙
+                int strID = message.getDirect() == MsgDirectionEnum.In ? R.string.avchat_has_reject : R.string.avchat_be_rejected;
+                textString = context.getString(strID);
+                break;
+            case Canceled:
+                textString = context.getString(R.string.avchat_cancel);
             default:
                 break;
         }

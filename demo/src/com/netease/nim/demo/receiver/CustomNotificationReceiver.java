@@ -3,7 +3,8 @@ package com.netease.nim.demo.receiver;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -33,7 +34,7 @@ public class CustomNotificationReceiver extends BroadcastReceiver {
                     // Toast
                     String content = obj.getString("content");
                     String tip = String.format("自定义消息[%s]：%s", notification.getFromAccount(), content);
-                    Toast.makeText(context, tip, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(context, tip);
                 }
             } catch (JSONException e) {
                 LogUtil.e("demo", e.getMessage());

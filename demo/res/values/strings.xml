@@ -29,6 +29,7 @@
     <string name="readed">已读</string>
     <string name="unread">未读</string>
     <string name="about">关于</string>
+    <string name="privatization_config">私有化配置</string>
     <string name="logout">注销</string>
     <string name="add">添加</string>
     <string name="remove">移除</string>
@@ -53,7 +54,7 @@
     <string name="nim_status_unlogin">未登录</string>
     <string name="nim_status_connecting">连接中...</string>
     <string name="nim_status_logining">登录中...</string>
-    <string name="copyright">Copyright ©1997-2018 网易公司版权所有</string>
+    <string name="copyright">Copyright ©1997-2019 网易公司版权所有</string>
     <string name="user_not_exsit">该用户不存在</string>
     <string name="user_tips">请检查你输入的帐号是否正确</string>
     <string name="edit">编辑</string>
@@ -70,6 +71,9 @@
     <string name="message_history_query">云消息记录</string>
     <string name="message_search_title">搜索本地消息记录</string>
     <string name="message_clear">清空本地消息记录</string>
+    <string name="message_p2p_clear">清空点对点历史消息</string>
+    <string name="message_p2p_clear_tips">确定清空点对点历史消息?</string>
+    <string name="sure_keep_roam">确认单保留漫游</string>
     <string name="message_info">聊天信息</string>
 
     <!-- 通讯录 -->
@@ -145,9 +149,10 @@
     <string name="no_disturb">免打扰</string>
     <string name="multiport_push">PC/Web在线推送</string>
     <string name="msg_notice">消息提醒</string>
+    <string name="recent_sticky">消息置顶</string>
     <string name="setting_about">关于</string>
     <string name="setting_close">已关闭</string>
-    <string name="no_disturb_tips">在设定的时间段内云信消息将不再提醒</string>
+    <string name="no_disturb_tips">在设定的时间段内云信消息提醒将不再响铃振动,如果开启了不显示通知，则通知不再显示</string>
     <string name="time_from">从</string>
     <string name="time_to">至</string>
     <string name="time_from_default">22:00</string>
@@ -155,12 +160,19 @@
     <string name="black_list">黑名单</string>
     <string name="msg_speaker">听筒模式</string>
     <string name="ring">响铃模式</string>
+    <string name="vibrate">振动模式</string>
     <string name="led">自定义呼吸灯</string>
     <string name="notice_content">通知栏标题定制</string>
     <string name="clear_index">清理全文检索缓存</string>
     <string name="clear_sdk_cache">清理SDK文件缓存</string>
     <string name="push_no_detail">推送不展示消息详情</string>
     <string name="operation_too_frequent">操作太频繁</string>
+    <string name="setting_private_config">私有化配置</string>
+    <string name="private_config_note"> \n 1.私有化配置的将在app重启后生效，请注销登陆并杀掉进程。
+        \n 2.如果要切换到环境，关闭或打开开关退出登陆杀掉进程即可。\n </string>
+    <string name="local_db_migration">本地消息迁移</string>
+    <string name="delete_friend_is_delete_alias">删除好友是否同步删除备注</string>
+
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
     <string name="multiport_logout">下线</string>
@@ -218,5 +230,6 @@
     <string name="send_ack_msg">发送已读回执消息</string>
     <string name="ack_msg_info">消息已读详情</string>
     <string name="ack_msg_tip">已读回执能力支持文本、图片、音频、视频、文件、自定义等消息类型。此处仅以文本消息作为演示，开发者可以根据具体业务场景进行功能设计。</string>
+    <string name="down_time_enable_notification">免打扰期间显示通知</string>
 
 </resources>

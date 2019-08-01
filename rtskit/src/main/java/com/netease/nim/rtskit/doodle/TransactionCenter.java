@@ -73,13 +73,13 @@ public class TransactionCenter {
     /**
      * 数据接收
      */
-    public void onReceive(String sessionId, String data) {
+    public void onReceive(String sessionId, List<Transaction> transactions) {
         if (observers.containsKey(sessionId)) {
-            observers.get(sessionId).onTransaction(unpack(data));
+            observers.get(sessionId).onTransaction(transactions);
         }
     }
 
-    private List<Transaction> unpack(String data) {
+    public List<Transaction> unpack(String data) {
         if (TextUtils.isEmpty(data)) {
             return null;
         }

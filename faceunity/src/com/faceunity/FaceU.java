@@ -200,13 +200,12 @@ public class FaceU {
 
     private void doReleaseFaceUNative() {
         Log.i(TAG, "release faceU native...");
-
-        faceunity.fuDestroyItem(mEffectItem);
+        faceunity.fuDestroyAllItems();
         itemsArray[1] = mEffectItem = 0;
-        faceunity.fuDestroyItem(mFaceBeautyItem);
         itemsArray[0] = mFaceBeautyItem = 0;
-        faceunity.fuOnDeviceLost();
+        faceunity.fuDone();
         faceunity.fuReleaseEGLContext();
+        faceunity.fuOnDeviceLost();
         frame_id = 0;
         effectChange = true;
         beautifyChange = true;
@@ -285,6 +284,7 @@ public class FaceU {
         }
         effectChange = false;
         try {
+            int prev = itemsArray[1];
             if (mEffectFileName.equals("none")) {
                 itemsArray[1] = mEffectItem = 0;
             } else {
@@ -292,12 +292,12 @@ public class FaceU {
                 byte[] itemData = new byte[is.available()];
                 is.read(itemData);
                 is.close();
-                int tmp = itemsArray[1];
                 itemsArray[1] = mEffectItem = faceunity.fuCreateItemFromPackage(itemData);
                 faceunity.fuItemSetParam(mEffectItem, "isAndroid", 1.0);
-                if (tmp != 0) {
-                    faceunity.fuDestroyItem(tmp);
-                }
+            }
+
+            if (prev != 0) {
+                faceunity.fuDestroyItem(prev);
             }
         } catch (IOException e) {
             e.printStackTrace();

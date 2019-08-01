@@ -60,14 +60,14 @@ public class SettingsAdapter extends BaseAdapter {
         if (viewHolder == null) {
             viewHolder = new ViewHolder();
             viewHolder.root = convertView;
-            viewHolder.headImageView = (HeadImageView) convertView.findViewById(R.id.head_image);
-            viewHolder.titleView = (TextView) convertView.findViewById(R.id.title_label);
-            viewHolder.detailView = (TextView) convertView.findViewById(R.id.detail_label);
-            viewHolder.switchButton = (SwitchButton) convertView.findViewById(R.id.setting_item_toggle);
+            viewHolder.headImageView = convertView.findViewById(R.id.head_image);
+            viewHolder.titleView = convertView.findViewById(R.id.title_label);
+            viewHolder.detailView = convertView.findViewById(R.id.detail_label);
+            viewHolder.switchButton = convertView.findViewById(R.id.setting_item_toggle);
             viewHolder.line = convertView.findViewById(R.id.line);
-            viewHolder.indicator = (ImageView) convertView.findViewById(R.id.setting_item_indicator);
-            viewHolder.headTitleView = (TextView) convertView.findViewById(R.id.head_title_label);
-            viewHolder.headDetailView = (TextView) convertView.findViewById(R.id.head_detail_label);
+            viewHolder.indicator = convertView.findViewById(R.id.setting_item_indicator);
+            viewHolder.headTitleView = convertView.findViewById(R.id.head_title_label);
+            viewHolder.headDetailView = convertView.findViewById(R.id.head_detail_label);
             convertView.setTag(viewHolder);
         }
 

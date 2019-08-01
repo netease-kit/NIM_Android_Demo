@@ -8,8 +8,8 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
-import android.widget.Toast;
 
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
@@ -28,7 +28,7 @@ import java.util.List;
  */
 public class FileBrowserActivity extends UI implements TAdapterDelegate {
     // constant
-    private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath() + "/";
+    private static final String ROOT_PATH = Environment.getExternalStorageDirectory().getPath();
     public static final String EXTRA_DATA_PATH = "EXTRA_DATA_PATH";
 
     // data
@@ -58,7 +58,7 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
     }
 
     private void findViews() {
-        fileListView = (ListView) findViewById(R.id.file_list);
+        fileListView = findViewById(R.id.file_list);
     }
 
     /**
@@ -73,10 +73,10 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
         File[] files = file.listFiles();
 
         //如果当前目录不是根目录
-        if (ROOT_PATH.equals(path)) {
+        if (!ROOT_PATH.equals(path)) {
             names.add("@1");
             paths.add(ROOT_PATH);
-        } else {
+
             names.add("@2");
             paths.add(file.getParent());
         }
@@ -111,7 +111,7 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
                     }
                 } else {
                     //没有权限
-                    Toast.makeText(FileBrowserActivity.this, R.string.no_permission, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(FileBrowserActivity.this, R.string.no_permission);
                 }
             }
         });

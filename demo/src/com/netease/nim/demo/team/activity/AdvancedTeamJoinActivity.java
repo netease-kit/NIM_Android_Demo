@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
@@ -16,6 +17,7 @@ import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
+import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.constant.TeamTypeEnum;
 import com.netease.nimlib.sdk.team.model.Team;
@@ -93,7 +95,7 @@ public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener
      */
     private void updateTeamInfo(final Team t) {
         if (t == null) {
-            Toast.makeText(AdvancedTeamJoinActivity.this, R.string.team_not_exist, Toast.LENGTH_LONG).show();
+            ToastHelper.showToast(AdvancedTeamJoinActivity.this, R.string.team_not_exist);
             finish();
         } else {
             team = t;
@@ -115,26 +117,25 @@ public class AdvancedTeamJoinActivity extends UI implements View.OnClickListener
                 public void onSuccess(Team team) {
                     applyJoinButton.setEnabled(false);
                     String toast = getString(R.string.team_join_success, team.getName());
-                    Toast.makeText(AdvancedTeamJoinActivity.this, toast, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AdvancedTeamJoinActivity.this, toast);
                 }
 
                 @Override
                 public void onFailed(int code) {
-                    if (code == 808) {
+                    //仅仅是申请成功
+                    if (code == ResponseCode.RES_TEAM_APPLY_SUCCESS) {
                         applyJoinButton.setEnabled(false);
-                        Toast.makeText(AdvancedTeamJoinActivity.this, R.string.team_apply_to_join_send_success,
-                                Toast.LENGTH_SHORT).show();
-                    } else if (code == 809) {
+                        ToastHelper.showToast(AdvancedTeamJoinActivity.this, R.string.team_apply_to_join_send_success);
+                    }
+
+                    else if (code == ResponseCode.RES_TEAM_ALREADY_IN) {
                         applyJoinButton.setEnabled(false);
-                        Toast.makeText(AdvancedTeamJoinActivity.this, R.string.has_exist_in_team,
-                                Toast.LENGTH_SHORT).show();
-                    } else if (code == 806) {
+                        ToastHelper.showToast(AdvancedTeamJoinActivity.this, R.string.has_exist_in_team);
+                    } else if (code == ResponseCode.RES_TEAM_LIMIT) {
                         applyJoinButton.setEnabled(false);
-                        Toast.makeText(AdvancedTeamJoinActivity.this, R.string.team_num_limit,
-                                Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(AdvancedTeamJoinActivity.this, R.string.team_num_limit);
                     } else {
-                        Toast.makeText(AdvancedTeamJoinActivity.this, "failed, error code =" + code,
-                                Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(AdvancedTeamJoinActivity.this, "failed, error code =" + code);
                     }
                 }
 

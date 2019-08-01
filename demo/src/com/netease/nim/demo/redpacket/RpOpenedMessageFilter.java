@@ -16,12 +16,10 @@ import java.util.Map;
 
 /**
  * Created by hzchenkang on 2017/8/2.
- * <p>
  * 结合observeReceiveMessage、observeRecentContact 做一个应用层面的消息过滤，过滤掉与自己无关的拆红包消息
  * 前提是RpOpenedMessageFilter 必须先于其他ReceiveMessage、RecentContact 观察者之前注册
  * 该消息最好设置为不计未读数
  */
-
 public class RpOpenedMessageFilter {
 
     private static Map<String, IMMessage> delete = new HashMap<>();

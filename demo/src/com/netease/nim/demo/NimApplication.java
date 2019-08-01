@@ -38,6 +38,7 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.NIMPushClient;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 import com.netease.nimlib.sdk.util.NIMUtil;
+import com.squareup.leakcanary.LeakCanary;
 
 import io.fabric.sdk.android.Fabric;
 
@@ -49,9 +50,19 @@ public class NimApplication extends Application {
         MultiDex.install(this);
     }
 
+    /**
+     * 注意：每个进程都会创建自己的Application 然后调用onCreate() 方法，
+     * 如果用户有自己的逻辑需要写在Application#onCreate()（还有Application的其他方法）中，一定要注意判断进程，不能把业务逻辑写在core进程，
+     * 理论上，core进程的Application#onCreate()（还有Application的其他方法）只能做与im sdk 相关的工作
+     */
     @Override
     public void onCreate() {
         super.onCreate();
+
+        // 内存泄漏检测
+        if (!LeakCanary.isInAnalyzerProcess(this)) {
+//            LeakCanary.install(this);
+        }
 
         DemoCache.setContext(this);
 
@@ -76,6 +87,8 @@ public class NimApplication extends Application {
             initUIKit();
             // 初始化消息提醒
             NIMClient.toggleNotification(UserPreferences.getNotificationToggle());
+            //关闭撤回消息提醒
+//            NIMClient.toggleRevokeMessageNotification(false);
             // 云信sdk相关业务初始化
             NIMInitManager.getInstance().init(true);
             // 初始化音视频模块
@@ -134,7 +147,7 @@ public class NimApplication extends Application {
     }
 
     private void initAVChatKit() {
-        AVChatOptions avChatOptions = new AVChatOptions(){
+        AVChatOptions avChatOptions = new AVChatOptions() {
             @Override
             public void logout(Context context) {
                 MainActivity.logout(context, true);

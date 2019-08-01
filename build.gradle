@@ -1,5 +1,6 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+import java.text.SimpleDateFormat
 
+// Top-level build file where you can add configuration options common to all sub-projects/modules.
 buildscript {
     apply from: 'script.gradle', to: buildscript
 }
@@ -9,7 +10,7 @@ allprojects {
         google()
         jcenter()
         mavenCentral()
-        maven {url 'http://developer.huawei.com/repo'}
+        maven { url 'http://developer.huawei.com/repo' }
         maven { url 'https://fabric-artifacts.s3.amazonaws.com/public' }
     }
 }
@@ -20,10 +21,27 @@ ext {
     minSdkVersion = 14
     targetSdkVersion = 26
     appTargetSdkVersion = 26
-    versionCode = 48
-    versionName = '5.1.1'
+    versionCode = 69
+    versionName = '6.7.0'
     sdkSourceCompatibility = 1.7
     sdkTargetCompatibility = 1.7
     appSourceCompatibility = 1.7
     appTargetCompatibility = 1.7
+    nimOutputDir = "nim-outputs-${versionName}-${getBuildTime()}-${getGitVersion()}"
+
+}
+
+static def getGitVersion() {
+    try {
+        return 'git rev-parse --short HEAD'.execute().text.trim()
+    } catch (Throwable th) {
+        th.printStackTrace()
+        return ""
+    }
+}
+
+static def getBuildTime() {
+    Date date = new Date()
+    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
+    return simpleDateFormat.format(date)
 }

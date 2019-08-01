@@ -7,7 +7,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.contact.viewholder.BlackListViewHolder;
@@ -142,14 +143,14 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
             NIMClient.getService(FriendService.class).removeFromBlackList(user.getAccount()).setCallback(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void param) {
-                    Toast.makeText(BlackListActivity.this, "移出黑名单成功", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(BlackListActivity.this, "移出黑名单成功");
                     data.remove(user);
                     adapter.notifyDataSetChanged();
                 }
 
                 @Override
                 public void onFailed(int code) {
-                    Toast.makeText(BlackListActivity.this, "移出黑名单失败，错误码：" + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(BlackListActivity.this, "移出黑名单失败，错误码：" + code);
                 }
 
                 @Override
@@ -176,7 +177,7 @@ public class BlackListActivity extends UI implements TAdapterDelegate {
 
                 @Override
                 public void onFailed(int code) {
-                    Toast.makeText(BlackListActivity.this, "加入黑名单失败,code:" + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(BlackListActivity.this, "加入黑名单失败,code:" + code);
                 }
 
                 @Override

@@ -27,12 +27,6 @@
             android:title="@string/nrtc_setting_voe_audio_ns"/>
 
         <SwitchPreference
-            android:defaultValue="true"
-            android:key="@string/nrtc_setting_voe_dtx_key"
-            android:summary="检测人声非活跃状态时减少数据包的发送"
-            android:title="@string/nrtc_setting_voe_dtx"/>
-
-        <SwitchPreference
             android:defaultValue="false"
             android:key="@string/nrtc_setting_voe_high_quality_key"
             android:summary="高采样率语音数据"

@@ -66,4 +66,9 @@
     <color name="color_black_ff999999">#ff999999</color>
     <color name="color_gray_bfc2c5">#bfc2c5</color>
 
+
+    <color name="color_3d3d3d">#3d3d3d</color>
+    <color name="color_f2f2f2">#f2f2f2</color>
+    <color name="color_9000000">#90000000</color>
+
 </resources>

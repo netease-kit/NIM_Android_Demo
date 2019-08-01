@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.HandlerThread;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,6 +26,7 @@ import com.netease.nim.rtskit.common.imageview.HeadImageView;
 import com.netease.nim.rtskit.common.util.ScreenUtil;
 import com.netease.nim.rtskit.doodle.DoodleView;
 import com.netease.nim.rtskit.doodle.SupportActionType;
+import com.netease.nim.rtskit.doodle.Transaction;
 import com.netease.nim.rtskit.doodle.TransactionCenter;
 import com.netease.nim.rtskit.doodle.action.MyPath;
 import com.netease.nim.rtskit.doodle.constant.ActionTypeEnum;
@@ -43,6 +45,7 @@ import com.netease.nimlib.sdk.rts.model.RTSCalleeAckEvent;
 import com.netease.nimlib.sdk.rts.model.RTSCommonEvent;
 import com.netease.nimlib.sdk.rts.model.RTSControlEvent;
 import com.netease.nimlib.sdk.rts.model.RTSData;
+import com.netease.nimlib.sdk.rts.model.RTSNetworkProxy;
 import com.netease.nimlib.sdk.rts.model.RTSNotifyOption;
 import com.netease.nimlib.sdk.rts.model.RTSOnlineAckEvent;
 import com.netease.nimlib.sdk.rts.model.RTSOptions;
@@ -94,6 +97,10 @@ public class RTSActivity extends UI implements View.OnClickListener {
     private Button backBtn;
     private Button clearBtn;
 
+    // 数据接收处理 放到子线程中，防止阻塞数据发送通道 ， 待sdk 优化
+    private HandlerThread receiveThread;
+    private Handler receiveDataHandler;
+
     public static void incomingSession(Context context, RTSData data, int source) {
 
         if (isBusy) {
@@ -141,6 +148,10 @@ public class RTSActivity extends UI implements View.OnClickListener {
         isIncoming = getIntent().getBooleanExtra(KEY_INCOMING, false);
         findViews();
         initActionBarButton();
+
+        receiveThread = new HandlerThread("receive_data_thread");
+        receiveThread.start();
+        receiveDataHandler = new Handler(receiveThread.getLooper());
 
         if (isIncoming) {
             incoming();
@@ -203,23 +214,23 @@ public class RTSActivity extends UI implements View.OnClickListener {
 
     @Override
     protected void onDestroy() {
+        super.onDestroy();
         if (doodleView != null) {
             doodleView.end();
         }
-
-        super.onDestroy();
+        if (receiveThread != null) {
+            receiveThread.quit();
+            receiveThread = null;
+        }
 
         if (needFinish) {
             return;
         }
-
         NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, false);
         registerInComingObserver(false);
         registerOutgoingObserver(false);
         registerCommonObserver(false);
-
         needFinish = true;
-
         isBusy = false;
     }
 
@@ -248,17 +259,17 @@ public class RTSActivity extends UI implements View.OnClickListener {
         startSessionLayout = findViewById(R.id.start_session_layout);
         sessionLayout = findViewById(R.id.session_layout);
 
-        headImage = (HeadImageView) findViewById(R.id.head_image);
-        sessionStepText = (TextView) findViewById(R.id.session_step_text);
-        nameText = (TextView) findViewById(R.id.name);
+        headImage = findViewById(R.id.head_image);
+        sessionStepText = findViewById(R.id.session_step_text);
+        nameText = findViewById(R.id.name);
         calleeAckLayout = findViewById(R.id.callee_ack_layout);
-        acceptBtn = (Button) findViewById(R.id.accept);
-        rejectBtn = (Button) findViewById(R.id.reject);
-        endSessionBtn = (Button) findViewById(R.id.end_session);
-        doodleView = (DoodleView) findViewById(R.id.doodle_view);
-        backBtn = (Button) findViewById(R.id.doodle_back);
-        clearBtn = (Button) findViewById(R.id.doodle_clear);
-        audioSwitchBtn = (Button) findViewById(R.id.audio_switch);
+        acceptBtn = findViewById(R.id.accept);
+        rejectBtn = findViewById(R.id.reject);
+        endSessionBtn = findViewById(R.id.end_session);
+        doodleView = findViewById(R.id.doodle_view);
+        backBtn = findViewById(R.id.doodle_back);
+        clearBtn = findViewById(R.id.doodle_clear);
+        audioSwitchBtn = findViewById(R.id.audio_switch);
 
         acceptBtn.setOnClickListener(this);
         rejectBtn.setOnClickListener(this);
@@ -360,20 +371,37 @@ public class RTSActivity extends UI implements View.OnClickListener {
         }
     };
 
+
     /**
      * 监听收到对方发送的通道数据
      */
     private Observer<RTSTunData> receiveDataObserver = new Observer<RTSTunData>() {
         @Override
-        public void onEvent(RTSTunData rtsTunData) {
-            String data = "[parse bytes error]";
+        public void onEvent(final RTSTunData rtsTunData) {
+            // 放到子线程中，防止阻塞数据发送通道 ， 待sdk 优化
+            String data = "[parse bytes error] , thread = " + Thread.currentThread().getName();
             try {
                 data = new String(rtsTunData.getData(), 0, rtsTunData.getLength(), "UTF-8");
             } catch (UnsupportedEncodingException e) {
                 e.printStackTrace();
             }
+            final List<Transaction> trans = TransactionCenter.getInstance().unpack(data);
+            if (trans == null || trans.size() == 0) {
+                return;
+            }
+            // 如果是清屏动作，将之前的都remove 掉， 直接执行清屏动作
+            if (trans.get(0).isClearSelf()) {
+                Log.i("RTSActivity","clear self");
+                receiveDataHandler.removeCallbacks(null);
+            }
 
-            TransactionCenter.getInstance().onReceive(sessionId, data);
+            receiveDataHandler.post(new Runnable() {
+                @Override
+                public void run() {
+                    TransactionCenter.getInstance().onReceive(sessionId, trans);
+                }
+            });
+
         }
     };
 
@@ -512,6 +540,14 @@ public class RTSActivity extends UI implements View.OnClickListener {
         RTSNotifyOption notifyOption = new RTSNotifyOption();
         notifyOption.apnsContent = pushContent;
         notifyOption.extendMessage = extra;
+        //代理测试
+//        RTSNetworkProxy networkProxy = new RTSNetworkProxy();
+//        networkProxy.host = "10.234.1.23";
+//        networkProxy.port = 8080;
+//        networkProxy.userName = "test";
+//        networkProxy.userPassword = "testPwd";
+//        RTSManager.getInstance().setNetworkProxy(networkProxy);
+
         sessionId = RTSManager.getInstance().start(account, types, options, notifyOption, new RTSCallback<RTSData>() {
             @Override
             public void onSuccess(RTSData rtsData) {

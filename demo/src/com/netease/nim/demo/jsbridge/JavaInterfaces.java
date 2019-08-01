@@ -1,7 +1,8 @@
 package com.netease.nim.demo.jsbridge;
 
 
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nimlib.jsbridge.annotation.JavaInterface;
 import com.netease.nimlib.jsbridge.annotation.Param;
@@ -26,7 +27,7 @@ public class JavaInterfaces {
         helper.activeCallingNotification(true, msg);
 
         // toast
-        Toast.makeText(context.getApplicationContext(), "发送成功", Toast.LENGTH_LONG).show();
+        ToastHelper.showToast(context.getApplicationContext(), "发送成功");
     }
 
     @JavaInterface("picture")

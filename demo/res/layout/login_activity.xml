@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@drawable/login_bg"
     android:orientation="vertical">
 
@@ -30,7 +31,7 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_height="wrap_content"
             android:orientation="vertical">
 
             <ImageView
@@ -39,107 +40,108 @@
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="59dp"
                 android:background="@drawable/logo"
-                android:contentDescription="@string/empty"/>
+                android:contentDescription="@string/empty" />
 
-            <FrameLayout
+
+            <LinearLayout
+                android:id="@+id/login_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
-                android:layout_marginTop="74dp">
+                android:layout_marginTop="74dp"
+                android:orientation="vertical"
+                tools:visibility="gone">
 
-                <LinearLayout
-                    android:id="@+id/login_layout"
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_login_account"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/login_hint_account"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
 
-                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                        android:id="@+id/edit_login_account"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_white_normal"
-                        android:drawablePadding="15dp"
-                        android:hint="@string/login_hint_account"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/color_white_66ffffff"
-                        android:textCursorDrawable="@null"
-                        android:textSize="15sp"/>
-
-                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                        android:id="@+id/edit_login_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_white_normal"
-                        android:drawablePadding="15dp"
-                        android:hint="@string/login_hint_password"
-                        android:inputType="textPassword"
-                        android:longClickable="false"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/color_white_66ffffff"
-                        android:textCursorDrawable="@null"
-                        android:textSize="15sp"/>
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/register_layout"
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_login_password"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:orientation="vertical"
-                    android:visibility="gone">
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/login_hint_password"
+                    android:inputType="textPassword"
+                    android:longClickable="false"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
-                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                        android:id="@+id/edit_register_account"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_white_normal"
-                        android:digits="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
-                        android:drawablePadding="15dp"
-                        android:hint="@string/input_account"
-                        android:inputType="text"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/color_white_66ffffff"
-                        android:textCursorDrawable="@null"
-                        android:textSize="15sp"/>
+            <LinearLayout
+                android:id="@+id/register_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="74dp"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible">
 
-                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                        android:id="@+id/edit_register_nickname"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_white_normal"
-                        android:drawablePadding="15dp"
-                        android:hint="@string/input_nickname"
-                        android:inputType="text"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/color_white_66ffffff"
-                        android:textCursorDrawable="@null"
-                        android:textSize="15sp"/>
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_register_account"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:digits="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/input_account"
+                    android:inputType="text"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
 
-                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                        android:id="@+id/edit_register_password"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edittext_white_normal"
-                        android:drawablePadding="15dp"
-                        android:hint="@string/input_password"
-                        android:inputType="textPassword"
-                        android:longClickable="false"
-                        android:paddingLeft="15dp"
-                        android:paddingRight="15dp"
-                        android:textColor="@color/white"
-                        android:textColorHint="@color/color_white_66ffffff"
-                        android:textCursorDrawable="@null"
-                        android:textSize="15sp"/>
-                </LinearLayout>
-            </FrameLayout>
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_register_nickname"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/input_nickname"
+                    android:inputType="text"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
+
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_register_password"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/input_password"
+                    android:inputType="textPassword"
+                    android:longClickable="false"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/register_login_tip"
@@ -150,7 +152,7 @@
                 android:padding="15dip"
                 android:text="@string/register"
                 android:textColor="@drawable/register_tip_selector"
-                android:textSize="15sp"/>
+                android:textSize="15sp" />
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

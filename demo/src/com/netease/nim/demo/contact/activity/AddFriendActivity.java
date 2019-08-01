@@ -6,7 +6,8 @@ import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -60,9 +61,9 @@ public class AddFriendActivity extends UI {
             @Override
             public void onClick(View v) {
                 if (TextUtils.isEmpty(searchEdit.getText().toString())) {
-                    Toast.makeText(AddFriendActivity.this, R.string.not_allow_empty, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AddFriendActivity.this, R.string.not_allow_empty);
                 } else if (searchEdit.getText().toString().equals(DemoCache.getAccount())) {
-                    Toast.makeText(AddFriendActivity.this, R.string.add_friend_self_tip, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AddFriendActivity.this, R.string.add_friend_self_tip);
                 } else {
                     query();
                 }
@@ -85,11 +86,11 @@ public class AddFriendActivity extends UI {
                         UserProfileActivity.start(AddFriendActivity.this, account);
                     }
                 } else if (code == 408) {
-                    Toast.makeText(AddFriendActivity.this, R.string.network_is_not_available, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AddFriendActivity.this, R.string.network_is_not_available);
                 } else if (code == ResponseCode.RES_EXCEPTION) {
-                    Toast.makeText(AddFriendActivity.this, "on exception", Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AddFriendActivity.this, "on exception");
                 } else {
-                    Toast.makeText(AddFriendActivity.this, "on failed:" + code, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(AddFriendActivity.this, "on failed:" + code);
                 }
             }
         });

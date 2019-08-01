@@ -33,7 +33,7 @@ import com.netease.nimlib.sdk.avchat.model.AVChatData;
  * Created by winnie on 2017/12/10.
  */
 
-public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
+public class AVChatAudioUI implements View.OnClickListener, ToggleListener {
     // constant
     private static final int[] NETWORK_GRADE_DRAWABLE = new int[]{R.drawable.network_grade_0, R.drawable.network_grade_1, R.drawable.network_grade_2, R.drawable.network_grade_3};
     private static final int[] NETWORK_GRADE_LABEL = new int[]{R.string.avchat_network_grade_0, R.string.avchat_network_grade_1, R.string.avchat_network_grade_2, R.string.avchat_network_grade_3};
@@ -69,25 +69,20 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
 
     // state
     private boolean init = false;
-    public boolean canSwitchCamera = false;
-    private boolean isClosedCamera = false;
     private boolean isInSwitch = false;
     private boolean isEnabled = false;
     private boolean isRecordWarning = false;
 
-    // data
-    private AVChatData avChatData;
     private String account;
     private String displayName;
     private AVChatController avChatController;
     private AVSwitchListener avSwitchListener;
     private CallStateEnum callingState;
 
-    public AVChatAudioUI(Context context, View root, AVChatData avChatData, String displayName,
+    public AVChatAudioUI(Context context, View root, String displayName,
                          AVChatController avChatController, AVSwitchListener avSwitchListener) {
         this.context = context;
         this.rootView = root;
-        this.avChatData = avChatData;
         this.displayName = displayName;
         this.avChatController = avChatController;
         this.avSwitchListener = avSwitchListener;
@@ -100,12 +95,12 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
         switchVideo = rootView.findViewById(R.id.avchat_audio_switch_video);
         switchVideo.setOnClickListener(this);
 
-        headImg = (HeadImageView) rootView.findViewById(R.id.avchat_audio_head);
-        nickNameTV = (TextView) rootView.findViewById(R.id.avchat_audio_nickname);
-        time = (Chronometer) rootView.findViewById(R.id.avchat_audio_time);
-        wifiUnavailableNotifyTV = (TextView) rootView.findViewById(R.id.avchat_audio_wifi_unavailable);
-        notifyTV = (TextView) rootView.findViewById(R.id.avchat_audio_notify);
-        netUnstableTV = (TextView) rootView.findViewById(R.id.avchat_audio_netunstable);
+        headImg = rootView.findViewById(R.id.avchat_audio_head);
+        nickNameTV = rootView.findViewById(R.id.avchat_audio_nickname);
+        time = rootView.findViewById(R.id.avchat_audio_time);
+        wifiUnavailableNotifyTV = rootView.findViewById(R.id.avchat_audio_wifi_unavailable);
+        notifyTV = rootView.findViewById(R.id.avchat_audio_notify);
+        netUnstableTV = rootView.findViewById(R.id.avchat_audio_netunstable);
 
         mute_speaker_hangup = rootView.findViewById(R.id.avchat_audio_mute_speaker_huangup);
         View mute = mute_speaker_hangup.findViewById(R.id.avchat_audio_mute);
@@ -113,7 +108,7 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
         View speaker = mute_speaker_hangup.findViewById(R.id.avchat_audio_speaker);
         speakerToggle = new ToggleView(speaker, ToggleState.OFF, this);
         recordToggle = mute_speaker_hangup.findViewById(R.id.avchat_audio_record);
-        recordToggleButton = (Button) mute_speaker_hangup.findViewById(R.id.avchat_audio_record_button);
+        recordToggleButton = mute_speaker_hangup.findViewById(R.id.avchat_audio_record_button);
 
         hangup = mute_speaker_hangup.findViewById(R.id.avchat_audio_hangup);
         hangup.setOnClickListener(this);
@@ -121,8 +116,8 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
         recordToggle.setEnabled(false);
 
         refuse_receive = rootView.findViewById(R.id.avchat_audio_refuse_receive);
-        refuseTV = (TextView) refuse_receive.findViewById(R.id.refuse);
-        receiveTV = (TextView) refuse_receive.findViewById(R.id.receive);
+        refuseTV = refuse_receive.findViewById(R.id.refuse);
+        receiveTV = refuse_receive.findViewById(R.id.receive);
         refuseTV.setOnClickListener(this);
         receiveTV.setOnClickListener(this);
 
@@ -145,7 +140,6 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
 
     public void showIncomingCall(AVChatData avChatData) {
         // 接听方的数据是AVChatData
-        this.avChatData = avChatData;
         this.account = avChatData.getAccount();
         this.callingState = CallStateEnum.INCOMING_AUDIO_CALLING;
 
@@ -190,7 +184,6 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
         avChatController.doCalling(account, AVChatType.AUDIO, new AVChatControllerCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData avChatData) {
-                AVChatAudioUI.this.avChatData = avChatData;
                 avChatController.setAvChatData(avChatData);
             }
 
@@ -206,7 +199,9 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
      */
 
     // 视频切换为音频时，禁音与扬声器按钮状态
-    public void onVideoToAudio(boolean muteOn, boolean speakerOn) {
+    public void onVideoToAudio(boolean muteOn, boolean speakerOn, String account) {
+
+        this.account = account;
         showAudioInitLayout();
 
         muteToggle.toggle(muteOn ? ToggleState.ON : ToggleState.OFF);
@@ -214,6 +209,8 @@ public class AVChatAudioUI implements View.OnClickListener, ToggleListener{
         recordToggle.setSelected(avChatController.isRecording());
 
         showRecordView(avChatController.isRecording(), isRecordWarning);
+
+        AVChatManager.getInstance().disableVideo();
     }
 
     public void showIncomingAudioToVideo() {

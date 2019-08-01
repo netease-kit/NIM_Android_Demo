@@ -11,6 +11,7 @@ import com.netease.nim.uikit.common.activity.UI;
 
 public class AboutActivity extends UI {
 
+    private TextView version;
     private TextView versionGit;
     private TextView versionDate;
 
@@ -32,11 +33,13 @@ public class AboutActivity extends UI {
     }
 
     private void findViews() {
+        version = findViewById(R.id.version_detail);
         versionGit = findViewById(R.id.version_detail_git);
         versionDate = findViewById(R.id.version_detail_date);
     }
 
     private void initViewData() {
+        version.setText("Version: " + BuildConfig.VERSION_NAME);
         versionGit.setText("Git Version: " + BuildConfig.GIT_REVISION);
         versionDate.setText("Build Date:" + BuildConfig.BUILD_DATE);
     }

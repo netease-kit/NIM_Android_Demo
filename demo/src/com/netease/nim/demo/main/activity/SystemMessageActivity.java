@@ -4,11 +4,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.adapter.SystemMessageAdapter;
@@ -54,6 +56,7 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
     private static final boolean MERGE_ADD_FRIEND_VERIFY = false; // 是否要合并好友申请，同一个用户仅保留最近一条申请内容（默认不合并）
 
     private static final int LOAD_MESSAGE_COUNT = 10;
+    private static final String TAG = "SystemMessageActivity";
 
     // view
     private MessageListView listView;
@@ -279,6 +282,14 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
         loadOffset++;
         items.add(0, message);
 
+        // 只有拉人入群才可以设置自定义字段
+        String customInfo = message.getCustomInfo();
+        Log.e(TAG, "system message , customInfo = " + customInfo);
+
+        // 获取系统通知的内容。例如：申请附言，拒绝理由
+        String content = message.getContent();
+        Log.e(TAG, "system message , content = " + content);
+
         refresh();
 
         // 收集未知用户资料的账号集合并从远程获取
@@ -398,8 +409,7 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
     }
 
     private void onProcessFailed(final int code, SystemMessage message) {
-        Toast.makeText(SystemMessageActivity.this, "failed, error code=" + code,
-                Toast.LENGTH_LONG).show();
+        ToastHelper.showToastLong(SystemMessageActivity.this, "failed, error code=" + code);
         if (code == 408) {
             return;
         }
@@ -483,7 +493,7 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
         NIMClient.getService(SystemMessageService.class).resetSystemMessageUnreadCount();
         items.clear();
         refresh();
-        Toast.makeText(SystemMessageActivity.this, R.string.clear_all_success, Toast.LENGTH_SHORT).show();
+        ToastHelper.showToast(SystemMessageActivity.this, R.string.clear_all_success);
     }
 
     private void showLongClickMenu(final SystemMessage message) {
@@ -503,6 +513,6 @@ public class SystemMessageActivity extends UI implements TAdapterDelegate,
         NIMClient.getService(SystemMessageService.class).deleteSystemMessage(message.getMessageId());
         items.remove(message);
         refresh();
-        Toast.makeText(SystemMessageActivity.this, R.string.delete_success, Toast.LENGTH_SHORT).show();
+        ToastHelper.showToast(SystemMessageActivity.this, R.string.delete_success);
     }
 }

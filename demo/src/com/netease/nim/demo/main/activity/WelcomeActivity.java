@@ -19,7 +19,6 @@ import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.NIMSDK;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;

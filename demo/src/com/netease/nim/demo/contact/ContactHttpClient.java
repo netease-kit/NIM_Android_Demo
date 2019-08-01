@@ -95,10 +95,10 @@ public class ContactHttpClient {
             @Override
             public void onResponse(String response, int code, Throwable exception) {
                 if (code != 200 || exception != null) {
-                    LogUtil.e(TAG, "register failed : code = " + code + ", errorMsg = "
-                            + (exception != null ? exception.getMessage() : "null"));
+                    String errMsg = exception != null ? exception.getMessage() : "null";
+                    LogUtil.e(TAG, "register failed : code = " + code + ", errorMsg = " + errMsg);
                     if (callback != null) {
-                        callback.onFailed(code, exception != null ? exception.getMessage() : "null");
+                        callback.onFailed(code, errMsg);
                     }
                     return;
                 }
@@ -121,8 +121,9 @@ public class ContactHttpClient {
 
     private String readAppKey() {
         try {
-            ApplicationInfo appInfo = DemoCache.getContext().getPackageManager()
-                    .getApplicationInfo(DemoCache.getContext().getPackageName(), PackageManager.GET_META_DATA);
+            ApplicationInfo appInfo = DemoCache.getContext().
+                    getPackageManager().
+                    getApplicationInfo(DemoCache.getContext().getPackageName(), PackageManager.GET_META_DATA);
             if (appInfo != null) {
                 return appInfo.metaData.getString("com.netease.nim.appKey");
             }

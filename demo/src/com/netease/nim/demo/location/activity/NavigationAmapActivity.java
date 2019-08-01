@@ -11,7 +11,8 @@ import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.AMap.InfoWindowAdapter;
@@ -238,7 +239,7 @@ public class NavigationAmapActivity extends UI implements
         if (firstLocation && firstTipLocation) {
             firstTipLocation = false;
             myAddressInfo = getString(R.string.location_address_unkown);
-            Toast.makeText(this, R.string.location_address_fail, Toast.LENGTH_LONG).show();
+            ToastHelper.showToast(this, R.string.location_address_fail);
         }
     }
 

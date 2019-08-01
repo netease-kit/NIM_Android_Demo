@@ -11,7 +11,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
@@ -256,17 +257,17 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
         NIMClient.getService(MsgService.class).sendCustomNotification(notification).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
-                Toast.makeText(CustomNotificationActivity.this, R.string.send_custom_notification_success, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_success);
             }
 
             @Override
             public void onFailed(int code) {
-                Toast.makeText(CustomNotificationActivity.this, R.string.send_custom_notification_failed, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_failed);
             }
 
             @Override
             public void onException(Throwable exception) {
-                Toast.makeText(CustomNotificationActivity.this, R.string.send_custom_notification_failed, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_failed);
             }
         });
     }

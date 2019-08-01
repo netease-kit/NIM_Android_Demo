@@ -6,6 +6,9 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
+
+import java.util.Locale;
+
 /**
  * 适配Android O版本的通知栏
  * 采用
@@ -14,9 +17,10 @@ import android.os.Build;
  */
 
 class AVChatNotificationChannelCompat26 {
+
     private static final String NIM_CHANNEL_ID = "nim_avchat_tip_channel_001";
-    private static final String NIM_CHANNEL_NAME = "avchat tip channel";
-    private static final String NIM_CHANNEL_DESC = "avchat tip notification";
+    private static String NIM_CHANNEL_NAME = "AV chat tip channel";
+    private static String NIM_CHANNEL_DESC = "AV chat tip notification";
 
     static String getNIMChannelId(Context context) {
         /*
@@ -32,7 +36,7 @@ class AVChatNotificationChannelCompat26 {
         if (!isBuildAndTargetO(context)) {
             return;
         }
-
+        configLanguage(context);
         NotificationChannel channel;
         NotificationManager manager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         if (manager != null) {
@@ -56,5 +60,15 @@ class AVChatNotificationChannelCompat26 {
     private static boolean isBuildAndTargetO(Context context) {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.O &&
                 context.getApplicationInfo().targetSdkVersion >= Build.VERSION_CODES.O;
+    }
+
+    private static void configLanguage(Context context) {
+        Locale locale = context.getResources().getConfiguration().locale;
+        String language = locale.getLanguage();
+        if (language != null && language.endsWith("zh")) {
+            // default channel
+            NIM_CHANNEL_NAME = "音视频聊天通知";
+            NIM_CHANNEL_DESC = "音视频聊天通知";
+        }
     }
 }

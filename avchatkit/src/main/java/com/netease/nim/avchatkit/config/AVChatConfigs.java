@@ -27,7 +27,6 @@ public class AVChatConfigs {
     private int videoQuality;
     private boolean serverRecordAudio;
     private boolean serverRecordVideo;
-    private boolean defaultFrontCamera;
     private boolean autoCallProximity;
     private int videoHwEncoderMode;
     private int videoHwDecoderMode;
@@ -38,7 +37,6 @@ public class AVChatConfigs {
     private int deviceDefaultRotation;
     private int deviceRotationOffset;
     private boolean audioHighQuality;
-    private boolean audioDtx;
 
     public AVChatConfigs(Context context) {
         this.context = context;
@@ -53,7 +51,6 @@ public class AVChatConfigs {
         videoQuality = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_vie_quality_key), 0 + ""));
         serverRecordAudio = preferences.getBoolean(context.getString(R.string.nrtc_setting_other_server_record_audio_key), false);
         serverRecordVideo = preferences.getBoolean(context.getString(R.string.nrtc_setting_other_server_record_video_key), false);
-        defaultFrontCamera = preferences.getBoolean(context.getString(R.string.nrtc_setting_vie_default_front_camera_key), true);
         autoCallProximity = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_call_proximity_key), true);
         videoHwEncoderMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_vie_hw_encoder_key), 0 + ""));
         videoHwDecoderMode = Integer.parseInt(preferences.getString(context.getString(R.string.nrtc_setting_vie_hw_decoder_key), 0 + ""));
@@ -67,7 +64,6 @@ public class AVChatConfigs {
         String value3 = preferences.getString(context.getString(R.string.nrtc_setting_other_device_rotation_fixed_offset_key), 0 + "");
         deviceRotationOffset = Integer.parseInt(TextUtils.isDigitsOnly(value3) && !TextUtils.isEmpty(value3) ? value3 : 0 + "");
         audioHighQuality = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_high_quality_key), false);
-        audioDtx = preferences.getBoolean(context.getString(R.string.nrtc_setting_voe_dtx_key), true);
     }
 
     /**
@@ -76,7 +72,6 @@ public class AVChatConfigs {
      * 3, videoAutoRotate: 结合自己设备角度和对方设备角度自动旋转画面
      * 4, serverRecordAudio: 需要服务器录制语音, 同时需要 APP KEY 下面开通了服务器录制功能
      * 5, serverRecordVideo: 需要服务器录制视频, 同时需要 APP KEY 下面开通了服务器录制功能
-     * 6, defaultFrontCamera: 默认是否使用前置摄像头
      * 7, videoQuality: 视频质量调整, 最高建议使用480P
      * 8, videoFpsReported: 是否开启视频绘制帧率汇报
      * 9, deviceDefaultRotation: 99.99%情况下你不需要设置这个参数, 当设备固定在水平方向时,并且设备不会移动, 这时是无法确定设备角度的,可以设置一个默认角度
@@ -95,7 +90,6 @@ public class AVChatConfigs {
         avChatParameters.setBoolean(AVChatParameters.KEY_VIDEO_ROTATE_IN_RENDING, videoAutoRotate);
         avChatParameters.setBoolean(AVChatParameters.KEY_SERVER_AUDIO_RECORD, serverRecordAudio);
         avChatParameters.setBoolean(AVChatParameters.KEY_SERVER_VIDEO_RECORD, serverRecordVideo);
-        avChatParameters.setBoolean(AVChatParameters.KEY_VIDEO_DEFAULT_FRONT_CAMERA, defaultFrontCamera);
         avChatParameters.setInteger(AVChatParameters.KEY_VIDEO_QUALITY, videoQuality);
         avChatParameters.setBoolean(AVChatParameters.KEY_VIDEO_FPS_REPORTED, videoFpsReported);
         avChatParameters.setInteger(AVChatParameters.KEY_DEVICE_DEFAULT_ROTATION, deviceDefaultRotation);
@@ -149,7 +143,6 @@ public class AVChatConfigs {
                 break;
         }
         avChatParameters.setBoolean(AVChatParameters.KEY_AUDIO_HIGH_QUALITY, audioHighQuality);
-        avChatParameters.setBoolean(AVChatParameters.KEY_AUDIO_DTX_ENABLE, audioDtx);
 
         //观众角色,多人模式下使用. IM Demo没有多人通话, 全部设置为AVChatUserRole.NORMAL.
         avChatParameters.setInteger(AVChatParameters.KEY_SESSION_MULTI_MODE_USER_ROLE, AVChatUserRole.NORMAL);
@@ -160,5 +153,13 @@ public class AVChatConfigs {
 
     public AVChatParameters getAvChatParameters() {
         return avChatParameters;
+    }
+
+    public boolean isServerRecordAudio() {
+        return serverRecordAudio;
+    }
+
+    public boolean isServerRecordVideo() {
+        return serverRecordVideo;
     }
 }

@@ -43,13 +43,17 @@ public class Transaction implements Serializable {
         if (sp1 <= 0) {
             return null;
         }
-        int sp2 = data.indexOf(",");
-        if (sp2 <= 2) {
+
+        String step = data.substring(0, sp1);
+        String infoStr = data.substring(sp1 + 1);
+        String[] info = infoStr.split(",");
+
+        if(info.length < 2) {
             return null;
         }
-        String step = data.substring(0, sp1);
-        String x = data.substring(sp1 + 1, sp2);
-        String y = data.substring(sp2 + 1);
+
+        String x = info[0];
+        String y = info[1];
 
         try {
             byte p1 = Byte.parseByte(step);

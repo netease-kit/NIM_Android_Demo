@@ -12,7 +12,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -320,7 +321,7 @@ public class OnlinePeopleFragment extends TFragment {
                 if (success) {
                     showLongClickMenu(result);
                 } else {
-                    Toast.makeText(getActivity(), R.string.chatroom_fetch_member_failed, Toast.LENGTH_SHORT).show();
+                    ToastHelper.showToast(getActivity(), R.string.chatroom_fetch_member_failed);
                 }
             }
         });
@@ -507,7 +508,7 @@ public class OnlinePeopleFragment extends TFragment {
         NIMClient.getService(ChatRoomService.class).kickMember(roomId, chatRoomMember.getAccount(), reason).setCallback(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void param) {
-                Toast.makeText(getActivity(), R.string.chatroom_kick_member, Toast.LENGTH_SHORT).show();
+                ToastHelper.showToast(getActivity(), R.string.chatroom_kick_member);
                 ChatRoomMember del = null;
                 for (ChatRoomMember member : items) {
                     if (member.getAccount().equals(chatRoomMember.getAccount())) {
@@ -542,7 +543,7 @@ public class OnlinePeopleFragment extends TFragment {
                 .setCallback(new RequestCallback<ChatRoomMember>() {
                     @Override
                     public void onSuccess(ChatRoomMember param) {
-                        Toast.makeText(getActivity(), R.string.set_success, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), R.string.set_success);
                         refreshList(param, chatRoomMember);
                     }
 
@@ -565,7 +566,7 @@ public class OnlinePeopleFragment extends TFragment {
                 .setCallback(new RequestCallback<ChatRoomMember>() {
                     @Override
                     public void onSuccess(ChatRoomMember param) {
-                        Toast.makeText(getActivity(), R.string.set_success, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), R.string.set_success);
                     }
 
                     @Override
@@ -587,7 +588,7 @@ public class OnlinePeopleFragment extends TFragment {
                 .setCallback(new RequestCallback<ChatRoomMember>() {
                     @Override
                     public void onSuccess(ChatRoomMember param) {
-                        Toast.makeText(getActivity(), R.string.set_success, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), R.string.set_success);
                         refreshList(param, member);
                     }
 
@@ -609,7 +610,7 @@ public class OnlinePeopleFragment extends TFragment {
                 .setCallback(new RequestCallback<ChatRoomMember>() {
                     @Override
                     public void onSuccess(ChatRoomMember param) {
-                        Toast.makeText(getActivity(), R.string.set_success, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), R.string.set_success);
                         refreshList(param, member);
                     }
 
@@ -632,12 +633,12 @@ public class OnlinePeopleFragment extends TFragment {
                 .setCallback(new RequestCallback<Void>() {
                     @Override
                     public void onSuccess(Void param) {
-                        Toast.makeText(getActivity(), "设置临时禁言成功", Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), "设置临时禁言成功");
                     }
 
                     @Override
                     public void onFailed(int code) {
-                        Toast.makeText(getActivity(), "设置临时禁言失败，code:" + code, Toast.LENGTH_SHORT).show();
+                        ToastHelper.showToast(getActivity(), "设置临时禁言失败，code:" + code);
                     }
 
                     @Override
@@ -670,6 +671,7 @@ public class OnlinePeopleFragment extends TFragment {
         compMap.put(MemberType.LIMITED, 3);
         compMap.put(MemberType.GUEST, 4);
         compMap.put(MemberType.ANONYMOUS, 5);
+        compMap.put(MemberType.UNKNOWN, 6);
     }
 
     private static Comparator<ChatRoomMember> comp = new Comparator<ChatRoomMember>() {
@@ -682,7 +684,12 @@ public class OnlinePeopleFragment extends TFragment {
             if (rhs == null) {
                 return -1;
             }
-
+            if (compMap.get(lhs.getMemberType()) == null) {
+                return -1;
+            }
+            if (compMap.get(rhs.getMemberType()) == null) {
+                return -1;
+            }
             return compMap.get(lhs.getMemberType()) - compMap.get(rhs.getMemberType());
         }
     };

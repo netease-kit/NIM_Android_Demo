@@ -78,7 +78,6 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs', 'libs-sdk']
         }
-
     }
 
     lintOptions {
@@ -95,6 +94,8 @@ android {
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
         exclude 'META-INF/NOTICE.txt'
+        doNotStrip '*/mips/*.so'
+        doNotStrip '*/mips64/*.so'
     }
 
     aaptOptions {
@@ -113,11 +114,11 @@ android {
 
 dependencies {
     implementation 'com.android.support:multidex:1.0.2'
-    implementation fileTree(include: '*.jar', dir: 'libs')
+    implementation fileTree(include: '*.jar', dir: 'libs')
 
     implementation project(path: ':uikit')
     implementation project(':jrmfRpWalletlib')
-    implementation project(':avchatkit')
+    implementation project(':avchatkit')
     //debugImplementation project(':plugins:sf')
     implementation 'com.google.firebase:firebase-messaging:11.6.0'
     implementation 'com.google.android.gms:play-services-base:11.6.0'
@@ -135,6 +136,11 @@ dependencies {
     // Java8 support for Lifecycles
     implementation "android.arch.lifecycle:common-java8:1.1.0"
     compile project(path: ':rtskit')
+
+    debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.1'
+    debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.1'
+    releaseImplementation 'com.squareup.leakcanary:leakcanary-android-no-op:1.6.1'
+
 }
 
 

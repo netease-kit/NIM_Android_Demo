@@ -27,6 +27,8 @@ import com.netease.nim.avchatkit.common.permission.annotation.OnMPermissionGrant
 import com.netease.nim.avchatkit.common.permission.annotation.OnMPermissionNeverAskAgain;
 import com.netease.nim.avchatkit.common.recyclerview.decoration.SpacingDecoration;
 import com.netease.nim.avchatkit.common.util.ScreenUtil;
+import com.netease.nim.avchatkit.config.AVChatConfigs;
+import com.netease.nim.avchatkit.config.AVPrivatizationConfig;
 import com.netease.nim.avchatkit.controll.AVChatSoundPlayer;
 import com.netease.nim.avchatkit.teamavchat.TeamAVChatNotification;
 import com.netease.nim.avchatkit.teamavchat.TeamAVChatVoiceMuteDialog;
@@ -47,12 +49,11 @@ import com.netease.nimlib.sdk.avchat.constant.AVChatType;
 import com.netease.nimlib.sdk.avchat.constant.AVChatUserRole;
 import com.netease.nimlib.sdk.avchat.constant.AVChatVideoCropRatio;
 import com.netease.nimlib.sdk.avchat.constant.AVChatVideoScalingType;
-import com.netease.nimlib.sdk.avchat.model.AVChatCameraCapturer;
 import com.netease.nimlib.sdk.avchat.model.AVChatControlEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 import com.netease.nimlib.sdk.avchat.model.AVChatParameters;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturer;
-import com.netease.nimlib.sdk.avchat.model.AVChatVideoCapturerFactory;
+import com.netease.nimlib.sdk.avchat.video.AVChatCameraCapturer;
+import com.netease.nimlib.sdk.avchat.video.AVChatVideoCapturerFactory;
 import com.netease.nrtc.video.render.IVideoRender;
 
 import java.util.ArrayList;
@@ -76,7 +77,7 @@ import static com.netease.nim.avchatkit.teamavchat.module.TeamAVChatItem.TYPE.TY
  * <li>打开视频模块 {@link AVChatManager#enableVideo()}。</li>
  * <li>设置本地预览画布 {@link AVChatManager#setupLocalVideoRender(IVideoRender, boolean, int)} 。</li>
  * <li>设置视频通话可选参数[可以不设置] {@link AVChatManager#setParameter(AVChatParameters.Key, Object)}, {@link AVChatManager#setParameters(AVChatParameters)}。</li>
- * <li>创建并设置本地视频预览源 {@link AVChatVideoCapturerFactory#createCameraCapturer()}, {@link AVChatManager#setupVideoCapturer(AVChatVideoCapturer)}</li>
+ * <li>创建并设置本地视频预览源 {@link AVChatVideoCapturerFactory#createCameraCapturer(boolean )}, {@link AVChatManager#setupVideoCapturer(AVChatVideoCapturer)}</li>
  * <li>打开本地视频预览 {@link AVChatManager#startVideoPreview()}。</li>
  * <li>加入房间 {@link AVChatManager#joinRoom2(String, AVChatType, AVChatCallback)}。</li>
  * <li>开始多人会议或者互动直播，以及各种音视频操作。</li>
@@ -364,11 +365,11 @@ public class TeamAVChatActivity extends UI {
 
     private void startRtc() {
         // rtc init
-        AVChatManager.getInstance().enableRtc();
+        AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(this));
         AVChatManager.getInstance().enableVideo();
         LogUtil.i(TAG, "start rtc done");
 
-        mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer();
+        mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer(true);
         AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
 
         // state observer
@@ -425,6 +426,11 @@ public class TeamAVChatActivity extends UI {
         AVChatManager.getInstance().setParameter(AVChatParameters.KEY_SESSION_MULTI_MODE_USER_ROLE, AVChatUserRole.NORMAL);
         AVChatManager.getInstance().setParameter(AVChatParameters.KEY_AUDIO_REPORT_SPEAKER, true);
         AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FIXED_CROP_RATIO, AVChatVideoCropRatio.CROP_RATIO_1_1);
+
+        AVChatConfigs avChatConfigs = new AVChatConfigs(this);
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_SERVER_AUDIO_RECORD, avChatConfigs.isServerRecordAudio());
+        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_SERVER_VIDEO_RECORD, avChatConfigs.isServerRecordVideo());
+
         AVChatManager.getInstance().joinRoom2(roomId, AVChatType.VIDEO, new AVChatCallback<AVChatData>() {
             @Override
             public void onSuccess(AVChatData data) {
@@ -559,6 +565,7 @@ public class TeamAVChatActivity extends UI {
 
         try {
             AVChatManager.getInstance().stopVideoPreview();
+            AVChatManager.getInstance().disableVideo();
             AVChatManager.getInstance().leaveRoom2(roomId, null);
             AVChatManager.getInstance().disableRtc();
         } catch (Exception e) {

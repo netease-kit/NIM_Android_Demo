@@ -8,7 +8,8 @@ import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Toast;
+
+import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
@@ -135,7 +136,7 @@ public class WatchSnapChatPictureActivity extends UI {
         Bitmap bitmap = BitmapDecoder.decodeSampledForDisplay(path, false);
         bitmap = ImageUtil.rotateBitmapInNeeded(path, bitmap);
         if (bitmap == null) {
-            Toast.makeText(this, R.string.picker_image_error, Toast.LENGTH_LONG).show();
+            ToastHelper.showToast(this, R.string.picker_image_error);
             image.setImageBitmap(ImageUtil.getBitmapFromDrawableRes(getImageResOnFailed()));
         } else {
             image.setImageBitmap(bitmap);
@@ -196,6 +197,6 @@ public class WatchSnapChatPictureActivity extends UI {
     private void onDownloadFailed() {
         loadingLayout.setVisibility(View.GONE);
         image.setImageBitmap(ImageUtil.getBitmapFromDrawableRes(getImageResOnFailed()));
-        Toast.makeText(this, R.string.download_picture_fail, Toast.LENGTH_LONG).show();
+        ToastHelper.showToast(this, R.string.download_picture_fail);
     }
 }

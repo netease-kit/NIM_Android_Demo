@@ -16,7 +16,6 @@ import java.util.ArrayList;
  */
 
 public class ChatRoomSessionHelper {
-    private static ChatRoomSessionCustomization customization;
 
     public static void init() {
         registerViewHolders();
@@ -28,14 +27,10 @@ public class ChatRoomSessionHelper {
     }
 
     private static ChatRoomSessionCustomization getChatRoomSessionCustomization() {
-        if (customization == null) {
-            customization = new ChatRoomSessionCustomization();
-            ArrayList<BaseAction> actions = new ArrayList<>();
-            actions.add(new GuessAction());
-//            actions.add(new ImageAction());
-            customization.actions = actions;
-        }
-
+        ArrayList<BaseAction> actions = new ArrayList<>();
+        actions.add(new GuessAction());
+        ChatRoomSessionCustomization customization = new ChatRoomSessionCustomization();
+        customization.actions = actions;
         return customization;
     }
 }

@@ -12,25 +12,72 @@ import com.netease.nimlib.sdk.StatusBarNotificationConfig;
  * Created by hzxuwen on 2015/4/13.
  */
 public class UserPreferences {
+
     private final static String KEY_DOWNTIME_TOGGLE = "down_time_toggle";
+
     private final static String KEY_SB_NOTIFY_TOGGLE = "sb_notify_toggle";
+
     private final static String KEY_TEAM_ANNOUNCE_CLOSED = "team_announce_closed";
+
     private final static String KEY_STATUS_BAR_NOTIFICATION_CONFIG = "KEY_STATUS_BAR_NOTIFICATION_CONFIG";
 
     // 测试过滤通知
     private final static String KEY_MSG_IGNORE = "KEY_MSG_IGNORE";
+
     // 响铃配置
     private final static String KEY_RING_TOGGLE = "KEY_RING_TOGGLE";
+
+    // 震动配置
+    private final static String KEY_VIBRATE_TOGGLE = "KEY_VIBRATE_TOGGLE";
+
     // 呼吸灯配置
     private final static String KEY_LED_TOGGLE = "KEY_LED_TOGGLE";
+
     // 通知栏标题配置
     private final static String KEY_NOTICE_CONTENT_TOGGLE = "KEY_NOTICE_CONTENT_TOGGLE";
+
+    // 删除好友同时删除备注
+    private final static String KEY_DELETE_FRIEND_AND_DELETE_ALIAS = "KEY_DELETE_FRIEND_AND_DELETE_ALIAS";
 
     // 通知栏样式（展开、折叠）配置
     private final static String KEY_NOTIFICATION_FOLDED_TOGGLE = "KEY_NOTIFICATION_FOLDED";
 
     // 保存在线状态订阅时间
     private final static String KEY_SUBSCRIBE_TIME = "KEY_SUBSCRIBE_TIME";
+
+    /*************************no disturb begin***************************************/
+    public static final String DOWN_TIME_BEGIN = "downTimeBegin";
+
+    public static final String DOWN_TIME_END = "downTimeEnd";
+
+    public static final String DOWN_TIME_TOGGLE = "downTimeToggle";
+
+    public static final String DOWN_TIME_ENABLE_NOTIFICATION = "downTimeEnableNotification";
+
+    public static final String RING = "ring";
+
+    public static final String VIBRATE = "vibrate";
+
+    public static final String NOTIFICATION_SMALL_ICON_ID = "notificationSmallIconId";
+
+    public static final String NOTIFICATION_SOUND = "notificationSound";
+
+    public static final String HIDE_CONTENT = "hideContent";
+
+    public static final String LEDARGB = "ledargb";
+
+    public static final String LEDONMS = "ledonms";
+
+    public static final String LEDOFFMS = "ledoffms";
+
+    public static final String TITLE_ONLY_SHOW_APP_NAME = "titleOnlyShowAppName";
+
+    public static final String NOTIFICATION_FOLDED = "notificationFolded";
+
+    public static final String NOTIFICATION_ENTRANCE = "notificationEntrance";
+
+    public static final String NOTIFICATION_COLOR = "notificationColor";
+    /**************************no disturb end************************************/
 
     public static void setMsgIgnore(boolean enable) {
         saveBoolean(KEY_MSG_IGNORE, enable);
@@ -56,6 +103,14 @@ public class UserPreferences {
         return getBoolean(KEY_RING_TOGGLE, true);
     }
 
+    public static void setVibrateToggle(boolean on) {
+        saveBoolean(KEY_VIBRATE_TOGGLE, on);
+    }
+
+    public static boolean getVibrateToggle() {
+        return getBoolean(KEY_VIBRATE_TOGGLE, true);
+    }
+
     public static void setLedToggle(boolean on) {
         saveBoolean(KEY_LED_TOGGLE, on);
     }
@@ -68,8 +123,17 @@ public class UserPreferences {
         return getBoolean(KEY_NOTICE_CONTENT_TOGGLE, false);
     }
 
+
     public static void setNoticeContentToggle(boolean on) {
         saveBoolean(KEY_NOTICE_CONTENT_TOGGLE, on);
+    }
+
+    public static boolean isDeleteFriendAndDeleteAlias() {
+        return getBoolean(KEY_DELETE_FRIEND_AND_DELETE_ALIAS, false);
+    }
+
+    public static void setDeleteFriendAndDeleteAlias(boolean on) {
+        saveBoolean(KEY_DELETE_FRIEND_AND_DELETE_ALIAS, on);
     }
 
     public static void setDownTimeToggle(boolean on) {
@@ -120,25 +184,34 @@ public class UserPreferences {
             if (jsonObject == null) {
                 return null;
             }
-            config.downTimeBegin = jsonObject.getString("downTimeBegin");
-            config.downTimeEnd = jsonObject.getString("downTimeEnd");
-            config.downTimeToggle = jsonObject.getBoolean("downTimeToggle");
-            config.ring = jsonObject.getBoolean("ring");
-            config.vibrate = jsonObject.getBoolean("vibrate");
-            config.notificationSmallIconId = jsonObject.getIntValue("notificationSmallIconId");
-            config.notificationSound = jsonObject.getString("notificationSound");
-            config.hideContent = jsonObject.getBoolean("hideContent");
-            config.ledARGB = jsonObject.getIntValue("ledargb");
-            config.ledOnMs = jsonObject.getIntValue("ledonms");
-            config.ledOffMs = jsonObject.getIntValue("ledoffms");
-            config.titleOnlyShowAppName = jsonObject.getBoolean("titleOnlyShowAppName");
-            config.notificationFolded = jsonObject.getBoolean("notificationFolded");
-            config.notificationEntrance = (Class<? extends Activity>) Class.forName(jsonObject.getString("notificationEntrance"));
-            config.notificationColor = jsonObject.getInteger("notificationColor");
+            config.downTimeBegin = jsonObject.getString(DOWN_TIME_BEGIN);
+            config.downTimeEnd = jsonObject.getString(DOWN_TIME_END);
+            config.downTimeToggle = jsonObject.getBoolean(DOWN_TIME_TOGGLE);
+
+            Boolean downTimeEnableNotification = jsonObject.getBoolean(DOWN_TIME_ENABLE_NOTIFICATION);
+            config.downTimeEnableNotification = downTimeEnableNotification == null ? true : downTimeEnableNotification;
+            Boolean ring = jsonObject.getBoolean(RING);
+            config.ring = ring == null ? true : ring;
+            Boolean vibrate = jsonObject.getBoolean(VIBRATE);
+            config.vibrate = vibrate == null ? true : vibrate;
+
+            config.notificationSmallIconId = jsonObject.getIntValue(NOTIFICATION_SMALL_ICON_ID);
+            config.notificationSound = jsonObject.getString(NOTIFICATION_SOUND);
+            config.hideContent = jsonObject.getBooleanValue(HIDE_CONTENT);
+            config.ledARGB = jsonObject.getIntValue(LEDARGB);
+            config.ledOnMs = jsonObject.getIntValue(LEDONMS);
+            config.ledOffMs = jsonObject.getIntValue(LEDOFFMS);
+            config.titleOnlyShowAppName = jsonObject.getBooleanValue(TITLE_ONLY_SHOW_APP_NAME);
+
+            Boolean notificationFolded = jsonObject.getBoolean(NOTIFICATION_FOLDED);
+            config.notificationFolded = notificationFolded == null ? true : notificationFolded;
+
+            config.notificationEntrance = (Class<? extends Activity>) Class.forName(
+                    jsonObject.getString(NOTIFICATION_ENTRANCE));
+            config.notificationColor = jsonObject.getInteger(NOTIFICATION_COLOR);
         } catch (Exception e) {
             e.printStackTrace();
         }
-
         return config;
     }
 
@@ -146,21 +219,22 @@ public class UserPreferences {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         JSONObject jsonObject = new JSONObject();
         try {
-            jsonObject.put("downTimeBegin", config.downTimeBegin);
-            jsonObject.put("downTimeEnd", config.downTimeEnd);
-            jsonObject.put("downTimeToggle", config.downTimeToggle);
-            jsonObject.put("ring", config.ring);
-            jsonObject.put("vibrate", config.vibrate);
-            jsonObject.put("notificationSmallIconId", config.notificationSmallIconId);
-            jsonObject.put("notificationSound", config.notificationSound);
-            jsonObject.put("hideContent", config.hideContent);
-            jsonObject.put("ledargb", config.ledARGB);
-            jsonObject.put("ledonms", config.ledOnMs);
-            jsonObject.put("ledoffms", config.ledOffMs);
-            jsonObject.put("titleOnlyShowAppName", config.titleOnlyShowAppName);
-            jsonObject.put("notificationFolded", config.notificationFolded);
-            jsonObject.put("notificationEntrance", config.notificationEntrance.getName());
-            jsonObject.put("notificationColor", config.notificationColor);
+            jsonObject.put(DOWN_TIME_BEGIN, config.downTimeBegin);
+            jsonObject.put(DOWN_TIME_END, config.downTimeEnd);
+            jsonObject.put(DOWN_TIME_TOGGLE, config.downTimeToggle);
+            jsonObject.put(DOWN_TIME_ENABLE_NOTIFICATION, config.downTimeEnableNotification);
+            jsonObject.put(RING, config.ring);
+            jsonObject.put(VIBRATE, config.vibrate);
+            jsonObject.put(NOTIFICATION_SMALL_ICON_ID, config.notificationSmallIconId);
+            jsonObject.put(NOTIFICATION_SOUND, config.notificationSound);
+            jsonObject.put(HIDE_CONTENT, config.hideContent);
+            jsonObject.put(LEDARGB, config.ledARGB);
+            jsonObject.put(LEDONMS, config.ledOnMs);
+            jsonObject.put(LEDOFFMS, config.ledOffMs);
+            jsonObject.put(TITLE_ONLY_SHOW_APP_NAME, config.titleOnlyShowAppName);
+            jsonObject.put(NOTIFICATION_FOLDED, config.notificationFolded);
+            jsonObject.put(NOTIFICATION_ENTRANCE, config.notificationEntrance.getName());
+            jsonObject.put(NOTIFICATION_COLOR, config.notificationColor);
         } catch (Exception e) {
             e.printStackTrace();
         }
