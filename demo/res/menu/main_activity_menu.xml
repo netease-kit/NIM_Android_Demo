@@ -25,6 +25,12 @@
                 android:id="@+id/search_advanced_team"
                 android:title="@string/search_advanced_team"/>
             <item
+                android:id="@+id/view_cloud_session"
+                android:title="@string/view_cloud_session"/>
+            <item
+                android:id="@+id/enter_ysf"
+                android:title="@string/enter_ysf_str"/>
+            <item
                 android:id="@+id/about"
                 android:title="@string/settings"/>
         </menu>

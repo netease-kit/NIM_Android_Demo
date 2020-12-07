@@ -1,10 +1,11 @@
 package com.netease.nim.uikit.common.media.imagepicker.adapter;
 
 import android.app.Activity;
-import android.support.v4.view.PagerAdapter;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.view.ViewGroup;
+import androidx.viewpager.widget.PagerAdapter;
+import com.github.chrisbanes.photoview.PhotoView;
 
 import com.netease.nim.uikit.common.media.imagepicker.ImagePicker;
 import com.netease.nim.uikit.common.media.imagepicker.Utils;
@@ -12,7 +13,6 @@ import com.netease.nim.uikit.common.media.model.GLImage;
 
 import java.util.ArrayList;
 
-import uk.co.senab.photoview.PhotoView;
 
 public abstract class ImagePageAdapter extends PagerAdapter {
 

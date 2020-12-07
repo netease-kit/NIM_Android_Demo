@@ -1,8 +1,8 @@
 package com.netease.nim.uikit.common.activity;
 
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.View;
 
 import com.netease.nim.uikit.R;
@@ -14,7 +14,7 @@ import com.netease.nim.uikit.common.ui.recyclerview.listener.OnItemClickListener
 
 import java.util.List;
 
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+//import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 /**
  * 列表Activity抽象类
@@ -58,7 +58,7 @@ public abstract class ListActivityBase<T> extends UI {
         });
 
         // ios style
-        OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
+//        OverScrollDecoratorHelper.setUpOverScroll(recyclerView, OverScrollDecoratorHelper.ORIENTATION_VERTICAL);
 
         // adapter
         final List<T> data = onLoadData();

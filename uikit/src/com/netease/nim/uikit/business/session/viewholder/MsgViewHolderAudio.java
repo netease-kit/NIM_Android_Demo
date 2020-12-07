@@ -43,12 +43,12 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
     private MessageAudioControl audioControl;
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_audio;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         durationLabel = findViewById(R.id.message_item_audio_duration);
         containerView = findViewById(R.id.message_item_audio_container);
         unreadIndicator = findViewById(R.id.message_item_audio_unread_indicator);
@@ -58,7 +58,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         layoutByDirection();
 
         refreshStatus();
@@ -67,7 +67,7 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
         if (audioControl != null) {
             if (message.getDirect() == MsgDirectionEnum.In && message.getAttachStatus() != AttachStatusEnum.transferred) {
                 if (message.getAttachStatus() == AttachStatusEnum.fail || message.getAttachStatus() == AttachStatusEnum.def) {
@@ -298,11 +298,11 @@ public class MsgViewHolderAudio extends MsgViewHolderBase {
 
     @Override
     protected int leftBackground() {
-        return 0;
+        return R.drawable.nim_message_left_white_bg;
     }
 
     @Override
     protected int rightBackground() {
-        return 0;
+        return R.drawable.nim_message_right_blue_bg;
     }
 }

@@ -1,6 +1,5 @@
 package com.netease.nim.demo.chatroom.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
@@ -14,6 +13,8 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * 聊天室在线用户数据适配器
  * Created by huangjun on 2016/12/29.
@@ -25,26 +26,27 @@ public class ChatRoomOnlinePeopleAdapter extends BaseQuickAdapter<ChatRoomMember
     }
 
     @Override
-    protected void convert(BaseViewHolder holder, ChatRoomMember member, int position, boolean isScrolling) {
+    protected void convert(BaseViewHolder holder, ChatRoomMember member, int position,
+                           boolean isScrolling) {
         // bg selector
-        holder.getConvertView().setBackgroundResource(com.netease.nim.uikit.R.drawable.nim_touch_bg);
-
+        holder.getConvertView().setBackgroundResource(
+                com.netease.nim.uikit.R.drawable.nim_touch_bg);
         // identity image
         ImageView identityImage = holder.getView(R.id.identity_image);
         if (member.getMemberType() == MemberType.CREATOR) {
             identityImage.setVisibility(View.VISIBLE);
-            identityImage.setImageDrawable(holder.getContext().getResources().getDrawable(R.drawable.nim_master_icon));
+            identityImage.setImageDrawable(
+                    holder.getContext().getResources().getDrawable(R.drawable.nim_master_icon));
         } else if (member.getMemberType() == MemberType.ADMIN) {
             identityImage.setVisibility(View.VISIBLE);
-            identityImage.setImageDrawable(holder.getContext().getResources().getDrawable(R.drawable.nim_admin_icon));
+            identityImage.setImageDrawable(
+                    holder.getContext().getResources().getDrawable(R.drawable.nim_admin_icon));
         } else {
             identityImage.setVisibility(View.GONE);
         }
-
         // head image
         ChatRoomImageView userHeadImage = holder.getView(R.id.user_head);
-        userHeadImage.loadAvatarByUrl(member.getAvatar());
-
+        userHeadImage.loadAvatarByUrl(member.getRoomId(), member.getAvatar());
         // user name
         holder.setText(R.id.user_name, TextUtils.isEmpty(member.getNick()) ? "" : member.getNick());
     }

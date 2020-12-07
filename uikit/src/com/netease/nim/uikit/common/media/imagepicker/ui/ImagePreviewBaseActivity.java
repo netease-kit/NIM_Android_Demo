@@ -13,8 +13,8 @@ import com.netease.nim.uikit.common.media.imagepicker.view.ViewPagerFixed;
 import com.netease.nim.uikit.common.media.model.GLImage;
 
 import java.util.ArrayList;
+import com.github.chrisbanes.photoview.PhotoView;
 
-import uk.co.senab.photoview.PhotoView;
 
 public abstract class ImagePreviewBaseActivity extends ImageBaseActivity {
 

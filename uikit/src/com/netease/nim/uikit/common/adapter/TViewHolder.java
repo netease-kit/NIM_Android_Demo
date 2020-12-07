@@ -1,7 +1,7 @@
 package com.netease.nim.uikit.common.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
+import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 

@@ -101,7 +101,7 @@ public class NoDisturbActivity extends UI implements SettingsAdapter.SwitchChang
         initItems();
         noDisturbList = findViewById(R.id.no_disturb_list);
         initFooter();
-        adapter = new SettingsAdapter(this, this, items);
+        adapter = new SettingsAdapter(this, this, null, items);
         noDisturbList.setAdapter(adapter);
         startLayout.setOnClickListener(this);
         endLayout.setOnClickListener(this);

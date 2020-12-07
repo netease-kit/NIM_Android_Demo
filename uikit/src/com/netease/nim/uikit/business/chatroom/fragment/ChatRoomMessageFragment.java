@@ -6,6 +6,7 @@ import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+
 import com.netease.nim.uikit.common.ToastHelper;
 
 import com.netease.nim.uikit.R;
@@ -246,6 +247,11 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
             NimRobotInfo robot = NimUIKit.getRobotInfoProvider().getRobotByAccount(attachment.getFromRobotAccount());
             aitManager.insertAitRobot(robot.getAccount(), robot.getName(), inputPanel.getEditSelectionStart());
         }
+    }
+
+    @Override
+    public void onReplyMessage(IMMessage replyMsg) {
+
     }
 
     @Override

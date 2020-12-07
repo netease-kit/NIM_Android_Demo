@@ -9,4 +9,5 @@ public interface SettingType {
     int TYPE_HEAD = 3;
     int TYPE_SEPERATOR = 4;
     int TYPE_LINE = 5;
+    int TYPE_THREE_CHOOSE_ONE = 6;
 }

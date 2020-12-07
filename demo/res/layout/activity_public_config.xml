@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/color_background">
+
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/app_bar_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:theme="@style/AppTheme.AppBarOverlay"
+            app:elevation="0dp"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.appcompat.widget.Toolbar
+                android:id="@+id/toolbar"
+                android:layout_width="match_parent"
+                android:layout_height="?attr/actionBarSize"
+                android:background="?attr/colorPrimary"
+                app:titleTextAppearance="@style/Toolbar.TitleText" />
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <TableLayout
+            android:id="@+id/tl_setting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:orientation="horizontal"
+            app:layout_constraintTop_toBottomOf="@id/app_bar_layout">
+            <TableRow>
+                <RadioGroup
+                    android:id="@+id/rg_hand_shake"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp">
+                    <TextView
+                        style="@style/ActionMenuTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hand_shake_type"/>
+                    <RadioButton
+                        android:id="@+id/rb_hand_shake_type_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hand_shake_type_1"/>
+                    <RadioButton
+                        android:id="@+id/rb_hand_shake_type_5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/hand_shake_type_5"/>
+
+                </RadioGroup>
+            </TableRow>
+
+            <TableRow>
+
+                <RadioGroup
+                    android:id="@+id/rg_asymmetric"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkedButton="@id/rb_asymmetric_rsa">
+
+                    <TextView
+                        style="@style/ActionMenuTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asymmetric" />
+
+                    <RadioButton
+                        android:id="@+id/rb_asymmetric_rsa"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asymmetric_rsa" />
+
+                    <RadioButton
+                        android:id="@+id/rb_asymmetric_sm2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asymmetric_sm2" />
+
+                    <RadioButton
+                        android:id="@+id/rb_asymmetric_rsa_oaep_1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asymmetric_rsa_oaep_1" />
+
+                    <RadioButton
+                        android:id="@+id/rb_asymmetric_rsa_oaep_256"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/asymmetric_rsa_oaep_256" />
+                </RadioGroup>
+
+                <RadioGroup
+                    android:id="@+id/rg_symmetry"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:checkedButton="@id/rb_symmetry_rc4">
+
+                    <TextView
+                        style="@style/ActionMenuTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/symmetry" />
+
+                    <RadioButton
+                        android:id="@+id/rb_symmetry_rc4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/symmetry_rc4" />
+
+                    <RadioButton
+                        android:id="@+id/rb_symmetry_aes"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/symmetry_aes" />
+
+                    <RadioButton
+                        android:id="@+id/rb_symmetry_sm4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/symmetry_sm4" />
+                </RadioGroup>
+            </TableRow>
+
+            <TableRow>
+
+                <RadioGroup
+                    android:id="@+id/rg_ipv"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="5dp"
+                    android:checkedButton="@id/rb_ipv4">
+
+                    <TextView
+                        style="@style/ActionMenuTheme"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ip_version" />
+
+                    <RadioButton
+                        android:id="@+id/rb_ipv4"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ip_version_4" />
+
+                    <RadioButton
+                        android:id="@+id/rb_ipv6"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ip_version_6" />
+
+                    <RadioButton
+                        android:id="@+id/rb_ipv_auto"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/ip_version_auto" />
+                </RadioGroup>
+            </TableRow>
+        </TableLayout>
+
+        <Button
+            android:id="@+id/btn_ok"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:text="@string/ok"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tl_setting" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

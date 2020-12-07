@@ -4,6 +4,11 @@ import android.app.Activity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.github.chrisbanes.photoview.OnPhotoTapListener;
+import com.github.chrisbanes.photoview.PhotoView;
+import com.github.chrisbanes.photoview.PhotoViewAttacher;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.media.imagepicker.ImagePicker;
@@ -12,8 +17,6 @@ import com.netease.nim.uikit.common.media.model.GLImage;
 
 import java.util.ArrayList;
 
-import uk.co.senab.photoview.PhotoView;
-import uk.co.senab.photoview.PhotoViewAttacher;
 
 /**
  */
@@ -45,9 +48,9 @@ public class LocalImagePageAdapter extends ImagePageAdapter {
                     }
                 });
 
-        photoView.setOnPhotoTapListener(new PhotoViewAttacher.OnPhotoTapListener() {
+        photoView.setOnPhotoTapListener(new OnPhotoTapListener() {
             @Override
-            public void onPhotoTap(View view, float x, float y) {
+            public void onPhotoTap(ImageView view, float x, float y) {
                 if (listener != null) {
                     listener.OnPhotoTapListener(view, x, y);
                 }

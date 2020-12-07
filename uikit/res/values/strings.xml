@@ -18,6 +18,10 @@
     <string name="menu">菜单</string>
     <string name="now_allow_space">不能含有空格</string>
     <string name="readed">已读</string>
+    <string name="picture">图片</string>
+    <string name="succeed">成功</string>
+    <string name="fail">失败</string>
+    <string name="error">错误</string>
 
     <!-- session -->
     <string name="input_panel_photo">图 片</string>
@@ -28,12 +32,22 @@
     <string name="repeat_download_message">重新下载?</string>
     <string name="repeat_send_has_blank">重 发</string>
     <string name="repeat_send_message">重发消息?</string>
+    <string name="reply_has_blank">回 复</string>
+    <string name="reply_with_message">回复 %s: %s</string>
+    <string name="reply_with_amount">%s 条回复</string>
     <string name="copy_has_blank">复 制</string>
     <string name="delete_has_blank">删 除</string>
     <string name="voice_to_text">转文字</string>
+    <string name="forward">转发</string>
     <string name="forward_to_person">转发到个人</string>
     <string name="forward_to_team">转发到群组</string>
     <string name="withdrawn_msg">撤 回</string>
+    <string name="withdrawn_msg_count_notify">撤回(通知计入未读数)</string>
+    <string name="withdrawn_msg_not_count_notify">撤回(通知不计入未读数)</string>
+    <string name="multiple_selection">多 选</string>
+    <string name="delete_msg_self">单向删除消息</string>
+    <string name="delete_msg_self_success">单向删除成功</string>
+    <string name="delete_msg_self_failed">单向删除失败</string>
     <string name="save">保存</string>
     <string name="main_msg_list_delete_chatting">删除该聊天</string>
     <string name="main_msg_list_sticky_on_top">置顶该聊天</string>
@@ -49,11 +63,14 @@
     <string name="normal_team_invalid_tip">您已退出该讨论组</string>
     <string name="team_send_message_not_allow">您已不在该群，不能发送消息</string>
     <string name="send">发送</string>
+    <string name="send_with_blank">发 送</string>
     <string name="unsupport_title">无法显示该内容</string>
     <string name="unsupport_desc">客户端版本不支持该内容</string>
     <string name="revoke_failed">发送时间超过2分钟的消息，不能被撤回</string>
     <string name="pic_and_video">图片和视频</string>
     <string name="black_list_send_tip">消息已发送，但对方拒收</string>
+    <string name="confirm_forwarded_to">确认转发给</string>
+    <string name="confirm_forwarded">确认转发</string>
 
     <!-- 语音 -->
     <string name="record_audio">按住 说话</string>
@@ -65,6 +82,9 @@
     <string name="timer_default">00:00</string>
     <string name="recording_cancel_tip">松开手指，取消发送</string>
     <string name="recording_max_time">录音达到最大时间，是否发送？</string>
+    <string name="play_ready">准备播放</string>
+    <string name="play_complete">播放完成</string>
+    <string name="playing">播放中</string>
 
     <!-- 拍照视频 -->
     <string name="gallery_invalid">你的手机没有图库程序</string>
@@ -74,6 +94,8 @@
     <string name="download_video_fail">视频下载失败,请重试</string>
     <string name="look_video_fail">无法播放该视频</string>
     <string name="look_video_fail_try_again">暂时无法播放视频，请重试</string>
+    <string name="surface_has_not_been_created">Surface尚未创建完成</string>
+    <string name="surface_created">Surface创建完成</string>
     <string name="video_play">视频播放</string>
     <string name="video_record">视频录制</string>
     <string name="video_record_symbol">REC</string>
@@ -216,6 +238,7 @@
     <!-- 消息类型 -->
     <string name="msg_type_image">图片</string>
     <string name="msg_type_audio">语音</string>
+    <string name="msg_type_multi_retweet">[聊天记录]</string>
 
     <!-- 查看大图 -->
     <string name="download_picture_fail">图片下载失败</string>
@@ -252,5 +275,10 @@
     <string name="video_network_not_good">网络不给力，稍后重试</string>
     <string name="permission_request">需要语音和摄像头权限</string>
     <string name="sure">确定</string>
+    <string name="super_team_impl_by_self">超大群开发者按需实现</string>
+    <string name="delete_chat_only_server">删除该聊天（仅服务器）</string>
+    <string name="message_history">聊天记录</string>
+    <string name="load_more">加载更多</string>
+    <string name="no_more_session">没有更多会话了</string>
 
 </resources>

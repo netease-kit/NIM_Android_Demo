@@ -9,10 +9,10 @@ import android.net.NetworkInfo;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
-import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.model.contact.ContactChangedObserver;
+import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.common.util.sys.NetworkUtil;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
@@ -149,7 +149,6 @@ public class OnlineStateEventManager {
 
                 // 订阅在线状态，包括好友以及最近联系人
                 OnlineStateEventSubscribe.initSubscribes();
-
             }
         }, true);
     }

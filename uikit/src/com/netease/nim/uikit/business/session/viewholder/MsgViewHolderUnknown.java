@@ -14,7 +14,7 @@ public class MsgViewHolderUnknown extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_unknown;
     }
 
@@ -27,10 +27,10 @@ public class MsgViewHolderUnknown extends MsgViewHolderBase {
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
     }
 }

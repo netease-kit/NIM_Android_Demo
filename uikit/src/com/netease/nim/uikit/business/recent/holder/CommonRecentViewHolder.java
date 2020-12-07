@@ -27,7 +27,8 @@ public class CommonRecentViewHolder extends RecentViewHolder {
     }
 
     String descOfMsg(RecentContact recent) {
-        if (recent.getMsgType() == MsgTypeEnum.text) {
+        if (recent.getMsgType() == MsgTypeEnum.text
+            || recent.getMsgType() == MsgTypeEnum.nrtc_netcall) {
             return recent.getContent();
         } else if (recent.getMsgType() == MsgTypeEnum.tip) {
             String digest = null;
@@ -51,6 +52,8 @@ public class CommonRecentViewHolder extends RecentViewHolder {
             }
 
             return digest;
+        } else if (recent.getSessionType() == SessionTypeEnum.Ysf) {
+            return recent.getContent();
         }
 
         return "[未知]";

@@ -36,7 +36,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compileOnly("com.android.support:support-v4:${V4_SUPPORT_VERSION}")
+    api fileTree(dir: 'libs', include: ['*.jar'])
+    compileOnly("androidx.legacy:legacy-support-v4:${LEGACY_X_VERSION}")
 }
 

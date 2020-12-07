@@ -23,12 +23,12 @@
         android:layout_alignParentBottom="true"
         android:background="@color/black_opacity_80">
 
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/choose_list"
             android:layout_width="match_parent"
             android:layout_height="77dp"
             android:paddingTop="@dimen/dp_size_10">
-        </android.support.v7.widget.RecyclerView>
+        </androidx.recyclerview.widget.RecyclerView>
 
         <com.netease.nim.uikit.common.media.imagepicker.view.SuperCheckBox
             android:id="@+id/cb_origin"

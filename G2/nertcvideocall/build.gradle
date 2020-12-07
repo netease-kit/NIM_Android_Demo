@@ -1,0 +1,44 @@
+apply plugin: 'com.android.library'
+
+android {
+    compileSdkVersion rootProject.ext.compileSdkVersion
+    buildToolsVersion rootProject.ext.buildToolsVersion
+
+    defaultConfig {
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+
+        consumerProguardFiles "consumer-rules.pro"
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+        }
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+}
+
+dependencies {
+//    api fileTree(dir: "libs", include: ["*.jar"])
+    api rootProject.ext.nertcSdk
+    api 'com.netease.yunxin:report:2.0.3'
+
+    compileOnly fileTree(dir: 'libs-push', include: ['*.jar', '*.aar'])
+
+    implementation 'androidx.appcompat:appcompat:1.1.0'
+    implementation 'androidx.recyclerview:recyclerview:1.1.0'
+
+    api project(':G2:baselib')
+
+    compileOnly 'com.huawei.hms:push:4.0.4.301'
+    compileOnly 'com.meizu.flyme.internet:push-internal:3.9.7'
+    compileOnly 'com.google.android.gms:play-services-base:17.1.0'
+    compileOnly 'com.google.firebase:firebase-messaging:20.1.0'
+}

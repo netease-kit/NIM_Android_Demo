@@ -1,0 +1,24 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.netease.yunxin.nertc.ui">
+
+    <application>
+        <activity
+            android:name=".NERTCVideoCallActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"></activity>
+
+        <activity
+            android:name=".NERTCAudioCallActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"
+            android:screenOrientation="portrait"
+            android:launchMode="singleTask"></activity>
+
+        <activity
+            android:name=".team.TeamG2Activity"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait"
+            android:theme="@style/FullScreenTheme"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+    </application>
+</manifest>

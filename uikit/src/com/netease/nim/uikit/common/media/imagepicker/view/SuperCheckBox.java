@@ -1,7 +1,7 @@
 package com.netease.nim.uikit.common.media.imagepicker.view;
 
 import android.content.Context;
-import android.support.v7.widget.AppCompatCheckBox;
+import androidx.appcompat.widget.AppCompatCheckBox;
 import android.util.AttributeSet;
 import android.view.SoundEffectConstants;
 

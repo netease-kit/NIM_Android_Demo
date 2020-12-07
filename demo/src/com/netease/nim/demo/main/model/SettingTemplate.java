@@ -11,6 +11,7 @@ public class SettingTemplate {
     private String detail; // right detail
     private boolean visible;
     private boolean checked;
+    private int checkedId; // type==TYPE_THREE_CHOOSE_ONE; 默认被选中项的ID
 
     public SettingTemplate(int id, String title) {
         this(id, title, 0);
@@ -32,6 +33,12 @@ public class SettingTemplate {
     public SettingTemplate(int id, String title, int type, boolean checked) {
         this(id, title, type, 0);
         this.checked = checked;
+    }
+
+
+    public SettingTemplate(int id, String title, int type, Void icon, int checkedId) {
+        this(id, title, type, 0);
+        this.checkedId = checkedId;
     }
 
     public SettingTemplate(int id, String title, int type, int icon) {
@@ -84,5 +91,13 @@ public class SettingTemplate {
 
     public void setChecked(boolean checked) {
         this.checked = checked;
+    }
+
+    public int getCheckedId() {
+        return this.checkedId;
+    }
+
+    public void setCheckedId(int checkedId) {
+        this.checkedId = checkedId;
     }
 }

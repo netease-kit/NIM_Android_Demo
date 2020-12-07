@@ -58,39 +58,49 @@ public class TeamNotificationHelper {
         String text;
         switch (attachment.getType()) {
             case InviteMember:
+            case SUPER_TEAM_INVITE:
                 text = buildInviteMemberNotification(((MemberChangeAttachment) attachment), fromAccount);
                 break;
             case KickMember:
+            case SUPER_TEAM_KICK:
                 text = buildKickMemberNotification(((MemberChangeAttachment) attachment));
                 break;
             case LeaveTeam:
+            case SUPER_TEAM_LEAVE:
                 text = buildLeaveTeamNotification(fromAccount);
                 break;
             case DismissTeam:
+            case SUPER_TEAM_DISMISS:
                 text = buildDismissTeamNotification(fromAccount);
                 break;
             case UpdateTeam:
+            case SUPER_TEAM_UPDATE_T_INFO:
                 text = buildUpdateTeamNotification(tid, fromAccount, (UpdateTeamAttachment) attachment);
                 break;
             case PassTeamApply:
+            case SUPER_TEAM_APPLY_PASS:
                 text = buildManagerPassTeamApplyNotification((MemberChangeAttachment) attachment);
                 break;
             case TransferOwner:
+            case SUPER_TEAM_CHANGE_OWNER:
                 text = buildTransferOwnerNotification(fromAccount, (MemberChangeAttachment) attachment);
                 break;
             case AddTeamManager:
+            case SUPER_TEAM_ADD_MANAGER:
                 text = buildAddTeamManagerNotification((MemberChangeAttachment) attachment);
                 break;
             case RemoveTeamManager:
+            case SUPER_TEAM_REMOVE_MANAGER:
                 text = buildRemoveTeamManagerNotification((MemberChangeAttachment) attachment);
                 break;
             case AcceptInvite:
+            case SUPER_TEAM_INVITE_ACCEPT:
                 text = buildAcceptInviteNotification(fromAccount, (MemberChangeAttachment) attachment);
                 break;
             case MuteTeamMember:
+            case SUPER_TEAM_MUTE_TLIST:
                 text = buildMuteTeamNotification((MuteMemberAttachment) attachment);
                 break;
-                // todo super team
             default:
                 text = getTeamMemberDisplayName(fromAccount) + ": unknown message";
                 break;

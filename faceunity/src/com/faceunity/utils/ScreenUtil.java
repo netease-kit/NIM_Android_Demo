@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.DisplayMetrics;
 
 public class ScreenUtil {
+
     private static float density;
+
     private static float scaleDensity;
 
     public static int dip2px(float dipValue) {

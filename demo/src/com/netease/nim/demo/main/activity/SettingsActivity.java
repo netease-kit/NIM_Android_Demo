@@ -2,14 +2,11 @@ package com.netease.nim.demo.main.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
 import android.widget.ListView;
 
-import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.UserPreferences;
@@ -25,14 +22,13 @@ import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.NotificationFoldStyle;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.AuthService;
-import com.netease.nimlib.sdk.avchat.AVChatNetDetectCallback;
-import com.netease.nimlib.sdk.avchat.AVChatNetDetector;
 import com.netease.nimlib.sdk.lucene.LuceneService;
 import com.netease.nimlib.sdk.misc.DirCacheFileType;
 import com.netease.nimlib.sdk.misc.MiscService;
@@ -47,27 +43,41 @@ import java.util.List;
 /**
  * Created by hzxuwen on 2015/6/26.
  */
-public class SettingsActivity extends UI implements SettingsAdapter.SwitchChangeListener {
+public class SettingsActivity extends UI implements SettingsAdapter.SwitchChangeListener, SettingsAdapter.CheckChangeListener {
+
     private static final int TAG_HEAD = 1;
+
     private static final int TAG_NOTICE = 2;
+
     private static final int TAG_NO_DISTURBE = 3;
+
     private static final int TAG_CLEAR = 4;
+
     private static final int TAG_CUSTOM_NOTIFY = 5;
+
     private static final int TAG_ABOUT = 6;
+
     private static final int TAG_SPEAKER = 7;
 
     private static final int TAG_NRTC_SETTINGS = 8;
+
     private static final int TAG_NRTC_NET_DETECT = 9;
 
     private static final int TAG_MSG_IGNORE = 10;
+
     private static final int TAG_RING = 11;
+
     private static final int TAG_LED = 12;
+
     private static final int TAG_NOTICE_CONTENT = 13; // 通知栏提醒配置
+
     private static final int TAG_CLEAR_INDEX = 18; // 清空全文检索缓存
+
     private static final int TAG_MULTIPORT_PUSH = 19; // 桌面端登录，是否推送
+
     private static final int TAG_JS_BRIDGE = 20; // js bridge
 
-    private static final int TAG_NOTIFICATION_STYLE = 21; // 通知栏展开、折叠
+    private static final int TAG_NOTIFICATION_FOLD_STYLE = 21; // 通知栏展开方式: 完全展开、全部折叠、按会话折叠
 
     private static final int TAG_JRMFWAllET = 22; // 我的钱包
 
@@ -78,33 +88,40 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     private static final int TAG_VIBRATE = 25; // 推送消息不展示详情
 
     private static final int TAG_PRIVATE_CONFIG = 26; // 私有化开关
+
     private static final int TAG_MSG_MIGRATION = 27; // 本地消息迁移
 
     private static final int TAG_DELETE_FRIEND_ALIAS = 28; // 本地消息迁移
 
+    private static final int AVCHAT_QUERY = 29; // 音视频通话记录查询
 
     ListView listView;
+
     SettingsAdapter adapter;
+
     private List<SettingTemplate> items = new ArrayList<>();
+
     private String noDisturbTime;
+
     private SettingTemplate disturbItem;
+
     private SettingTemplate clearIndexItem;
+
     private SettingTemplate clearSDKDirCacheItem;
+
     private SettingTemplate notificationItem;
+
     private SettingTemplate pushShowNoDetailItem;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.settings_activity);
-
         ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.settings;
         setToolBar(R.id.toolbar, options);
-
         initData();
         initUI();
-
         registerObservers(true);
     }
 
@@ -121,22 +138,20 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     }
 
     private void registerObservers(boolean register) {
-        NIMClient.getService(SettingsServiceObserver.class).observeMultiportPushConfigNotify(pushConfigObserver, register);
+        NIMClient.getService(SettingsServiceObserver.class).observeMultiportPushConfigNotify(
+                pushConfigObserver, register);
     }
 
-    Observer<Boolean> pushConfigObserver = new Observer<Boolean>() {
-        @Override
-        public void onEvent(Boolean aBoolean) {
-            ToastHelper.showToast(SettingsActivity.this, "收到multiport push config：" + aBoolean);
-        }
-    };
+    Observer<Boolean> pushConfigObserver = (Observer<Boolean>) aBoolean -> ToastHelper.showToast(
+            SettingsActivity.this, "收到multiport push config：" + aBoolean);
 
     private void initData() {
-        if (UserPreferences.getStatusConfig() == null || !UserPreferences.getStatusConfig().downTimeToggle) {
+        if (UserPreferences.getStatusConfig() == null ||
+            !UserPreferences.getStatusConfig().downTimeToggle) {
             noDisturbTime = getString(R.string.setting_close);
         } else {
             noDisturbTime = String.format("%s到%s", UserPreferences.getStatusConfig().downTimeBegin,
-                    UserPreferences.getStatusConfig().downTimeEnd);
+                                          UserPreferences.getStatusConfig().downTimeEnd);
         }
         getSDKDirCacheSize();
     }
@@ -146,109 +161,123 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         listView = findViewById(R.id.settings_listview);
         View footer = LayoutInflater.from(this).inflate(R.layout.settings_logout_footer, null);
         listView.addFooterView(footer);
-
         initAdapter();
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                SettingTemplate item = items.get(position);
-                onListItemClick(item);
-            }
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            SettingTemplate item = items.get(position);
+            onListItemClick(item);
         });
         View logoutBtn = footer.findViewById(R.id.settings_button_logout);
-        logoutBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logout();
-            }
-        });
+        logoutBtn.setOnClickListener(v -> logout());
     }
 
     private void initAdapter() {
-        adapter = new SettingsAdapter(this, this, items);
+        adapter = new SettingsAdapter(this, this, this, items);
         listView.setAdapter(adapter);
     }
 
     private void initItems() {
         items.clear();
-
         items.add(new SettingTemplate(TAG_HEAD, SettingType.TYPE_HEAD));
-        notificationItem = new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice), SettingType.TYPE_TOGGLE,
-                UserPreferences.getNotificationToggle());
+        notificationItem = new SettingTemplate(TAG_NOTICE, getString(R.string.msg_notice),
+                                               SettingType.TYPE_TOGGLE,
+                                               UserPreferences.getNotificationToggle());
         items.add(notificationItem);
         items.add(SettingTemplate.addLine());
-        pushShowNoDetailItem = new SettingTemplate(TAG_PUSH_SHOW_NO_DETAIL, getString(R.string.push_no_detail), SettingType.TYPE_TOGGLE, getIsShowPushNoDetail());
+        pushShowNoDetailItem = new SettingTemplate(TAG_PUSH_SHOW_NO_DETAIL,
+                                                   getString(R.string.push_no_detail),
+                                                   SettingType.TYPE_TOGGLE,
+                                                   getIsShowPushNoDetail());
         items.add(pushShowNoDetailItem);
+
+        NotificationFoldStyle foldStyle = getNotificationFoldStyle();
+        int selectedId;
+        switch (foldStyle) {
+            case EXPAND:
+                selectedId = R.id.rb_expand;
+                break;
+            case CONTACT:
+                selectedId = R.id.rb_contact;
+                break;
+            case ALL:
+            default:
+                selectedId = R.id.rb_fold;
+                break;
+        }
+        items.add(new SettingTemplate(TAG_NOTIFICATION_FOLD_STYLE, getString(R.string.notification_fold_style), SettingType.TYPE_THREE_CHOOSE_ONE,null, selectedId));
         items.add(new SettingTemplate(TAG_RING, getString(R.string.ring), SettingType.TYPE_TOGGLE,
-                UserPreferences.getRingToggle()));
-
-        items.add(new SettingTemplate(TAG_VIBRATE, getString(R.string.vibrate), SettingType.TYPE_TOGGLE,
-                UserPreferences.getVibrateToggle()));
-
+                                      UserPreferences.getRingToggle()));
+        items.add(new SettingTemplate(TAG_VIBRATE, getString(R.string.vibrate),
+                                      SettingType.TYPE_TOGGLE, UserPreferences.getVibrateToggle()));
         items.add(new SettingTemplate(TAG_LED, getString(R.string.led), SettingType.TYPE_TOGGLE,
-                UserPreferences.getLedToggle()));
+                                      UserPreferences.getLedToggle()));
         items.add(SettingTemplate.addLine());
-        items.add(new SettingTemplate(TAG_NOTICE_CONTENT, getString(R.string.notice_content), SettingType.TYPE_TOGGLE,
-                UserPreferences.getNoticeContentToggle()));
+        items.add(new SettingTemplate(TAG_NOTICE_CONTENT, getString(R.string.notice_content),
+                                      SettingType.TYPE_TOGGLE,
+                                      UserPreferences.getNoticeContentToggle()));
         items.add(SettingTemplate.addLine());
-        disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb), noDisturbTime);
+        disturbItem = new SettingTemplate(TAG_NO_DISTURBE, getString(R.string.no_disturb),
+                                          noDisturbTime);
         items.add(disturbItem);
         items.add(SettingTemplate.addLine());
-        items.add(new SettingTemplate(TAG_MULTIPORT_PUSH, getString(R.string.multiport_push), SettingType.TYPE_TOGGLE,
-                !NIMClient.getService(SettingsService.class).isMultiportPushOpen()));
-
+        items.add(new SettingTemplate(TAG_MULTIPORT_PUSH, getString(R.string.multiport_push),
+                                      SettingType.TYPE_TOGGLE,
+                                      !NIMClient.getService(SettingsService.class)
+                                                .isMultiportPushOpen()));
+        items.add(SettingTemplate.makeSeperator());
+        items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker),
+                                      SettingType.TYPE_TOGGLE, NimUIKit.isEarPhoneModeEnable()));
         items.add(SettingTemplate.makeSeperator());
 
-        items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker), SettingType.TYPE_TOGGLE,
-                NimUIKit.isEarPhoneModeEnable()));
-
+        items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知", SettingType.TYPE_TOGGLE,
+                                      UserPreferences.getMsgIgnore()));
         items.add(SettingTemplate.makeSeperator());
-
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            items.add(new SettingTemplate(TAG_NRTC_SETTINGS, getString(R.string.nrtc_settings)));
-            items.add(SettingTemplate.addLine());
-            items.add(new SettingTemplate(TAG_NRTC_NET_DETECT, "音视频通话网络探测"));
-            items.add(SettingTemplate.makeSeperator());
-        }
-
-        items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知",
-                SettingType.TYPE_TOGGLE, UserPreferences.getMsgIgnore()));
-
-        items.add(SettingTemplate.makeSeperator());
-
         items.add(new SettingTemplate(TAG_CLEAR, getString(R.string.about_clear_msg_history)));
         items.add(SettingTemplate.addLine());
-        clearIndexItem = new SettingTemplate(TAG_CLEAR_INDEX, getString(R.string.clear_index), getIndexCacheSize() + " M");
+        clearIndexItem = new SettingTemplate(TAG_CLEAR_INDEX, getString(R.string.clear_index),
+                                             getIndexCacheSize() + " M");
         items.add(clearIndexItem);
         items.add(SettingTemplate.addLine());
-        clearSDKDirCacheItem = new SettingTemplate(TAG_CLEAR_SDK_CACHE, getString(R.string.clear_sdk_cache), 0 + " M");
+        clearSDKDirCacheItem = new SettingTemplate(TAG_CLEAR_SDK_CACHE,
+                                                   getString(R.string.clear_sdk_cache), 0 + " M");
         items.add(clearSDKDirCacheItem);
-
         items.add(SettingTemplate.makeSeperator());
-
         items.add(new SettingTemplate(TAG_CUSTOM_NOTIFY, getString(R.string.custom_notification)));
         items.add(SettingTemplate.addLine());
         items.add(new SettingTemplate(TAG_JS_BRIDGE, getString(R.string.js_bridge_demonstration)));
         items.add(SettingTemplate.makeSeperator());
-
         if (NIMRedPacketClient.isEnable()) {
             items.add(new SettingTemplate(TAG_JRMFWAllET, "我的钱包"));
             items.add(SettingTemplate.makeSeperator());
         }
-        items.add(new SettingTemplate(TAG_PRIVATE_CONFIG, getString(R.string.setting_private_config)));
-
+        items.add(new SettingTemplate(TAG_PRIVATE_CONFIG,
+                                      getString(R.string.setting_private_config)));
         items.add(SettingTemplate.makeSeperator());
         items.add(new SettingTemplate(TAG_MSG_MIGRATION, getString(R.string.local_db_migration)));
         items.add(SettingTemplate.makeSeperator());
         items.add(new SettingTemplate(TAG_ABOUT, getString(R.string.setting_about)));
         items.add(SettingTemplate.makeSeperator());
-        items.add(new SettingTemplate(TAG_DELETE_FRIEND_ALIAS, getString(R.string.delete_friend_is_delete_alias), SettingType.TYPE_TOGGLE,
+        items.add(new SettingTemplate(TAG_DELETE_FRIEND_ALIAS,
+                                      getString(R.string.delete_friend_is_delete_alias),
+                                      SettingType.TYPE_TOGGLE,
                                       UserPreferences.isDeleteFriendAndDeleteAlias()));
     }
 
-    private void onListItemClick(SettingTemplate item) {
-        if (item == null) return;
+    private NotificationFoldStyle getNotificationFoldStyle() {
 
+        StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
+        NotificationFoldStyle foldStyle = config.notificationFoldStyle;
+        if (foldStyle == null) {
+            foldStyle = NotificationFoldStyle.ALL;
+            config.notificationFoldStyle = NotificationFoldStyle.ALL;
+            UserPreferences.setStatusConfig(config);
+        }
+        return foldStyle;
+    }
+
+    private void onListItemClick(SettingTemplate item) {
+        if (item == null) {
+            return;
+        }
         switch (item.getId()) {
             case TAG_HEAD:
                 UserProfileSettingActivity.start(this, DemoCache.getAccount());
@@ -272,23 +301,15 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_CLEAR_SDK_CACHE:
                 clearSDKDirCache();
                 break;
-            case TAG_NRTC_SETTINGS:
-                AVChatKit.startAVChatSettings(SettingsActivity.this);
-                break;
-            case TAG_NRTC_NET_DETECT:
-                netDetectForNrtc();
-                break;
             case TAG_JS_BRIDGE:
                 startActivity(new Intent(SettingsActivity.this, JsBridgeActivity.class));
                 break;
             case TAG_JRMFWAllET:
                 NIMRedPacketClient.startWalletActivity(this);
                 break;
-
             case TAG_PRIVATE_CONFIG:
                 startActivity(new Intent(this, PrivatizationConfigActivity.class));
                 break;
-
             case TAG_MSG_MIGRATION:
                 startActivity(new Intent(this, MsgMigrationActivity.class));
                 break;
@@ -304,13 +325,16 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         types.add(DirCacheFileType.IMAGE);
         types.add(DirCacheFileType.VIDEO);
         types.add(DirCacheFileType.OTHER);
-        NIMClient.getService(MiscService.class).getSizeOfDirCache(types, 0, 0).setCallback(new RequestCallbackWrapper<Long>() {
-            @Override
-            public void onResult(int code, Long result, Throwable exception) {
-                clearSDKDirCacheItem.setDetail(String.format("%.2f M", result / (1024.0f * 1024.0f)));
-                adapter.notifyDataSetChanged();
-            }
-        });
+        NIMClient.getService(MiscService.class).getSizeOfDirCache(types, 0, 0).setCallback(
+                new RequestCallbackWrapper<Long>() {
+
+                    @Override
+                    public void onResult(int code, Long result, Throwable exception) {
+                        clearSDKDirCacheItem.setDetail(
+                                String.format("%.2f M", result / (1024.0f * 1024.0f)));
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
 
     private void clearSDKDirCache() {
@@ -320,65 +344,47 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         types.add(DirCacheFileType.IMAGE);
         types.add(DirCacheFileType.VIDEO);
         types.add(DirCacheFileType.OTHER);
+        NIMClient.getService(MiscService.class).clearDirCache(types, 0, 0).setCallback(
+                new RequestCallbackWrapper<Void>() {
 
-        NIMClient.getService(MiscService.class).clearDirCache(types, 0, 0).setCallback(new RequestCallbackWrapper<Void>() {
-            @Override
-            public void onResult(int code, Void result, Throwable exception) {
-                clearSDKDirCacheItem.setDetail("0.00 M");
-                adapter.notifyDataSetChanged();
-            }
-        });
+                    @Override
+                    public void onResult(int code, Void result, Throwable exception) {
+                        clearSDKDirCacheItem.setDetail("0.00 M");
+                        adapter.notifyDataSetChanged();
+                    }
+                });
     }
-
-    private void netDetectForNrtc() {
-        AVChatNetDetector.startNetDetect(new AVChatNetDetectCallback() {
-            @Override
-            public void onDetectResult(String id,
-                                       int code,
-                                       int loss,
-                                       int rttMax,
-                                       int rttMin,
-                                       int rttAvg,
-                                       int mdev,
-                                       String info) {
-                String msg = code == 200 ?
-                        ("loss:" + loss + ", rtt min/avg/max/mdev = " + rttMin + "/" + rttAvg + "/" + rttMax + "/" + mdev + " ms")
-                        : ("error:" + code);
-                ToastHelper.showToast(SettingsActivity.this, msg);
-            }
-        });
-    }
-
 
     private boolean getIsShowPushNoDetail() {
         StatusBarNotificationConfig localConfig = UserPreferences.getStatusConfig();
-
         // 可能出现服务器和本地不一致，纠正
-        boolean remoteShowNoDetail = NIMClient.getService(MixPushService.class).isPushShowNoDetail();
+        boolean remoteShowNoDetail = NIMClient.getService(MixPushService.class)
+                                              .isPushShowNoDetail();
         if (localConfig.hideContent ^ remoteShowNoDetail) {
             updateShowPushNoDetail(localConfig.hideContent);
         }
-
         return localConfig.hideContent;
     }
 
     private void updateShowPushNoDetail(final boolean showNoDetail) {
-        NIMClient.getService(MixPushService.class).setPushShowNoDetail(showNoDetail).setCallback(new RequestCallbackWrapper<Void>() {
-            @Override
-            public void onResult(int code, Void result, Throwable exception) {
-                if (code == ResponseCode.RES_SUCCESS) {
-                    StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
-                    config.hideContent = showNoDetail;
-                    UserPreferences.setStatusConfig(config);
-                    NIMClient.updateStatusBarNotificationConfig(config);
-                    ToastHelper.showToast(SettingsActivity.this, "设置成功");
-                } else {
-                    pushShowNoDetailItem.setChecked(!showNoDetail);
-                    adapter.notifyDataSetChanged();
-                    ToastHelper.showToast(SettingsActivity.this, "设置失败");
-                }
-            }
-        });
+        NIMClient.getService(MixPushService.class).setPushShowNoDetail(showNoDetail).setCallback(
+                new RequestCallbackWrapper<Void>() {
+
+                    @Override
+                    public void onResult(int code, Void result, Throwable exception) {
+                        if (code == ResponseCode.RES_SUCCESS) {
+                            StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
+                            config.hideContent = showNoDetail;
+                            UserPreferences.setStatusConfig(config);
+                            NIMClient.updateStatusBarNotificationConfig(config);
+                            ToastHelper.showToast(SettingsActivity.this, "设置成功");
+                        } else {
+                            pushShowNoDetailItem.setChecked(!showNoDetail);
+                            adapter.notifyDataSetChanged();
+                            ToastHelper.showToast(SettingsActivity.this, "设置失败");
+                        }
+                    }
+                });
     }
 
     /**
@@ -386,9 +392,45 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
      */
     private void logout() {
         MainActivity.logout(SettingsActivity.this, false);
-
         finish();
         NIMClient.getService(AuthService.class).logout();
+    }
+
+
+    @Override
+    public void onCheckChange(SettingTemplate item, int checkedId) {
+        switch (item.getId()) {
+            case TAG_NOTIFICATION_FOLD_STYLE:
+                updateNotificationFoldStyle(checkedId);
+                break;
+            default:
+                break;
+        }
+    }
+
+    /**
+     * 更新通知栏合并方式
+     *
+     * @param checkedId 选中项的ID
+     */
+    private void updateNotificationFoldStyle(int checkedId) {
+        NotificationFoldStyle foldStyle;
+        switch (checkedId) {
+            case R.id.rb_contact:
+                foldStyle = NotificationFoldStyle.CONTACT;
+                break;
+            case R.id.rb_expand:
+                foldStyle = NotificationFoldStyle.EXPAND;
+                break;
+            default:
+            case R.id.rb_fold:
+                foldStyle = NotificationFoldStyle.ALL;
+                break;
+        }
+        StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
+        config.notificationFoldStyle = foldStyle;
+        UserPreferences.setStatusConfig(config);
+        NIMClient.updateStatusBarNotificationConfig(config);
     }
 
     @Override
@@ -446,14 +488,6 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_MULTIPORT_PUSH:
                 updateMultiportPushConfig(!checkState);
                 break;
-            case TAG_NOTIFICATION_STYLE: {
-                UserPreferences.setNotificationFoldedToggle(checkState);
-                StatusBarNotificationConfig config = UserPreferences.getStatusConfig();
-                config.notificationFolded = checkState;
-                UserPreferences.setStatusConfig(config);
-                NIMClient.updateStatusBarNotificationConfig(config);
-                break;
-            }
             case TAG_PUSH_SHOW_NO_DETAIL:
                 updateShowPushNoDetail(checkState);
                 break;
@@ -474,34 +508,38 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         // 如果接入第三方推送（小米），则同样应该设置开、关推送提醒
         // 如果关闭消息提醒，则第三方推送消息提醒也应该关闭。
         // 如果打开消息提醒，则同时打开第三方推送消息提醒。
-        NIMClient.getService(MixPushService.class).enable(checkState).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                ToastHelper.showToast(SettingsActivity.this, R.string.user_info_update_success);
-                notificationItem.setChecked(checkState);
-                setToggleNotification(checkState);
-            }
+        NIMClient.getService(MixPushService.class).enable(checkState).setCallback(
+                new RequestCallback<Void>() {
 
-            @Override
-            public void onFailed(int code) {
-                notificationItem.setChecked(!checkState);
-                // 这种情况是客户端不支持第三方推送
-                if (code == ResponseCode.RES_UNSUPPORT) {
-                    notificationItem.setChecked(checkState);
-                    setToggleNotification(checkState);
-                } else if (code == ResponseCode.RES_EFREQUENTLY) {
-                    ToastHelper.showToast(SettingsActivity.this, R.string.operation_too_frequent);
-                } else {
-                    ToastHelper.showToast(SettingsActivity.this, R.string.user_info_update_failed);
-                }
-                adapter.notifyDataSetChanged();
-            }
+                    @Override
+                    public void onSuccess(Void param) {
+                        ToastHelper.showToast(SettingsActivity.this,
+                                              R.string.user_info_update_success);
+                        notificationItem.setChecked(checkState);
+                        setToggleNotification(checkState);
+                    }
 
-            @Override
-            public void onException(Throwable exception) {
+                    @Override
+                    public void onFailed(int code) {
+                        notificationItem.setChecked(!checkState);
+                        // 这种情况是客户端不支持第三方推送
+                        if (code == ResponseCode.RES_UNSUPPORT) {
+                            notificationItem.setChecked(checkState);
+                            setToggleNotification(checkState);
+                        } else if (code == ResponseCode.RES_EFREQUENTLY) {
+                            ToastHelper.showToast(SettingsActivity.this,
+                                                  R.string.operation_too_frequent);
+                        } else {
+                            ToastHelper.showToast(SettingsActivity.this,
+                                                  R.string.user_info_update_failed);
+                        }
+                        adapter.notifyDataSetChanged();
+                    }
 
-            }
-        });
+                    @Override
+                    public void onException(Throwable exception) {
+                    }
+                });
     }
 
     private void setToggleNotification(boolean checkState) {
@@ -518,7 +556,8 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     }
 
     private void startNoDisturb() {
-        NoDisturbActivity.startActivityForResult(this, UserPreferences.getStatusConfig(), noDisturbTime, NoDisturbActivity.NO_DISTURB_REQ);
+        NoDisturbActivity.startActivityForResult(this, UserPreferences.getStatusConfig(),
+                                                 noDisturbTime, NoDisturbActivity.NO_DISTURB_REQ);
     }
 
     private String getIndexCacheSize() {
@@ -533,23 +572,24 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
     }
 
     private void updateMultiportPushConfig(final boolean checkState) {
-        NIMClient.getService(SettingsService.class).updateMultiportPushConfig(checkState).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                ToastHelper.showToast(SettingsActivity.this, "设置成功");
-            }
+        NIMClient.getService(SettingsService.class).updateMultiportPushConfig(checkState)
+                 .setCallback(new RequestCallback<Void>() {
 
-            @Override
-            public void onFailed(int code) {
-                ToastHelper.showToast(SettingsActivity.this, "设置失败,code:" + code);
-                adapter.notifyDataSetChanged();
-            }
+                     @Override
+                     public void onSuccess(Void param) {
+                         ToastHelper.showToast(SettingsActivity.this, "设置成功");
+                     }
 
-            @Override
-            public void onException(Throwable exception) {
+                     @Override
+                     public void onFailed(int code) {
+                         ToastHelper.showToast(SettingsActivity.this, "设置失败,code:" + code);
+                         adapter.notifyDataSetChanged();
+                     }
 
-            }
-        });
+                     @Override
+                     public void onException(Throwable exception) {
+                     }
+                 });
     }
 
     @Override

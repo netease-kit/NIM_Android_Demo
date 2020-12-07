@@ -9,11 +9,17 @@ import android.text.TextUtils;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.nos.NosService;
 import com.netease.nimlib.sdk.superteam.SuperTeam;
 import com.netease.nimlib.sdk.team.model.Team;
 import com.netease.nimlib.sdk.uinfo.UserInfoProvider;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 /**
  * 初始化sdk 需要的用户信息提供者，现主要用于内置通知提醒获取昵称和头像
@@ -42,32 +48,50 @@ public class NimUserInfoProvider implements UserInfoProvider {
          */
         Bitmap bm = null;
         int defResId = R.drawable.nim_avatar_default;
-
+        CountDownLatch countDownLatch = new CountDownLatch(1);
+        final String[] originUrl = new String[1];
         if (SessionTypeEnum.P2P == sessionType) {
             UserInfo user = getUserInfo(sessionId);
-            bm = (user != null) ? NimUIKit.getImageLoaderKit().getNotificationBitmapFromCache(user.getAvatar()) : null;
+            originUrl[0] = user != null ? user.getAvatar() : null;
         } else if (SessionTypeEnum.Team == sessionType) {
             Team team = NimUIKit.getTeamProvider().getTeamById(sessionId);
-            bm = (team != null) ? NimUIKit.getImageLoaderKit().getNotificationBitmapFromCache(team.getIcon()) : null;
-            defResId = R.drawable.nim_avatar_group;
-        } else if(SessionTypeEnum.SUPER_TEAM == sessionType){
+            originUrl[0] = team != null ? team.getIcon() : null;
+        } else if (SessionTypeEnum.SUPER_TEAM == sessionType) {
             SuperTeam team = NimUIKit.getSuperTeamProvider().getTeamById(sessionId);
-            bm = (team != null) ? NimUIKit.getImageLoaderKit().getNotificationBitmapFromCache(team.getIcon()) : null;
-            defResId = R.drawable.nim_avatar_group;
+            originUrl[0] = team != null ? team.getIcon() : null;
         }
+        NIMClient.getService(NosService.class).getOriginUrlFromShortUrl(originUrl[0]).setCallback(
+                new RequestCallbackWrapper<String>() {
 
+                    @Override
+                    public void onResult(int code, String result, Throwable exception) {
+                        originUrl[0] = result;
+                        countDownLatch.countDown();
+                    }
+                });
+        try {
+            countDownLatch.await(200, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        if (!TextUtils.isEmpty(originUrl[0])) {
+            bm = NimUIKit.getImageLoaderKit().getNotificationBitmapFromCache(originUrl[0]);
+        }
         if (bm == null) {
+            if (SessionTypeEnum.Team == sessionType || SessionTypeEnum.SUPER_TEAM == sessionType) {
+                defResId = R.drawable.nim_avatar_group;
+            }
             Drawable drawable = context.getResources().getDrawable(defResId);
             if (drawable instanceof BitmapDrawable) {
                 bm = ((BitmapDrawable) drawable).getBitmap();
             }
         }
-
         return bm;
     }
 
     @Override
-    public String getDisplayNameForMessageNotifier(String account, String sessionId, SessionTypeEnum sessionType) {
+    public String getDisplayNameForMessageNotifier(String account, String sessionId,
+                                                   SessionTypeEnum sessionType) {
         String nick = null;
         if (sessionType == SessionTypeEnum.P2P) {
             nick = NimUIKit.getContactProvider().getAlias(account);
@@ -77,11 +101,9 @@ public class NimUserInfoProvider implements UserInfoProvider {
                 nick = TeamHelper.getTeamNick(sessionId, account);
             }
         }
-
         if (TextUtils.isEmpty(nick)) {
             return null; // 返回null，交给sdk处理。如果对方有设置nick，sdk会显示nick
         }
-
         return nick;
     }
 }

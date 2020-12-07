@@ -11,6 +11,7 @@ import com.netease.nim.uikit.api.wrapper.MessageRevokeTip;
 import com.netease.nim.uikit.api.wrapper.NimUserInfoProvider;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderThumbBase;
 import com.netease.nimlib.sdk.NosTokenSceneConfig;
+import com.netease.nimlib.sdk.NotificationFoldStyle;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.ServerAddresses;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
@@ -61,6 +62,12 @@ class NimSDKOptionConfig {
         options.mixPushConfig = buildMixPushConfig();
         //        options.mNosTokenSceneConfig = createNosTokenScene();
         options.loginCustomTag = "登录自定义字段";
+        options.useXLog = false;
+        // 会话置顶是否漫游
+        options.notifyStickTopSession = true;
+        // 设置数据库加密秘钥（替换为自己的秘钥），开启加密；如不需要加密，则去掉
+        options.databaseEncryptKey = "123456";
+
         return options;
     }
 
@@ -124,6 +131,7 @@ class NimSDKOptionConfig {
             // APP默认 StatusBarNotificationConfig 配置修改后，使其生效
             userConfig.notificationEntrance = config.notificationEntrance;
             userConfig.notificationFolded = config.notificationFolded;
+            userConfig.notificationFoldStyle = config.notificationFoldStyle;
             userConfig.notificationColor = config.notificationColor;
         }
         // 持久化生效
@@ -143,6 +151,7 @@ class NimSDKOptionConfig {
         config.notificationSound = "android.resource://com.netease.nim.demo/raw/msg";
         config.notificationFolded = true;
         //        config.notificationFolded = false;
+        config.notificationFoldStyle = NotificationFoldStyle.ALL;
         config.downTimeEnableNotification = true;
         // 呼吸灯配置
         config.ledARGB = Color.GREEN;
@@ -177,12 +186,15 @@ class NimSDKOptionConfig {
         // 第三方推送配置
         MixPushConfig config = new MixPushConfig();
         // 小米推送
+//        config.xmAppId = "2882303761517521532";
+//        config.xmAppKey = "5541752152532";
+//        config.xmCertificateName = "DEMO_MI_PUSH";
         config.xmAppId = "2882303761517502883";
         config.xmAppKey = "5671750254883";
         config.xmCertificateName = "DEMO_MI_PUSH";
 
-
         // 华为推送
+        config.hwAppId = "101420927";
         config.hwCertificateName = "DEMO_HW_PUSH";
 
 

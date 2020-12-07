@@ -97,6 +97,11 @@ public class DisplayMessageActivity extends UI implements ModuleProxy {
     }
 
     @Override
+    public void onReplyMessage(IMMessage replyMsg) {
+
+    }
+
+    @Override
     public boolean isLongClickEnabled() {
         return true;
     }

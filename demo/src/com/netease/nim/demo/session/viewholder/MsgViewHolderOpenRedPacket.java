@@ -15,9 +15,9 @@ import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
-import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 
 
@@ -37,18 +37,18 @@ public class MsgViewHolderOpenRedPacket extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.red_packet_open_item;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         linearLayout = findViewById(R.id.packet_ll);
         packetMessageText = findViewById(R.id.packet_message);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         attachment = (RedPacketOpenedAttachment) message.getAttachment();
         if (attachment == null || !validAttachment(attachment) || !belongToMe(attachment)) {
             setLayoutParams(0, 0, linearLayout);
@@ -155,7 +155,7 @@ public class MsgViewHolderOpenRedPacket extends MsgViewHolderBase {
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
 
     }
 }

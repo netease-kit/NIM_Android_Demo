@@ -24,18 +24,18 @@ public class MsgViewHolderLocation extends MsgViewHolderBase {
     public TextView addressText;
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_location;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         mapView = (MsgThumbImageView) view.findViewById(R.id.message_item_location_image);
         addressText = (TextView) view.findViewById(R.id.message_item_location_address);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         final LocationAttachment location = (LocationAttachment) message.getAttachment();
         addressText.setText(location.getAddress());
 
@@ -50,7 +50,7 @@ public class MsgViewHolderLocation extends MsgViewHolderBase {
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
         if (NimUIKitImpl.getLocationProvider() != null) {
             LocationAttachment location = (LocationAttachment) message.getAttachment();
             NimUIKitImpl.getLocationProvider().openMap(context, location.getLongitude(), location.getLatitude(), location.getAddress());

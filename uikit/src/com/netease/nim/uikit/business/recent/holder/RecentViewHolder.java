@@ -1,7 +1,6 @@
 package com.netease.nim.uikit.business.recent.holder;
 
 import android.graphics.drawable.AnimationDrawable;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -11,10 +10,11 @@ import android.widget.TextView;
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.business.recent.RecentContactsCallback;
-import com.netease.nim.uikit.business.recent.RecentContactsFragment;
 import com.netease.nim.uikit.business.recent.adapter.RecentContactAdapter;
 import com.netease.nim.uikit.business.session.emoji.MoonUtil;
 import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.CommonUtil;
+import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.uikit.common.ui.drop.DropFake;
 import com.netease.nim.uikit.common.ui.drop.DropManager;
 import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
@@ -23,6 +23,8 @@ import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.RecyclerViewHolder;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
@@ -60,6 +62,8 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
     private ImageView imgUnreadExplosion;
 
     protected TextView tvOnlineState;
+
+    private static Integer labelWidth;
 
     // 子类覆写
     protected abstract String getContent(RecentContact recent);
@@ -118,14 +122,10 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
             if (o instanceof String && o.equals("0")) {
                 imgUnreadExplosion.setImageResource(R.drawable.nim_explosion);
                 imgUnreadExplosion.setVisibility(View.VISIBLE);
-                new Handler().post(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        ((AnimationDrawable) imgUnreadExplosion.getDrawable()).start();
-                        // 解决部分手机动画无法播放的问题（例如华为荣耀）
-                        getAdapter().notifyItemChanged(getAdapter().getViewHolderPosition(position));
-                    }
+                Handlers.sharedHandler(holder.getContext()).post(() -> {
+                    ((AnimationDrawable) imgUnreadExplosion.getDrawable()).start();
+                    // 解决部分手机动画无法播放的问题（例如华为荣耀）
+                    getAdapter().notifyItemChanged(getAdapter().getViewHolderPosition(position));
                 });
             }
         } else {
@@ -136,11 +136,9 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
     private void updateBackground(BaseViewHolder holder, RecentContact recent, int position) {
         topLine.setVisibility(getAdapter().isFirstDataItem(position) ? View.GONE : View.VISIBLE);
         bottomLine.setVisibility(getAdapter().isLastDataItem(position) ? View.VISIBLE : View.GONE);
-        if ((recent.getTag() & RecentContactsFragment.RECENT_TAG_STICKY) == 0) {
-            holder.getConvertView().setBackgroundResource(R.drawable.nim_touch_bg);
-        } else {
-            holder.getConvertView().setBackgroundResource(R.drawable.nim_recent_contact_sticky_selecter);
-        }
+        holder.getConvertView().setBackgroundResource(recent == null || NIMClient.getService(MsgService.class)
+                .isStickTopSession(recent.getContactId(), recent.getSessionType()) ?
+                R.drawable.nim_recent_contact_sticky_selecter : R.drawable.nim_touch_bg);
     }
 
     protected void loadPortrait(RecentContact recent) {
@@ -153,6 +151,8 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
         } else if (recent.getSessionType() == SessionTypeEnum.SUPER_TEAM) {
             SuperTeam team = NimUIKit.getSuperTeamProvider().getTeamById(recent.getContactId());
             imgHead.loadSuperTeamIconByTeam(team);
+        } else if (recent.getSessionType() == SessionTypeEnum.Ysf) {
+            imgHead.setImageResource(R.drawable.nim_ic_ysf_default_icon);
         }
     }
 
@@ -167,18 +167,22 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
         MoonUtil.identifyRecentVHFaceExpressionAndTags(holder.getContext(), tvMessage, getContent(recent), -1, 0.45f);
         //tvMessage.setText(getContent());
         MsgStatusEnum status = recent.getMsgStatus();
-        switch (status) {
-            case fail:
-                imgMsgStatus.setImageResource(R.drawable.nim_g_ic_failed_small);
-                imgMsgStatus.setVisibility(View.VISIBLE);
-                break;
-            case sending:
-                imgMsgStatus.setImageResource(R.drawable.nim_recent_contact_ic_sending);
-                imgMsgStatus.setVisibility(View.VISIBLE);
-                break;
-            default:
-                imgMsgStatus.setVisibility(View.GONE);
-                break;
+        if (status == null) {
+            imgMsgStatus.setVisibility(View.GONE);
+        } else {
+            switch (status) {
+                case fail:
+                    imgMsgStatus.setImageResource(R.drawable.nim_g_ic_failed_small);
+                    imgMsgStatus.setVisibility(View.VISIBLE);
+                    break;
+                case sending:
+                    imgMsgStatus.setImageResource(R.drawable.nim_recent_contact_ic_sending);
+                    imgMsgStatus.setVisibility(View.VISIBLE);
+                    break;
+                default:
+                    imgMsgStatus.setVisibility(View.GONE);
+                    break;
+            }
         }
         String timeString = TimeUtil.getTimeShowString(recent.getTime(), true);
         tvDatetime.setText(timeString);
@@ -203,8 +207,9 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
     }
 
     protected void updateNickLabel(String nick) {
-        int labelWidth = ScreenUtil.screenWidth;
-        labelWidth -= ScreenUtil.dip2px(50 + 70); // 减去固定的头像和时间宽度
+        if (labelWidth == null) {
+            labelWidth = ScreenUtil.screenWidth - ScreenUtil.dip2px(120); // 减去固定的头像和时间宽度;
+        }
         if (labelWidth > 0) {
             tvNickname.setMaxWidth(labelWidth);
         }

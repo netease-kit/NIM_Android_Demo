@@ -18,7 +18,7 @@ import android.net.Uri;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.support.v4.view.ViewCompat;
+import androidx.core.view.ViewCompat;
 import android.util.AttributeSet;
 import android.util.TypedValue;
 import android.view.MotionEvent;
@@ -33,7 +33,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public abstract class CropImageView extends android.support.v7.widget.AppCompatImageView {
+public abstract class CropImageView extends androidx.appcompat.widget.AppCompatImageView {
 
     /******************************** 中间的FocusView绘图相关的参数 *****************************/
     public enum Style {

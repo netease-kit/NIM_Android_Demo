@@ -8,9 +8,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.netease.nim.uikit.common.ToastHelper;
-
 import com.netease.nim.demo.R;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nimlib.sdk.NIMClient;
@@ -43,7 +42,7 @@ public class FileDownloadActivity extends UI {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.file_download_activity);
+        setContentView(R.layout.nim_file_download_activity);
 
         onParseIntent();
         findViews();

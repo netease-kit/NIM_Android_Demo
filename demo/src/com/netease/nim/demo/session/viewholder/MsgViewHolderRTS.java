@@ -16,17 +16,17 @@ public class MsgViewHolderRTS extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_rts;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         textView = (TextView) view.findViewById(R.id.rts_text);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         RTSAttachment attachment = (RTSAttachment) message.getAttachment();
         textView.setText(attachment.getContent());
     }

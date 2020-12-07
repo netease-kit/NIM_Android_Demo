@@ -39,12 +39,12 @@ public class MsgViewHolderRobot extends MsgViewHolderText implements RobotConten
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_robot;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         containerIn = findViewById(R.id.robot_in);
         robotContent = findViewById(R.id.robot_out);
         robotContent.setBackgroundResource(NimUIKitImpl.getOptions().messageLeftBackground);
@@ -62,7 +62,7 @@ public class MsgViewHolderRobot extends MsgViewHolderText implements RobotConten
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         onClickIds = new HashSet<>(); // for child to add
         RobotAttachment attachment = (RobotAttachment) message.getAttachment();
 

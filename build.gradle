@@ -7,28 +7,32 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
         jcenter()
         mavenCentral()
-        maven { url 'http://developer.huawei.com/repo' }
-        maven { url 'https://fabric-artifacts.s3.amazonaws.com/public' }
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/google' }
+        maven { url 'http://developer.huawei.com/repo/' }
+        maven { url "https://jitpack.io" }
     }
 }
 
 ext {
-    compileSdkVersion = 26
-    buildToolsVersion = '26.0.2'
-    minSdkVersion = 14
-    targetSdkVersion = 26
-    appTargetSdkVersion = 26
-    versionCode = 69
-    versionName = '6.7.0'
-    sdkSourceCompatibility = 1.7
-    sdkTargetCompatibility = 1.7
-    appSourceCompatibility = 1.7
-    appTargetCompatibility = 1.7
+    compileSdkVersion = 29
+    buildToolsVersion = '29.0.3'
+    minSdkVersion = 19
+    targetSdkVersion = 28
+    appTargetSdkVersion = 28
+    versionCode = 150
+    versionName = '8.1.0'
+    sdkSourceCompatibility = 1.8
+    sdkTargetCompatibility = 1.8
+    appSourceCompatibility = 1.8
+    appTargetCompatibility = 1.8
     nimOutputDir = "nim-outputs-${versionName}-${getBuildTime()}-${getGitVersion()}"
 
+    //参考other-sdks 下的版本， 严格按照绑定的NRTC 版本来 ，使用 fetch_nrtc.sh 更新NRTC时会自动修改
+    nosSdkVersion = '1.0.1'
+    reportSdkVersion = '2.0.1'
 }
 
 static def getGitVersion() {
@@ -44,4 +48,31 @@ static def getBuildTime() {
     Date date = new Date()
     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMdd")
     return simpleDateFormat.format(date)
+}
+
+ext {
+    compileSdkVersion = 30
+    buildToolsVersion = "30.0.0"
+    minSdkVersion = 19
+    targetSdkVersion = 30
+
+    nertcSdk = "com.netease.yunxin:nertc:3.7.1"
+
+    nimVersion = '8.1.5'
+    imSdk = "com.netease.nimlib:basesdk:$nimVersion"
+    avsignallingSdk = "com.netease.nimlib:avsignalling:$nimVersion"
+    imPushSdk = "com.netease.nimlib:push:$nimVersion"
+    luceneSdk = "com.netease.nimlib:lucene:$nimVersion"
+    chatroomSdk = "com.netease.nimlib:chatroom:$nimVersion"
+    rtsSdk = "com.netease.nimlib:rts:$nimVersion"
+    superteamSdk = "com.netease.nimlib:superteam:$nimVersion"
+    ysfSdk = "com.netease.nimlib:ysf:$nimVersion"
+    ysfkitSdk = "com.netease.nimlib:ysfkit:$nimVersion"
+
+    ndkAbis = [
+            'armeabi-v7a',
+            'x86',
+            'arm64-v8a',
+            'x86_64'
+    ]
 }

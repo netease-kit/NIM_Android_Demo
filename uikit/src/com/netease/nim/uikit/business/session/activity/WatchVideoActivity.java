@@ -10,7 +10,6 @@ import android.media.MediaPlayer.OnPreparedListener;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v7.app.ActionBar;
 import android.text.TextUtils;
 import android.util.DisplayMetrics;
 import android.view.SurfaceHolder;
@@ -22,10 +21,12 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.netease.nim.uikit.common.ToastHelper;
+
+import androidx.appcompat.app.ActionBar;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.file.FileUtil;
@@ -335,7 +336,7 @@ public class WatchVideoActivity extends UI implements Callback {
                 if (isSurfaceCreated) {
                     mediaPlayer.setDisplay(surfaceHolder);
                 } else {
-                    ToastHelper.showToast(WatchVideoActivity.this, R.string.look_video_fail_try_again);
+                    ToastHelper.showToast(WatchVideoActivity.this, R.string.surface_has_not_been_created);
                     return;
                 }
             }
@@ -555,6 +556,7 @@ public class WatchVideoActivity extends UI implements Callback {
 
     @Override
     public void surfaceCreated(SurfaceHolder holder) {
+        ToastHelper.showToast(this, R.string.surface_created);
         if (!isSurfaceCreated) {
             isSurfaceCreated = true;
             play();

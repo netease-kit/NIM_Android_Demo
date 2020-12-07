@@ -1,5 +1,7 @@
 package com.netease.nim.demo.session.viewholder;
 
+import android.os.Build;
+import android.os.Bundle;
 import android.text.TextUtils;
 import android.view.MotionEvent;
 import android.view.View;
@@ -7,8 +9,12 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.session.activity.WatchSnapChatPictureActivity;
+import com.netease.nim.demo.session.activity.WatchSnapChatPictureFragment;
 import com.netease.nim.demo.session.extension.SnapChatAttachment;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
@@ -35,12 +41,12 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_snapchat;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         thumbnailImageView = (ImageView) view.findViewById(R.id.message_item_snap_chat_image);
         progressBar = findViewById(R.id.message_item_thumb_progress_bar); // 覆盖掉
         progressCover = findViewById(R.id.message_item_thumb_progress_cover);
@@ -48,7 +54,7 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         contentContainer.setOnTouchListener(onTouchListener);
 
         layoutByDirection();
@@ -84,9 +90,22 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
                     break;
                 case MotionEvent.ACTION_UP:
                 case MotionEvent.ACTION_CANCEL:
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && event.getAction() == MotionEvent.ACTION_CANCEL) {
+                        // Android 10.0以上打开新的Activity时，前一个Activity会收到ACTION_CANCEL，需要忽略
+                        break;
+                    }
+
                     v.getParent().requestDisallowInterceptTouchEvent(false);
 
-                    WatchSnapChatPictureActivity.destroy();
+                    if (getMsgAdapter() != null && getMsgAdapter().getContainer() != null && getMsgAdapter().getContainer().activity instanceof AppCompatActivity) {
+                        AppCompatActivity activity = (AppCompatActivity) getMsgAdapter().getContainer().activity;
+
+                        FragmentManager fragmentManager = activity.getSupportFragmentManager();
+                        Fragment fragment = fragmentManager.findFragmentById(R.id.container_snapshot);
+                        if (fragment != null) {
+                            fragmentManager.beginTransaction().remove(fragment).commitAllowingStateLoss();
+                        }
+                    }
 
                     // 删除这条消息，当然你也可以将其标记为已读，同时删除附件内容，然后不让再查看
                     if (isLongClick && message.getAttachStatus() == AttachStatusEnum.transferred) {
@@ -108,7 +127,19 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
     @Override
     protected boolean onItemLongClick() {
         if (message.getStatus() == MsgStatusEnum.success) {
-            WatchSnapChatPictureActivity.start(context, message);
+            if (getMsgAdapter() != null && getMsgAdapter().getContainer() != null && getMsgAdapter().getContainer().activity instanceof AppCompatActivity) {
+                Bundle bundle = new Bundle();
+                bundle.putSerializable(WatchSnapChatPictureFragment.INTENT_EXTRA_IMAGE, message);
+
+                Fragment fragment = new WatchSnapChatPictureFragment();
+                fragment.setArguments(bundle);
+
+                AppCompatActivity activity = (AppCompatActivity) getMsgAdapter().getContainer().activity;
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .add(R.id.container_snapshot, fragment)
+                        .commitAllowingStateLoss();
+            }
             isLongClick = true;
             return true;
         }
@@ -117,12 +148,12 @@ public class MsgViewHolderSnapChat extends MsgViewHolderBase {
 
     @Override
     protected int leftBackground() {
-        return 0;
+        return R.drawable.nim_message_left_white_bg;
     }
 
     @Override
     protected int rightBackground() {
-        return 0;
+        return R.drawable.nim_message_right_blue_bg;
     }
 
     private void layoutByDirection() {

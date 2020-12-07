@@ -11,10 +11,9 @@ import android.widget.TextView;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.widget.ChatRoomImageView;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.api.NimUIKit;
-import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
@@ -26,26 +25,34 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
  * Created by hzxuwen on 2015/12/17.
  */
 public class MasterFragment extends TFragment {
+
     private static final String TAG = MasterFragment.class.getSimpleName();
+
     private ChatRoomImageView imageView;
+
     private TextView nameText;
+
     private TextView countText;
+
     private TextView announceText;
+
     private LinearLayout announceLayout;
+
     private LinearLayout noAnnounceLayout;
 
     private ChatRoomMember master;
+
     private long lastClickTime = 0;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.master_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         findViews();
     }
 
@@ -72,7 +79,7 @@ public class MasterFragment extends TFragment {
 
     private void findViews() {
         imageView = findView(R.id.master_head_image);
-        imageView.loadAvatarByUrl(""); // 网络不好的时候，设置一个默认头像
+        imageView.loadAvatarByUrl("", ""); // 网络不好的时候，设置一个默认头像
         nameText = findView(R.id.master_name);
         countText = findView(R.id.online_total);
         announceText = findView(R.id.announce_content);
@@ -82,47 +89,46 @@ public class MasterFragment extends TFragment {
 
     private void fetchRoomInfo() {
         String roomId = ((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId();
-        NIMClient.getService(ChatRoomService.class).fetchRoomInfo(roomId).setCallback(new RequestCallback<ChatRoomInfo>() {
-            @Override
-            public void onSuccess(ChatRoomInfo param) {
-                getChatRoomMaster(param);
-            }
+        NIMClient.getService(ChatRoomService.class).fetchRoomInfo(roomId).setCallback(
+                new RequestCallback<ChatRoomInfo>() {
 
-            @Override
-            public void onFailed(int code) {
-                LogUtil.d(TAG, "fetch room info failed:" + code);
-            }
+                    @Override
+                    public void onSuccess(ChatRoomInfo param) {
+                        getChatRoomMaster(param);
+                    }
 
-            @Override
-            public void onException(Throwable exception) {
-                LogUtil.d(TAG, "fetch room info exception:" + exception);
-            }
-        });
+                    @Override
+                    public void onFailed(int code) {
+                        LogUtil.d(TAG, "fetch room info failed:" + code);
+                    }
+
+                    @Override
+                    public void onException(Throwable exception) {
+                        LogUtil.d(TAG, "fetch room info exception:" + exception);
+                    }
+                });
     }
 
     private void getChatRoomMaster(final ChatRoomInfo roomInfo) {
-        master = NimUIKit.getChatRoomProvider().getChatRoomMember(roomInfo.getRoomId(), roomInfo.getCreator());
+        master = NimUIKit.getChatRoomProvider().getChatRoomMember(roomInfo.getRoomId(),
+                                                                  roomInfo.getCreator());
         if (master != null) {
             updateView(roomInfo);
         } else {
             NimUIKit.getChatRoomProvider().fetchMember(roomInfo.getRoomId(), roomInfo.getCreator(),
-                    new SimpleCallback<ChatRoomMember>() {
-                        @Override
-                        public void onResult(boolean success, ChatRoomMember result, int code) {
-                            if (success) {
-                                master = result;
-                                updateView(roomInfo);
-                            }
-                        }
-                    });
+                                                       (success, result, code) -> {
+                                                           if (success) {
+                                                               master = result;
+                                                               updateView(roomInfo);
+                                                           }
+                                                       });
         }
     }
 
     private void updateView(ChatRoomInfo chatRoomInfo) {
-        imageView.loadAvatarByUrl(master.getAvatar());
+        imageView.loadAvatarByUrl(master.getRoomId(), master.getAvatar());
         nameText.setText(TextUtils.isEmpty(master.getNick()) ? "" : master.getNick());
         countText.setText(String.valueOf(chatRoomInfo.getOnlineUserCount()));
-
         if (TextUtils.isEmpty(chatRoomInfo.getAnnouncement())) {
             noAnnounceLayout.setVisibility(View.VISIBLE);
             announceLayout.setVisibility(View.GONE);

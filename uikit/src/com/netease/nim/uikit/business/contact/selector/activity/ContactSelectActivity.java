@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.widget.SearchView;
 import android.text.TextUtils;
 import android.util.TypedValue;
 import android.view.MenuItem;
@@ -21,7 +19,9 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import com.netease.nim.uikit.common.ToastHelper;
+
+import androidx.appcompat.widget.SearchView;
+import androidx.core.view.MenuItemCompat;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
@@ -40,6 +40,8 @@ import com.netease.nim.uikit.business.contact.selector.adapter.ContactSelectAdap
 import com.netease.nim.uikit.business.contact.selector.adapter.ContactSelectAvatarAdapter;
 import com.netease.nim.uikit.business.contact.selector.viewholder.ContactsMultiSelectHolder;
 import com.netease.nim.uikit.business.contact.selector.viewholder.ContactsSelectHolder;
+import com.netease.nim.uikit.business.session.constant.Extras;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.liv.LetterIndexView;
@@ -54,10 +56,11 @@ import java.util.List;
  * <p/>
  * Created by huangjun on 2015/3/3.
  */
-public class ContactSelectActivity extends UI implements View.OnClickListener, android.support.v7.widget.SearchView.OnQueryTextListener {
+public class ContactSelectActivity extends UI implements View.OnClickListener, androidx.appcompat.widget.SearchView.OnQueryTextListener {
 
     public static final String EXTRA_DATA = "EXTRA_DATA"; // 请求数据：Option
     public static final String RESULT_DATA = "RESULT_DATA"; // 返回结果
+    public static final String RESULT_NAME = "RESULT_NAME";//返回结果对应的的昵称或群名称
 
     // adapter
 
@@ -410,8 +413,10 @@ public class ContactSelectActivity extends UI implements View.OnClickListener, a
                     if (item instanceof ContactItem) {
                         final IContact contact = ((ContactItem) item).getContact();
                         ArrayList<String> selectedIds = new ArrayList<>();
+                        ArrayList<String> selectedNames = new ArrayList<>();
                         selectedIds.add(contact.getContactId());
-                        onSelected(selectedIds);
+                        selectedNames.add(contact.getDisplayName());
+                        onSelected(selectedIds, selectedNames);
                     }
 
                     arrangeSelected();
@@ -558,11 +563,13 @@ public class ContactSelectActivity extends UI implements View.OnClickListener, a
             List<IContact> contacts = contactSelectedAdapter
                     .getSelectedContacts();
             if (option.allowSelectEmpty || checkMinMaxSelection(contacts.size())) {
+                ArrayList<String> selectedNames = new ArrayList<>();
                 ArrayList<String> selectedAccounts = new ArrayList<>();
                 for (IContact c : contacts) {
                     selectedAccounts.add(c.getContactId());
+                    selectedNames.add(c.getDisplayName());
                 }
-                onSelected(selectedAccounts);
+                onSelected(selectedAccounts, selectedNames);
             }
 
         }
@@ -586,9 +593,10 @@ public class ContactSelectActivity extends UI implements View.OnClickListener, a
         return false;
     }
 
-    public void onSelected(ArrayList<String> selects) {
+    public void onSelected(ArrayList<String> selects, ArrayList<String> selectedNames) {
         Intent intent = new Intent();
         intent.putStringArrayListExtra(RESULT_DATA, selects);
+        intent.putStringArrayListExtra(Extras.RESULT_NAME, selectedNames);
         setResult(Activity.RESULT_OK, intent);
         this.finish();
     }

@@ -4,11 +4,11 @@ import android.content.ActivityNotFoundException;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Handler;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
 import android.view.View;
-import com.netease.nim.uikit.common.ToastHelper;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.api.NimUIKit;
@@ -19,6 +19,7 @@ import com.netease.nim.uikit.business.robot.parser.elements.group.LinkElement;
 import com.netease.nim.uikit.business.session.audio.MessageAudioControl;
 import com.netease.nim.uikit.business.session.module.Container;
 import com.netease.nim.uikit.business.session.viewholder.robot.RobotLinkView;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyAlertDialogHelper;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseFetchLoadAdapter;
@@ -54,22 +55,26 @@ import java.util.List;
  * Created by huangjun on 2016/1/27.
  */
 public class ChatRoomMsgListPanel {
+
     private static final int MESSAGE_CAPACITY = 500;
 
     // container
     private Container container;
+
     private View rootView;
+
     private Handler uiHandler;
 
     // message list view
     private RecyclerView messageListView;
+
     private LinkedList<ChatRoomMessage> items;
+
     private ChatRoomMsgAdapter adapter;
 
     public ChatRoomMsgListPanel(Container container, View rootView) {
         this.container = container;
         this.rootView = rootView;
-
         init();
     }
 
@@ -106,10 +111,11 @@ public class ChatRoomMsgListPanel {
 
     private void initListView() {
         // RecyclerView
-        messageListView = (RecyclerView) rootView.findViewById(R.id.messageListView);
+        messageListView = rootView.findViewById(R.id.messageListView);
         messageListView.setLayoutManager(new LinearLayoutManager(container.activity));
         messageListView.requestDisallowInterceptTouchEvent(true);
         messageListView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
@@ -119,7 +125,6 @@ public class ChatRoomMsgListPanel {
             }
         });
         messageListView.setOverScrollMode(View.OVER_SCROLL_NEVER);
-
         // adapter
         items = new LinkedList<>();
         adapter = new ChatRoomMsgAdapter(messageListView, items, container);
@@ -129,7 +134,6 @@ public class ChatRoomMsgListPanel {
         adapter.setEventListener(new MsgItemEventListener());
         adapter.setOnFetchMoreListener(new MessageLoader()); // load from start
         messageListView.setAdapter(adapter);
-
         messageListView.addOnItemTouchListener(listener);
     }
 
@@ -148,7 +152,6 @@ public class ChatRoomMsgListPanel {
         if (needRefresh) {
             adapter.notifyDataSetChanged();
         }
-
         // incoming messages tip
         ChatRoomMessage lastMsg = messages.get(messages.size() - 1);
         if (isMyMessage(lastMsg) && needScrollToBottom) {
@@ -157,7 +160,8 @@ public class ChatRoomMsgListPanel {
     }
 
     private boolean isLastMessageVisible() {
-        LinearLayoutManager layoutManager = (LinearLayoutManager) messageListView.getLayoutManager();
+        LinearLayoutManager layoutManager = (LinearLayoutManager) messageListView
+                .getLayoutManager();
         int lastVisiblePosition = layoutManager.findLastCompletelyVisibleItemPosition();
         return lastVisiblePosition >= adapter.getBottomDataPosition();
     }
@@ -166,7 +170,6 @@ public class ChatRoomMsgListPanel {
     // 发送消息后，更新本地消息列表
     public void onMsgSend(ChatRoomMessage message) {
         saveMessage(message);
-
         adapter.notifyDataSetChanged();
         doScrollToBottom();
     }
@@ -175,18 +178,17 @@ public class ChatRoomMsgListPanel {
         if (message == null) {
             return;
         }
-
         if (items.size() >= MESSAGE_CAPACITY) {
             items.poll();
         }
-
         items.add(message);
     }
 
     /**
      * *************** MessageLoader ***************
      */
-    private class MessageLoader implements BaseFetchLoadAdapter.RequestLoadMoreListener, BaseFetchLoadAdapter.RequestFetchMoreListener {
+    private class MessageLoader implements BaseFetchLoadAdapter.RequestLoadMoreListener,
+            BaseFetchLoadAdapter.RequestFetchMoreListener {
 
         private static final int LOAD_MESSAGE_COUNT = 10;
 
@@ -202,12 +204,12 @@ public class ChatRoomMsgListPanel {
         }
 
         private RequestCallback<List<ChatRoomMessage>> callback = new RequestCallbackWrapper<List<ChatRoomMessage>>() {
+
             @Override
             public void onResult(int code, List<ChatRoomMessage> messages, Throwable exception) {
                 if (code == ResponseCode.RES_SUCCESS && messages != null) {
                     onMessageLoaded(messages);
                 }
-
                 fetching = false;
             }
         };
@@ -216,15 +218,18 @@ public class ChatRoomMsgListPanel {
             if (fetching) {
                 return;
             }
-
             fetching = true;
-            NIMClient.getService(ChatRoomService.class).pullMessageHistoryEx(container.account, anchor().getTime(), LOAD_MESSAGE_COUNT, QueryDirectionEnum.QUERY_OLD)
-                    .setCallback(callback);
+            NIMClient.getService(ChatRoomService.class).pullMessageHistoryEx(container.account,
+                                                                             anchor().getTime(),
+                                                                             LOAD_MESSAGE_COUNT,
+                                                                             QueryDirectionEnum.QUERY_OLD)
+                     .setCallback(callback);
         }
 
         private IMMessage anchor() {
             if (items.size() == 0) {
-                return (anchor == null ? ChatRoomMessageBuilder.createEmptyChatRoomMessage(container.account, 0) : anchor);
+                return (anchor == null ? ChatRoomMessageBuilder.createEmptyChatRoomMessage(
+                        container.account, 0) : anchor);
             } else {
                 return items.get(0);
             }
@@ -235,7 +240,6 @@ public class ChatRoomMsgListPanel {
          */
         private void onMessageLoaded(List<ChatRoomMessage> messages) {
             int count = messages.size();
-
             // 逆序
             Collections.reverse(messages);
             // 加入到列表中
@@ -244,12 +248,10 @@ public class ChatRoomMsgListPanel {
             } else {
                 adapter.fetchMoreComplete(messages);
             }
-
             // 如果是第一次加载，updateShowTimeItem返回的就是lastShowTimeItem
             if (firstLoad) {
                 doScrollToBottom();
             }
-
             firstLoad = false;
         }
 
@@ -260,7 +262,6 @@ public class ChatRoomMsgListPanel {
 
         @Override
         public void onLoadMoreRequested() {
-
         }
     }
 
@@ -278,6 +279,7 @@ public class ChatRoomMsgListPanel {
      * 消息状态变化观察者
      */
     private Observer<ChatRoomMessage> messageStatusObserver = new Observer<ChatRoomMessage>() {
+
         @Override
         public void onEvent(ChatRoomMessage message) {
             if (isMyMessage(message)) {
@@ -290,6 +292,7 @@ public class ChatRoomMsgListPanel {
      * 消息附件上传/下载进度观察者
      */
     private Observer<AttachmentProgress> attachmentProgressObserver = new Observer<AttachmentProgress>() {
+
         @Override
         public void onEvent(AttachmentProgress progress) {
             onAttachmentProgressChange(progress);
@@ -306,7 +309,6 @@ public class ChatRoomMsgListPanel {
             if (item.getMsgType() == MsgTypeEnum.audio || item.getMsgType() == MsgTypeEnum.avchat) {
                 item.setAttachment(message.getAttachment()); // 附件可能更新了
             }
-
             refreshViewHolderByIndex(index);
         }
     }
@@ -322,9 +324,8 @@ public class ChatRoomMsgListPanel {
     }
 
     public boolean isMyMessage(ChatRoomMessage message) {
-        return message.getSessionType() == container.sessionType
-                && message.getSessionId() != null
-                && message.getSessionId().equals(container.account);
+        return message.getSessionType() == container.sessionType &&
+               message.getSessionId() != null && message.getSessionId().equals(container.account);
     }
 
     /**
@@ -338,7 +339,6 @@ public class ChatRoomMsgListPanel {
                 if (index < 0) {
                     return;
                 }
-
                 adapter.notifyDataItemChanged(index);
             }
         });
@@ -351,14 +351,13 @@ public class ChatRoomMsgListPanel {
                 return i;
             }
         }
-
         return -1;
     }
 
     private OnItemClickListener listener = new OnItemClickListener() {
+
         @Override
         public void onItemClick(IRecyclerView adapter, View view, int position) {
-
         }
 
         @Override
@@ -387,9 +386,12 @@ public class ChatRoomMsgListPanel {
                         // 发送点击的block
                         ChatRoomMessage message = adapter.getItem(position);
                         if (message != null) {
-                            String robotAccount = ((RobotAttachment) message.getAttachment()).getFromRobotAccount();
-                            ChatRoomMessage robotMsg = ChatRoomMessageBuilder.createRobotMessage(container.account, robotAccount,
-                                    robotLinkView.getShowContent(), RobotMsgType.LINK, "", element.getTarget(), element.getParams());
+                            String robotAccount = ((RobotAttachment) message.getAttachment())
+                                    .getFromRobotAccount();
+                            ChatRoomMessage robotMsg = ChatRoomMessageBuilder.createRobotMessage(
+                                    container.account, robotAccount, robotLinkView.getShowContent(),
+                                    RobotMsgType.LINK, "", element.getTarget(),
+                                    element.getParams());
                             container.proxy.sendMessage(robotMsg);
                         }
                     }
@@ -409,8 +411,8 @@ public class ChatRoomMsgListPanel {
                 } else {
                     if (message.getAttachment() instanceof FileAttachment) {
                         FileAttachment attachment = (FileAttachment) message.getAttachment();
-                        if (TextUtils.isEmpty(attachment.getPath())
-                                && TextUtils.isEmpty(attachment.getThumbPath())) {
+                        if (TextUtils.isEmpty(attachment.getPath()) && TextUtils.isEmpty(
+                                attachment.getThumbPath())) {
                             showReDownloadConfirmDlg(message);
                         }
                     } else {
@@ -444,12 +446,15 @@ public class ChatRoomMsgListPanel {
                 @Override
                 public void doOkAction() {
                     // 正常情况收到消息后附件会自动下载。如果下载失败，可调用该接口重新下载
-                    if (message.getAttachment() != null && message.getAttachment() instanceof FileAttachment)
-                        NIMClient.getService(ChatRoomService.class).downloadAttachment((ChatRoomMessage) message, true);
+                    if (message.getAttachment() != null &&
+                        message.getAttachment() instanceof FileAttachment) {
+                        NIMClient.getService(ChatRoomService.class).downloadAttachment(
+                                (ChatRoomMessage) message, true);
+                    }
                 }
             };
-
-            final EasyAlertDialog dialog = EasyAlertDialogHelper.createOkCancelDiolag(container.activity, null,
+            final EasyAlertDialog dialog = EasyAlertDialogHelper.createOkCancelDiolag(
+                    container.activity, null,
                     container.activity.getString(R.string.repeat_download_message), true, listener);
             dialog.show();
         }
@@ -463,8 +468,8 @@ public class ChatRoomMsgListPanel {
                 item.setStatus(MsgStatusEnum.sending);
                 refreshViewHolderByIndex(index);
             }
-
-            NIMClient.getService(ChatRoomService.class).sendMessage((ChatRoomMessage) message, true);
+            NIMClient.getService(ChatRoomService.class).sendMessage((ChatRoomMessage) message,
+                                                                    true);
         }
     }
 
@@ -477,6 +482,7 @@ public class ChatRoomMsgListPanel {
 
     public void scrollToBottom() {
         uiHandler.postDelayed(new Runnable() {
+
             @Override
             public void run() {
                 doScrollToBottom();

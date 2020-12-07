@@ -7,23 +7,23 @@
     android:background="@drawable/login_bg"
     android:orientation="vertical">
 
-    <android.support.design.widget.AppBarLayout
+    <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/app_bar_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/AppTheme.AppBarOverlay"
         app:elevation="0dp">
 
-        <android.support.v7.widget.Toolbar
+        <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:titleTextAppearance="@style/Toolbar.TitleText">
-
+            <include layout="@layout/nim_action_bar_left_click_tv"/>
             <include layout="@layout/nim_action_bar_right_clickable_tv" />
-        </android.support.v7.widget.Toolbar>
-    </android.support.design.widget.AppBarLayout>
+        </androidx.appcompat.widget.Toolbar>
+    </com.google.android.material.appbar.AppBarLayout>
 
     <ScrollView
         android:layout_width="match_parent"
@@ -82,6 +82,22 @@
                     android:textColorHint="@color/color_white_66ffffff"
                     android:textCursorDrawable="@null"
                     android:textSize="15sp" />
+
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_login_subtype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/login_hint_subtype"
+                    android:inputType="textPassword"
+                    android:longClickable="false"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -132,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_white_normal"
                     android:drawablePadding="15dp"
-                    android:hint="@string/input_password"
+                    android:hint="@string/login_hint_password"
                     android:inputType="textPassword"
                     android:longClickable="false"
                     android:paddingLeft="15dp"

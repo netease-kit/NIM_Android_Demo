@@ -31,8 +31,8 @@ import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
  * 会话窗口消息列表项的ViewHolder基类，负责每个消息项的外层框架，包括头像，昵称，发送/接收进度条，重发按钮等。<br>
  * 具体的消息展示项可继承该基类，然后完成具体消息内容展示即可。
  */
-public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseMultiItemFetchLoadAdapter,
-        BaseViewHolder, ChatRoomMessage> {
+public abstract class ChatRoomMsgViewHolderBase extends
+        RecyclerViewHolder<BaseMultiItemFetchLoadAdapter, BaseViewHolder, ChatRoomMessage> {
 
     public ChatRoomMsgViewHolderBase(BaseMultiItemFetchLoadAdapter adapter) {
         super(adapter);
@@ -41,7 +41,9 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
 
     // basic
     protected View view;
+
     protected Context context;
+
     protected BaseMultiItemFetchLoadAdapter adapter;
 
     // data
@@ -49,14 +51,23 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
 
     // view
     protected View alertButton;
+
     protected TextView timeTextView;
+
     protected ProgressBar progressBar;
+
     protected TextView nameTextView;
+
     protected FrameLayout contentContainer;
+
+    protected LinearLayout contentContainerWithReplyTip; //包含回复提示的内容部分
+
     protected LinearLayout nameContainer;
+
     protected TextView readReceiptTextView;
 
     private HeadImageView avatarLeft;
+
     private HeadImageView avatarRight;
 
     public ImageView nameIconView;
@@ -77,7 +88,6 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
 
     // 在该接口操作BaseViewHolder中的数据，进行事件绑定，可选
     protected void bindHolder(BaseViewHolder holder) {
-
     }
 
     // 内容区域点击事件响应处理。
@@ -128,8 +138,9 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
      * 下载附件/缩略图
      */
     protected void downloadAttachment() {
-        if (message.getAttachment() != null && message.getAttachment() instanceof FileAttachment)
+        if (message.getAttachment() != null && message.getAttachment() instanceof FileAttachment) {
             NIMClient.getService(MsgService.class).downloadAttachment(message, true);
+        }
     }
 
     // 设置FrameLayout子控件的gravity参数
@@ -160,11 +171,11 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
 
     /// -- 以下是基类实现代码
     @Override
-    public void convert(BaseViewHolder holder, ChatRoomMessage data, int position, boolean isScrolling) {
+    public void convert(BaseViewHolder holder, ChatRoomMessage data, int position,
+                        boolean isScrolling) {
         view = holder.getConvertView();
         context = holder.getContext();
         message = data;
-
         inflate();
         refresh();
         bindHolder(holder);
@@ -178,10 +189,10 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
         progressBar = findViewById(R.id.message_item_progress);
         nameTextView = findViewById(R.id.message_item_nickname);
         contentContainer = findViewById(R.id.message_item_content);
+        contentContainerWithReplyTip = findViewById(R.id.message_item_container_with_reply_tip);
         nameIconView = findViewById(R.id.message_item_name_icon);
         nameContainer = findViewById(R.id.message_item_name_layout);
         readReceiptTextView = findViewById(R.id.textViewAlreadyRead);
-
         // 这里只要inflate出来后加入一次即可
         if (contentContainer.getChildCount() == 0) {
             View.inflate(view.getContext(), getContentResId(), contentContainer);
@@ -197,7 +208,6 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
         setOnClickListener();
         setLongClickListener();
         setContent();
-
         bindContentView();
     }
 
@@ -217,7 +227,6 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
             timeTextView.setVisibility(View.GONE);
             return;
         }
-
         String text = TimeUtil.getTimeShowString(message.getTime(), false);
         timeTextView.setText(text);
     }
@@ -255,7 +264,8 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
             show.setVisibility(View.GONE);
         } else {
             show.setVisibility(View.VISIBLE);
-            show.loadBuddyAvatar(message.getFromAccount());
+            String avatar = ChatRoomViewHolderHelper.getAvatar(message);
+            show.loadAvatar(message.getSessionId(), avatar);
         }
 
     }
@@ -263,31 +273,16 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
     private void setOnClickListener() {
         // 重发/重收按钮响应事件
         if (getMsgAdapter().getEventListener() != null) {
-            alertButton.setOnClickListener(new View.OnClickListener() {
-
-                @Override
-                public void onClick(View v) {
-                    getMsgAdapter().getEventListener().onFailedBtnClick(message);
-                }
-            });
+            alertButton.setOnClickListener(
+                    v -> getMsgAdapter().getEventListener().onFailedBtnClick(message));
         }
-
         // 内容区域点击事件响应， 相当于点击了整项
-        contentContainer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                onItemClick();
-            }
-        });
-
+        contentContainer.setOnClickListener(v -> onItemClick());
         // 头像点击事件响应
         if (NimUIKitImpl.getSessionListener() != null) {
-            View.OnClickListener portraitListener = new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    NimUIKitImpl.getSessionListener().onAvatarClicked(context, message);
-                }
-            };
+            View.OnClickListener portraitListener = v -> NimUIKitImpl.getSessionListener()
+                                                                     .onAvatarClicked(context,
+                                                                                      message);
             avatarLeft.setOnClickListener(portraitListener);
             avatarRight.setOnClickListener(portraitListener);
         }
@@ -297,30 +292,24 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
      * item长按事件监听
      */
     private void setLongClickListener() {
-        longClickListener = new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View v) {
-                // 优先派发给自己处理，
-                if (!onItemLongClick()) {
-                    if (getMsgAdapter().getEventListener() != null) {
-                        getMsgAdapter().getEventListener().onViewHolderLongClick(contentContainer, view, message);
-                        return true;
-                    }
+        longClickListener = v -> {
+            // 优先派发给自己处理，
+            if (!onItemLongClick()) {
+                if (getMsgAdapter().getEventListener() != null) {
+                    getMsgAdapter().getEventListener().onViewHolderLongClick(contentContainer, view,
+                                                                             message);
+                    return true;
                 }
-                return false;
             }
+            return false;
         };
         // 消息长按事件响应处理
         contentContainer.setOnLongClickListener(longClickListener);
-
         // 头像长按事件响应处理
         if (NimUIKitImpl.getSessionListener() != null) {
-            View.OnLongClickListener longClickListener = new View.OnLongClickListener() {
-                @Override
-                public boolean onLongClick(View v) {
-                    NimUIKitImpl.getSessionListener().onAvatarLongClicked(context, message);
-                    return true;
-                }
+            View.OnLongClickListener longClickListener = v -> {
+                NimUIKitImpl.getSessionListener().onAvatarLongClicked(context, message);
+                return true;
             };
             avatarLeft.setOnLongClickListener(longClickListener);
             avatarRight.setOnLongClickListener(longClickListener);
@@ -332,7 +321,6 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
             nameTextView.setVisibility(View.GONE);
             return;
         }
-
         nameContainer.setPadding(ScreenUtil.dip2px(6), 0, 0, 0);
         nameTextView.setVisibility(View.VISIBLE);
         nameTextView.setText(getNameText());
@@ -351,31 +339,29 @@ public abstract class ChatRoomMsgViewHolderBase extends RecyclerViewHolder<BaseM
         if (!isShowBubble() && !isMiddleItem()) {
             return;
         }
-
-        LinearLayout bodyContainer = (LinearLayout) view.findViewById(R.id.message_item_body);
-
+        LinearLayout bodyContainer = view.findViewById(R.id.message_item_body);
         // 调整container的位置
         int index = isReceivedMessage() ? 0 : 3;
-        if (bodyContainer.getChildAt(index) != contentContainer) {
-            bodyContainer.removeView(contentContainer);
-            bodyContainer.addView(contentContainer, index);
+        if (bodyContainer.getChildAt(index) != contentContainerWithReplyTip) {
+            bodyContainer.removeView(contentContainerWithReplyTip);
+            bodyContainer.addView(contentContainerWithReplyTip, index);
         }
-
         if (isMiddleItem()) {
             setGravity(bodyContainer, Gravity.CENTER);
         } else {
             if (isReceivedMessage()) {
                 setGravity(bodyContainer, Gravity.LEFT);
-                contentContainer.setBackgroundResource(leftBackground());
+                contentContainerWithReplyTip.setBackgroundResource(leftBackground());
             } else {
                 setGravity(bodyContainer, Gravity.RIGHT);
-                contentContainer.setBackgroundResource(rightBackground());
+                contentContainerWithReplyTip.setBackgroundResource(rightBackground());
             }
         }
     }
 
     private void setReadReceipt() {
-        if (!TextUtils.isEmpty(getMsgAdapter().getUuid()) && message.getUuid().equals(getMsgAdapter().getUuid())) {
+        if (!TextUtils.isEmpty(getMsgAdapter().getUuid()) && message.getUuid().equals(
+                getMsgAdapter().getUuid())) {
             readReceiptTextView.setVisibility(View.VISIBLE);
         } else {
             readReceiptTextView.setVisibility(View.GONE);

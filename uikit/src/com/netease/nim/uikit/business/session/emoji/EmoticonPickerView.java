@@ -5,7 +5,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Handler;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -224,7 +224,7 @@ public class EmoticonPickerView extends LinearLayout implements IEmoticonCategor
 
         gifView.showStickers(index);
     }
-
+    //该方法为自定义表情框的方法不需要
     private void showEmojiView() {
         if (gifView == null) {
             gifView = new EmoticonView(context, listener, currentEmojiPage, pageNumberLayout);

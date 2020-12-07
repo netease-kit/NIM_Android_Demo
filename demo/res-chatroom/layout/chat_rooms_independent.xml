@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout android:id="@+id/rlRoot"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bussiness_card_gridview_bg">
+
+    <EditText
+        android:id="@+id/independent"
+        android:layout_width="match_parent"
+        android:layout_marginRight="@dimen/dp_size_16"
+        android:layout_height="@dimen/dp_size_36"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_size_16"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/pastelBlueColor"
+        android:hint="独立appKey"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"></EditText>
+
+    <EditText
+        android:id="@+id/account"
+        android:layout_width="@dimen/dp_size_120"
+        android:layout_height="@dimen/dp_size_36"
+        android:layout_below="@id/independent"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_size_16"
+        android:layout_marginTop="@dimen/dp_10"
+        android:background="@color/pastelBlueColor"
+        android:hint="账号"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"></EditText>
+
+    <EditText
+        android:id="@+id/pwd"
+        android:layout_width="@dimen/dp_size_120"
+        android:layout_height="@dimen/dp_size_36"
+        android:layout_alignTop="@id/account"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_size_16"
+        android:layout_toRightOf="@id/account"
+        android:background="@color/pastelBlueColor"
+        android:hint="密码"
+        android:textColor="@color/white"
+        android:textColorHint="@color/white"></EditText>
+
+    <TextView
+        android:id="@+id/room_list"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/dp_size_36"
+        android:layout_marginBottom="@dimen/dp_10"
+        android:layout_marginLeft="@dimen/dp_size_16"
+        android:layout_toRightOf="@id/pwd"
+        android:layout_alignTop="@id/account"
+        android:background="@color/pastelBlueColor"
+        android:padding="@dimen/dp_10"
+        android:text="直播间"
+        android:textColor="@color/white"></TextView>
+
+    <RelativeLayout
+        android:id="@+id/message_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/pwd"></RelativeLayout>
+
+
+
+</RelativeLayout>

@@ -1,6 +1,6 @@
 package com.netease.nim.uikit.common.media.imagepicker.data;
 
-import android.support.v4.app.FragmentActivity;
+import androidx.fragment.app.FragmentActivity;
 
 import java.util.ArrayList;
 import java.util.Collections;

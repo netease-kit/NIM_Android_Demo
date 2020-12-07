@@ -1,9 +1,9 @@
 package com.netease.nim.demo.common.ui.viewpager;
 
 import android.content.Context;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.ViewPager;
 
 import com.netease.nim.uikit.common.fragment.TabFragment;
 

@@ -10,8 +10,10 @@ import java.util.Map;
 
 
 /**
+ *
  */
 public class MediaUtil {
+
     public static Map<String, List<GLImage>> divideMedias(List<GLImage> images) {
         Map<String, List<GLImage>> imageItemMap = new LinkedHashMap<>();
         for (int i = 0; i < images.size(); i++) {
@@ -27,7 +29,6 @@ public class MediaUtil {
                 imageItemMap.put(date, GLImageList);
             }
         }
-
         return imageItemMap;
     }
 }

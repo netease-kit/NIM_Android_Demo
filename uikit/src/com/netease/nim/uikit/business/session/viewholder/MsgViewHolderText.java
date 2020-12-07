@@ -25,17 +25,17 @@ public class MsgViewHolderText extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_text;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         bodyTextView = findViewById(R.id.nim_message_item_text_body);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         layoutDirection();
         bodyTextView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,12 +62,12 @@ public class MsgViewHolderText extends MsgViewHolderBase {
 
     @Override
     protected int leftBackground() {
-        return 0;
+        return R.drawable.nim_message_left_white_bg;
     }
 
     @Override
     protected int rightBackground() {
-        return 0;
+        return R.drawable.nim_message_right_blue_bg;
     }
 
     protected String getDisplayText() {

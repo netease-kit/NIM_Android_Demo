@@ -74,4 +74,13 @@ public class SessionCustomization implements Serializable {
         // 响应事件
         public abstract void onClick(Context context, View view, String sessionId);
     }
+
+    /**
+     * 获取消息的简述
+     *
+     * @return 消息的简述
+     */
+    public String getMessageDigest(IMMessage message) {
+        return message == null ? "" : message.getContent();
+    }
 }

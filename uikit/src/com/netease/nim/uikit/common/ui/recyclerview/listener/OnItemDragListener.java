@@ -1,6 +1,6 @@
 package com.netease.nim.uikit.common.ui.recyclerview.listener;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 public interface OnItemDragListener {
     void onItemDragStart(RecyclerView.ViewHolder viewHolder, int pos);

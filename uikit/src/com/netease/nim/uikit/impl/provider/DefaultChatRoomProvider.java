@@ -20,12 +20,15 @@ public class DefaultChatRoomProvider implements ChatRoomProvider {
     }
 
     @Override
-    public void fetchMember(String roomId, String account, SimpleCallback<ChatRoomMember> callback) {
+    public void fetchMember(String roomId, String account,
+                            SimpleCallback<ChatRoomMember> callback) {
         ChatRoomMemberCache.getInstance().fetchMember(roomId, account, callback);
     }
 
     @Override
-    public void fetchRoomMembers(String roomId, MemberQueryType memberQueryType, long time, int limit, SimpleCallback<List<ChatRoomMember>> callback) {
-        ChatRoomMemberCache.getInstance().fetchRoomMembers(roomId, memberQueryType, time, limit, callback);
+    public void fetchRoomMembers(String roomId, MemberQueryType memberQueryType, long time,
+                                 int limit, SimpleCallback<List<ChatRoomMember>> callback) {
+        ChatRoomMemberCache.getInstance().fetchRoomMembers(roomId, memberQueryType, time, limit,
+                                                           callback);
     }
 }

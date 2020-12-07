@@ -14,6 +14,7 @@ import com.netease.nim.demo.main.model.MainTab;
 import com.netease.nim.demo.main.reminder.ReminderManager;
 import com.netease.nim.demo.session.SessionHelper;
 import com.netease.nim.demo.session.extension.GuessAttachment;
+import com.netease.nim.demo.session.extension.MultiRetweetAttachment;
 import com.netease.nim.demo.session.extension.RTSAttachment;
 import com.netease.nim.demo.session.extension.RedPacketAttachment;
 import com.netease.nim.demo.session.extension.RedPacketOpenedAttachment;
@@ -24,6 +25,7 @@ import com.netease.nim.uikit.business.recent.RecentContactsFragment;
 import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
+import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.StatusCode;
@@ -34,6 +36,7 @@ import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.Unicorn;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,6 +112,7 @@ public class SessionListFragment extends MainTabFragment {
         public void onEvent(StatusCode code) {
             if (code.wontAutoLogin()) {
                 kickOut(code);
+                NimLog.i(TAG, "kick out desc: " + code.getDesc());
             } else {
                 if (code == StatusCode.NET_BROKEN) {
                     notifyBar.setVisibility(View.VISIBLE);
@@ -173,15 +177,20 @@ public class SessionListFragment extends MainTabFragment {
         } else {
             LogUtil.i("Auth", "Kicked!");
         }
-        onLogout();
+
+        if (code == StatusCode.DATA_UPGRADE) {
+            onLogout(getString(R.string.kickout_encrypt_database));
+        } else {
+            onLogout("");
+        }
     }
 
     // 注销
-    private void onLogout() {
+    private void onLogout(String desc) {
         // 清理缓存&注销监听&清除状态
         LogoutHelper.logout();
 
-        LoginActivity.start(getActivity(), true);
+        LoginActivity.start(getActivity(), true, desc);
         getActivity().finish();
     }
 
@@ -219,6 +228,9 @@ public class SessionListFragment extends MainTabFragment {
                     case SUPER_TEAM:
                         ToastHelper.showToast(getActivity(), "超大群开发者按需实现");
                         break;
+                    case Ysf:
+                        Unicorn.openServiceActivity(getContext(), "七鱼测试", null);
+                        break;
                     default:
                         break;
                 }
@@ -241,6 +253,8 @@ public class SessionListFragment extends MainTabFragment {
                     return "[红包]";
                 } else if (attachment instanceof RedPacketOpenedAttachment) {
                     return ((RedPacketOpenedAttachment) attachment).getDesc(recentContact.getSessionType(), recentContact.getContactId());
+                } else if (attachment instanceof MultiRetweetAttachment){
+                    return "[聊天记录]";
                 }
 
                 return null;

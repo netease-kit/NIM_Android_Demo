@@ -5,8 +5,6 @@ import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.Build;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
@@ -530,22 +528,6 @@ public class NetworkUtil {
         } else {
             return true;
         }
-    }
-
-    /**
-     * get mac address of wifi if wifi is active
-     */
-
-    public static String getActiveMacAddress(Context context) {
-        WifiManager wifi = (WifiManager) context.getSystemService(Context.WIFI_SERVICE);
-
-        WifiInfo info = wifi.getConnectionInfo();
-
-        if (info != null) {
-            return info.getMacAddress();
-        }
-
-        return "";
     }
 
     public static String getNetworkInfo(Context context) {

@@ -38,6 +38,9 @@ public class CustomAttachParser implements MsgAttachmentParser {
                 case CustomAttachmentType.OpenedRedPacket:
                     attachment = new RedPacketOpenedAttachment();
                     break;
+                case CustomAttachmentType.MultiRetweet:
+                    attachment = new MultiRetweetAttachment();
+                    break;
                 default:
                     attachment = new DefaultCustomAttachment();
                     break;

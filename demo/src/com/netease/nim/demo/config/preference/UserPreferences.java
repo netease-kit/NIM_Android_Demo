@@ -6,6 +6,7 @@ import android.content.SharedPreferences;
 
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
+import com.netease.nimlib.sdk.NotificationFoldStyle;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 
 /**
@@ -16,6 +17,8 @@ public class UserPreferences {
     private final static String KEY_DOWNTIME_TOGGLE = "down_time_toggle";
 
     private final static String KEY_SB_NOTIFY_TOGGLE = "sb_notify_toggle";
+
+    private final static String KEY_OFFLINE_PUSH = "offline_push";
 
     private final static String KEY_TEAM_ANNOUNCE_CLOSED = "team_announce_closed";
 
@@ -38,9 +41,6 @@ public class UserPreferences {
 
     // 删除好友同时删除备注
     private final static String KEY_DELETE_FRIEND_AND_DELETE_ALIAS = "KEY_DELETE_FRIEND_AND_DELETE_ALIAS";
-
-    // 通知栏样式（展开、折叠）配置
-    private final static String KEY_NOTIFICATION_FOLDED_TOGGLE = "KEY_NOTIFICATION_FOLDED";
 
     // 保存在线状态订阅时间
     private final static String KEY_SUBSCRIBE_TIME = "KEY_SUBSCRIBE_TIME";
@@ -74,9 +74,12 @@ public class UserPreferences {
 
     public static final String NOTIFICATION_FOLDED = "notificationFolded";
 
+    public static final String NOTIFICATION_FOLD_TYPE = "notificationFoldType";
+
     public static final String NOTIFICATION_ENTRANCE = "notificationEntrance";
 
     public static final String NOTIFICATION_COLOR = "notificationColor";
+
     /**************************no disturb end************************************/
 
     public static void setMsgIgnore(boolean enable) {
@@ -144,14 +147,6 @@ public class UserPreferences {
         return getBoolean(KEY_DOWNTIME_TOGGLE, false);
     }
 
-    public static void setNotificationFoldedToggle(boolean folded) {
-        saveBoolean(KEY_NOTIFICATION_FOLDED_TOGGLE, folded);
-    }
-
-    public static boolean getNotificationFoldedToggle() {
-        return getBoolean(KEY_NOTIFICATION_FOLDED_TOGGLE, true);
-    }
-
     public static void setStatusConfig(StatusBarNotificationConfig config) {
         saveStatusBarNotificationConfig(KEY_STATUS_BAR_NOTIFICATION_CONFIG, config);
     }
@@ -206,6 +201,9 @@ public class UserPreferences {
             Boolean notificationFolded = jsonObject.getBoolean(NOTIFICATION_FOLDED);
             config.notificationFolded = notificationFolded == null ? true : notificationFolded;
 
+            Integer notificationFoldType = jsonObject.getInteger(NOTIFICATION_FOLD_TYPE);
+            config.notificationFoldStyle = notificationFoldType == null ? null : NotificationFoldStyle.value(notificationFoldType);
+
             config.notificationEntrance = (Class<? extends Activity>) Class.forName(
                     jsonObject.getString(NOTIFICATION_ENTRANCE));
             config.notificationColor = jsonObject.getInteger(NOTIFICATION_COLOR);
@@ -233,6 +231,9 @@ public class UserPreferences {
             jsonObject.put(LEDOFFMS, config.ledOffMs);
             jsonObject.put(TITLE_ONLY_SHOW_APP_NAME, config.titleOnlyShowAppName);
             jsonObject.put(NOTIFICATION_FOLDED, config.notificationFolded);
+            if (config.notificationFoldStyle != null) {
+                jsonObject.put(NOTIFICATION_FOLD_TYPE, config.notificationFoldStyle.getValue());
+            }
             jsonObject.put(NOTIFICATION_ENTRANCE, config.notificationEntrance.getName());
             jsonObject.put(NOTIFICATION_COLOR, config.notificationColor);
         } catch (Exception e) {
@@ -250,6 +251,16 @@ public class UserPreferences {
         SharedPreferences.Editor editor = getSharedPreferences().edit();
         editor.putBoolean(key, value);
         editor.commit();
+    }
+
+    private static void saveInt(String key, int value) {
+        SharedPreferences.Editor editor = getSharedPreferences().edit();
+        editor.putInt(key, value);
+        editor.commit();
+    }
+
+    private static int getInt(String key, int value) {
+        return getSharedPreferences().getInt(key, value);
     }
 
     private static void saveLong(String key, long value) {

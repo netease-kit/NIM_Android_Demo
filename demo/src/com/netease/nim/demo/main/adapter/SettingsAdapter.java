@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 
 import com.netease.nim.demo.DemoCache;
@@ -32,17 +33,28 @@ public class SettingsAdapter extends BaseAdapter {
     private SwitchButton.OnChangedListener onchangeListener;
     private SwitchChangeListener switchChangeListener;
 
+    private RadioGroup.OnCheckedChangeListener onCheckedChangeListener;
+    private CheckChangeListener checkChangeListener;
+
+
     public interface SwitchChangeListener {
         void onSwitchChange(SettingTemplate item, boolean checkState);
     }
 
-    public SettingsAdapter(Context context, SwitchChangeListener switchChangeListener, List<SettingTemplate> items) {
-        this(context, switchChangeListener, items, R.layout.setting_item_base);
+    public interface CheckChangeListener {
+        void onCheckChange(SettingTemplate item, int checkedId);
     }
 
-    public SettingsAdapter(Context context, SwitchChangeListener switchChangeListener, List<SettingTemplate> items, int layoutID) {
+    public SettingsAdapter(Context context, SwitchChangeListener switchChangeListener,
+                           CheckChangeListener checkedChangeListener, List<SettingTemplate> items) {
+        this(context, switchChangeListener, checkedChangeListener, items, R.layout.setting_item_base);
+    }
+
+    public SettingsAdapter(Context context, SwitchChangeListener switchChangeListener,
+                           CheckChangeListener checkedChangeListener, List<SettingTemplate> items, int layoutID) {
         this.context = context;
         this.switchChangeListener = switchChangeListener;
+        this.checkChangeListener = checkedChangeListener;
         this.items = items;
         this.layoutID = layoutID;
         itemHeight = context.getResources().getDimensionPixelSize(R.dimen.isetting_item_height);
@@ -68,6 +80,7 @@ public class SettingsAdapter extends BaseAdapter {
             viewHolder.indicator = convertView.findViewById(R.id.setting_item_indicator);
             viewHolder.headTitleView = convertView.findViewById(R.id.head_title_label);
             viewHolder.headDetailView = convertView.findViewById(R.id.head_detail_label);
+            viewHolder.threeChooseOneRG = convertView.findViewById(R.id.rg_three_choose_one);
             convertView.setTag(viewHolder);
         }
 
@@ -86,6 +99,7 @@ public class SettingsAdapter extends BaseAdapter {
         viewHolder.indicator.setVisibility(View.GONE);
         viewHolder.headTitleView.setVisibility(View.GONE);
         viewHolder.headDetailView.setVisibility(View.GONE);
+        viewHolder.threeChooseOneRG.setVisibility(View.GONE);
 
 
         SettingTemplate item = items.get(position);
@@ -97,6 +111,8 @@ public class SettingsAdapter extends BaseAdapter {
             updateSeperatorItem(viewHolder);
         } else if (item.getType() == SettingType.TYPE_LINE) {
             addLineItem(viewHolder);
+        } else if (item.getType() == SettingType.TYPE_THREE_CHOOSE_ONE) {
+            updateThreeChooseOneItem(viewHolder, item, position);
         } else {
             updateDefaultItem(viewHolder, item, position);
         }
@@ -135,6 +151,18 @@ public class SettingsAdapter extends BaseAdapter {
     private void updateToggleItem(ViewHolder viewHolder, SettingTemplate item, int position) {
         setTextView(viewHolder.titleView, item.getTitle());
         setToggleView(viewHolder, item);
+    }
+
+    /**
+     * 设置带有三选一RadioGroup的item
+     *
+     * @param viewHolder
+     * @param item
+     * @param position
+     */
+    private void updateThreeChooseOneItem(ViewHolder viewHolder, SettingTemplate item, int position) {
+        setTextView(viewHolder.titleView, item.getTitle());
+        setThreeChooseOneView(viewHolder, item);
     }
 
     /**
@@ -203,6 +231,16 @@ public class SettingsAdapter extends BaseAdapter {
         }
     }
 
+    private void setThreeChooseOneView(ViewHolder viewHolder, SettingTemplate item) {
+        if (viewHolder.threeChooseOneRG == null) {
+            return;
+        }
+        viewHolder.threeChooseOneRG.setVisibility(View.VISIBLE);
+        viewHolder.threeChooseOneRG.check(item.getCheckedId());
+        createCheckChangeListener(item);
+        viewHolder.threeChooseOneRG.setOnCheckedChangeListener(onCheckedChangeListener);
+    }
+
     private void setTextView(TextView textView, String value) {
         if (textView == null || TextUtils.isEmpty(value)) {
             return;
@@ -218,6 +256,14 @@ public class SettingsAdapter extends BaseAdapter {
             @Override
             public void OnChanged(View v, boolean checkState) {
                 switchChangeListener.onSwitchChange(item, checkState);
+            }
+        };
+    }
+
+    private void createCheckChangeListener(final SettingTemplate item) {
+        onCheckedChangeListener = (group, checkedId) -> {
+            if (checkChangeListener != null) {
+                checkChangeListener.onCheckChange(item, checkedId);
             }
         };
     }
@@ -247,6 +293,7 @@ public class SettingsAdapter extends BaseAdapter {
         private ImageView indicator;
         private TextView headTitleView;
         private TextView headDetailView;
+        private RadioGroup threeChooseOneRG;
     }
 
 }

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center_vertical"
+    android:paddingTop="10dp"
+    android:paddingBottom="10dp"
+    android:paddingStart="14dp"
+    android:paddingEnd="14dp">
+
+    <TextView
+        android:id="@+id/nim_message_item_tv_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:lineSpacingExtra="3dip"
+        android:maxWidth="@dimen/max_text_bubble_width"
+        android:text="的聊天记录"
+        android:textColor="@color/color_black_b3000000"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/nim_message_item_tv_msg1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:maxWidth="@dimen/max_text_bubble_width"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="消息1"
+        android:textColor="@color/color_grey_555555"
+        android:textSize="13sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nim_message_item_tv_title" />
+    <TextView
+        android:id="@+id/nim_message_item_tv_msg2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:maxWidth="@dimen/max_text_bubble_width"
+        android:ellipsize="end"
+        android:singleLine="true"
+        android:text="消息2"
+        android:textColor="@color/color_grey_555555"
+        android:textSize="13sp"
+        app:layout_constraintTop_toBottomOf="@id/nim_message_item_tv_msg1"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <View
+        android:id="@+id/nim_message_item_v_separator"
+        android:layout_width="wrap_content"
+        android:layout_height="1dp"
+        android:layout_marginTop="5dp"
+        android:background="@color/gray7"
+        app:layout_constraintStart_toStartOf="@id/nim_message_item_tv_title"
+        app:layout_constraintEnd_toEndOf="@id/nim_message_item_tv_title"
+        app:layout_constraintTop_toBottomOf="@id/nim_message_item_tv_msg2" />
+
+    <TextView
+        android:id="@+id/nim_message_item_tv_foot_note"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:text="@string/message_history"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/nim_message_item_v_separator"
+        />
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,9 +1,9 @@
 package com.netease.nim.demo.chatroom.adapter;
 
 import android.content.Context;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.view.ViewPager;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.viewpager.widget.ViewPager;
 
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTab;
 import com.netease.nim.demo.chatroom.fragment.tab.ChatRoomTabFragment;

@@ -14,12 +14,12 @@ public class MsgViewHolderPicture extends MsgViewHolderThumbBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_picture;
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
         WatchMessagePictureActivity.start(context, message);
     }
 

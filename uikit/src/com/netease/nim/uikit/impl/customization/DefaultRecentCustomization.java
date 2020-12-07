@@ -5,6 +5,7 @@ import com.netease.nim.uikit.business.session.helper.TeamNotificationHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.attachment.NotificationAttachment;
+import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 
@@ -51,6 +52,8 @@ public class DefaultRecentCustomization extends RecentCustomization {
                         (NotificationAttachment) recent.getAttachment());
             case robot:
                 return "[机器人消息]";
+            case nrtc_netcall:
+                return String.format("[%s]", MsgTypeEnum.nrtc_netcall.getSendMessageTip());
             default:
                 return "[自定义消息] ";
         }
