@@ -18,7 +18,7 @@ import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.model.TeamMember;
 import com.netease.nimlib.sdk.uinfo.UserService;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 import com.netease.yunxin.nertc.ui.R;
 import com.netease.yunxin.nertc.ui.team.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.yunxin.nertc.ui.team.recyclerview.holder.BaseViewHolder;
@@ -46,6 +46,8 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
 
     private ProgressBar volumeBar;
 
+    private ImageView ivMute;
+
 
     public TeamG2ItemViewHolder(BaseMultiItemFetchLoadAdapter adapter) {
         super(adapter);
@@ -58,6 +60,7 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
         nickNameText = holder.getView(R.id.nick_name_text);
         stateText = holder.getView(R.id.avchat_state_text);
         volumeBar = holder.getView(R.id.avchat_volume);
+        ivMute = holder.getView(R.id.iv_voice_control);
     }
 
     protected void refresh(final TeamG2Item data) {
@@ -76,24 +79,33 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
             loadingImage.setVisibility(View.VISIBLE);
             surfaceView.setVisibility(View.INVISIBLE);
             stateText.setVisibility(GONE);
+            ivMute.setVisibility(GONE);
         } else if (data.state == TeamG2Item.STATE.STATE_PLAYING) {
             // 正在通话
             loadingImage.setVisibility(GONE);
             surfaceView.setVisibility(data.videoLive ? View.VISIBLE : View.INVISIBLE); // 有视频流才需要SurfaceView
             stateText.setVisibility(GONE);
+            if (data.isSelf) {
+                ivMute.setVisibility(GONE);
+            } else {
+                ivMute.setVisibility(View.VISIBLE);
+                ivMute.setSelected(data.isMute);
+            }
         } else if (data.state == TeamG2Item.STATE.STATE_END || data.state == TeamG2Item.STATE.STATE_HANGUP) {
             // 未接听/挂断
             loadingImage.setVisibility(GONE);
             surfaceView.setVisibility(GONE);
             stateText.setVisibility(View.VISIBLE);
             stateText.setText(data.state ==
-                              TeamG2Item.STATE.STATE_HANGUP ? R.string.avchat_has_hangup : R.string.avchat_no_pick_up);
+                    TeamG2Item.STATE.STATE_HANGUP ? R.string.avchat_has_hangup : R.string.avchat_no_pick_up);
+            ivMute.setVisibility(GONE);
         } else if(data.state == TeamG2Item.STATE.STATE_REJECTED){
             //已拒绝
             loadingImage.setVisibility(GONE);
             surfaceView.setVisibility(GONE);
             stateText.setVisibility(View.VISIBLE);
             stateText.setText(R.string.avchat_has_reject);
+            ivMute.setVisibility(GONE);
         }
         updateVolume(data.volume);
     }

@@ -38,6 +38,11 @@ dependencies {
     implementation("com.google.android.material:material:${MATERIAL_GOOGLE_VERSION}")
     implementation("androidx.constraintlayout:constraintlayout:${CONSTRAINT_X_VERSION}")
 
-    implementation project(':G2:baselib')
     implementation project(':G2:nertcvideocall')
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.blankj:utilcodex:1.29.0'
+
+    implementation rootProject.ext.imSdk
+    implementation rootProject.ext.avsignallingSdk
 }

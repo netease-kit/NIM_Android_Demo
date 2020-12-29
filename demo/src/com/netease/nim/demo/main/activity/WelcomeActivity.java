@@ -23,7 +23,7 @@ import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-import com.netease.yunxin.nertc.nertcvideocalldemo.utils.CallParams;
+import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 
 import java.util.ArrayList;
 import java.util.Map;

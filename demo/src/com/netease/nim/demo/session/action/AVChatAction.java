@@ -12,7 +12,6 @@ import com.netease.nimlib.sdk.nos.NosService;
 import com.netease.nimlib.sdk.uinfo.UserService;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 import com.netease.yunxin.nertc.model.UserModel;
-import com.netease.yunxin.nertc.ui.NERTCAudioCallActivity;
 import com.netease.yunxin.nertc.ui.NERTCVideoCallActivity;
 
 /**
@@ -69,7 +68,7 @@ public class AVChatAction extends BaseAction {
 
     public void startAudioVideoCall(ChannelType avChatType, UserModel userModel) {
         if (avChatType == ChannelType.AUDIO) {
-            NERTCAudioCallActivity.startCallOther(getActivity(), userModel);
+            NERTCVideoCallActivity.startAudioCallOther(getActivity(), userModel);
         } else {
             NERTCVideoCallActivity.startCallOther(getActivity(), userModel);
         }

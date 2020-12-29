@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.netease.yunxin.nertc.nertcvideocalldemo">
+    package="com.netease.yunxin.nertc.nertcvideocall">
 
     <application>
 
@@ -9,12 +9,15 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="com.netease.yunxin.nertc.nertcvideocalldemo.push.SignallingHuaweiPushActivity"
+        <activity
+            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingHuaweiPushActivity"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
+
                 <data
                     android:host="com.netease.nimlib.avsignalling.push"
                     android:path="/huawei"
@@ -23,7 +26,7 @@
         </activity>
 
         <service
-            android:name="com.netease.yunxin.nertc.nertcvideocalldemo.push.SignallingHuaweiPushMessageService"
+            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingHuaweiPushMessageService"
             android:exported="false">
             <intent-filter>
                 <action android:name="com.netease.nimlib.mixpush.hw.action.MESSAGING_EVENT" />
@@ -31,7 +34,7 @@
         </service>
 
         <activity
-            android:name="com.netease.yunxin.nertc.nertcvideocalldemo.push.SignallingOppoPushActivity"
+            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingOppoPushActivity"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="com.oppo.codelabpush.intent.action.test" />

@@ -8,7 +8,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
 
         consumerProguardFiles "consumer-rules.pro"
     }
@@ -26,16 +26,18 @@ android {
 }
 
 dependencies {
-//    api fileTree(dir: "libs", include: ["*.jar"])
-    api rootProject.ext.nertcSdk
     api 'com.netease.yunxin:report:2.0.3'
 
     compileOnly fileTree(dir: 'libs-push', include: ['*.jar', '*.aar'])
 
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
+    implementation 'com.blankj:utilcodex:1.29.0'
 
-    api project(':G2:baselib')
+    implementation rootProject.ext.imSdk
+    implementation rootProject.ext.avsignallingSdk
+    implementation rootProject.ext.imPushSdk
+    api rootProject.ext.nertcSdk
 
     compileOnly 'com.huawei.hms:push:4.0.4.301'
     compileOnly 'com.meizu.flyme.internet:push-internal:3.9.7'

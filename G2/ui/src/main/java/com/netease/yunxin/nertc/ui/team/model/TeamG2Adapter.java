@@ -1,5 +1,7 @@
 package com.netease.yunxin.nertc.ui.team.model;
 
+import android.view.View;
+
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.netease.lava.nertc.sdk.video.NERtcVideoView;
@@ -24,6 +26,8 @@ public class TeamG2Adapter extends BaseMultiItemFetchLoadAdapter<TeamG2Item, Bas
 
     private Map<Class<? extends RecyclerViewHolder>, Integer> holder2ViewType;
 
+    private RemoteUserMuteChangeListener onItemMuteChangeListener;
+
     public TeamG2Adapter(RecyclerView recyclerView, List<TeamG2Item> data) {
         super(recyclerView, data);
 
@@ -46,6 +50,23 @@ public class TeamG2Adapter extends BaseMultiItemFetchLoadAdapter<TeamG2Item, Bas
     }
 
     @Override
+    protected void convert(BaseViewHolder baseHolder, TeamG2Item item, int position, boolean isScrolling) {
+        super.convert(baseHolder, item, position, isScrolling);
+        baseHolder.itemView.setOnClickListener(v -> {
+            TeamG2Item itemStep = item;
+            item.isMute = !item.isMute;
+            if (onItemMuteChangeListener != null) {
+                onItemMuteChangeListener.onMuteChange(item.uid, item.isMute);
+            }
+            notifyItemChanged(position, itemStep);
+        });
+    }
+
+    public void setOnItemMuteChangeListener(RemoteUserMuteChangeListener onItemMuteChangeListener) {
+        this.onItemMuteChangeListener = onItemMuteChangeListener;
+    }
+
+    @Override
     protected String getItemKey(TeamG2Item item) {
         return item.type + "_" + item.teamId + "_" + item.account;
     }
@@ -64,5 +85,9 @@ public class TeamG2Adapter extends BaseMultiItemFetchLoadAdapter<TeamG2Item, Bas
         if (holder instanceof TeamG2ItemViewHolder) {
             ((TeamG2ItemViewHolder) holder).updateVolume(item.volume);
         }
+    }
+
+    public interface RemoteUserMuteChangeListener {
+        void onMuteChange(long uid, boolean isMute);
     }
 }

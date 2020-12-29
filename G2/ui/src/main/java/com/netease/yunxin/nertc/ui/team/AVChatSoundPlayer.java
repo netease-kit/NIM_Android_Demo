@@ -8,7 +8,7 @@ import android.media.AudioManager;
 import android.media.SoundPool;
 import android.util.Log;
 
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 import com.netease.yunxin.nertc.ui.R;
 
 /**

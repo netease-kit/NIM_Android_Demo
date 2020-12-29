@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.blankj.utilcode.util.ToastUtils;
+import com.netease.lava.nertc.sdk.stats.NERtcNetworkQualityInfo;
 import com.netease.lava.nertc.sdk.video.NERtcVideoView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -32,10 +33,10 @@ import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
 import com.netease.nimlib.sdk.avsignalling.model.MemberInfo;
 import com.netease.yunxin.nertc.model.ProfileManager;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.JoinChannelCallBack;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCCallingDelegate;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCVideoCall;
-import com.netease.yunxin.nertc.nertcvideocalldemo.utils.CallParams;
+import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 import com.netease.yunxin.nertc.ui.R;
 import com.netease.yunxin.nertc.ui.team.model.TeamG2Adapter;
 import com.netease.yunxin.nertc.ui.team.model.TeamG2Item;
@@ -45,6 +46,7 @@ import com.netease.yunxin.nertc.ui.team.utils.ScreenUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -356,8 +358,14 @@ public class TeamG2Activity extends UI {
         }
         nertcCallingDelegate = new NERTCCallingDelegate() {
             @Override
-            public void onError(int errorCode, String errorMsg) {
-
+            public void onError(int errorCode, String errorMsg, boolean needFinish) {
+                if (needFinish) {
+                    ToastUtils.showLong(errorMsg + " errorCode:" + errorCode);
+                    AVChatSoundPlayer.instance().stop();
+                    finish();
+                } else {
+                    Log.i(TAG, errorMsg + " errorCode:" + errorCode);
+                }
             }
 
             @Override
@@ -381,13 +389,18 @@ public class TeamG2Activity extends UI {
             }
 
             @Override
+            public void onUserDisconnect(String userId) {
+                onAVChatUserLeave(userId);
+            }
+
+            @Override
             public void onRejectByUserId(String userId) {
                 onSignalingUserReject(userId);
             }
 
             @Override
             public void onUserBusy(String userId) {
-
+                onSignalingUserReject(userId);
             }
 
             @Override
@@ -408,6 +421,16 @@ public class TeamG2Activity extends UI {
 
             @Override
             public void onAudioAvailable(long userId, boolean isAudioAvailable) {
+
+            }
+
+            @Override
+            public void onUserNetworkQuality(NERtcNetworkQualityInfo[] stats) {
+
+            }
+
+            @Override
+            public void onCallTypeChange(ChannelType type) {
 
             }
 
@@ -477,6 +500,7 @@ public class TeamG2Activity extends UI {
             if (surfaceView != null) {
                 item.state = TeamG2Item.STATE.STATE_PLAYING;
                 item.videoLive = true;
+                item.uid = uid;
                 adapter.notifyItemChanged(index);
                 NERTCVideoCall.sharedInstance().setupRemoteView(surfaceView, uid);
             }
@@ -753,6 +777,7 @@ public class TeamG2Activity extends UI {
 
         TeamG2Item selfItem = new TeamG2Item(TYPE_DATA, teamId, ProfileManager.getInstance().getUserModel().imAccid);
         selfItem.state = TeamG2Item.STATE.STATE_PLAYING; // 自己直接采集摄像头画面
+        selfItem.isSelf = true;
         data.add(0, selfItem);
 
         // 补充占位符
@@ -764,6 +789,9 @@ public class TeamG2Activity extends UI {
         // RecyclerView
         adapter = new TeamG2Adapter(recyclerView, data);
         recyclerView.setAdapter(adapter);
+        adapter.setOnItemMuteChangeListener((uid, isMute) -> {
+            NERTCVideoCall.sharedInstance().setAudioMute(isMute, uid);
+        });
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         recyclerView.addItemDecoration(new SpacingDecoration(ScreenUtil.dip2px(1), ScreenUtil.dip2px(1), true));
     }

@@ -1,4 +1,3 @@
-include ':G2:baselib'
 include ':G2:ui'
 include ':G2:nertcvideocall'
 include ':rtskit'

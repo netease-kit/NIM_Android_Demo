@@ -68,12 +68,14 @@ import com.netease.nimlib.sdk.msg.model.CustomNotification;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.yunxin.nertc.model.ProfileManager;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCVideoCall;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.TokenService;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.UIService;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.VideoCallOptions;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.impl.UIServiceManager;
-import com.netease.yunxin.nertc.nertcvideocalldemo.utils.CallParams;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.TokenService;
+import com.netease.yunxin.nertc.nertcvideocall.model.UIService;
+import com.netease.yunxin.nertc.nertcvideocall.model.VideoCallOptions;
+import com.netease.yunxin.nertc.nertcvideocall.model.impl.UIServiceManager;
+import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
+import com.netease.yunxin.nertc.ui.NERTCVideoCallActivity;
+import com.netease.yunxin.nertc.ui.team.TeamG2Activity;
 import com.qiyukf.unicorn.ysfkit.unicorn.api.Unicorn;
 
 import org.json.JSONArray;
@@ -191,18 +193,28 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 
                         NERTCVideoCall.sharedInstance().setupAppKey(getApplicationContext(), appKey, new VideoCallOptions(null, new UIService() {
                             @Override
-                            public String getOneToOneAudioChat() {
-                                return "com.netease.yunxin.nertc.ui.NERTCAudioCallActivity";
+                            public Class getOneToOneAudioChat() {
+                                return NERTCVideoCallActivity.class;
                             }
 
                             @Override
-                            public String getOneToOneVideoChat() {
-                                return "com.netease.yunxin.nertc.ui.NERTCVideoCallActivity";
+                            public Class getOneToOneVideoChat() {
+                                return NERTCVideoCallActivity.class;
                             }
 
                             @Override
-                            public String getGroupVideoChat() {
-                                return "com.netease.yunxin.nertc.ui.team.TeamG2Activity";
+                            public Class getGroupVideoChat() {
+                                return TeamG2Activity.class;
+                            }
+
+                            @Override
+                            public int getNotificationIcon() {
+                                return R.drawable.ic_logo;
+                            }
+
+                            @Override
+                            public int getNotificationSmallIcon() {
+                                return R.drawable.ic_logo;
                             }
                         }, ProfileManager.getInstance()));
 
@@ -260,7 +272,9 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                                 }
 
                                 new Handler(getMainLooper()).post(() -> {
-                                    callback.onFailed(-1);
+                                    //fixme 此处因为demo可以走非安全模式所以返回null，线上环境请在此处走 onFailed 逻辑
+                                    callback.onSuccess(null);
+//                                    callback.onFailed(-1);
                                 });
                             }).start();
                         });
@@ -282,7 +296,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                             NimLog.d(TAG, String.format("onNotificationClicked callType:%s channelType:%s", callType, channelType));
 
                             if (TextUtils.equals(String.valueOf(CallParams.CallType.TEAM), callType)) {
-                                avChatIntent.setClassName(MainActivity.this, UIServiceManager.getInstance().getUiService().getGroupVideoChat());
+                                avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getGroupVideoChat());
 
                                 try {
                                     String userIdsBase64 = extraIntent.getString(CallParams.INVENT_USER_IDS);
@@ -305,9 +319,9 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                                 }
                             } else {
                                 if (TextUtils.equals(String.valueOf(ChannelType.AUDIO.getValue()), channelType)) {
-                                    avChatIntent.setClassName(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneAudioChat());
+                                    avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneAudioChat());
                                 } else {
-                                    avChatIntent.setClassName(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneVideoChat());
+                                    avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneVideoChat());
                                 }
                             }
 

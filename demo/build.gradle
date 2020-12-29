@@ -133,7 +133,6 @@ dependencies {
     implementation project(path: ':rtskit')
 
     implementation project(path: ':G2:ui')
-    implementation project(path: ':G2:baselib')
     implementation project(path: ':G2:nertcvideocall')
 
     //debugImplementation project(':plugins:sf')

@@ -5,7 +5,7 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 import android.util.Log;
 
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 
 import java.lang.reflect.Field;
 

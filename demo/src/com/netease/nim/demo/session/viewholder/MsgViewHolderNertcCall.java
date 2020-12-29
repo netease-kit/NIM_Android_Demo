@@ -13,7 +13,7 @@ import com.netease.nim.uikit.common.util.sys.TimeUtil;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.msg.attachment.NetCallAttachment;
 import com.netease.nimlib.sdk.msg.constant.MsgDirectionEnum;
-import com.netease.yunxin.nertc.nertcvideocalldemo.utils.NrtcCallStatus;
+import com.netease.yunxin.nertc.nertcvideocall.utils.NrtcCallStatus;
 
 /**
  * Created by zhoujianghua on 2015/8/6.

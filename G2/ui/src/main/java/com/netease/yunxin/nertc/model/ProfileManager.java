@@ -10,8 +10,7 @@ import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.uinfo.UserService;
-import com.netease.yunxin.nertc.baselib.CommonDataManager;
-import com.netease.yunxin.nertc.nertcvideocalldemo.model.UserInfoInitCallBack;
+import com.netease.yunxin.nertc.nertcvideocall.model.UserInfoInitCallBack;
 
 public final class ProfileManager implements UserInfoInitCallBack {
     private static final ProfileManager instance = new ProfileManager();
