@@ -5,9 +5,13 @@ import android.os.Build;
 import android.os.Environment;
 import android.text.TextUtils;
 
+import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
+
 import java.io.File;
 
 public class StorageUtil {
+    private static final String TAG = "StorageUtil";
+
     public final static long K = 1024;
     public final static long M = 1024 * 1024;
     // 外置存储卡默认预警临界值
@@ -71,7 +75,10 @@ public class StorageUtil {
         }
 
         long residual = ExternalStorage.getInstance().getAvailableExternalSize();
-        if (residual < fileType.getStorageMinSize()) {
+        long storageMinSize = fileType.getStorageMinSize();
+
+        if (residual < storageMinSize) {
+            NimLog.i(TAG, String.format("hasEnoughSpaceForWrite residual:%s MinSize:%s", residual, storageMinSize));
             return false;
         } else if (residual < THRESHOLD_WARNING_SPACE) {
         }

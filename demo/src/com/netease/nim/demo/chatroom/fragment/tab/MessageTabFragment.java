@@ -13,6 +13,7 @@ import com.netease.nim.uikit.business.chatroom.fragment.ChatRoomMessageFragment;
  * Created by hzxuwen on 2015/12/14.
  */
 public class MessageTabFragment extends ChatRoomTabFragment {
+
     private ChatRoomMessageFragment fragment;
 
     public MessageTabFragment() {
@@ -20,7 +21,8 @@ public class MessageTabFragment extends ChatRoomTabFragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return super.onCreateView(inflater, container, savedInstanceState);
     }
 
@@ -49,6 +51,8 @@ public class MessageTabFragment extends ChatRoomTabFragment {
     }
 
     private void findViews() {
-        fragment = (ChatRoomMessageFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.chat_room_message_fragment);
+        fragment = (ChatRoomMessageFragment) getActivity().getSupportFragmentManager()
+                                                          .findFragmentById(
+                                                                  R.id.chat_room_message_fragment);
     }
 }

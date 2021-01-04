@@ -23,6 +23,7 @@ public class SystemMessageViewHolder extends TViewHolder {
     private TextView fromAccountText;
     private TextView timeText;
     private TextView contentText;
+    private TextView postcriptText;
     private View operatorLayout;
     private Button agreeButton;
     private Button rejectButton;
@@ -47,6 +48,7 @@ public class SystemMessageViewHolder extends TViewHolder {
         headImageView = (HeadImageView) view.findViewById(R.id.from_account_head_image);
         fromAccountText = (TextView) view.findViewById(R.id.from_account_text);
         contentText = (TextView) view.findViewById(R.id.content_text);
+        postcriptText = (TextView) view.findViewById(R.id.postscript_text);
         timeText = (TextView) view.findViewById(R.id.notification_time);
         operatorLayout = view.findViewById(R.id.operator_layout);
         agreeButton = (Button) view.findViewById(R.id.agree);
@@ -88,6 +90,13 @@ public class SystemMessageViewHolder extends TViewHolder {
                 operatorResultText.setVisibility(View.VISIBLE);
                 operatorResultText.setText(MessageHelper.getVerifyNotificationDealResult(message));
             }
+        }
+
+        if (!MessageHelper.hasPostscript(message)) {
+            postcriptText.setVisibility(View.GONE);
+        } else {
+            postcriptText.setText(message.getContent());
+            postcriptText.setVisibility(View.VISIBLE);
         }
     }
 

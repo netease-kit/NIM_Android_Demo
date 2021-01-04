@@ -11,17 +11,18 @@ import com.netease.nim.demo.R;
 import java.util.HashMap;
 import java.util.Map;
 
-import jp.wasabeef.glide.transformations.BlurTransformation;
-
 /**
  * Created by hzxuwen on 2016/1/19.
  */
 public class ChatRoomHelper {
-    private static final int[] imageRes = {R.drawable.room_cover_36, R.drawable.room_cover_37, R.drawable.room_cover_49,
-            R.drawable.room_cover_50, R.drawable.room_cover_57, R.drawable.room_cover_58, R.drawable.room_cover_64,
-            R.drawable.room_cover_72};
+
+    private static final int[] imageRes = {R.drawable.room_cover_36, R.drawable.room_cover_37,
+                                           R.drawable.room_cover_49, R.drawable.room_cover_50,
+                                           R.drawable.room_cover_57, R.drawable.room_cover_58,
+                                           R.drawable.room_cover_64, R.drawable.room_cover_72};
 
     private static Map<String, Integer> roomCoverMap = new HashMap<>();
+
     private static int index = 0;
 
     public static void setCoverImage(String roomId, ImageView coverImage, boolean blur) {
@@ -36,13 +37,12 @@ public class ChatRoomHelper {
 
     private static void blurCoverImage(boolean blur, final ImageView imageView, final int resId) {
         final Context context = DemoCache.getContext();
-
         if (!blur) {
             Glide.with(context).load(resId).into(imageView);
         } else {
-            Glide.with(context).load(resId)
-                    .apply(new RequestOptions().bitmapTransform(new BlurTransformation(5)))
-                    .into(imageView);
+            Glide.with(context).load(resId).apply(
+                    new RequestOptions().bitmapTransform(new BlurTransformation(context, 5))).into(
+                    imageView);
         }
     }
 }

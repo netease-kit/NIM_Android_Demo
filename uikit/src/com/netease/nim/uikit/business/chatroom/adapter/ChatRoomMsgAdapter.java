@@ -1,6 +1,5 @@
 package com.netease.nim.uikit.business.chatroom.adapter;
 
-import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
 import com.netease.nim.uikit.R;
@@ -19,34 +18,39 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * Created by huangjun on 2016/12/21.
  */
-public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMessage, BaseViewHolder> {
+public class ChatRoomMsgAdapter extends
+        BaseMultiItemFetchLoadAdapter<ChatRoomMessage, BaseViewHolder> {
 
     private Map<Class<? extends ChatRoomMsgViewHolderBase>, Integer> holder2ViewType;
 
     private ViewHolderEventListener eventListener;
+
     private Map<String, Float> progresses; // 有文件传输，需要显示进度条的消息ID map
+
     private String messageId;
+
     private Container container;
 
-    public ChatRoomMsgAdapter(RecyclerView recyclerView, List<ChatRoomMessage> data, Container container) {
+    public ChatRoomMsgAdapter(RecyclerView recyclerView, List<ChatRoomMessage> data,
+                              Container container) {
         super(recyclerView, data);
-
         timedItems = new HashSet<>();
         progresses = new HashMap<>();
-
         // view type, view holder
         holder2ViewType = new HashMap<>();
-        List<Class<? extends ChatRoomMsgViewHolderBase>> holders = ChatRoomMsgViewHolderFactory.getAllViewHolders();
+        List<Class<? extends ChatRoomMsgViewHolderBase>> holders = ChatRoomMsgViewHolderFactory
+                .getAllViewHolders();
         int viewType = 0;
         for (Class<? extends ChatRoomMsgViewHolderBase> holder : holders) {
             viewType++;
             addItemType(viewType, R.layout.nim_message_item, holder);
             holder2ViewType.put(holder, viewType);
         }
-
         this.container = container;
     }
 
@@ -72,7 +76,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
         if (message == null) {
             return;
         }
-
         int index = 0;
         for (IMMessage item : getData()) {
             if (item.isTheSame(message)) {
@@ -80,7 +83,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
             }
             ++index;
         }
-
         if (index < getDataSize()) {
             remove(index);
             if (isRelocateTime) {
@@ -104,6 +106,7 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
      */
 
     private Set<String> timedItems; // 需要显示消息时间的消息ID
+
     private IMMessage lastShowTimeItem; // 用于消息时间显示,判断和上条消息间的时间间隔
 
     public boolean needShowTime(IMMessage message) {
@@ -120,7 +123,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
                 anchor = message;
             }
         }
-
         if (update) {
             lastShowTimeItem = anchor;
         }
@@ -131,7 +133,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
      */
     private boolean setShowTimeFlag(IMMessage message, IMMessage anchor) {
         boolean update = false;
-
         if (hideTimeAlways(message)) {
             setShowTime(message, false);
         } else {
@@ -141,7 +142,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
             } else {
                 long time = anchor.getTime();
                 long now = message.getTime();
-
                 if (now - time == 0) {
                     // 消息撤回时使用
                     setShowTime(message, true);
@@ -155,7 +155,6 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
                 }
             }
         }
-
         return update;
     }
 
@@ -180,12 +179,11 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
                     //删除的不是最后一项
                     nextItem = getItem(index);
                 }
-
                 // 增加其他不需要显示时间的消息类型判断
                 if (hideTimeAlways(nextItem)) {
                     setShowTime(nextItem, false);
-                    if (lastShowTimeItem != null && lastShowTimeItem != null
-                            && lastShowTimeItem.isTheSame(messageItem)) {
+                    if (lastShowTimeItem != null && lastShowTimeItem != null &&
+                        lastShowTimeItem.isTheSame(messageItem)) {
                         lastShowTimeItem = null;
                         for (int i = getDataSize() - 1; i >= 0; i--) {
                             IMMessage item = getItem(i);
@@ -197,8 +195,8 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
                     }
                 } else {
                     setShowTime(nextItem, true);
-                    if (lastShowTimeItem == null
-                            || (lastShowTimeItem != null && lastShowTimeItem.isTheSame(messageItem))) {
+                    if (lastShowTimeItem == null ||
+                        (lastShowTimeItem != null && lastShowTimeItem.isTheSame(messageItem))) {
                         lastShowTimeItem = nextItem;
                     }
                 }
@@ -221,6 +219,7 @@ public class ChatRoomMsgAdapter extends BaseMultiItemFetchLoadAdapter<ChatRoomMe
     }
 
     public interface ViewHolderEventListener {
+
         // 长按事件响应处理
         boolean onViewHolderLongClick(View clickView, View viewHolderView, IMMessage item);
 

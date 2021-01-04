@@ -25,17 +25,20 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
 
     private static final String EXTRA_DATA_ACCOUNT = "EXTRA_DATA_ACCOUNT";
     private static final String EXTRA_DATA_SESSION_TYPE = "EXTRA_DATA_SESSION_TYPE";
+    private static final String EXTRA_PERSIST_CLEAR = "EXTRA_PERSIST_CLEAR";
 
     // context
     private SessionTypeEnum sessionType;
     private String account; // 对方帐号
+    private boolean persistClear; // 是否入库被清除的消息
 
     private MessageListPanelEx messageListPanel;
 
-    public static void start(Context context, String account, SessionTypeEnum sessionType) {
+    public static void start(Context context, String account, SessionTypeEnum sessionType, boolean persistClear) {
         Intent intent = new Intent();
         intent.putExtra(EXTRA_DATA_ACCOUNT, account);
         intent.putExtra(EXTRA_DATA_SESSION_TYPE, sessionType);
+        intent.putExtra(EXTRA_PERSIST_CLEAR, persistClear);
         intent.setClass(context, MessageHistoryActivity.class);
         context.startActivity(intent);
     }
@@ -58,7 +61,7 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
         onParseIntent();
 
         Container container = new Container(this, account, sessionType, this);
-        messageListPanel = new MessageListPanelEx(container, rootView, true, true);
+        messageListPanel = new MessageListPanelEx(container, rootView, null, true, true, persistClear);
     }
 
     @Override
@@ -77,6 +80,7 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
     protected void onParseIntent() {
         account = getIntent().getStringExtra(EXTRA_DATA_ACCOUNT);
         sessionType = (SessionTypeEnum) getIntent().getSerializableExtra(EXTRA_DATA_SESSION_TYPE);
+        persistClear = getIntent().getBooleanExtra(EXTRA_PERSIST_CLEAR, true);
     }
 
     @Override
@@ -96,6 +100,11 @@ public class MessageHistoryActivity extends UI implements ModuleProxy {
 
     @Override
     public void onItemFooterClick(IMMessage message) {
+
+    }
+
+    @Override
+    public void onReplyMessage(IMMessage replyMsg) {
 
     }
 

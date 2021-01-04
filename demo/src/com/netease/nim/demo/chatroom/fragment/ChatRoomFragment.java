@@ -1,7 +1,6 @@
 package com.netease.nim.demo.chatroom.fragment;
 
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,17 +21,27 @@ import com.netease.nim.uikit.common.ui.barrage.BarrageSurfaceView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
 
+import androidx.viewpager.widget.ViewPager;
+
 /**
  * 聊天室顶层fragment
  * Created by hzxuwen on 2015/12/14.
  */
-public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.OnPageChangeListener {
+public class ChatRoomFragment extends ChatRoomTabFragment implements
+        ViewPager.OnPageChangeListener {
+
     private PagerSlidingTabStrip tabs;
+
     private ViewPager viewPager;
+
     private ChatRoomTabPagerAdapter adapter;
+
     private int scrollState;
+
     private ImageView imageView;
+
     private TextView statusText;
+
     private static final boolean SHOW_BARRAGE = false;
 
     @Override
@@ -45,14 +54,14 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.chat_room_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         findViews();
         setupPager();
         setupTabs();
@@ -63,7 +72,8 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     }
 
     public void updateView() {
-        ChatRoomHelper.setCoverImage(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId(), imageView, true);
+        ChatRoomHelper.setCoverImage(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId(),
+                                     imageView, true);
     }
 
     @Override
@@ -77,35 +87,26 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
         final ImageView backImage = findView(R.id.back_arrow);
         tabs = findView(R.id.chat_room_tabs);
         viewPager = findView(R.id.chat_room_viewpager);
-
-        backImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                NIMClient.getService(ChatRoomService.class).exitChatRoom(((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId());
-                ((ChatRoomActivity) getActivity()).onExitedChatRoom();
-            }
+        backImage.setOnClickListener(v -> {
+            NIMClient.getService(ChatRoomService.class).exitChatRoom(
+                    ((ChatRoomActivity) getActivity()).getRoomInfo().getRoomId());
+            ((ChatRoomActivity) getActivity()).onExitedChatRoom();
         });
-
         // 是否演示弹幕控件
         if (SHOW_BARRAGE) {
             ViewStub barrageViewStub = findView(R.id.barrage_view_stub);
             barrageViewStub.inflate();
-
             View barrageViewRoot = findView(R.id.barrage_view_after_inflate);
-            final BarrageSurfaceView barrageView = (BarrageSurfaceView) barrageViewRoot.findViewById(R.id.barrage_view);
-
+            final BarrageSurfaceView barrageView = barrageViewRoot.findViewById(R.id.barrage_view);
             final String barrageText1 = "欢迎进入直播间";
             final String barrageText2 = "Welcome to live room";
-            Handlers.sharedHandler(getActivity()).postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    BarrageConfig config = new BarrageConfig();
-                    config.setDuration(4500);
-                    // 初始化弹幕控件
-                    barrageView.init(config);
-                    for (int i = 1; i <= 200; i++) {
-                        barrageView.addTextBarrage((i % 2 == 0 ? barrageText1 : barrageText2) + i);
-                    }
+            Handlers.sharedHandler(getActivity()).postDelayed(() -> {
+                BarrageConfig config = new BarrageConfig();
+                config.setDuration(4500);
+                // 初始化弹幕控件
+                barrageView.init(config);
+                for (int i = 1; i <= 200; i++) {
+                    barrageView.addTextBarrage((i % 2 == 0 ? barrageText1 : barrageText2) + i);
                 }
             }, 1000);
         }
@@ -120,11 +121,12 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
         // ADAPTER
         viewPager.setAdapter(adapter);
         // TAKE OVER CHANGE
-        viewPager.setOnPageChangeListener(this);
+        viewPager.addOnPageChangeListener(this);
     }
 
     private void setupTabs() {
         tabs.setOnCustomTabListener(new PagerSlidingTabStrip.OnCustomTabListener() {
+
             @Override
             public int getTabLayoutResId(int position) {
                 return R.layout.chat_room_tab_layout;
@@ -156,7 +158,6 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     public void onPageSelected(int position) {
         // TO TABS
         tabs.onPageSelected(position);
-
         selectPage(position);
     }
 
@@ -164,9 +165,7 @@ public class ChatRoomFragment extends ChatRoomTabFragment implements ViewPager.O
     public void onPageScrollStateChanged(int state) {
         // TO TABS
         tabs.onPageScrollStateChanged(state);
-
         scrollState = state;
-
         selectPage(viewPager.getCurrentItem());
     }
 

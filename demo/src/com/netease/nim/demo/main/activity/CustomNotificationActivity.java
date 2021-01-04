@@ -2,7 +2,6 @@ package com.netease.nim.demo.main.activity;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -12,14 +11,15 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.netease.nim.uikit.common.ToastHelper;
-
 import com.alibaba.fastjson.JSONObject;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.main.helper.CustomNotificationCache;
 import com.netease.nim.demo.main.viewholder.CustomNotificationViewHolder;
+import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapter;
@@ -28,8 +28,6 @@ import com.netease.nim.uikit.common.adapter.TViewHolder;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.listview.AutoRefreshListView;
 import com.netease.nim.uikit.common.ui.listview.MessageListView;
-import com.netease.nim.uikit.api.NimUIKit;
-import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -39,6 +37,8 @@ import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.CustomNotification;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -57,6 +57,7 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
 
     // adapter
     private TAdapter adapter;
+
     private List<CustomNotification> items = new ArrayList<>();
 
     public static void start(Context context) {
@@ -94,16 +95,12 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.system_notification_message_activity);
-
         ToolBarOptions options = new NimToolBarOptions();
         options.titleId = R.string.custom_notification;
         setToolBar(R.id.toolbar, options);
-
         initAdapter();
         initListView();
-
         loadData(); // load old data
         registerCustomNotificationObserver(true);
     }
@@ -112,7 +109,6 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-
         registerCustomNotificationObserver(false);
     }
 
@@ -142,12 +138,11 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
     }
 
     private void initListView() {
-        listView = (MessageListView) findViewById(R.id.messageListView);
+        listView = findViewById(R.id.messageListView);
         listView.setMode(AutoRefreshListView.Mode.END);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
             listView.setOverScrollMode(View.OVER_SCROLL_NEVER);
         }
-
         // adapter
         listView.setAdapter(adapter);
     }
@@ -157,81 +152,86 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
         List<CustomNotification> cache = CustomNotificationCache.getInstance().getCustomNotification();
         if (!cache.isEmpty()) {
             items.addAll(cache);
+            sortItems();
         }
-
         refresh();
     }
 
     private void refresh() {
-        runOnUiThread(new Runnable() {
-            @Override
-            public void run() {
-                adapter.notifyDataSetChanged();
-            }
-        });
+        runOnUiThread(() -> adapter.notifyDataSetChanged());
     }
 
     private void registerCustomNotificationObserver(boolean register) {
         NIMClient.getService(MsgServiceObserve.class).observeCustomNotification(customNotificationObserver, register);
     }
 
-    Observer<CustomNotification> customNotificationObserver = new Observer<CustomNotification>() {
-        @Override
-        public void onEvent(CustomNotification customNotification) {
-            if (!items.contains(customNotification) && customNotification.getContent() != null) {
-                items.add(0, customNotification);
+    Observer<CustomNotification> customNotificationObserver = (Observer<CustomNotification>) customNotification -> {
+        for (CustomNotification it : items) {
+            if (it.getTime() == customNotification.getTime() && it.getSessionId().equals(customNotification.getSessionId())) {
+                refresh();
+                return;
             }
-            refresh();
         }
+        if (!items.contains(customNotification) && customNotification.getContent() != null) {
+            items.add(0, customNotification);
+        }
+        sortItems();
+        refresh();
     };
+
+    private void sortItems() {
+
+        Collections.sort(items, new Comparator<CustomNotification>() {
+            @Override
+            public int compare(CustomNotification o1, CustomNotification o2) {
+                if (o1 == null && o2 == null) {
+                    return 0;
+                }
+                if (o1 == null) {
+                    return 1;
+                }
+                if (o2 == null) {
+                    return -1;
+                }
+                long t1 = o1.getTime();
+                long t2 = o2.getTime();
+                return -Long.compare(t1, t2);
+            }
+        });
+    }
 
     private void selectCustomNotificationTarget(boolean team) {
         ContactSelectActivity.Option option = new ContactSelectActivity.Option();
         option.title = DemoCache.getContext().getString(R.string.select_custom_notification_target);
         option.multi = false;
         option.showContactSelectArea = !team;
-        option.type = team ? ContactSelectActivity.ContactSelectType.TEAM :
-                ContactSelectActivity.ContactSelectType.BUDDY;
-
+        option.type = team ? ContactSelectActivity.ContactSelectType.TEAM : ContactSelectActivity.ContactSelectType.BUDDY;
         sendTarget = team ? 1 : 0;
-
         NimUIKit.startContactSelector(CustomNotificationActivity.this, option, CONTACT_SELECT_REQUEST_CODE);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-
         if (requestCode == CONTACT_SELECT_REQUEST_CODE && resultCode == Activity.RESULT_OK) {
             final ArrayList<String> selected = data.getStringArrayListExtra(ContactSelectActivity.RESULT_DATA);
             if (selected != null && !selected.isEmpty()) {
                 final EasyEditDialog requestDialog = new EasyEditDialog(this);
                 requestDialog.setEditTextMaxLength(200);
                 requestDialog.setTitle(getString(R.string.send_custom_notification_tip));
-                requestDialog.addNegativeButtonListener(R.string.cancel, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        finish();
-                    }
+                requestDialog.addNegativeButtonListener(R.string.cancel, v -> {
+                    requestDialog.dismiss();
+                    finish();
                 });
-                requestDialog.addPositiveButtonListener(R.string.send, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        String content = requestDialog.getEditMessage();
-                        if (!TextUtils.isEmpty(content)) {
-                            sendCustomNotification(selected.get(0), content);
-                        }
-                        finish();
+                requestDialog.addPositiveButtonListener(R.string.send, v -> {
+                    requestDialog.dismiss();
+                    String content = requestDialog.getEditMessage();
+                    if (!TextUtils.isEmpty(content)) {
+                        sendCustomNotification(selected.get(0), content);
                     }
+                    finish();
                 });
-                requestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                        finish();
-                    }
-                });
+                requestDialog.setOnCancelListener(dialog -> finish());
                 requestDialog.show();
                 showKeyboard(true);
             }
@@ -245,7 +245,6 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
         obj.put("id", "2");
         obj.put("content", content);
         String jsonContent = obj.toJSONString();
-
         CustomNotification notification = new CustomNotification();
         notification.setFromAccount(DemoCache.getAccount());
         notification.setSessionId(account);
@@ -253,22 +252,26 @@ public class CustomNotificationActivity extends UI implements TAdapterDelegate {
         notification.setSessionType(sendTarget == 1 ? SessionTypeEnum.Team : SessionTypeEnum.P2P);
         notification.setApnsText(jsonContent);
         notification.setContent(jsonContent);
+        NIMClient.getService(MsgService.class).sendCustomNotification(notification).setCallback(
+                new RequestCallback<Void>() {
 
-        NIMClient.getService(MsgService.class).sendCustomNotification(notification).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_success);
-            }
+                    @Override
+                    public void onSuccess(Void param) {
+                        ToastHelper.showToast(CustomNotificationActivity.this,
+                                              R.string.send_custom_notification_success);
+                    }
 
-            @Override
-            public void onFailed(int code) {
-                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_failed);
-            }
+                    @Override
+                    public void onFailed(int code) {
+                        ToastHelper.showToast(CustomNotificationActivity.this,
+                                              R.string.send_custom_notification_failed);
+                    }
 
-            @Override
-            public void onException(Throwable exception) {
-                ToastHelper.showToast(CustomNotificationActivity.this, R.string.send_custom_notification_failed);
-            }
-        });
+                    @Override
+                    public void onException(Throwable exception) {
+                        ToastHelper.showToast(CustomNotificationActivity.this,
+                                              R.string.send_custom_notification_failed);
+                    }
+                });
     }
 }

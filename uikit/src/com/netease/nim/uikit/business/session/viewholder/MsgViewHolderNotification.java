@@ -18,17 +18,17 @@ public class MsgViewHolderNotification extends MsgViewHolderBase {
     protected TextView notificationTextView;
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_notification;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         notificationTextView = (TextView) view.findViewById(R.id.message_item_notification_label);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         handleTextNotification(getDisplayText());
     }
 

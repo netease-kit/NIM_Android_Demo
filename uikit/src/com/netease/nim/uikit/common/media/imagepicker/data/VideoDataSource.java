@@ -3,8 +3,8 @@ package com.netease.nim.uikit.common.media.imagepicker.data;
 import android.database.Cursor;
 import android.net.Uri;
 import android.provider.MediaStore;
-import android.support.annotation.NonNull;
-import android.support.v4.app.FragmentActivity;
+import androidx.annotation.NonNull;
+import androidx.fragment.app.FragmentActivity;
 import android.text.TextUtils;
 
 import com.netease.nim.uikit.common.media.model.GLImage;

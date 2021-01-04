@@ -11,6 +11,8 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+
 import com.faceunity.FaceU;
 import com.faceunity.utils.VersionUtil;
 import com.netease.nim.avchatkit.AVChatKit;
@@ -66,6 +68,7 @@ public class AVChatActivity extends UI implements AVChatVideoUI.TouchZoneCallbac
     private static final String KEY_SOURCE = "source";
     private static final String KEY_CALL_CONFIG = "KEY_CALL_CONFIG";
     public static final String INTENT_ACTION_AVCHAT = "INTENT_ACTION_AVCHAT";
+    private static final String KEY_NEED_FINISH = "need_finish";
 
     public static final int FROM_BROADCASTRECEIVER = 0; // 来自广播
     public static final int FROM_INTERNAL = 1; // 来自发起方
@@ -117,6 +120,12 @@ public class AVChatActivity extends UI implements AVChatVideoUI.TouchZoneCallbac
     // 接听来电
     public static void incomingCall(Context context, AVChatData config, String displayName, int source) {
         needFinish = false;
+        Intent intent = incomingCallIntent(context, config, displayName, source);
+        context.startActivity(intent);
+    }
+
+    @NonNull
+    public static Intent incomingCallIntent(Context context, AVChatData config, String displayName, int source) {
         Intent intent = new Intent();
         intent.setClass(context, AVChatActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -124,12 +133,19 @@ public class AVChatActivity extends UI implements AVChatVideoUI.TouchZoneCallbac
         intent.putExtra(KEY_DISPLAY_NAME, displayName);
         intent.putExtra(KEY_IN_CALLING, true);
         intent.putExtra(KEY_SOURCE, source);
-        context.startActivity(intent);
+        intent.putExtra(KEY_NEED_FINISH, false);
+
+        return intent;
     }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        if (getIntent().hasExtra(KEY_NEED_FINISH)) {
+            needFinish = getIntent().getBooleanExtra(KEY_NEED_FINISH, false);
+        }
+
         // 若来电或去电未接通时，点击home。另外一方挂断通话。从最近任务列表恢复，则finish
         if (needFinish) {
             finish();
@@ -655,7 +671,11 @@ public class AVChatActivity extends UI implements AVChatVideoUI.TouchZoneCallbac
     @Override
     public void finish() {
         isUserFinish = true;
-        super.finish();
+        if(mIsInComingCall && Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            super.finishAndRemoveTask();
+        } else {
+            super.finish();
+        }
     }
 
     /**

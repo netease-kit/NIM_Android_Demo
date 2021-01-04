@@ -47,6 +47,10 @@ public class RobotInfoCache {
     public void buildCache() {
         // 获取所有有效的机器人
         List<NimRobotInfo> robots = NIMClient.getService(RobotService.class).getAllRobots();
+        if (robots == null) {
+            LogUtil.i(UIKitLogTag.ROBOT_CACHE, "build RobotInfoCache failed, robot list is null");
+            return;
+        }
         for (NimRobotInfo r : robots) {
             robotMap.put(r.getAccount(), r);
         }

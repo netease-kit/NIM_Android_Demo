@@ -32,12 +32,12 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_file;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         fileIcon = (ImageView) view.findViewById(R.id.message_item_file_icon_image);
         fileNameLabel = (TextView) view.findViewById(R.id.message_item_file_name_label);
         fileStatusLabel = (TextView) view.findViewById(R.id.message_item_file_status_label);
@@ -45,7 +45,7 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         msgAttachment = (FileAttachment) message.getAttachment();
         String path = msgAttachment.getPath();
         initDisplay();
@@ -107,7 +107,7 @@ public class MsgViewHolderFile extends MsgViewHolderBase {
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
         FileDownloadActivity.start(context, message);
     }
 

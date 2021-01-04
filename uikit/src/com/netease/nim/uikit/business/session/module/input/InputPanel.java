@@ -20,9 +20,11 @@ import android.widget.Button;
 import android.widget.Chronometer;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ToastHelper;
 
 import com.alibaba.fastjson.JSONObject;
@@ -79,8 +81,11 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
     protected View switchToAudioButtonInInputBar;// 语音消息选择按钮
     protected View moreFuntionButtonInInputBar;// 更多消息选择按钮
     protected View sendMessageButtonInInputBar;// 发送消息按钮
-    protected View emojiButtonInInputBar;// 发送消息按钮
+    protected View emojiButtonInInputBar;// emoji选择按钮
     protected View messageInputBar;
+    protected TextView replyInfoTv;// 被回复消息信息
+    protected View replyLayout;
+    protected ImageView cancelReplyImg;// 取消回复消息的按钮
 
     private SessionCustomization customization;
 
@@ -110,6 +115,8 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
     private boolean isRobotSession;
 
     private TextWatcher aitTextWatcher;
+
+    private IMMessage replyMessage = null;
 
     public InputPanel(Container container, View view, List<BaseAction> actions, boolean isTextAudioSwitchShow) {
         this.container = container;
@@ -164,6 +171,19 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
         }
     }
 
+    public IMMessage getReplyMessage() {
+        return replyMessage;
+    }
+
+    public void setReplyMessage(IMMessage replyMessage) {
+        this.replyMessage = replyMessage;
+        refreshReplyMsgLayout();
+    }
+
+    public void resetReplyMessage() {
+        setReplyMessage(null);
+    }
+
     public void setCustomization(SessionCustomization customization) {
         this.customization = customization;
         if (customization != null) {
@@ -186,6 +206,9 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
         emojiButtonInInputBar = view.findViewById(R.id.emoji_button);
         sendMessageButtonInInputBar = view.findViewById(R.id.buttonSendMessage);
         messageEditText = view.findViewById(R.id.editTextMessage);
+        replyInfoTv = view.findViewById(R.id.tvReplyInfo);
+        replyLayout = view.findViewById(R.id.layout_reply);
+        cancelReplyImg = view.findViewById(R.id.imgCancelReply);
 
         // 语音
         audioRecordBtn = view.findViewById(R.id.audioRecord);
@@ -216,12 +239,14 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
         emojiButtonInInputBar.setOnClickListener(clickListener);
         sendMessageButtonInInputBar.setOnClickListener(clickListener);
         moreFuntionButtonInInputBar.setOnClickListener(clickListener);
+        cancelReplyImg.setOnClickListener(clickListener);
     }
 
     private void initTextEdit() {
         messageEditText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
         messageEditText.setOnTouchListener(new View.OnTouchListener() {
 
+            @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     switchToTextLayout(true);
@@ -331,6 +356,8 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
                 toggleActionPanelLayout();
             } else if (v == emojiButtonInInputBar) {
                 toggleEmojiLayout();
+            } else if (v == cancelReplyImg) {
+                cancelReply();
             }
         }
     };
@@ -396,6 +423,10 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
         } else {
             hideEmojiLayout();
         }
+    }
+
+    private void cancelReply() {
+        resetReplyMessage();
     }
 
     // 隐藏表情布局
@@ -477,6 +508,21 @@ public class InputPanel implements IEmoticonSelectedListener, IAudioRecordCallba
 
         uiHandler.postDelayed(showMoreFuncRunnable, SHOW_LAYOUT_DELAY);
         container.proxy.onInputPanelExpand();
+    }
+
+    // 显示回复消息信息
+    private void refreshReplyMsgLayout() {
+        if (replyMessage == null) {
+            replyLayout.setVisibility(View.GONE);
+            return;
+        }
+
+        uiHandler.postDelayed(showTextRunnable, SHOW_LAYOUT_DELAY);
+        String fromDisplayName = UserInfoHelper.getUserDisplayNameInSession(replyMessage.getFromAccount(), replyMessage.getSessionType(), replyMessage.getSessionId());
+        String content = customization.getMessageDigest(replyMessage);
+        String text = String.format(container.activity.getString(R.string.reply_with_message), fromDisplayName, content);
+        replyInfoTv.setText(text);
+        replyLayout.setVisibility(View.VISIBLE);
     }
 
     // 初始化具体more layout中的项目

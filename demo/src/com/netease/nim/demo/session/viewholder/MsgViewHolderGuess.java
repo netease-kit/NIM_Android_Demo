@@ -21,17 +21,17 @@ public class MsgViewHolderGuess extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.rock_paper_scissors;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         imageView = (ImageView) view.findViewById(R.id.rock_paper_scissors_text);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         if (message.getAttachment() == null) {
             return;
         }

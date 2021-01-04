@@ -6,7 +6,8 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 
-
+import java.util.Arrays;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -18,7 +19,10 @@ import java.util.Locale;
 
 class AVChatNotificationChannelCompat26 {
 
-    private static final String NIM_CHANNEL_ID = "nim_avchat_tip_channel_001";
+    private static final List<String> NIM_CHANNEL_LEGACY_IDS  = Arrays.asList("nim_avchat_tip_channel_001");
+    // BuildConfig.VERSION_CODE
+    private static final String NIM_CHANNEL_ID = "nim_avchat_tip_channel_" + 130;
+
     private static String NIM_CHANNEL_NAME = "AV chat tip channel";
     private static String NIM_CHANNEL_DESC = "AV chat tip notification";
 
@@ -40,6 +44,13 @@ class AVChatNotificationChannelCompat26 {
         NotificationChannel channel;
         NotificationManager manager = ((NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE));
         if (manager != null) {
+            for (String legacyId : NIM_CHANNEL_LEGACY_IDS) {
+                NotificationChannel legacyChannel = manager.getNotificationChannel(legacyId);
+                if (legacyChannel != null) {
+                    manager.deleteNotificationChannel(legacyId);
+                }
+            }
+
             channel = manager.getNotificationChannel(NIM_CHANNEL_ID); // 已经存在就不要再创建了，无法修改通道配置
             if (channel == null) {
                 channel = buildNIMMessageChannel();
@@ -50,7 +61,7 @@ class AVChatNotificationChannelCompat26 {
 
     @TargetApi(Build.VERSION_CODES.O)
     private static NotificationChannel buildNIMMessageChannel() {
-        NotificationChannel channel = new NotificationChannel(NIM_CHANNEL_ID, NIM_CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+        NotificationChannel channel = new NotificationChannel(NIM_CHANNEL_ID, NIM_CHANNEL_NAME, NotificationManager.IMPORTANCE_HIGH);
         channel.setDescription(NIM_CHANNEL_DESC);
         channel.enableVibration(true);
         channel.setShowBadge(false);

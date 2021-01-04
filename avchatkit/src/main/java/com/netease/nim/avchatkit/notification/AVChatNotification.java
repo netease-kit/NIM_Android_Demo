@@ -5,12 +5,15 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
-import android.support.v4.app.NotificationCompat;
+
+import androidx.annotation.Nullable;
+import androidx.core.app.NotificationCompat;
 
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.R;
 import com.netease.nim.avchatkit.activity.AVChatActivity;
 import com.netease.nim.avchatkit.constant.AVChatExtras;
+import com.netease.nimlib.sdk.avchat.model.AVChatData;
 
 /**
  * 音视频聊天通知栏
@@ -23,10 +26,13 @@ public class AVChatNotification {
     private NotificationManager notificationManager;
     private Notification callingNotification;
     private Notification missCallNotification;
+    @Nullable
+    private Notification incomingCallNotification;
     private String account;
     private String displayName;
     private static final int CALLING_NOTIFY_ID = 111;
     private static final int MISS_CALL_NOTIFY_ID = 112;
+    private static final int INCOMING_CALL_NOTIFY_ID = 113;
 
     public AVChatNotification(Context context) {
         this.context = context;
@@ -69,14 +75,46 @@ public class AVChatNotification {
                     .FLAG_UPDATE_CURRENT);
 
             String title = context.getString(R.string.avchat_no_pickup_call);
-            String tickerText = displayName + ": 【网络通话】";
+            String tickerText = displayName + "：【网络通话】";
             int iconId = R.drawable.avchat_no_pickup;
 
             missCallNotification = makeNotification(pendingIntent, title, tickerText, tickerText, iconId, true, true);
         }
     }
 
+    private void buildIncomingCallNotification(AVChatData backgroundIncomingCallData) {
+        String displayName;
+        if (AVChatKit.getUserInfoProvider() != null) {
+            displayName = AVChatKit.getUserInfoProvider().getUserDisplayName(backgroundIncomingCallData.getAccount());
+        } else {
+            displayName = backgroundIncomingCallData.getAccount();
+        }
+        Intent notifyIntent = AVChatActivity.incomingCallIntent(context, backgroundIncomingCallData, displayName, AVChatActivity.FROM_BROADCASTRECEIVER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(
+                context,
+                CALLING_NOTIFY_ID,
+                notifyIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT);
+
+        String title = context.getString(R.string.avchat_incoming_call);
+        String content = displayName + "：【网络通话】";
+        String tickerText = displayName + " " + title;
+        int iconId = R.drawable.avchat_imcoming_call;
+
+        NotificationCompat.Builder incomingCallNotificationBuilder = makeNotificationBuilder(pendingIntent, title, content, tickerText, iconId, true, true);
+        incomingCallNotificationBuilder.setPriority(NotificationCompat.PRIORITY_MAX);
+        incomingCallNotificationBuilder.setCategory(NotificationCompat.CATEGORY_CALL);
+        incomingCallNotificationBuilder.setFullScreenIntent(pendingIntent, true);
+        incomingCallNotificationBuilder.setAutoCancel(true);
+        incomingCallNotification = incomingCallNotificationBuilder.build();
+    }
+
     private Notification makeNotification(PendingIntent pendingIntent, String title, String content, String tickerText,
+                                          int iconId, boolean ring, boolean vibrate) {
+        return makeNotificationBuilder(pendingIntent, title, content, tickerText, iconId, ring, vibrate).build();
+    }
+
+    private NotificationCompat.Builder makeNotificationBuilder(PendingIntent pendingIntent, String title, String content, String tickerText,
                                           int iconId, boolean ring, boolean vibrate) {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(context, AVChatNotificationChannelCompat26.getNIMChannelId(context));
         builder.setContentTitle(title)
@@ -94,7 +132,7 @@ public class AVChatNotification {
         }
         builder.setDefaults(defaults);
 
-        return builder.build();
+        return builder;
     }
 
     public void activeCallingNotification(boolean active) {
@@ -119,6 +157,19 @@ public class AVChatNotification {
             } else {
                 notificationManager.cancel(MISS_CALL_NOTIFY_ID);
                 AVChatKit.getNotifications().remove(MISS_CALL_NOTIFY_ID);
+            }
+        }
+    }
+
+    public void activeIncomingCallNotification(boolean active, AVChatData backgroundIncomingCallData) {
+        if (notificationManager != null) {
+            if (active) {
+                buildIncomingCallNotification(backgroundIncomingCallData);
+                notificationManager.notify(INCOMING_CALL_NOTIFY_ID, incomingCallNotification);
+                AVChatKit.getNotifications().put(INCOMING_CALL_NOTIFY_ID, incomingCallNotification);
+            } else {
+                notificationManager.cancel(INCOMING_CALL_NOTIFY_ID);
+                AVChatKit.getNotifications().remove(INCOMING_CALL_NOTIFY_ID);
             }
         }
     }

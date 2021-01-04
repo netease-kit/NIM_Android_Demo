@@ -8,6 +8,7 @@ import com.netease.nim.demo.chatroom.fragment.OnlinePeopleFragment;
  * Created by hzxuwen on 2015/12/14.
  */
 public class OnlinePeopleTabFragment extends ChatRoomTabFragment {
+
     private OnlinePeopleFragment fragment;
 
     @Override
@@ -24,6 +25,8 @@ public class OnlinePeopleTabFragment extends ChatRoomTabFragment {
     }
 
     private void findViews() {
-        fragment = (OnlinePeopleFragment) getActivity().getSupportFragmentManager().findFragmentById(R.id.online_people_fragment);
+        fragment = (OnlinePeopleFragment) getActivity().getSupportFragmentManager()
+                                                       .findFragmentById(
+                                                               R.id.online_people_fragment);
     }
 }

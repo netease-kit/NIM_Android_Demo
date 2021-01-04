@@ -1,7 +1,7 @@
 package com.netease.nim.uikit.common.media.imagepicker.adapter.vh;
 
 import android.Manifest;
-import android.support.v4.app.ActivityCompat;
+import androidx.core.app.ActivityCompat;
 import android.view.View;
 import android.view.ViewGroup;
 

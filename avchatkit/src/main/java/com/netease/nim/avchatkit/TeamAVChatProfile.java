@@ -63,7 +63,7 @@ public class TeamAVChatProfile {
 
     private boolean isTeamAVChatInvite(JSONObject json) {
         if (json != null) {
-            int id = json.getInteger(KEY_ID);
+            int id = json.getIntValue(KEY_ID);
             return id == ID;
         }
         return false;
@@ -74,7 +74,6 @@ public class TeamAVChatProfile {
      *
      * @param register
      */
-
     private Observer<CustomNotification> customNotificationObserver = new Observer<CustomNotification>() {
         @Override
         public void onEvent(CustomNotification customNotification) {

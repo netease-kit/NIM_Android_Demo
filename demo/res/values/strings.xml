@@ -11,9 +11,11 @@
     <string name="registering">注册中\u2026</string>
     <string name="agree">同意</string>
     <string name="reject">拒绝</string>
+    <string name="login_privatization_config_str">私有化配置跳转</string>
     <string name="network_is_not_available">网络连接失败，请检查你的网络设置</string>
     <string name="login_hint_account">请输入帐号</string>
     <string name="login_hint_password">请输入密码</string>
+    <string name="login_hint_subtype">请输入子类型（可选）</string>
     <string name="input_account">请输入帐号，限20位字母或者数字</string>
     <string name="register_account_tip">帐号限20位字母或者数字</string>
     <string name="input_nickname">请输入昵称，限10位汉字、字母或者数字</string>
@@ -54,7 +56,7 @@
     <string name="nim_status_unlogin">未登录</string>
     <string name="nim_status_connecting">连接中...</string>
     <string name="nim_status_logining">登录中...</string>
-    <string name="copyright">Copyright ©1997-2019 网易公司版权所有</string>
+    <string name="copyright">Copyright ©1997-2020 网易公司版权所有</string>
     <string name="user_not_exsit">该用户不存在</string>
     <string name="user_tips">请检查你输入的帐号是否正确</string>
     <string name="edit">编辑</string>
@@ -69,12 +71,20 @@
     <string name="input_panel_tip">Tip</string>
     <string name="input_panel_ack_msg">已读回执</string>
     <string name="message_history_query">云消息记录</string>
+    <string name="message_history_query_ingore">云消息记录(被清除消息入库)</string>
+    <string name="message_history_query_remember">云消息记录(被清除消息不入库)</string>
     <string name="message_search_title">搜索本地消息记录</string>
     <string name="message_clear">清空本地消息记录</string>
+    <string name="message_clear_record">清空本地消息记录(记录操作)</string>
+    <string name="message_clear_not_record">清空本地消息记录(不记录操作)</string>
     <string name="message_p2p_clear">清空点对点历史消息</string>
     <string name="message_p2p_clear_tips">确定清空点对点历史消息?</string>
+    <string name="cloud_message_clear">清空云端历史消息</string>
+    <string name="cloud_message_clear_tips">确定清空云端历史消息?</string>
     <string name="sure_keep_roam">确认单保留漫游</string>
+    <string name="sure_sync">确认多端同步</string>
     <string name="message_info">聊天信息</string>
+    <string name="avchat_list">音视频通话记录</string>
 
     <!-- 通讯录 -->
     <string name="add_friend">加为好友</string>
@@ -146,9 +156,11 @@
 
     <!-- setting -->
     <string name="settings">设置</string>
+    <string name="enter_ysf_str">联系客服</string>
     <string name="no_disturb">免打扰</string>
     <string name="multiport_push">PC/Web在线推送</string>
     <string name="msg_notice">消息提醒</string>
+    <string name="offline_push">离线推送</string>
     <string name="recent_sticky">消息置顶</string>
     <string name="setting_about">关于</string>
     <string name="setting_close">已关闭</string>
@@ -166,12 +178,33 @@
     <string name="clear_index">清理全文检索缓存</string>
     <string name="clear_sdk_cache">清理SDK文件缓存</string>
     <string name="push_no_detail">推送不展示消息详情</string>
+    <string name="notification_fold_style">通知栏折叠方式</string>
+    <string name="notification_fold_style_all">全部</string>
+    <string name="notification_fold_style_contact">会话</string>
+    <string name="notification_fold_style_expand">展开</string>
     <string name="operation_too_frequent">操作太频繁</string>
     <string name="setting_private_config">私有化配置</string>
+    <string name="setting_public_config">公有化配置</string>
     <string name="private_config_note"> \n 1.私有化配置的将在app重启后生效，请注销登陆并杀掉进程。
         \n 2.如果要切换到环境，关闭或打开开关退出登陆杀掉进程即可。\n </string>
     <string name="local_db_migration">本地消息迁移</string>
     <string name="delete_friend_is_delete_alias">删除好友是否同步删除备注</string>
+    <string name="hand_shake_type">握手方式</string>
+    <string name="hand_shake_type_1">1–1</string>
+    <string name="hand_shake_type_5">1–5</string>
+    <string name="asymmetric">不对称</string>
+    <string name="asymmetric_rsa">RSA</string>
+    <string name="asymmetric_sm2">SM2</string>
+    <string name="asymmetric_rsa_oaep_1">RSA_OAEP_1</string>
+    <string name="asymmetric_rsa_oaep_256">RSA_OAEP_256</string>
+    <string name="symmetry">对称</string>
+    <string name="symmetry_rc4">RC4</string>
+    <string name="symmetry_aes">AES</string>
+    <string name="symmetry_sm4">SM4</string>
+    <string name="ip_version">IP版本</string>
+    <string name="ip_version_4">IPV4</string>
+    <string name="ip_version_6">IPV6</string>
+    <string name="ip_version_auto">自动</string>
 
     <!-- 多端登录 -->
     <string name="multiport_manager">多端登录管理</string>
@@ -182,6 +215,7 @@
     <string name="multiport_logging">正在使用</string>
     <string name="kickout_notify">下线通知</string>
     <string name="kickout_content">你的帐号被%1$s踢出下线，请确定帐号信息安全</string>
+    <string name="kickout_encrypt_database">数据升级，请重新登录</string>
 
     <!-- 多端在线类型 -->
     <string name="on_line">在线</string>
@@ -231,5 +265,10 @@
     <string name="ack_msg_info">消息已读详情</string>
     <string name="ack_msg_tip">已读回执能力支持文本、图片、音频、视频、文件、自定义等消息类型。此处仅以文本消息作为演示，开发者可以根据具体业务场景进行功能设计。</string>
     <string name="down_time_enable_notification">免打扰期间显示通知</string>
+    <string name="independent_mode_error">独立AppKey模式，appKey不能为空</string>
+    <string name="appkey_cannot_empty">appKey不能为空</string>
+    <string name="view_cloud_session">查看云端会话</string>
+    <string name="cloud_session_list">云端会话列表</string>
+    <string name="effective_after_restart">重启后生效</string>
 
 </resources>

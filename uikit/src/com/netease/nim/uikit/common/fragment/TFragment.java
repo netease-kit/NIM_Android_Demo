@@ -4,14 +4,16 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.v4.app.Fragment;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 
+import androidx.fragment.app.Fragment;
+
 public abstract class TFragment extends Fragment {
+
     private static final Handler handler = new Handler();
 
     private int containerId;
@@ -32,17 +34,13 @@ public abstract class TFragment extends Fragment {
 
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         LogUtil.ui("fragment: " + getClass().getSimpleName() + " onActivityCreated()");
-
         destroyed = false;
     }
 
     public void onDestroy() {
         super.onDestroy();
-
         LogUtil.ui("fragment: " + getClass().getSimpleName() + " onDestroy()");
-
         destroyed = true;
     }
 
@@ -51,32 +49,17 @@ public abstract class TFragment extends Fragment {
     }
 
     protected final void postRunnable(final Runnable runnable) {
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-                // validate
-                if (!isAdded()) {
-                    return;
-                }
-
-                // run
-                runnable.run();
-            }
-        });
+        postDelayed(runnable, 0);
     }
 
     protected final void postDelayed(final Runnable runnable, long delay) {
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                // validate
-                if (!isAdded()) {
-                    return;
-                }
-
-                // run
-                runnable.run();
+        handler.postDelayed(() -> {
+            // validate
+            if (!isAdded()) {
+                return;
             }
+            // run
+            runnable.run();
         }, delay);
     }
 
@@ -85,12 +68,10 @@ public abstract class TFragment extends Fragment {
         if (activity == null) {
             return;
         }
-
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm == null) {
             return;
         }
-
         if (isShow) {
             if (activity.getCurrentFocus() == null) {
                 imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
@@ -100,7 +81,7 @@ public abstract class TFragment extends Fragment {
         } else {
             if (activity.getCurrentFocus() != null) {
                 imm.hideSoftInputFromWindow(activity.getCurrentFocus().getWindowToken(),
-                        InputMethodManager.HIDE_NOT_ALWAYS);
+                                            InputMethodManager.HIDE_NOT_ALWAYS);
             }
 
         }
@@ -111,15 +92,11 @@ public abstract class TFragment extends Fragment {
         if (activity == null) {
             return;
         }
-
         InputMethodManager imm = (InputMethodManager) activity.getSystemService(Context.INPUT_METHOD_SERVICE);
         if (imm == null) {
             return;
         }
-
-        imm.hideSoftInputFromWindow(
-                view.getWindowToken(),
-                InputMethodManager.HIDE_NOT_ALWAYS);
+        imm.hideSoftInputFromWindow(view.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
     }
 
     protected <T extends View> T findView(int resId) {

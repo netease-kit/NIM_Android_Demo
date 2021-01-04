@@ -25,18 +25,18 @@ public class MsgViewHolderAVChat extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.nim_message_item_avchat;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         typeImage = findViewById(R.id.message_item_avchat_type_img);
         statusLabel = findViewById(R.id.message_item_avchat_state);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         if (message.getAttachment() == null) {
             return;
         }

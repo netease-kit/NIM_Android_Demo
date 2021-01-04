@@ -4,9 +4,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.support.annotation.NonNull;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
+
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,7 +80,7 @@ import static com.netease.nim.avchatkit.teamavchat.module.TeamAVChatItem.TYPE.TY
  * <li>打开视频模块 {@link AVChatManager#enableVideo()}。</li>
  * <li>设置本地预览画布 {@link AVChatManager#setupLocalVideoRender(IVideoRender, boolean, int)} 。</li>
  * <li>设置视频通话可选参数[可以不设置] {@link AVChatManager#setParameter(AVChatParameters.Key, Object)}, {@link AVChatManager#setParameters(AVChatParameters)}。</li>
- * <li>创建并设置本地视频预览源 {@link AVChatVideoCapturerFactory#createCameraCapturer(boolean )}, {@link AVChatManager#setupVideoCapturer(AVChatVideoCapturer)}</li>
+ * <li>创建并设置本地视频预览源 {@link AVChatVideoCapturerFactory#createCameraCapturer(boolean)}, {@link AVChatManager#setupVideoCapturer(AVChatVideoCapturer)}</li>
  * <li>打开本地视频预览 {@link AVChatManager#startVideoPreview()}。</li>
  * <li>加入房间 {@link AVChatManager#joinRoom2(String, AVChatType, AVChatCallback)}。</li>
  * <li>开始多人会议或者互动直播，以及各种音视频操作。</li>
@@ -255,6 +258,7 @@ public class TeamAVChatActivity extends UI {
         roomId = intent.getStringExtra(KEY_ROOM_ID);
         teamId = intent.getStringExtra(KEY_TEAM_ID);
         accounts = (ArrayList<String>) intent.getSerializableExtra(KEY_ACCOUNTS);
+        accounts = accounts == null ? new ArrayList<String>(0) : accounts;
         teamName = intent.getStringExtra(KEY_TNAME);
         LogUtil.i(TAG, "onIntent, roomId=" + roomId + ", teamId=" + teamId
                 + ", receivedCall=" + receivedCall + ", accounts=" + accounts.size() + ", teamName = " + teamName);
@@ -298,7 +302,8 @@ public class TeamAVChatActivity extends UI {
         // 提示
         TextView textView = (TextView) callLayout.findViewById(R.id.received_call_tip);
 
-        textView.setText(teamName + " 的视频通话");
+        final String tipText = TextUtils.isEmpty(teamName)? "你有一条视频通话" : teamName + "的视频通话";
+        textView.setText(tipText);
 
         // 播放铃声
         AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.RING);

@@ -6,7 +6,7 @@
     <application>
         <activity
             android:name="com.netease.nim.avchatkit.activity.AVChatActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />
@@ -14,7 +14,7 @@
         <!-- 音视频 -->
         <activity
             android:name=".teamavchat.activity.TeamAVChatActivity"
-            android:launchMode="singleInstance"
+            android:launchMode="singleTask"
             android:screenOrientation="portrait"
             android:theme="@style/FullScreenTheme"
             android:windowSoftInputMode="stateAlwaysHidden" />

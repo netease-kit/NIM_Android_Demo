@@ -60,14 +60,14 @@
     <uses-sdk tools:overrideLibrary="com.huawei.android.hms.base,com.huawei.android.hms.push"/>
     <!--魅族推送-->
 
-    <!-- 兼容flyme5.0以下版本，魅族内部集成pushSDK必填，不然无法收到消息-->
+    <!-- 兼容 Flyme5 以下版本，魅族内部接入 PushSDK 必填，不然无法收到消息-->
     <uses-permission android:name="com.meizu.flyme.push.permission.RECEIVE"/>
     <permission
         android:name="com.netease.nim.demo.push.permission.MESSAGE"
         android:protectionLevel="signature"/>
     <uses-permission android:name="com.netease.nim.demo.push.permission.MESSAGE"/>
-    <!--  兼容flyme3.0配置权限-->
-    <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE"/>
+    <!-- 兼容 Flyme3 配置权限-->
+    <uses-permission android:name="com.meizu.c2dm.permission.RECEIVE" />
     <permission
         android:name="com.netease.nim.demo.permission.C2D_MESSAGE"
         android:protectionLevel="signature"/>
@@ -75,13 +75,16 @@
 
     <!--  oppo推送配置权限-->
     <uses-permission android:name="com.coloros.mcs.permission.RECIEVE_MCS_MESSAGE"/>
+    <uses-permission android:name="com.heytap.mcs.permission.RECIEVE_MCS_MESSAGE"/>
 
     <application
         android:name=".NimApplication"
-        android:allowBackup="true"
+        android:allowBackup="false"
         android:icon="@drawable/ic_logo"
         android:label="@string/app_name"
-        android:theme="@style/AppTheme.NoActionBar">
+        android:theme="@style/AppTheme.NoActionBar"
+        android:usesCleartextTraffic="true"
+        tools:replace="android:allowBackup">
 
         <!-- 如果IDE是Eclipse，此处可将build.gradle中的AMAP_KEY定义拷贝过来。 -->
         <meta-data
@@ -99,7 +102,7 @@
         <!-- 金融魔方SDK 渠道id以及红包名称-->
         <meta-data
             android:name="JRMF_PARTNER_NAME"
-            android:value="云信红包"/>
+            android:value="yunxin_red_packet"/>
 
         <!-- 全面屏配置 -->
         <meta-data
@@ -162,6 +165,13 @@
 
         <activity
             android:name=".main.activity.SettingsActivity"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden"/>
+
+        <activity
+            android:name=".main.activity.RecentSessionActivity"
             android:configChanges="orientation"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
@@ -231,6 +241,12 @@
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
         <activity
+            android:name=".main.activity.AvchatListActivity"
+            android:configChanges="keyboardHidden|orientation"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden"/>
+        <activity
             android:name=".session.activity.MessageHistoryActivity"
             android:configChanges="keyboardHidden|orientation"
             android:screenOrientation="portrait"
@@ -268,7 +284,7 @@
         <activity
             android:name=".main.activity.GlobalSearchActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
+            android:screenOrientation="behind"
             android:theme="@style/global_search_bg"
             android:windowSoftInputMode="stateUnspecified"/>
 
@@ -284,15 +300,16 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <!-- 查看阅后即焚 -->
+        <!-- 查看合并转发消息 -->
         <activity
-            android:name=".session.activity.WatchSnapChatPictureActivity"
+            android:name="com.netease.nim.demo.session.activity.WatchMultiRetweetActivity"
             android:configChanges="keyboardHidden"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:launchMode="standard"
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <!-- 下载文件 -->
         <activity
-            android:name=".session.activity.FileDownloadActivity"
+            android:name="com.netease.nim.demo.session.activity.FileDownloadActivity"
             android:configChanges="keyboardHidden"
             android:theme="@style/AppTheme.NoActionBar"/>
 
@@ -314,7 +331,7 @@
         <activity
             android:name=".session.search.SearchMessageActivity"
             android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
+            android:screenOrientation="behind"
             android:theme="@style/global_search_bg"
             android:windowSoftInputMode="adjustPan|stateUnspecified"/>
 
@@ -328,6 +345,12 @@
         <!-- 聊天室 -->
         <activity
             android:name=".chatroom.activity.ChatRoomActivity"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden|adjustResize"/>
+
+        <activity
+            android:name=".chatroom.activity.ChatRoomIndependentActivity"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
@@ -362,7 +385,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"/>
 
-
         <activity
             android:name=".main.activity.PrivatizationConfigActivity"
             android:configChanges="orientation"
@@ -370,6 +392,15 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
+
+        <activity
+            android:name=".main.activity.PublicConfigActivity"
+            android:configChanges="orientation"
+            android:label="@string/privatization_config"
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="adjustUnspecified|stateHidden"/>
+
         <activity
             android:name=".main.activity.MsgMigrationActivity"
             android:configChanges="orientation"
@@ -421,16 +452,11 @@
             android:exported="false"
             android:process=":core"/>
 
-        <!-- 申明自定义通知的广播接收器，第三方APP集成时，action中的com.netease.nim.demo请替换为自己的包名 -->
-        <!-- 需要权限申明 <uses-permission android:name="com.netease.nim.demo.permission.RECEIVE_MSG"/> -->
-        <receiver
-            android:name=".receiver.CustomNotificationReceiver"
-            android:enabled="true"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.netease.nim.demo.ACTION.RECEIVE_CUSTOM_NOTIFICATION"/>
-            </intent-filter>
-        </receiver>
+        <!-- 云信内部使用的进程间通信provider -->
+        <provider
+            android:name="com.netease.nimlib.ipc.cp.provider.PreferenceContentProvider"
+            android:authorities="com.netease.nim.demo.ipc.provider.preference"
+            android:exported="false" />
 
         <!-- 小米推送配置 -->
         <service
@@ -483,48 +509,49 @@
         </receiver>
 
         <!--华为推送配置-->
-
-        <meta-data
-            android:name="com.huawei.hms.client.appid"
-            android:value="100006871"/>
-
-        <provider
-            android:name="com.huawei.hms.update.provider.UpdateProvider"
-            android:authorities="com.netease.nim.demo.hms.update.provider"
-            android:exported="false"
-            android:grantUriPermissions="true"/>
-
-        <!-- 第三方相关 :接收Push消息（注册、Push消息、Push连接状态）广播 -->
-        <receiver android:name="com.netease.nimlib.mixpush.hw.HWPushReceiver">
-            <intent-filter android:priority="0x7fffffff">
-                <!-- 必须,用于接收token -->
-                <action android:name="com.huawei.android.push.intent.REGISTRATION"/>
-                <!-- 必须，用于接收消息 -->
-                <action android:name="com.huawei.android.push.intent.RECEIVE"/>
-                <!-- 可选，用于点击通知栏或通知栏上的按钮后触发onEvent回调 -->
-                <action android:name="com.huawei.android.push.intent.CLICK"/>
-                <!-- 可选，查看push通道是否连接，不查看则不需要 -->
-                <action android:name="com.huawei.intent.action.PUSH_STATE"/>
-            </intent-filter>
-            <meta-data
-                android:name="CS_cloud_ablitity"
-                android:value="successRateAnalytics"/>
-        </receiver>
-
-        <receiver android:name="com.huawei.hms.support.api.push.PushEventReceiver">
+        <service
+            android:name="com.netease.nimlib.mixpush.hw.HWPushService"
+            android:exported="false">
             <intent-filter>
-                <!-- 接收通道发来的通知栏消息，兼容老版本Push -->
-                <action android:name="com.huawei.intent.action.PUSH"/>
+                <action android:name="com.huawei.push.action.MESSAGING_EVENT" />
             </intent-filter>
-        </receiver>
+
+        </service>
+        <service
+            android:name="com.netease.nim.demo.mixpush.DemoHwPushMessageService"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.netease.nimlib.mixpush.hw.action.MESSAGING_EVENT" />
+            </intent-filter>
+
+        </service>
+
+        <activity android:name="com.netease.nim.demo.main.activity.MixPushActivity"
+            android:theme="@android:style/Theme.NoDisplay">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data
+                    android:host="com.huawei.codelabpush"
+                    android:path="/deeplink"
+                    android:scheme="pushscheme" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="com.oppo.codelabpush.intent.action.test" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <!-- 高德地图 -->
         <service android:name="com.amap.api.location.APSService"/>
 
         <!-- fcm -->
-        <service android:name="com.netease.nimlib.mixpush.fcm.FCMTokenService">
+        <service
+            android:name="com.netease.nimlib.mixpush.fcm.FCMTokenService"
+            android:exported="false">
             <intent-filter>
-                <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
@@ -536,26 +563,22 @@
             android:name="com.google.firebase.messaging.default_notification_color"
             android:resource="@color/color_blue_3a9efb"/>
 
-        <!--meizu-->
+        <!--魅族推送配置项-->
         <receiver android:name="com.netease.nimlib.mixpush.mz.MZPushReceiver">
             <intent-filter android:priority="0x7fffffff">
-                <!-- 接收push消息 -->
-                <action android:name="com.meizu.flyme.push.intent.MESSAGE"/>
-                <!-- 接收register消息 -->
-                <action android:name="com.meizu.flyme.push.intent.REGISTER.FEEDBACK"/>
-                <!-- 接收unregister消息-->
+                <!-- 接收 push 消息 -->
+                <action android:name="com.meizu.flyme.push.intent.MESSAGE" />
+                <!-- 接收 register 消息 -->
+                <action android:name="com.meizu.flyme.push.intent.REGISTER.FEEDBACK" />
+                <!-- 接收 unregister 消息-->
                 <action android:name="com.meizu.flyme.push.intent.UNREGISTER.FEEDBACK"/>
-                <!-- 兼容低版本Flyme3推送服务配置 -->
-                <action android:name="com.meizu.c2dm.intent.REGISTRATION"/>
-                <action android:name="com.meizu.c2dm.intent.RECEIVE"/>
+                <!-- 兼容低版本 Flyme3 推送服务配置 -->
+                <action android:name="com.meizu.c2dm.intent.REGISTRATION" />
+                <action android:name="com.meizu.c2dm.intent.RECEIVE" />
 
                 <category android:name="com.netease.nim.demo"/>
             </intent-filter>
         </receiver>
-
-        <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c3b7877640734c92138bf0a8becce1df29155681"/>
 
         <!--Vivo推送配置项-->
         <service
@@ -569,10 +592,10 @@
 
         <meta-data
             android:name="com.vivo.push.api_key"
-            android:value="18374205-eb53-428c-bad2-7a75712f6487"/>
+            android:value="2e8c38a8-604a-4c96-9bc0-e102f72728e9"/>
         <meta-data
             android:name="com.vivo.push.app_id"
-            android:value="11425"/>
+            android:value="17757"/>
 
         <receiver android:name="com.netease.nimlib.mixpush.vivo.VivoPushReceiver">
             <intent-filter>
@@ -581,14 +604,28 @@
             </intent-filter>
         </receiver>
 
-        <!--Oppo推送配置项-->
+        <!--Oppo推送配置项 需要配置以下两项-->
         <service
             android:name="com.netease.nimlib.mixpush.oppo.OppoPushService"
+
             android:permission="com.coloros.mcs.permission.SEND_MCS_MESSAGE">
             <intent-filter>
                 <action android:name="com.coloros.mcs.action.RECEIVE_MCS_MESSAGE"/>
             </intent-filter>
-        </service>
+        </service> <!--兼容Q以下版本-->
+
+        <service
+            android:name="com.netease.nimlib.mixpush.oppo.OppoAppPushService"
+
+            android:permission="com.heytap.mcs.permission.SEND_PUSH_MESSAGE">
+
+            <intent-filter>
+                <action android:name="com.heytap.mcs.action.RECEIVE_MCS_MESSAGE"/>
+
+                <action android:name="com.heytap.msp.push.RECEIVE_MCS_MESSAGE"/>
+            </intent-filter>
+        </service> <!--兼容Q版本-->
+
     </application>
 
 </manifest>

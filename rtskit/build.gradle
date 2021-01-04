@@ -25,10 +25,10 @@ android {
 
 dependencies {
     compileOnly fileTree(dir: 'libs', include: ['*.jar'])
-    implementation("com.android.support:appcompat-v7:${V7_APPCOMPAT_VERSION}")
+    implementation("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
 
-    compileOnly 'com.github.bumptech.glide:glide:4.2.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
+    compileOnly 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     compileOnly 'jp.wasabeef:glide-transformations:3.0.1'
 
 

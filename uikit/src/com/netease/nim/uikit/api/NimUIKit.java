@@ -25,6 +25,7 @@ import com.netease.nim.uikit.api.model.user.IUserInfoProvider;
 import com.netease.nim.uikit.api.model.user.UserInfoObservable;
 import com.netease.nim.uikit.business.chatroom.viewholder.ChatRoomMsgViewHolderBase;
 import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
+import com.netease.nim.uikit.business.session.module.IMultiRetweetMsgCreator;
 import com.netease.nim.uikit.business.session.module.MsgForwardFilter;
 import com.netease.nim.uikit.business.session.module.MsgRevokeFilter;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
@@ -168,12 +169,30 @@ public class NimUIKit {
     }
 
     /**
+     * 获取单聊界面定制 SessionCustomization
+     *
+     * @return 聊天界面定制化
+     */
+    public static SessionCustomization getCommonP2PSessionCustomization() {
+        return NimUIKitImpl.getCommonP2PSessionCustomization();
+    }
+
+    /**
      * 设置群聊界面定制 SessionCustomization
      *
      * @param commonTeamSessionCustomization 聊天界面定制化
      */
     public static void setCommonTeamSessionCustomization(SessionCustomization commonTeamSessionCustomization) {
         NimUIKitImpl.setCommonTeamSessionCustomization(commonTeamSessionCustomization);
+    }
+
+    /**
+     * 获取群聊界面定制 SessionCustomization
+     *
+     * @return 聊天界面定制化
+     */
+    public static SessionCustomization getCommonTeamSessionCustomization() {
+        return NimUIKitImpl.getCommonTeamSessionCustomization();
     }
 
     /**
@@ -202,6 +221,15 @@ public class NimUIKit {
      */
     public static void registerMsgItemViewHolder(Class<? extends MsgAttachment> attach, Class<? extends MsgViewHolderBase> viewHolder) {
         NimUIKitImpl.registerMsgItemViewHolder(attach, viewHolder);
+    }
+
+    /**
+     * 注册合并转发消息的创造函数，函数需通过回调反馈创建结果
+     *
+     * @param creator 创建器
+     */
+    public static void registerMultiRetweetMsgCreator(IMultiRetweetMsgCreator creator){
+        NimUIKitImpl.registerMultiRetweetMsgCreator(creator);
     }
 
     /**
@@ -293,7 +321,8 @@ public class NimUIKit {
      * @return 必须登录成功后才有值
      */
     public static String getAccount() {
-        return NimUIKitImpl.getAccount();
+        String account = NimUIKitImpl.getAccount();
+        return account == null ? "" : account;
     }
 
     /**
@@ -395,6 +424,7 @@ public class NimUIKit {
     public static void startContactSelector(Context context, ContactSelectActivity.Option option, int requestCode) {
         NimUIKitImpl.startContactSelector(context, option, requestCode);
     }
+
 
     /**
      * 打开讨论组或高级群资料页

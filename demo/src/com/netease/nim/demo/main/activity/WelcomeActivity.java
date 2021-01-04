@@ -16,6 +16,7 @@ import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
@@ -24,6 +25,9 @@ import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -143,7 +147,7 @@ public class WelcomeActivity extends UI {
             // 已经登录过了，处理过来的请求
             Intent intent = getIntent();
             if (intent != null) {
-                if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
+                if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT) || intent.hasExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT)) {
                     parseNotifyIntent(intent);
                     return;
                 } else if (NIMClient.getService(MixPushService.class).isFCMIntent(intent)) {
@@ -173,11 +177,34 @@ public class WelcomeActivity extends UI {
     }
 
     private void parseNotifyIntent(Intent intent) {
-        ArrayList<IMMessage> messages = (ArrayList<IMMessage>) intent.getSerializableExtra(NimIntent.EXTRA_NOTIFY_CONTENT);
-        if (messages == null || messages.size() > 1) {
+        IMMessage msg = null;
+        ArrayList<IMMessage> msgListExtra = null;
+        try {
+            if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
+                msgListExtra = (ArrayList<IMMessage>) intent.getSerializableExtra(NimIntent.EXTRA_NOTIFY_CONTENT);
+                msg = (CommonUtil.isEmpty(msgListExtra) || msgListExtra.size() > 1) ? null : msgListExtra.get(0);
+            } else if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT)) {
+                String sessionInfoExtra = intent.getStringExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT);
+                JSONArray arr = new JSONArray(sessionInfoExtra);
+                if (arr.length() > 0 && arr.length() < 2) {
+                    JSONObject firstObj = arr.optJSONObject(0);
+                    String uuid = firstObj.optString("uuid");
+                    String sessionId = firstObj.optString("sessionId");
+                    SessionTypeEnum sessionType = SessionTypeEnum.typeOfValue(firstObj.optInt("sessionType"));
+                    long time = firstObj.optLong("time");
+                    msg = MessageBuilder.createEmptyMessage(sessionId, sessionType, time);
+//                    List<String> uuidList = new ArrayList<>();
+//                    uuidList.add(uuid);
+//                    List<IMMessage> msgList = NIMClient.getService(MsgService.class).queryMessageListByUuidBlock(uuidList);
+//                    msg = CommonUtil.isEmpty(msgList) ? null : msgList.get(0);
+                }
+            }
+        } catch (Throwable ignore) {
+        }
+        if (msg == null) {
             showMainActivity(null);
         } else {
-            showMainActivity(new Intent().putExtra(NimIntent.EXTRA_NOTIFY_CONTENT, messages.get(0)));
+            showMainActivity(new Intent().putExtra(NimIntent.EXTRA_NOTIFY_CONTENT, msg));
         }
     }
 

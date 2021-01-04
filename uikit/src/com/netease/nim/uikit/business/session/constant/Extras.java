@@ -26,8 +26,14 @@ public interface Extras {
 
     // 参数
     String EXTRA_ACCOUNT = "account";
+    String EXTRA_NAME = "name";
+    String EXTRA_STATE = "state";
     String EXTRA_TYPE = "type";
     String EXTRA_ANCHOR = "anchor";
+    String EXTRA_ITEMS = "items";
+    String EXTRA_FORWARD = "forward";
+    String EXTRA_START = "start";
+    String EXTRA_AMOUNT = "amount";
 
     String EXTRA_CUSTOMIZATION = "customization";
     String EXTRA_BACK_TO_CLASS = "backToClass";
@@ -44,4 +50,8 @@ public interface Extras {
     String EXTRA_SCALED_IMAGE_LIST = "scaled_image_list";
     String EXTRA_ORIG_IMAGE_LIST = "orig_image_list";
     String EXTRA_NEED_SHOW_SEND_ORIGINAL = "need_show_send_original_image";
+
+
+    //返回结果
+    public static final String RESULT_NAME = "result_name";
 }

@@ -1,6 +1,6 @@
 package com.netease.nim.uikit.common.media.imagepicker.adapter.vh;
 
-import android.support.annotation.CallSuper;
+import androidx.annotation.CallSuper;
 import android.view.View;
 import android.view.ViewGroup;
 

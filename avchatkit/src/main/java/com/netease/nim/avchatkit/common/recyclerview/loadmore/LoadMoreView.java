@@ -1,7 +1,7 @@
 package com.netease.nim.avchatkit.common.recyclerview.loadmore;
 
-import android.support.annotation.IdRes;
-import android.support.annotation.LayoutRes;
+import androidx.annotation.IdRes;
+import androidx.annotation.LayoutRes;
 
 import com.netease.nim.avchatkit.common.recyclerview.holder.BaseViewHolder;
 

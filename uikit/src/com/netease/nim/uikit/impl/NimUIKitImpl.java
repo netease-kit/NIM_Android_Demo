@@ -38,8 +38,10 @@ import com.netease.nim.uikit.business.session.activity.P2PMessageActivity;
 import com.netease.nim.uikit.business.session.activity.TeamMessageActivity;
 import com.netease.nim.uikit.business.session.audio.MessageAudioControl;
 import com.netease.nim.uikit.business.session.emoji.StickerManager;
+import com.netease.nim.uikit.business.session.module.IMultiRetweetMsgCreator;
 import com.netease.nim.uikit.business.session.module.MsgForwardFilter;
 import com.netease.nim.uikit.business.session.module.MsgRevokeFilter;
+import com.netease.nim.uikit.business.session.module.MultiRetweetMsgCreatorFactory;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderFactory;
 import com.netease.nim.uikit.business.team.activity.AdvancedTeamInfoActivity;
@@ -63,12 +65,14 @@ import com.netease.nim.uikit.impl.provider.DefaultUserInfoProvider;
 import com.netease.nim.uikit.support.glide.ImageLoaderKit;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomInfo;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomMember;
 import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomResultData;
+import com.netease.nimlib.sdk.lifecycle.SdkLifecycleObserver;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
@@ -80,6 +84,7 @@ import com.netease.nimlib.sdk.team.model.Team;
  */
 public final class NimUIKitImpl {
 
+    private static final String TAG = "NimUIKitImpl";
     // context
     private static Context context;
 
@@ -209,12 +214,24 @@ public final class NimUIKitImpl {
 
         ChatRoomCacheManager.initCache();
         if (!TextUtils.isEmpty(getAccount())) {
-            if (options.initAsync) {
-                DataCacheManager.buildDataCacheAsync(); // build data cache on auto login
-            } else {
-                DataCacheManager.buildDataCache(); // build data cache on auto login
-                buildCacheComplete = true;
-            }
+            NIMClient.getService(SdkLifecycleObserver.class).observeMainProcessInitCompleteResult(new Observer<Boolean>() {
+                @Override
+                public void onEvent(Boolean aBoolean) {
+                    Log.i(TAG, "observeMainProcessInitCompleteResult onEvent:" + aBoolean);
+
+                    if (aBoolean != null && aBoolean) {
+                        NIMClient.getService(SdkLifecycleObserver.class).observeMainProcessInitCompleteResult(this, false);
+
+                        if (options.initAsync) {
+                            DataCacheManager.buildDataCacheAsync(); // build data cache on auto login
+                        } else {
+                            DataCacheManager.buildDataCache(); // build data cache on auto login
+                            buildCacheComplete = true;
+                        }
+                    }
+                }
+            }, true);
+
             getImageLoaderKit().buildImageCache(); // build image cache on auto login
         }
     }
@@ -489,8 +506,16 @@ public final class NimUIKitImpl {
         NimUIKitImpl.locationProvider = locationProvider;
     }
 
+    public static SessionCustomization getCommonP2PSessionCustomization() {
+        return commonP2PSessionCustomization;
+    }
+
     public static void setCommonP2PSessionCustomization(SessionCustomization commonP2PSessionCustomization) {
         NimUIKitImpl.commonP2PSessionCustomization = commonP2PSessionCustomization;
+    }
+
+    public static SessionCustomization getCommonTeamSessionCustomization() {
+        return commonTeamSessionCustomization;
     }
 
     public static void setCommonTeamSessionCustomization(SessionCustomization commonTeamSessionCustomization) {
@@ -511,6 +536,10 @@ public final class NimUIKitImpl {
 
     public static void registerMsgItemViewHolder(Class<? extends MsgAttachment> attach, Class<? extends MsgViewHolderBase> viewHolder) {
         MsgViewHolderFactory.register(attach, viewHolder);
+    }
+
+    public static void registerMultiRetweetMsgCreator(IMultiRetweetMsgCreator creator){
+        MultiRetweetMsgCreatorFactory.registerCreator(creator);
     }
 
     public static void registerChatRoomMsgItemViewHolder(Class<? extends MsgAttachment> attach, Class<? extends ChatRoomMsgViewHolderBase> viewHolder) {

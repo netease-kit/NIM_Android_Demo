@@ -2,8 +2,6 @@ package com.netease.nim.uikit.common.media.imagepicker;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.v4.app.Fragment;
 
 import com.netease.nim.uikit.R;
 import com.netease.nim.uikit.common.media.imagepicker.option.DefaultImagePickerOption;
@@ -15,6 +13,9 @@ import com.netease.nim.uikit.common.media.model.GLImage;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 
 import java.util.ArrayList;
+
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
 
 
 /**
@@ -35,47 +36,22 @@ public class ImagePickerLauncher {
         }
         CustomAlertDialog dialog = new CustomAlertDialog(context);
         dialog.setTitle(titleResId);
-        dialog.addItem(context.getString(R.string.input_panel_take),
-                       new CustomAlertDialog.onSeparateItemClickListener() {
-
-                           @Override
-                           public void onClick() {
-                               takePhoto(context, requestCode);
-                           }
-                       });
+        dialog.addItem(context.getString(R.string.input_panel_take), () -> takePhoto(context, requestCode));
         dialog.addItem(context.getString(R.string.choose_from_photo_album),
-                       new CustomAlertDialog.onSeparateItemClickListener() {
-
-                           @Override
-                           public void onClick() {
-                               selectImageFromAlbum(context, requestCode);
-                           }
-                       });
+                       () -> selectImageFromAlbum(context, requestCode));
         dialog.show();
     }
 
-    public static void selectImage(final Activity context, final int requestCode, @NonNull final ImagePickerOption option, int titleResId) {
+    public static void selectImage(final Activity context, final int requestCode,
+                                   @NonNull final ImagePickerOption option, int titleResId) {
         if (context == null) {
             return;
         }
         CustomAlertDialog dialog = new CustomAlertDialog(context);
         dialog.setTitle(titleResId);
-        dialog.addItem(context.getString(R.string.input_panel_take),
-                       new CustomAlertDialog.onSeparateItemClickListener() {
-
-                           @Override
-                           public void onClick() {
-                               takePhoto(context, requestCode);
-                           }
-                       });
+        dialog.addItem(context.getString(R.string.input_panel_take), () -> takePhoto(context, requestCode));
         dialog.addItem(context.getString(R.string.choose_from_photo_album),
-                       new CustomAlertDialog.onSeparateItemClickListener() {
-
-                           @Override
-                           public void onClick() {
-                               selectImage(context, requestCode, option);
-                           }
-                       });
+                       () -> selectImage(context, requestCode, option));
         dialog.show();
     }
 

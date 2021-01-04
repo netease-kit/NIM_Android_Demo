@@ -1,0 +1,11 @@
+{
+	"client":{
+		"cp_id":"890086000102126665",
+		"product_id":"9105385871708267631",
+		"client_id":"239507317412856896",
+		"client_secret":"A7889590DE527EA92B89D1C390BE8FB97CDDAA657EAF73F3B8FB5DC70329DAC7",
+		"app_id":"101420927",
+		"package_name":"com.netease.nim.demo"
+	},
+	"configuration_version":"1.0"
+}

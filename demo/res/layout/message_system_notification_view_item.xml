@@ -7,7 +7,7 @@
     <View
         android:id="@+id/top_line"
         style="@style/horizontal_light_thin_divider"
-        android:layout_marginLeft="70dp" />
+        android:layout_marginStart="70dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,14 +21,14 @@
             android:layout_width="@dimen/avatar_size_default"
             android:layout_height="@dimen/avatar_size_default"
             android:layout_centerVertical="true"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="10dp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="10dp"
             android:layout_marginRight="10dp" />
 
         <LinearLayout
             android:id="@+id/operator_layout"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="10dp"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="10dp"
             android:layout_centerVertical="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content">
@@ -46,8 +46,8 @@
                 android:id="@+id/reject"
                 android:layout_width="54dip"
                 android:layout_height="34dip"
-                android:layout_marginLeft="8dip"
-                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dip"
+                android:layout_marginEnd="8dp"
                 android:background="@drawable/nim_red_round_button_selector"
                 android:text="@string/reject"
                 android:textColor="@color/white"
@@ -58,7 +58,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:layout_marginRight="8dp"
+                android:layout_marginEnd="8dp"
                 android:text="已处理"
                 android:textColor="@color/color_black_333333"
                 android:textSize="13sp"
@@ -67,13 +67,13 @@
 
         <RelativeLayout
             android:id="@+id/title_content_layout"
-            android:layout_toRightOf="@id/from_account_head_image"
-            android:layout_toLeftOf="@id/operator_layout"
+            android:layout_toEndOf="@id/from_account_head_image"
+            android:layout_toStartOf="@id/operator_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:gravity="left"
+            android:gravity="start"
             android:layout_centerVertical="true"
-            android:layout_marginRight="8dip">
+            android:layout_marginEnd="8dip">
 
             <TextView
                 android:id="@+id/from_account_text"
@@ -91,8 +91,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignBottom="@id/from_account_text"
-                android:layout_marginLeft="10dip"
-                android:layout_toRightOf="@id/from_account_text"
+                android:layout_marginStart="10dip"
+                android:layout_toEndOf="@id/from_account_text"
                 android:ellipsize="end"
                 android:singleLine="true"
                 android:text="time"
@@ -107,13 +107,30 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginTop="@dimen/bubble_margin_top"
                 android:ellipsize="end"
-                android:gravity="center_vertical|left"
+                android:gravity="center_vertical|start"
                 android:includeFontPadding="false"
                 android:lineSpacingExtra="3dip"
                 android:singleLine="true"
                 android:text="content"
                 android:textColor="@color/color_aaaaaa_content_text"
                 android:textSize="13sp" />
+
+            <TextView
+                android:id="@+id/postscript_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/content_text"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="@dimen/bubble_margin_top"
+                android:ellipsize="end"
+                android:gravity="center_vertical|start"
+                android:includeFontPadding="false"
+                android:lineSpacingExtra="3dip"
+                android:singleLine="true"
+                android:text="postcript"
+                android:textColor="@color/color_aaaaaa_content_text"
+                android:textSize="13sp"
+                android:visibility="gone"/>
         </RelativeLayout>
 
 
@@ -122,6 +139,6 @@
     <View
         android:id="@+id/bottom_line"
         style="@style/horizontal_light_thin_divider"
-        android:layout_marginLeft="70dp" />
+        android:layout_marginStart="70dp" />
 
 </LinearLayout>

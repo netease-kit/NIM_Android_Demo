@@ -3,8 +3,6 @@ package com.netease.nim.demo.chatroom.fragment;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.text.InputType;
 import android.text.TextUtils;
 import android.util.Log;
@@ -13,7 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import com.netease.nim.uikit.common.ToastHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
@@ -21,12 +20,13 @@ import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.adapter.ChatRoomOnlinePeopleAdapter;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.model.SimpleCallback;
+import com.netease.nim.uikit.api.model.chatroom.ChatRoomProvider;
 import com.netease.nim.uikit.api.model.chatroom.RoomMemberChangedObserver;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.common.ui.dialog.CustomAlertDialog;
 import com.netease.nim.uikit.common.ui.dialog.EasyEditDialog;
 import com.netease.nim.uikit.common.ui.ptr2.PullToRefreshLayout;
-import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseQuickAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.listener.SimpleClickListener;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -50,29 +50,38 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by huangjun on 2016/12/29.
  */
 public class OnlinePeopleFragment extends TFragment {
+
     private static final String TAG = OnlinePeopleFragment.class.getSimpleName();
+
     private static final int LIMIT = 20;
 
     private PullToRefreshLayout swipeRefreshLayout;
+
     private RecyclerView recyclerView;
+
     private ChatRoomOnlinePeopleAdapter adapter;
+
     private List<ChatRoomMember> items = new ArrayList<>();
 
     private String roomId;
+
     private long updateTime = 0; // 非游客的updateTime
+
     private long enterTime = 0; // 游客的enterTime
+
     private boolean isNormalEmpty = false; // 固定成员是否拉取完
+
     private Map<String, ChatRoomMember> memberCache = new ConcurrentHashMap<>();
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
         return inflater.inflate(R.layout.online_people_fragment, container, false);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-
         findViews();
         registerObservers(true);
     }
@@ -106,6 +115,7 @@ public class OnlinePeopleFragment extends TFragment {
         swipeRefreshLayout = findView(R.id.swipe_refresh);
         swipeRefreshLayout.setPullUpEnable(false);
         swipeRefreshLayout.setOnRefreshListener(new PullToRefreshLayout.OnRefreshListener() {
+
             @Override
             public void onPullDownToRefresh() {
                 refreshData();
@@ -113,154 +123,127 @@ public class OnlinePeopleFragment extends TFragment {
 
             @Override
             public void onPullUpToRefresh() {
-
             }
         });
-
         // recyclerView
         recyclerView = findView(R.id.recycler_view);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         recyclerView.addOnItemTouchListener(touchListener);
         adapter = new ChatRoomOnlinePeopleAdapter(recyclerView, items);
-        adapter.setOnLoadMoreListener(new BaseQuickAdapter.RequestLoadMoreListener() {
-            @Override
-            public void onLoadMoreRequested() {
-                loadMoreData();
-            }
-        });
+        adapter.setOnLoadMoreListener(() -> loadMoreData());
         recyclerView.setAdapter(adapter);
     }
 
-    private void updateCache(List<ChatRoomMember> members) {
+    private boolean updateCache(List<ChatRoomMember> members) {
         if (members == null || members.isEmpty()) {
-            return;
+            return false;
         }
-
+        boolean hasNewMember = false;
         for (ChatRoomMember member : members) {
             if (member.getMemberType() == MemberType.GUEST) {
                 enterTime = member.getEnterTime();
             } else {
                 updateTime = member.getUpdateTime();
             }
-
             if (memberCache.containsKey(member.getAccount())) {
                 items.remove(memberCache.get(member.getAccount()));
+                items.add(member);
+                continue;
             }
             memberCache.put(member.getAccount(), member);
             items.add(member);
+            hasNewMember = true;
         }
         Collections.sort(items, comp);
+        return hasNewMember;
     }
 
     private void refreshData() {
         adapter.setEnableLoadMore(false);
-        getData(true, new SimpleCallback<List<ChatRoomMember>>() {
-            @Override
-            public void onResult(final boolean success, final List<ChatRoomMember> result, int code) {
-                final Activity context = getActivity();
-                if (context == null) {
-                    return;
-                } else {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // 刷新结束
-                            swipeRefreshLayout.setRefreshing(false);
-
-                            if (success) {
-                                clearCache();
-                                updateCache(result);
-                                adapter.notifyDataSetChanged();
-
-                                postDelayed(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        if (!isLastMessageVisible()) {
-                                            adapter.setEnableLoadMore(true); // 开启上拉加载
-                                        }
-                                    }
-                                }, 200);
+        getData(true, (success, result, code) -> {
+            final Activity context = getActivity();
+            if (context == null) {
+                return;
+            } else {
+                context.runOnUiThread(() -> {
+                    // 刷新结束
+                    swipeRefreshLayout.setRefreshing(false);
+                    if (success) {
+                        clearCache();
+                        updateCache(result);
+                        adapter.notifyDataSetChanged();
+                        postDelayed(() -> {
+                            if (!isLastMessageVisible()) {
+                                adapter.setEnableLoadMore(true); // 开启上拉加载
                             }
-                        }
-                    });
-                }
+                        }, 200);
+                    }
+                });
             }
         });
     }
 
     private void loadMoreData() {
-        getData(false, new SimpleCallback<List<ChatRoomMember>>() {
-            @Override
-            public void onResult(final boolean success, final List<ChatRoomMember> result, int code) {
-                Activity context = getActivity();
-                if (context == null) {
-                    return;
-                } else {
-                    context.runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            if (success) {
-                                if (result == null || result.isEmpty()) {
-                                    adapter.loadMoreEnd(true); // 没有更多数据了
-                                } else {
-                                    updateCache(result);
-                                    adapter.loadMoreComplete(); // 加载成功
-                                }
-                            } else {
-                                adapter.loadMoreFail(); // 加载失败
-                            }
+        getData(false, (success, result, code) -> {
+            Activity context = getActivity();
+            if (context == null) {
+                return;
+            } else {
+                context.runOnUiThread(() -> {
+                    if (success) {
+                        if (result == null || result.isEmpty()) {
+                            adapter.loadMoreEnd(true); // 没有更多数据了
+                        } else if (updateCache(result)){
+                            adapter.loadMoreComplete(); // 加载成功
+                        } else {
+                            adapter.loadMoreEnd(true); // 没有更多数据了
                         }
-                    });
-                }
+                    } else {
+                        adapter.loadMoreFail(); // 加载失败
+                    }
+                });
             }
         });
     }
 
-    private void getData(final boolean fetching, final SimpleCallback<List<ChatRoomMember>> callback) {
+    private void getData(final boolean fetching,
+                         final SimpleCallback<List<ChatRoomMember>> callback) {
         // reset status
         if (fetching) {
             resetStatus();
         }
-
         // query type
         final MemberQueryType memberQueryType = isNormalEmpty ? MemberQueryType.GUEST : MemberQueryType.ONLINE_NORMAL;
         final long time = isNormalEmpty ? enterTime : updateTime;
         final int expectNum = LIMIT;
         final List<ChatRoomMember> resultList = new ArrayList<>();
-        NimUIKit.getChatRoomProvider().fetchRoomMembers(roomId, memberQueryType, time, expectNum, new
-                SimpleCallback<List<ChatRoomMember>>() {
-                    @Override
-                    public void onResult(boolean success, List<ChatRoomMember> result, int code) {
-                        if (success) {
-                            // 结果集
-                            resultList.addAll(result);
-
-                            // 固定成员已经拉完，不满预期数量，开始拉游客
-                            if (memberQueryType == MemberQueryType.ONLINE_NORMAL && result.size() < expectNum) {
-                                isNormalEmpty = true;
-                                final int expectNum2 = expectNum - result.size();
-                                NimUIKit.getChatRoomProvider().fetchRoomMembers(roomId, MemberQueryType.GUEST, enterTime, expectNum2, new
-                                        SimpleCallback<List<ChatRoomMember>>() {
-                                            @Override
-                                            public void onResult(boolean success, List<ChatRoomMember> result, int code) {
-                                                if (success) {
-                                                    // 结果集
-                                                    resultList.addAll(result);
-                                                    callback.onResult(true, resultList, code);
-                                                } else {
-                                                    callback.onResult(false, null, code);
-                                                }
-                                            }
-                                        });
-                            } else {
-                                // 固定成员拉取到位或者拉取游客成功
-                                callback.onResult(true, resultList, code);
-                            }
-                        } else {
-                            callback.onResult(false, null, code);
-                        }
-                    }
-                });
+        ChatRoomProvider provider = NimUIKit.getChatRoomProvider();
+        provider.fetchRoomMembers(roomId, memberQueryType, time, expectNum, (success, result, code) -> {
+            if (success) {
+                // 结果集
+                resultList.addAll(result);
+                // 固定成员已经拉完，不满预期数量，开始拉游客
+                if (memberQueryType == MemberQueryType.ONLINE_NORMAL && result.size() < expectNum) {
+                    isNormalEmpty = true;
+                    final int expectNum2 = expectNum - result.size();
+                    provider.fetchRoomMembers(roomId, MemberQueryType.GUEST, enterTime, expectNum2,
+                                              (success1, result1, code1) -> {
+                                                  if (success1) {
+                                                      // 结果集
+                                                      resultList.addAll(result1);
+                                                      callback.onResult(true, resultList, code1);
+                                                  } else {
+                                                      callback.onResult(false, null, code1);
+                                                  }
+                                              });
+                } else {
+                    // 固定成员拉取到位或者拉取游客成功
+                    callback.onResult(true, resultList, code);
+                }
+            } else {
+                callback.onResult(false, null, code);
+            }
+        });
     }
 
     private boolean isLastMessageVisible() {
@@ -273,10 +256,12 @@ public class OnlinePeopleFragment extends TFragment {
      * *************************** 成员操作监听 ****************************
      */
     private void registerObservers(boolean register) {
-        NimUIKit.getChatRoomMemberChangedObservable().registerObserver(roomMemberChangedObserver, register);
+        NimUIKit.getChatRoomMemberChangedObservable().registerObserver(roomMemberChangedObserver,
+                                                                       register);
     }
 
     RoomMemberChangedObserver roomMemberChangedObserver = new RoomMemberChangedObserver() {
+
         @Override
         public void onRoomMemberIn(ChatRoomMember member) {
         }
@@ -292,9 +277,9 @@ public class OnlinePeopleFragment extends TFragment {
      */
 
     private SimpleClickListener<ChatRoomOnlinePeopleAdapter> touchListener = new SimpleClickListener<ChatRoomOnlinePeopleAdapter>() {
+
         @Override
         public void onItemClick(ChatRoomOnlinePeopleAdapter adapter, View view, int position) {
-
         }
 
         @Override
@@ -304,27 +289,25 @@ public class OnlinePeopleFragment extends TFragment {
 
         @Override
         public void onItemChildClick(ChatRoomOnlinePeopleAdapter adapter, View view, int position) {
-
         }
 
         @Override
-        public void onItemChildLongClick(ChatRoomOnlinePeopleAdapter adapter, View view, int position) {
-
+        public void onItemChildLongClick(ChatRoomOnlinePeopleAdapter adapter, View view,
+                                         int position) {
         }
     };
 
     // 弹出菜单前，获取成员最新数据
     private void fetchMemberInfo(final ChatRoomMember member) {
-        NimUIKit.getChatRoomProvider().fetchMember(roomId, member.getAccount(), new SimpleCallback<ChatRoomMember>() {
-            @Override
-            public void onResult(boolean success, ChatRoomMember result, int code) {
-                if (success) {
-                    showLongClickMenu(result);
-                } else {
-                    ToastHelper.showToast(getActivity(), R.string.chatroom_fetch_member_failed);
-                }
-            }
-        });
+        NimUIKit.getChatRoomProvider().fetchMember(roomId, member.getAccount(),
+                                                   (success, result, code) -> {
+                                                       if (success) {
+                                                           showLongClickMenu(result);
+                                                       } else {
+                                                           ToastHelper.showToast(getActivity(),
+                                                                                 R.string.chatroom_fetch_member_failed);
+                                                       }
+                                                   });
     }
 
     // 显示长按菜单
@@ -335,41 +318,35 @@ public class OnlinePeopleFragment extends TFragment {
         // 3、用户自己是普通成员
         // 4、用户自己是受限用户
         // 5、用户自己是游客
-        MemberType memberType = NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType();
-
-        if (currentMember.getMemberType() == MemberType.CREATOR
-                || currentMember.getAccount().equals(DemoCache.getAccount())
-                || memberType == MemberType.NORMAL
-                || memberType == MemberType.LIMITED
-                || memberType == MemberType.GUEST) {
+        MemberType memberType = NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache
+                .getAccount()).getMemberType();
+        if (currentMember.getMemberType() == MemberType.CREATOR ||
+            currentMember.getAccount().equals(DemoCache.getAccount()) ||
+            memberType == MemberType.NORMAL || memberType == MemberType.LIMITED ||
+            memberType == MemberType.GUEST) {
             return;
         }
         CustomAlertDialog alertDialog = new CustomAlertDialog(getActivity());
-        alertDialog.addItem(R.string.chatroom_kick_member, new CustomAlertDialog.onSeparateItemClickListener() {
-            @Override
-            public void onClick() {
-                kickMember(currentMember);
-            }
-        });
+        alertDialog.addItem(R.string.chatroom_kick_member,
+                            new CustomAlertDialog.onSeparateItemClickListener() {
 
+                                @Override
+                                public void onClick() {
+                                    kickMember(currentMember);
+                                }
+                            });
         // 设置/取消禁言
         addMutedItem(currentMember, alertDialog);
-
         // 设置/移出黑名单
         addBlackListItem(currentMember, alertDialog);
-
         // 设置/取消管理员
         addAdminItem(currentMember, alertDialog);
-
         // 设为/取消普通成员
         addNormalItem(currentMember, alertDialog);
-
         // 设置临时禁言（含通知）
         addTempMuteItemNotify(currentMember, alertDialog);
-
         // 设置临时禁言（不通知）
         addTemMuteItem(currentMember, alertDialog);
-
         alertDialog.show();
     }
 
@@ -377,6 +354,7 @@ public class OnlinePeopleFragment extends TFragment {
     private void addMutedItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
         int titleId = chatRoomMember.isMuted() ? R.string.cancel_muted : R.string.chatroom_muted;
         alertDialog.addItem(titleId, new CustomAlertDialog.onSeparateItemClickListener() {
+
             @Override
             public void onClick() {
                 setMuted(chatRoomMember);
@@ -385,9 +363,12 @@ public class OnlinePeopleFragment extends TFragment {
     }
 
     // 添加黑名单菜单
-    private void addBlackListItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
-        int titleId = chatRoomMember.isInBlackList() ? R.string.move_out_blacklist : R.string.chatroom_blacklist;
+    private void addBlackListItem(final ChatRoomMember chatRoomMember,
+                                  CustomAlertDialog alertDialog) {
+        int titleId = chatRoomMember
+                .isInBlackList() ? R.string.move_out_blacklist : R.string.chatroom_blacklist;
         alertDialog.addItem(titleId, new CustomAlertDialog.onSeparateItemClickListener() {
+
             @Override
             public void onClick() {
                 setBlackList(chatRoomMember);
@@ -398,13 +379,15 @@ public class OnlinePeopleFragment extends TFragment {
     // 添加管理员菜单
     private void addAdminItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
         // 被操作者比操作者权限大, 则返回
-        if (chatRoomMember.getMemberType() == MemberType.ADMIN
-                && NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache.getAccount()).getMemberType() != MemberType.CREATOR) {
+        if (chatRoomMember.getMemberType() == MemberType.ADMIN &&
+            NimUIKit.getChatRoomProvider().getChatRoomMember(roomId, DemoCache.getAccount())
+                    .getMemberType() != MemberType.CREATOR) {
             return;
         }
         final boolean isAdmin = chatRoomMember.getMemberType() == MemberType.ADMIN;
         int titleId = isAdmin ? R.string.cancel_admin : R.string.chatroom_set_admin;
         alertDialog.addItem(titleId, new CustomAlertDialog.onSeparateItemClickListener() {
+
             @Override
             public void onClick() {
                 setAdmin(chatRoomMember, isAdmin);
@@ -416,6 +399,7 @@ public class OnlinePeopleFragment extends TFragment {
         final boolean isNormal = chatRoomMember.getMemberType() == MemberType.NORMAL;
         int titleId = isNormal ? R.string.cancel_normal_member : R.string.set_normal_member;
         alertDialog.addItem(titleId, new CustomAlertDialog.onSeparateItemClickListener() {
+
             @Override
             public void onClick() {
                 setNormalMember(chatRoomMember, isNormal);
@@ -424,123 +408,177 @@ public class OnlinePeopleFragment extends TFragment {
     }
 
     // 设置临时禁言（含通知）
-    private void addTempMuteItemNotify(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
-        alertDialog.addItem(R.string.set_temp_mute_notify, new CustomAlertDialog.onSeparateItemClickListener() {
-            @Override
-            public void onClick() {
-                final EasyEditDialog requestDialog = new EasyEditDialog(getActivity());
-                requestDialog.setEditTextMaxLength(200);
-                requestDialog.setTitle(getString(R.string.mute_duration));
-                requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-                requestDialog.addNegativeButtonListener(R.string.cancel, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        getActivity().getWindow().setSoftInputMode(
-                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                    }
-                });
-                requestDialog.addPositiveButtonListener(R.string.send, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        String content = requestDialog.getEditMessage();
-                        if (!TextUtils.isEmpty(content)) {
-                            setTempMute(chatRoomMember.getAccount(), content, true);
-                        }
-                        getActivity().getWindow().setSoftInputMode(
-                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                    }
-                });
-                requestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                    }
-                });
-                requestDialog.show();
-            }
-        });
+    private void addTempMuteItemNotify(final ChatRoomMember chatRoomMember,
+                                       CustomAlertDialog alertDialog) {
+        alertDialog.addItem(R.string.set_temp_mute_notify,
+                            new CustomAlertDialog.onSeparateItemClickListener() {
+
+                                @Override
+                                public void onClick() {
+                                    final EasyEditDialog requestDialog = new EasyEditDialog(
+                                            getActivity());
+                                    requestDialog.setEditTextMaxLength(200);
+                                    requestDialog.setTitle(getString(R.string.mute_duration));
+                                    requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                    requestDialog.addNegativeButtonListener(R.string.cancel,
+                                                                            new View.OnClickListener() {
+
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                        View v) {
+                                                                                    requestDialog
+                                                                                            .dismiss();
+                                                                                    getActivity()
+                                                                                            .getWindow()
+                                                                                            .setSoftInputMode(
+                                                                                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                                                                                }
+                                                                            });
+                                    requestDialog.addPositiveButtonListener(R.string.send,
+                                                                            new View.OnClickListener() {
+
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                        View v) {
+                                                                                    requestDialog
+                                                                                            .dismiss();
+                                                                                    String content = requestDialog
+                                                                                            .getEditMessage();
+                                                                                    if (!TextUtils
+                                                                                            .isEmpty(
+                                                                                                    content)) {
+                                                                                        setTempMute(
+                                                                                                chatRoomMember
+                                                                                                        .getAccount(),
+                                                                                                content,
+                                                                                                true);
+                                                                                    }
+                                                                                    getActivity()
+                                                                                            .getWindow()
+                                                                                            .setSoftInputMode(
+                                                                                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                                                                                }
+                                                                            });
+                                    requestDialog.setOnCancelListener(
+                                            new DialogInterface.OnCancelListener() {
+
+                                                @Override
+                                                public void onCancel(DialogInterface dialog) {
+                                                }
+                                            });
+                                    requestDialog.show();
+                                }
+                            });
     }
 
     // 设置临时禁言（不通知）
-    private void addTemMuteItem(final ChatRoomMember chatRoomMember, CustomAlertDialog alertDialog) {
-        alertDialog.addItem(R.string.set_temp_mute_not_notify, new CustomAlertDialog.onSeparateItemClickListener() {
-            @Override
-            public void onClick() {
-                final EasyEditDialog requestDialog = new EasyEditDialog(getActivity());
-                requestDialog.setEditTextMaxLength(200);
-                requestDialog.setTitle(getString(R.string.mute_duration));
-                requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
-                requestDialog.addNegativeButtonListener(R.string.cancel, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        getActivity().getWindow().setSoftInputMode(
-                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                    }
-                });
-                requestDialog.addPositiveButtonListener(R.string.send, new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        requestDialog.dismiss();
-                        String content = requestDialog.getEditMessage();
-                        if (!TextUtils.isEmpty(content)) {
-                            setTempMute(chatRoomMember.getAccount(), content, false);
-                        }
-                        getActivity().getWindow().setSoftInputMode(
-                                WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-                    }
-                });
-                requestDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
-                    @Override
-                    public void onCancel(DialogInterface dialog) {
-                    }
-                });
-                requestDialog.show();
-            }
-        });
+    private void addTemMuteItem(final ChatRoomMember chatRoomMember,
+                                CustomAlertDialog alertDialog) {
+        alertDialog.addItem(R.string.set_temp_mute_not_notify,
+                            new CustomAlertDialog.onSeparateItemClickListener() {
+
+                                @Override
+                                public void onClick() {
+                                    final EasyEditDialog requestDialog = new EasyEditDialog(
+                                            getActivity());
+                                    requestDialog.setEditTextMaxLength(200);
+                                    requestDialog.setTitle(getString(R.string.mute_duration));
+                                    requestDialog.setInputType(InputType.TYPE_CLASS_NUMBER);
+                                    requestDialog.addNegativeButtonListener(R.string.cancel,
+                                                                            new View.OnClickListener() {
+
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                        View v) {
+                                                                                    requestDialog
+                                                                                            .dismiss();
+                                                                                    getActivity()
+                                                                                            .getWindow()
+                                                                                            .setSoftInputMode(
+                                                                                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                                                                                }
+                                                                            });
+                                    requestDialog.addPositiveButtonListener(R.string.send,
+                                                                            new View.OnClickListener() {
+
+                                                                                @Override
+                                                                                public void onClick(
+                                                                                        View v) {
+                                                                                    requestDialog
+                                                                                            .dismiss();
+                                                                                    String content = requestDialog
+                                                                                            .getEditMessage();
+                                                                                    if (!TextUtils
+                                                                                            .isEmpty(
+                                                                                                    content)) {
+                                                                                        setTempMute(
+                                                                                                chatRoomMember
+                                                                                                        .getAccount(),
+                                                                                                content,
+                                                                                                false);
+                                                                                    }
+                                                                                    getActivity()
+                                                                                            .getWindow()
+                                                                                            .setSoftInputMode(
+                                                                                                    WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+                                                                                }
+                                                                            });
+                                    requestDialog.setOnCancelListener(
+                                            new DialogInterface.OnCancelListener() {
+
+                                                @Override
+                                                public void onCancel(DialogInterface dialog) {
+                                                }
+                                            });
+                                    requestDialog.show();
+                                }
+                            });
     }
 
     // 踢人
     private void kickMember(final ChatRoomMember chatRoomMember) {
         Map<String, Object> reason = new HashMap<>();
         reason.put("reason", "就是不爽！");
-        NIMClient.getService(ChatRoomService.class).kickMember(roomId, chatRoomMember.getAccount(), reason).setCallback(new RequestCallback<Void>() {
-            @Override
-            public void onSuccess(Void param) {
-                ToastHelper.showToast(getActivity(), R.string.chatroom_kick_member);
-                ChatRoomMember del = null;
-                for (ChatRoomMember member : items) {
-                    if (member.getAccount().equals(chatRoomMember.getAccount())) {
-                        del = member;
-                        break;
+        NIMClient.getService(ChatRoomService.class).kickMember(roomId, chatRoomMember.getAccount(),
+                                                               reason).setCallback(
+                new RequestCallback<Void>() {
+
+                    @Override
+                    public void onSuccess(Void param) {
+                        ToastHelper.showToast(getActivity(), R.string.chatroom_kick_member);
+                        ChatRoomMember del = null;
+                        for (ChatRoomMember member : items) {
+                            if (member.getAccount().equals(chatRoomMember.getAccount())) {
+                                del = member;
+                                break;
+                            }
+                        }
+                        if (del != null) {
+                            items.remove(del);
+                            memberCache.remove(del.getAccount());
+                        }
+                        adapter.notifyDataSetChanged();
                     }
-                }
 
-                if (del != null) {
-                    items.remove(del);
-                    memberCache.remove(del.getAccount());
-                }
-                adapter.notifyDataSetChanged();
-            }
+                    @Override
+                    public void onFailed(int code) {
+                        Log.d(TAG, "kick member failed:" + code);
+                    }
 
-            @Override
-            public void onFailed(int code) {
-                Log.d(TAG, "kick member failed:" + code);
-            }
-
-            @Override
-            public void onException(Throwable exception) {
-                Log.d(TAG, "kick member exception:" + exception);
-            }
-        });
+                    @Override
+                    public void onException(Throwable exception) {
+                        Log.d(TAG, "kick member exception:" + exception);
+                    }
+                });
     }
 
     // 设置/取消禁言
     private void setMuted(final ChatRoomMember chatRoomMember) {
         MemberOption option = new MemberOption(roomId, chatRoomMember.getAccount());
-        NIMClient.getService(ChatRoomService.class).markChatRoomMutedList(!chatRoomMember.isMuted(), option)
-                .setCallback(new RequestCallback<ChatRoomMember>() {
+        NIMClient.getService(ChatRoomService.class).markChatRoomMutedList(!chatRoomMember.isMuted(),
+                                                                          option).setCallback(
+                new RequestCallback<ChatRoomMember>() {
+
                     @Override
                     public void onSuccess(ChatRoomMember param) {
                         ToastHelper.showToast(getActivity(), R.string.set_success);
@@ -554,7 +592,6 @@ public class OnlinePeopleFragment extends TFragment {
 
                     @Override
                     public void onException(Throwable exception) {
-
                     }
                 });
     }
@@ -562,8 +599,10 @@ public class OnlinePeopleFragment extends TFragment {
     // 设置/移出黑名单
     private void setBlackList(ChatRoomMember chatRoomMember) {
         MemberOption option = new MemberOption(roomId, chatRoomMember.getAccount());
-        NIMClient.getService(ChatRoomService.class).markChatRoomBlackList(!chatRoomMember.isInBlackList(), option)
-                .setCallback(new RequestCallback<ChatRoomMember>() {
+        NIMClient.getService(ChatRoomService.class).markChatRoomBlackList(
+                !chatRoomMember.isInBlackList(), option).setCallback(
+                new RequestCallback<ChatRoomMember>() {
+
                     @Override
                     public void onSuccess(ChatRoomMember param) {
                         ToastHelper.showToast(getActivity(), R.string.set_success);
@@ -576,61 +615,65 @@ public class OnlinePeopleFragment extends TFragment {
 
                     @Override
                     public void onException(Throwable exception) {
-
                     }
                 });
     }
 
     // 设置/取消管理员
     private void setAdmin(final ChatRoomMember member, boolean isAdmin) {
-        NIMClient.getService(ChatRoomService.class)
-                .markChatRoomManager(!isAdmin, new MemberOption(roomId, member.getAccount()))
-                .setCallback(new RequestCallback<ChatRoomMember>() {
-                    @Override
-                    public void onSuccess(ChatRoomMember param) {
-                        ToastHelper.showToast(getActivity(), R.string.set_success);
-                        refreshList(param, member);
-                    }
+        NIMClient.getService(ChatRoomService.class).markChatRoomManager(!isAdmin,
+                                                                        new MemberOption(roomId,
+                                                                                         member.getAccount()))
+                 .setCallback(new RequestCallback<ChatRoomMember>() {
 
-                    @Override
-                    public void onFailed(int code) {
-                        Log.d(TAG, "set admin failed:" + code);
-                    }
+                     @Override
+                     public void onSuccess(ChatRoomMember param) {
+                         ToastHelper.showToast(getActivity(), R.string.set_success);
+                         refreshList(param, member);
+                     }
 
-                    @Override
-                    public void onException(Throwable exception) {
+                     @Override
+                     public void onFailed(int code) {
+                         Log.d(TAG, "set admin failed:" + code);
+                     }
 
-                    }
-                });
+                     @Override
+                     public void onException(Throwable exception) {
+                     }
+                 });
     }
 
     // 设置/取消普通成员
     private void setNormalMember(final ChatRoomMember member, boolean isNormal) {
-        NIMClient.getService(ChatRoomService.class).markNormalMember(!isNormal, new MemberOption(roomId, member.getAccount()))
-                .setCallback(new RequestCallback<ChatRoomMember>() {
-                    @Override
-                    public void onSuccess(ChatRoomMember param) {
-                        ToastHelper.showToast(getActivity(), R.string.set_success);
-                        refreshList(param, member);
-                    }
+        NIMClient.getService(ChatRoomService.class).markNormalMember(!isNormal,
+                                                                     new MemberOption(roomId,
+                                                                                      member.getAccount()))
+                 .setCallback(new RequestCallback<ChatRoomMember>() {
 
-                    @Override
-                    public void onFailed(int code) {
+                     @Override
+                     public void onSuccess(ChatRoomMember param) {
+                         ToastHelper.showToast(getActivity(), R.string.set_success);
+                         refreshList(param, member);
+                     }
 
-                    }
+                     @Override
+                     public void onFailed(int code) {
+                     }
 
-                    @Override
-                    public void onException(Throwable exception) {
-
-                    }
-                });
+                     @Override
+                     public void onException(Throwable exception) {
+                     }
+                 });
     }
 
     // 设置临时禁言
     private void setTempMute(String account, String content, boolean needNotify) {
         MemberOption option = new MemberOption(roomId, account);
-        NIMClient.getService(ChatRoomService.class).markChatRoomTempMute(needNotify, Long.parseLong(content), option)
-                .setCallback(new RequestCallback<Void>() {
+        NIMClient.getService(ChatRoomService.class).markChatRoomTempMute(needNotify,
+                                                                         Long.parseLong(content),
+                                                                         option).setCallback(
+                new RequestCallback<Void>() {
+
                     @Override
                     public void onSuccess(Void param) {
                         ToastHelper.showToast(getActivity(), "设置临时禁言成功");
@@ -643,7 +686,6 @@ public class OnlinePeopleFragment extends TFragment {
 
                     @Override
                     public void onException(Throwable exception) {
-
                     }
                 });
     }
@@ -675,12 +717,12 @@ public class OnlinePeopleFragment extends TFragment {
     }
 
     private static Comparator<ChatRoomMember> comp = new Comparator<ChatRoomMember>() {
+
         @Override
         public int compare(ChatRoomMember lhs, ChatRoomMember rhs) {
             if (lhs == null) {
                 return 1;
             }
-
             if (rhs == null) {
                 return -1;
             }

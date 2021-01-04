@@ -1,19 +1,21 @@
 package com.netease.nim.demo.chatroom.activity;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.netease.nim.uikit.common.ToastHelper;
+import android.text.TextUtils;
 
 import com.netease.nim.demo.R;
+import com.netease.nim.demo.chatroom.constants.EnterMode;
+import com.netease.nim.demo.chatroom.constants.Extras;
 import com.netease.nim.demo.chatroom.fragment.ChatRoomFragment;
+import com.netease.nim.demo.chatroom.thridparty.ChatRoomHttpClient;
+import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.business.chatroom.fragment.ChatRoomMessageFragment;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.ui.dialog.DialogMaker;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nimlib.sdk.AbortableFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -28,32 +30,49 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomStatusChangeData;
 import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomData;
 import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomResultData;
 
+import java.util.Collections;
+import java.util.Random;
+
 /**
  * 聊天室
  * Created by hzxuwen on 2015/12/14.
  */
 public class ChatRoomActivity extends UI {
-    private final static String EXTRA_ROOM_ID = "ROOM_ID";
+
     private static final String TAG = ChatRoomActivity.class.getSimpleName();
 
     /**
      * 聊天室基本信息
      */
     private String roomId;
+
+    private String appKey, account, pwd, link;
+
+    private int mode = EnterMode.NORMAL;
+
     private ChatRoomInfo roomInfo;
+
     private boolean hasEnterSuccess = false; // 是否已经成功登录聊天室
+
     private ChatRoomFragment fragment;
 
     /**
      * 子页面
      */
     private ChatRoomMessageFragment messageFragment;
+
     private AbortableFuture<EnterChatRoomResultData> enterRequest;
 
-    public static void start(Context context, String roomId) {
+    public static void start(Context context, String roomId, int mode, String appKey,
+                             String account, String pwd, String link) {
         Intent intent = new Intent();
         intent.setClass(context, ChatRoomActivity.class);
-        intent.putExtra(EXTRA_ROOM_ID, roomId);
+        intent.putExtra(Extras.ROOM_ID, roomId);
+        intent.putExtra(Extras.MODE, mode);
+        intent.putExtra(Extras.APP_KEY, appKey);
+        intent.putExtra(Extras.ACCOUNT, account);
+        intent.putExtra(Extras.PWD, pwd);
+        intent.putExtra(Extras.LINK, link);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(intent);
     }
@@ -62,13 +81,31 @@ public class ChatRoomActivity extends UI {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.chat_room_activity);
-        roomId = getIntent().getStringExtra(EXTRA_ROOM_ID);
-
+        boolean ok = getIntentData();
+        if (!ok) {
+            finish();
+            return;
+        }
         // 注册监听
         registerObservers(true);
-
         // 登录聊天室
         enterRoom();
+    }
+    private boolean getIntentData() {
+        roomId = getIntent().getStringExtra(Extras.ROOM_ID);
+        mode = getIntent().getIntExtra(Extras.MODE, EnterMode.NORMAL);
+        appKey = getIntent().getStringExtra(Extras.APP_KEY);
+        account = getIntent().getStringExtra(Extras.ACCOUNT);
+        pwd = getIntent().getStringExtra(Extras.PWD);
+        if (mode == EnterMode.INDEPENDENT) {
+            if (TextUtils.isEmpty(appKey)) {
+                ToastHelper.showToast(ChatRoomActivity.this,
+                                      getString(R.string.independent_mode_error));
+                return false;
+            }
+        }
+        link = getIntent().getStringExtra(Extras.LINK);
+        return true;
     }
 
     @Override
@@ -82,7 +119,6 @@ public class ChatRoomActivity extends UI {
         if (messageFragment == null || !messageFragment.onBackPressed()) {
             super.onBackPressed();
         }
-
         logoutChatRoom();
     }
 
@@ -95,21 +131,33 @@ public class ChatRoomActivity extends UI {
     }
 
     private void enterRoom() {
-        DialogMaker.showProgressDialog(this, null, "", true, new DialogInterface.OnCancelListener() {
-            @Override
-            public void onCancel(DialogInterface dialog) {
-                if (enterRequest != null) {
-                    enterRequest.abort();
-                    onLoginDone();
-                    finish();
-                }
+        DialogMaker.showProgressDialog(this, null, "", true, dialog -> {
+            if (enterRequest != null) {
+                enterRequest.abort();
+                onLoginDone();
+                finish();
             }
         }).setCanceledOnTouchOutside(false);
         hasEnterSuccess = false;
         EnterChatRoomData data = new EnterChatRoomData(roomId);
-
+        if (mode == EnterMode.INDEPENDENT) {
+            data.setAppKey(appKey);
+            data.setIndependentMode((roomId, account) -> {
+                if (TextUtils.isEmpty(link)) {
+                    ChatRoomHttpClient client = ChatRoomHttpClient.getInstance();
+                    return client.fetchChatRoomAddress(roomId, appKey, account);
+                }
+                return Collections.singletonList(link);
+            }, account, pwd);
+            if (TextUtils.isEmpty(account)) {
+                data.setNick(String.format("soduku%s", new Random().nextInt(100)));
+                data.setAvatar(
+                        "https://nim.nosdn.127.net/MTAxMTAxMA==/bmltYV8yNDM0MzQ4OV8xNTMyMDUzNzM3ODkzXzJlNGQ3ZjA5LWI2MjgtNDNiNy1hZTIwLTBhYTgzMjZhYzBjZQ==?thumbnail=540x540&imageView&tostatic=0");
+            }
+        }
         enterRequest = NIMClient.getService(ChatRoomService.class).enterChatRoomEx(data, 1);
         enterRequest.setCallback(new RequestCallback<EnterChatRoomResultData>() {
+
             @Override
             public void onSuccess(EnterChatRoomResultData result) {
                 onLoginDone();
@@ -128,7 +176,8 @@ public class ChatRoomActivity extends UI {
                 } else if (code == ResponseCode.RES_ENONEXIST) {
                     ToastHelper.showToast(ChatRoomActivity.this, "聊天室不存在");
                 } else {
-                    ToastHelper.showToast(ChatRoomActivity.this, "enter chat room failed, code=" + code);
+                    ToastHelper.showToast(ChatRoomActivity.this,
+                                          "enter chat room failed, code=" + code);
                 }
                 finish();
             }
@@ -136,15 +185,18 @@ public class ChatRoomActivity extends UI {
             @Override
             public void onException(Throwable exception) {
                 onLoginDone();
-                ToastHelper.showToast(ChatRoomActivity.this, "enter chat room exception, e=" + exception.getMessage());
+                ToastHelper.showToast(ChatRoomActivity.this,
+                                      "enter chat room exception, e=" + exception.getMessage());
                 finish();
             }
         });
     }
 
     private void registerObservers(boolean register) {
-        NIMClient.getService(ChatRoomServiceObserver.class).observeOnlineStatus(onlineStatus, register);
-        NIMClient.getService(ChatRoomServiceObserver.class).observeKickOutEvent(kickOutObserver, register);
+        NIMClient.getService(ChatRoomServiceObserver.class).observeOnlineStatus(onlineStatus,
+                                                                                register);
+        NIMClient.getService(ChatRoomServiceObserver.class).observeKickOutEvent(kickOutObserver,
+                                                                                register);
     }
 
     private void logoutChatRoom() {
@@ -158,6 +210,7 @@ public class ChatRoomActivity extends UI {
     }
 
     Observer<ChatRoomStatusChangeData> onlineStatus = new Observer<ChatRoomStatusChangeData>() {
+
         @Override
         public void onEvent(ChatRoomStatusChangeData chatRoomStatusChangeData) {
             if (!chatRoomStatusChangeData.roomId.equals(roomId)) {
@@ -175,7 +228,6 @@ public class ChatRoomActivity extends UI {
                 if (fragment != null) {
                     fragment.updateOnlineStatus(false);
                 }
-
                 // 登录成功后，断网重连交给云信SDK，如果重连失败，可以查询具体失败的原因
                 if (hasEnterSuccess) {
                     int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
@@ -188,17 +240,15 @@ public class ChatRoomActivity extends UI {
                 }
                 ToastHelper.showToast(ChatRoomActivity.this, R.string.net_broken);
             }
-
-            LogUtil.i(TAG, "chat room online status changed to " + chatRoomStatusChangeData.status.name());
+            LogUtil.i(TAG, "chat room online status changed to " +
+                           chatRoomStatusChangeData.status.name());
         }
     };
 
-    Observer<ChatRoomKickOutEvent> kickOutObserver = new Observer<ChatRoomKickOutEvent>() {
-        @Override
-        public void onEvent(ChatRoomKickOutEvent chatRoomKickOutEvent) {
-            ToastHelper.showToast(ChatRoomActivity.this, "被踢出聊天室，原因:" + chatRoomKickOutEvent.getReason());
-            onExitedChatRoom();
-        }
+    Observer<ChatRoomKickOutEvent> kickOutObserver = (Observer<ChatRoomKickOutEvent>) chatRoomKickOutEvent -> {
+        ToastHelper.showToast(ChatRoomActivity.this,
+                              "被踢出聊天室，原因:" + chatRoomKickOutEvent.getReason());
+        onExitedChatRoom();
     };
 
     private void initChatRoomFragment() {
@@ -207,27 +257,18 @@ public class ChatRoomActivity extends UI {
             fragment.updateView();
         } else {
             // 如果Fragment还未Create完成，延迟初始化
-            getHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    initChatRoomFragment();
-                }
-            }, 50);
+            getHandler().postDelayed(this::initChatRoomFragment, 50);
         }
     }
 
     private void initMessageFragment() {
-        messageFragment = (ChatRoomMessageFragment) getSupportFragmentManager().findFragmentById(R.id.chat_room_message_fragment);
+        messageFragment = (ChatRoomMessageFragment) getSupportFragmentManager().findFragmentById(
+                R.id.chat_room_message_fragment);
         if (messageFragment != null) {
             messageFragment.init(roomId);
         } else {
             // 如果Fragment还未Create完成，延迟初始化
-            getHandler().postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    initMessageFragment();
-                }
-            }, 50);
+            getHandler().postDelayed(this::initMessageFragment, 50);
         }
     }
 

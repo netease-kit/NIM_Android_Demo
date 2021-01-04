@@ -9,14 +9,14 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
-import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.file.browser.FileBrowserAdapter.FileManagerItem;
+import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.adapter.TAdapterDelegate;
 import com.netease.nim.uikit.common.adapter.TViewHolder;
-import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -70,7 +70,18 @@ public class FileBrowserActivity extends UI implements TAdapterDelegate {
         names = new ArrayList<>();
         paths = new ArrayList<>();
         File file = new File(path);
-        File[] files = file.listFiles();
+        File[] files = null;
+        try {
+            files = file.listFiles();
+        } catch (Exception e) {
+            e.printStackTrace();
+            ToastHelper.showToast(this, "获取文件列表失败");
+        }
+        //获取失败
+        if (files == null || files.length == 0) {
+            ToastHelper.showToast(this, "当前文件夹为空");
+            return;
+        }
 
         //如果当前目录不是根目录
         if (!ROOT_PATH.equals(path)) {

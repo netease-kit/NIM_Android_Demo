@@ -16,7 +16,6 @@ public class MsgViewHolderDefCustom extends MsgViewHolderText {
     @Override
     protected String getDisplayText() {
         DefaultCustomAttachment attachment = (DefaultCustomAttachment) message.getAttachment();
-
         return "type: " + attachment.getType() + ", data: " + attachment.getContent();
     }
 }

@@ -1,22 +1,26 @@
 package com.netease.nim.uikit.business.session.module.list;
 
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.View;
 
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.netease.nim.uikit.R;
+import com.netease.nim.uikit.business.session.helper.MessageHelper;
 import com.netease.nim.uikit.business.session.module.Container;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderBase;
 import com.netease.nim.uikit.business.session.viewholder.MsgViewHolderFactory;
+import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.ui.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
 import com.netease.nim.uikit.impl.NimUIKitImpl;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,7 +36,7 @@ public class MsgAdapter extends BaseMultiItemFetchLoadAdapter<IMMessage, BaseVie
     private String messageId;
     private Container container;
 
-    MsgAdapter(RecyclerView recyclerView, List<IMMessage> data, Container container) {
+    public MsgAdapter(RecyclerView recyclerView, List<IMMessage> data, Container container) {
         super(recyclerView, data);
 
         timedItems = new HashSet<>();
@@ -94,6 +98,69 @@ public class MsgAdapter extends BaseMultiItemFetchLoadAdapter<IMMessage, BaseVie
                 relocateShowTimeItemAfterDelete(message, index);
             }
 //            notifyDataSetChanged(); // 可以不要！！！
+        }
+    }
+
+    public void deleteItems(List<IMMessage> msgList, boolean isRelocateTime) {
+        if (CommonUtil.isEmpty(msgList)) {
+            return;
+        }
+
+        int index = 0;
+        List<Integer> deleteIndexList = new ArrayList<>(msgList.size());
+        Set<String> msgUuidSet = MessageHelper.getUuidSet(msgList);
+        List<IMMessage> items = getData();
+        for (IMMessage item : items) {
+            if (msgUuidSet.contains(item.getUuid())) {
+                deleteIndexList.add(index);
+            }
+            ++index;
+        }
+
+        if (!deleteIndexList.isEmpty()) {
+            if (isRelocateTime) {
+                IMMessage toDeleteMsg;
+                for (int i = deleteIndexList.size() - 1; i >= 0; --i) {
+                    index = deleteIndexList.get(i);
+                    toDeleteMsg = items.get(index);
+                    remove(index);
+                    relocateShowTimeItemAfterDelete(toDeleteMsg, index);
+                }
+            }
+//            notifyDataSetChanged(); // 可以不要！！！
+        }
+    }
+
+    public void deleteItemsRange(long fromTime, long toTime, boolean isRelocateTime) {
+        if (toTime <= 0 || fromTime >= toTime) {
+            return;
+        }
+
+        List<IMMessage> items = getData();
+        if (CommonUtil.isEmpty(items)) {
+            return;
+        }
+        int index;
+        IMMessage item;
+        long itemTime;
+        ListIterator<IMMessage> itemIterator = items.listIterator(items.size());
+        while (itemIterator.hasPrevious()){
+            try {
+                index = itemIterator.previousIndex();
+                item = itemIterator.previous();
+                itemTime = item.getTime();
+
+                if (itemTime < toTime && itemTime > fromTime) {
+                    itemIterator.remove();
+                    notifyItemRemoved(index);
+                    onRemove(item);
+                    if (isRelocateTime) {
+                        relocateShowTimeItemAfterDelete(item, index);
+                    }
+                }
+            } catch (Throwable e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -236,6 +303,39 @@ public class MsgAdapter extends BaseMultiItemFetchLoadAdapter<IMMessage, BaseVie
 
         // viewholder footer按钮点击，如机器人继续会话
         void onFooterClick(IMMessage message);
+
+        /**
+         * 消息对应的复选框的状况变化时回调
+         * 状态: true: 选中; false: 未被选中; null: 选则无效（复选框不可见，且状态重置为未被选中）
+         *
+         * @param index    消息在列表中的位置
+         * @param newState 变化后的状态
+         */
+        void onCheckStateChanged(int index, Boolean newState);
+    }
+
+    /**
+     * 为了在实现ViewHolderEventListener时只需要复写需要的部分
+     */
+    public static class BaseViewHolderEventListener implements ViewHolderEventListener {
+
+        @Override
+        public boolean onViewHolderLongClick(View clickView, View viewHolderView, IMMessage item) {
+            return false;
+        }
+
+        @Override
+        public void onFailedBtnClick(IMMessage resendMessage) {
+        }
+
+        @Override
+        public void onFooterClick(IMMessage message) {
+        }
+
+        @Override
+        public void onCheckStateChanged(int index, Boolean newState) {
+
+        }
     }
 
     public void setUuid(String messageId) {

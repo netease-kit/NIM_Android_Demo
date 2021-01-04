@@ -36,22 +36,26 @@ android {
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
     }
+
+    dataBinding {
+        enabled = true
+    }
 }
 
 dependencies {
     api fileTree(dir: 'libs', include: '*.jar')
-    api("com.android.support:appcompat-v7:${V7_APPCOMPAT_VERSION}")
-    api("com.android.support:support-v4:${V4_SUPPORT_VERSION}")
-    api("com.android.support:design:${DESIGIN_SUPPORT_VERSION}")
-    api("com.android.support.constraint:constraint-layout:${CONSTRAIT_SUPPORT_VERSION}")
+    api("androidx.appcompat:appcompat:${ANDROIDX_APPCOMPAT_VERSION}")
+    api("androidx.legacy:legacy-support-v4:${LEGACY_X_VERSION}")
+    api("com.google.android.material:material:${MATERIAL_GOOGLE_VERSION}")
+    api("androidx.constraintlayout:constraintlayout:${CONSTRAINT_X_VERSION}")
 
-    api 'me.everything:overscroll-decor-android:1.0.4'
-    api "me.leolin:ShortcutBadger:1.1.17@aar"
+//    api 'me.everything:overscroll-decor-android:1.0.4'
+    api "me.leolin:ShortcutBadger:1.1.22@aar"
 
-    api 'com.github.bumptech.glide:glide:4.2.0'
-    annotationProcessor 'com.github.bumptech.glide:compiler:4.2.0'
-    api 'jp.wasabeef:glide-transformations:3.0.1'
+    api 'com.github.bumptech.glide:glide:4.9.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
+    //api 'jp.wasabeef:glide-transformations:3.0.1'
 
-    implementation "com.github.chrisbanes.photoview:library:1.2.4"
+    implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     //api 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1' // if you want to use the Glide GPU Filters
 }

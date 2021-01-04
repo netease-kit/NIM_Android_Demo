@@ -3,9 +3,15 @@ package com.netease.nim.uikit.business.uinfo;
 import android.text.TextUtils;
 
 import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.business.team.helper.SuperTeamHelper;
 import com.netease.nim.uikit.business.team.helper.TeamHelper;
+import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.IMMessage;
+import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
+
+import org.w3c.dom.Text;
 
 public class UserInfoHelper {
 
@@ -19,6 +25,8 @@ public class UserInfoHelper {
             }
         } else if (sessionType == SessionTypeEnum.Team) {
             return TeamHelper.getTeamName(id);
+        } else if (sessionType == SessionTypeEnum.Ysf) {
+            return "我的客服";
         }
         return id;
     }
@@ -39,6 +47,47 @@ public class UserInfoHelper {
                 return account;
             }
         }
+    }
+
+    /**
+     * 获取消息发送者的展示名称，优先级序列：备注>群昵称>用户名>账号
+     *
+     * @param account 用户账号
+     * @param sessionType 所处会话的类型
+     * @param sessionId 所处会话的ID
+     * @return 发送者的展示名称
+     */
+    public static String getUserDisplayNameInSession(String account, SessionTypeEnum sessionType, String sessionId) {
+        if (TextUtils.isEmpty(account)) {
+            return "";
+        }
+
+        // 备注
+        String alias = NimUIKit.getContactProvider().getAlias(account);
+        if (!TextUtils.isEmpty(alias)) {
+            return alias;
+        }
+
+        // 群昵称
+        String teamNick = null;
+        if (sessionType == SessionTypeEnum.Team) {
+            teamNick = TeamHelper.getTeamNick(sessionId, account);
+        } else if (sessionType == SessionTypeEnum.SUPER_TEAM) {
+            teamNick = SuperTeamHelper.getTeamNick(sessionId, account);
+        }
+        if (!TextUtils.isEmpty(teamNick)) {
+            return teamNick;
+        }
+
+        // 用户名
+        UserInfo userInfo = NimUIKit.getUserInfoProvider().getUserInfo(account);
+        if (userInfo != null && !TextUtils.isEmpty(userInfo.getName())) {
+            return userInfo.getName();
+        }
+
+        // 账号
+        return account;
+
     }
 
     // 获取用户原本的昵称

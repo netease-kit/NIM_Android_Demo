@@ -24,17 +24,17 @@ public class MsgViewHolderTip extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return com.netease.nim.uikit.R.layout.nim_message_item_notification;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         notificationTextView = (TextView) view.findViewById(com.netease.nim.uikit.R.id.message_item_notification_label);
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         String text = "未知通知提醒";
         if (TextUtils.isEmpty(message.getContent())) {
             Map<String, Object> content = message.getRemoteExtension();

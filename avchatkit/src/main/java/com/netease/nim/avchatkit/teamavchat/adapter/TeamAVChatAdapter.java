@@ -1,6 +1,6 @@
 package com.netease.nim.avchatkit.teamavchat.adapter;
 
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.netease.nim.avchatkit.R;
 import com.netease.nim.avchatkit.common.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;

@@ -6,6 +6,8 @@ import android.content.Intent;
 import android.util.Log;
 import android.util.SparseArray;
 
+import androidx.annotation.NonNull;
+
 import com.netease.nim.avchatkit.activity.AVChatActivity;
 import com.netease.nim.avchatkit.activity.AVChatSettingsActivity;
 import com.netease.nim.avchatkit.common.log.ILogUtil;
@@ -18,6 +20,7 @@ import com.netease.nim.avchatkit.teamavchat.activity.TeamAVChatActivity;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.avchat.AVChatManager;
 import com.netease.nimlib.sdk.avchat.constant.AVChatControlCommand;
+import com.netease.nimlib.sdk.avchat.model.AVChatCommonEvent;
 import com.netease.nimlib.sdk.avchat.model.AVChatData;
 
 import java.util.ArrayList;
@@ -180,6 +183,7 @@ public class AVChatKit {
      */
     private static void registerAVChatIncomingCallObserver(boolean register) {
         AVChatManager.getInstance().observeIncomingCall(inComingCallObserver, register);
+        AVChatManager.getInstance().observeHangUpNotification(callHangupObserver, register);
     }
 
     private static Observer<AVChatData> inComingCallObserver = new Observer<AVChatData>() {
@@ -188,17 +192,31 @@ public class AVChatKit {
             String extra = data.getExtra();
             Log.e("Extra", "Extra Message->" + extra);
             if (PhoneCallStateObserver.getInstance().getPhoneCallState() != PhoneCallStateObserver.PhoneCallStateEnum.IDLE
-                    || AVChatProfile.getInstance().isAVChatting()
                     || TeamAVChatProfile.sharedInstance().isTeamAVChatting()
                     || AVChatManager.getInstance().getCurrentChatId() != 0) {
                 LogUtil.i(TAG, "reject incoming call data =" + data.toString() + " as local phone is not idle");
                 AVChatManager.getInstance().sendControlCommand(data.getChatId(), AVChatControlCommand.BUSY, null);
                 return;
             }
+            if (ActivityMgr.INST.getTopActivity() instanceof AVChatActivity) {
+                // already open
+                return;
+            }
             // 有网络来电打开AVChatActivity
             AVChatProfile.getInstance().setAVChatting(true);
-            AVChatProfile.getInstance().launchActivity(data, userInfoProvider.getUserDisplayName(data.getAccount()), AVChatActivity.FROM_BROADCASTRECEIVER);
+            AVChatProfile.getInstance().launchIncomingCall(data, userInfoProvider.getUserDisplayName(data.getAccount()), AVChatActivity.FROM_BROADCASTRECEIVER);
         }
     };
 
+    // 通话过程中，收到对方挂断电话
+    @NonNull
+    private static Observer<AVChatCommonEvent> callHangupObserver = new Observer<AVChatCommonEvent>() {
+        @Override
+        public void onEvent(AVChatCommonEvent avChatHangUpInfo) {
+            if (AVChatProfile.getInstance().isBackgroundIncomingCall(avChatHangUpInfo.getAccount())) {
+                AVChatProfile.getInstance().setAVChatting(false);
+                AVChatProfile.getInstance().removeBackgroundIncomingCall(true);
+            }
+        }
+    };
 }

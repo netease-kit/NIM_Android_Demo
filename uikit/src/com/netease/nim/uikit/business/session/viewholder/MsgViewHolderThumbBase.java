@@ -11,6 +11,7 @@ import com.netease.nim.uikit.common.util.media.BitmapDecoder;
 import com.netease.nim.uikit.common.util.media.ImageUtil;
 import com.netease.nim.uikit.common.util.string.StringUtil;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
+import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.msg.attachment.FileAttachment;
 import com.netease.nimlib.sdk.msg.attachment.ImageAttachment;
 import com.netease.nimlib.sdk.msg.attachment.VideoAttachment;
@@ -34,7 +35,7 @@ public abstract class MsgViewHolderThumbBase extends MsgViewHolderBase {
     protected TextView progressLabel;
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         thumbnail = findViewById(R.id.message_item_thumb_thumbnail);
         progressBar = findViewById(R.id.message_item_thumb_progress_bar); // 覆盖掉
         progressCover = findViewById(R.id.message_item_thumb_progress_cover);
@@ -42,7 +43,7 @@ public abstract class MsgViewHolderThumbBase extends MsgViewHolderBase {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         FileAttachment msgAttachment = (FileAttachment) message.getAttachment();
         String path = msgAttachment.getPath();
         String thumbPath = msgAttachment.getThumbPath();
@@ -54,11 +55,27 @@ public abstract class MsgViewHolderThumbBase extends MsgViewHolderBase {
             loadThumbnailImage(null, false, msgAttachment.getExtension());
             if (message.getAttachStatus() == AttachStatusEnum.transferred
                     || message.getAttachStatus() == AttachStatusEnum.def) {
-                downloadAttachment();
+                downloadAttachment(new RequestCallback<Void>() {
+                    @Override
+                    public void onSuccess(Void param) {
+                        loadThumbnailImage(msgAttachment.getThumbPath(), false, msgAttachment.getExtension());
+                        refreshStatus();
+                    }
+
+                    @Override
+                    public void onFailed(int code) {
+
+                    }
+
+                    @Override
+                    public void onException(Throwable exception) {
+
+                    }
+                });
             }
         }
-
         refreshStatus();
+
     }
 
     private void refreshStatus() {

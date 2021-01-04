@@ -25,6 +25,7 @@ import com.netease.nim.uikit.business.session.module.list.MessageListPanelEx;
 import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.fragment.TFragment;
 import com.netease.nim.uikit.impl.NimUIKitImpl;
+import com.netease.nimlib.sdk.InvocationFuture;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -118,7 +119,7 @@ public class MessageFragment extends TFragment implements ModuleProxy {
     }
 
     public boolean onBackPressed() {
-        return inputPanel.collapse(true) || messageListPanel.onBackPressed();
+        return inputPanel.collapse(true);
     }
 
     public void refreshMessageList() {
@@ -223,26 +224,7 @@ public class MessageFragment extends TFragment implements ModuleProxy {
         if (isAllowSendMessage(message)) {
             appendTeamMemberPush(message);
             message = changeToRobotMsg(message);
-            final IMMessage msg = message;
-            appendPushConfig(message);
-            // send message to server and save to db
-            NIMClient.getService(MsgService.class).sendMessage(message, false).setCallback(new RequestCallback<Void>() {
-                @Override
-                public void onSuccess(Void param) {
-
-                }
-
-                @Override
-                public void onFailed(int code) {
-                    sendFailWithBlackList(code, msg);
-                }
-
-                @Override
-                public void onException(Throwable exception) {
-
-                }
-            });
-
+            appendPushConfigAndSend(message);
         } else {
             // 替换成tip
             message = MessageBuilder.createTipMessage(message.getSessionId(), message.getSessionType());
@@ -256,6 +238,50 @@ public class MessageFragment extends TFragment implements ModuleProxy {
             aitManager.reset();
         }
         return true;
+    }
+
+    private void appendPushConfigAndSend(IMMessage message) {
+        final IMMessage msg = message;
+        appendPushConfig(message);
+        MsgService service = NIMClient.getService(MsgService.class);
+        // send message to server and save to db
+        final IMMessage replyMsg = inputPanel.getReplyMessage();
+        if (replyMsg == null) {
+            service.sendMessage(message, false).setCallback(new RequestCallback<Void>() {
+                @Override
+                public void onSuccess(Void param) {
+                }
+
+                @Override
+                public void onFailed(int code) {
+                    sendFailWithBlackList(code, msg);
+                }
+
+                @Override
+                public void onException(Throwable exception) {
+
+                }
+            });
+        } else {
+            service.replyMessage(message, replyMsg, false).setCallback(new RequestCallback<Void>() {
+                @Override
+                public void onSuccess(Void param) {
+                    String threadId = message.getThreadOption().getThreadMsgIdClient();
+                    messageListPanel.refreshMessageItem(threadId);
+                }
+
+                @Override
+                public void onFailed(int code) {
+                    sendFailWithBlackList(code, msg);
+                }
+
+                @Override
+                public void onException(Throwable exception) {
+
+                }
+            });
+        }
+        inputPanel.resetReplyMessage();
     }
 
     // 被对方拉入黑名单后，发消息失败的交互处理
@@ -364,6 +390,11 @@ public class MessageFragment extends TFragment implements ModuleProxy {
             NimRobotInfo robot = NimUIKitImpl.getRobotInfoProvider().getRobotByAccount(attachment.getFromRobotAccount());
             aitManager.insertAitRobot(robot.getAccount(), robot.getName(), inputPanel.getEditSelectionStart());
         }
+    }
+
+    @Override
+    public void onReplyMessage(IMMessage message) {
+        inputPanel.setReplyMessage(message);
     }
 
     @Override

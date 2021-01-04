@@ -2,11 +2,15 @@ package com.netease.nim.demo;
 
 import android.app.Application;
 import android.content.Context;
-import android.support.multidex.MultiDex;
+import android.os.Build;
+import android.os.Process;
 import android.text.TextUtils;
+import android.webkit.WebView;
 
-import com.crashlytics.android.Crashlytics;
-import com.crashlytics.android.core.CrashlyticsCore;
+import androidx.multidex.MultiDex;
+
+import com.heytap.msp.push.HeytapPushManager;
+import com.huawei.hms.support.common.ActivityMgr;
 import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.avchatkit.config.AVChatOptions;
 import com.netease.nim.avchatkit.model.ITeamDataProvider;
@@ -26,6 +30,8 @@ import com.netease.nim.demo.redpacket.NIMRedPacketClient;
 import com.netease.nim.demo.rts.RTSHelper;
 import com.netease.nim.demo.session.NimDemoLocationProvider;
 import com.netease.nim.demo.session.SessionHelper;
+import com.netease.nim.demo.ysf.imageloader.GlideImageLoader;
+import com.netease.nim.demo.ysf.util.YsfHelper;
 import com.netease.nim.rtskit.RTSKit;
 import com.netease.nim.rtskit.api.config.RTSOptions;
 import com.netease.nim.uikit.api.NimUIKit;
@@ -33,14 +39,22 @@ import com.netease.nim.uikit.api.UIKitOptions;
 import com.netease.nim.uikit.business.contact.core.query.PinYin;
 import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.NIMPushClient;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 import com.netease.nimlib.sdk.util.NIMUtil;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.OnBotEventListener;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.QuickEntry;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.QuickEntryListener;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.UICustomization;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.Unicorn;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.UnicornImageLoader;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.YSFOptions;
+import com.qiyukf.unicorn.ysfkit.unicorn.api.privatization.UnicornAddress;
 import com.squareup.leakcanary.LeakCanary;
-
-import io.fabric.sdk.android.Fabric;
 
 public class NimApplication extends Application {
 
@@ -63,17 +77,21 @@ public class NimApplication extends Application {
         if (!LeakCanary.isInAnalyzerProcess(this)) {
 //            LeakCanary.install(this);
         }
-
         DemoCache.setContext(this);
 
         // 4.6.0 开始，第三方推送配置入口改为 SDKOption#mixPushConfig，旧版配置方式依旧支持。
-        NIMClient.init(this, getLoginInfo(), NimSDKOptionConfig.getSDKOptions(this));
+        SDKOptions sdkOptions = NimSDKOptionConfig.getSDKOptions(this);
+        NIMClient.init(this, getLoginInfo(), sdkOptions);
 
         // crash handler
         AppCrashHandler.getInstance(this);
 
         // 以下逻辑只在主进程初始化时执行
         if (NIMUtil.isMainProcess(this)) {
+
+            ActivityMgr.INST.init(this);
+            // 初始化OPPO PUSH服务，创建默认通道
+            HeytapPushManager.init(this, true);
 
             // 注册自定义推送消息处理，这个是可选项
             NIMPushClient.registerMixPushMessageHandler(new DemoMixPushMessageHandler());
@@ -95,14 +113,54 @@ public class NimApplication extends Application {
             initAVChatKit();
             // 初始化rts模块
             initRTSKit();
+
         }
+        //初始化融合 SDK 中的七鱼业务关业务
+        initMixSdk();
 
-        Crashlytics crashlyticsKit = new Crashlytics.Builder()
-                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
-                .build();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+            WebView.setDataDirectorySuffix(Process.myPid() + "");
+        }
+    }
 
-        // Initialize Fabric with the debug-disabled crashlytics.
-        Fabric.with(this, crashlyticsKit);
+    private void initMixSdk() {
+        UnicornImageLoader imageLoader;
+        imageLoader = new GlideImageLoader(this);
+        //内部已经初始化了 Nim baseSDK
+        Unicorn.init(this, YsfHelper.readAppKey(this), mixOptions(), imageLoader);
+    }
+
+    private YSFOptions mixOptions() {
+        YSFOptions options = new YSFOptions();
+        if (options.uiCustomization == null) {
+            options.uiCustomization = new UICustomization();
+        }
+        options.onMessageItemClickListener = (context, url) -> ToastHelper.showToast(context, url);
+
+        options.onBotEventListener = new OnBotEventListener() {
+            @Override
+            public boolean onUrlClick(Context context, String url) {
+                ToastHelper.showToast(context, url);
+                return true;
+            }
+        };
+        options.quickEntryListener = new QuickEntryListener() {
+            @Override
+            public void onClick(Context context, String shopId, QuickEntry quickEntry) {
+                ToastHelper.showToast(context, shopId);
+                if (quickEntry.getId() == 0) {
+                }
+            }
+        };
+        options.isPullMessageFromServer = true;
+        options.isMixSDK = true;
+        if (!TextUtils.isEmpty(DemoPrivatizationConfig.getYsfDaUrlLabel(this)) && !TextUtils.isEmpty(DemoPrivatizationConfig.getYsfDefalutUrlLabel(this))) {
+            UnicornAddress unicornAddress = new UnicornAddress();
+            unicornAddress.defaultUrl = DemoPrivatizationConfig.getYsfDefalutUrlLabel(this);
+            unicornAddress.daUrl = DemoPrivatizationConfig.getYsfDaUrlLabel(this);
+            options.unicornAddress = unicornAddress;
+        }
+        return options;
     }
 
     private LoginInfo getLoginInfo() {
@@ -155,6 +213,7 @@ public class NimApplication extends Application {
         };
         avChatOptions.entranceActivity = WelcomeActivity.class;
         avChatOptions.notificationIconRes = R.drawable.ic_stat_notify_msg;
+        com.netease.nim.avchatkit.ActivityMgr.INST.init(this);
         AVChatKit.init(avChatOptions);
 
         // 初始化日志系统

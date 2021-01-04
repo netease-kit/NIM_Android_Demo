@@ -51,6 +51,7 @@
     <string name="avchat_call">网络通话</string>
     <string name="avchat_no_pickup_call">未接听</string>
     <string name="avchat_call_failed">发起通话失败</string>
+    <string name="avchat_incoming_call">你有新的来电，请查看</string>
     <string name="avchat_no_permission">暂无权限，请开通音视频服务</string>
     <string name="avchat_in_switch">请耐心等待！</string>
 

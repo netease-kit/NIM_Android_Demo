@@ -5,6 +5,11 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
+    <include
+        android:id="@+id/layout_reply"
+        layout="@layout/nim_message_activity_reply_layout"
+        android:visibility="gone"/>
+
     <include layout="@layout/nim_message_activity_text_layout" />
 
     <com.netease.nim.uikit.business.session.emoji.EmoticonPickerView

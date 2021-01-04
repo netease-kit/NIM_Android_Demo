@@ -35,13 +35,15 @@ import com.netease.nim.uikit.common.ui.liv.LivIndex;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.impl.NimUIKitImpl;
 import com.netease.nim.uikit.impl.cache.UIKitLogTag;
+import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
+import com.netease.nimlib.sdk.lifecycle.SdkLifecycleObserver;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
+//import me.everything.android.ui.overscroll.OverScrollDecoratorHelper;
 
 
 /**
@@ -97,8 +99,15 @@ public class ContactsFragment extends TFragment {
         // 注册观察者
         registerObserver(true);
         registerOnlineStateChangeListener(true);
-        // 加载本地数据
-        reload(false);
+
+        NIMClient.getService(SdkLifecycleObserver.class).observeMainProcessInitCompleteResult(new Observer<Boolean>() {
+            @Override
+            public void onEvent(Boolean aBoolean) {
+                // 加载本地数据
+                reload(false);
+                NIMClient.getService(SdkLifecycleObserver.class).observeMainProcessInitCompleteResult(this, false);
+            }
+        }, true);
     }
 
     @Override
@@ -175,7 +184,7 @@ public class ContactsFragment extends TFragment {
         listView.setOnItemLongClickListener(listener);
 
         // ios style
-        OverScrollDecoratorHelper.setUpOverScroll(listView);
+//        OverScrollDecoratorHelper.setUpOverScroll(listView);
     }
 
     private void buildLitterIdx(View view) {

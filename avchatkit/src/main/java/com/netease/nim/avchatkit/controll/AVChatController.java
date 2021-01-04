@@ -37,25 +37,34 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 
 public class AVChatController {
+
     private static final String TAG = AVChatController.class.getSimpleName();
 
     protected Context context;
+
     private long timeBase = 0;
+
     protected AVChatData avChatData;
+
     private AVChatCameraCapturer mVideoCapturer;
+
     private AVChatConfigs avChatConfigs;
 
 
     public AtomicBoolean isCallEstablish = new AtomicBoolean(false);
+
     private boolean destroyRTC = false;
+
     private boolean isRecording = false;
 
     private boolean needRestoreLocalVideo = false;
+
     private boolean needRestoreLocalAudio = false;
 
     List<Pair<String, Boolean>> recordList = new LinkedList<Pair<String, Boolean>>();
 
     public interface RecordCallback {
+
         void onRecordUpdate(boolean isRecording);
     }
 
@@ -76,7 +85,6 @@ public class AVChatController {
             AVChatManager.getInstance().muteLocalVideo(false);
             needRestoreLocalVideo = false;
         }
-
         if (needRestoreLocalAudio) {
             AVChatManager.getInstance().muteLocalAudio(false);
             needRestoreLocalAudio = false;
@@ -86,12 +94,10 @@ public class AVChatController {
 
     //关闭视频和语音发送.
     public void pauseVideo() {
-
         if (!AVChatManager.getInstance().isLocalVideoMuted()) {
             AVChatManager.getInstance().muteLocalVideo(true);
             needRestoreLocalVideo = true;
         }
-
         if (!AVChatManager.getInstance().isLocalAudioMuted()) {
             AVChatManager.getInstance().muteLocalAudio(true);
             needRestoreLocalAudio = true;
@@ -102,27 +108,25 @@ public class AVChatController {
      * *************************** 拨打和接听 ****************************
      */
 
-    public void doCalling(String account, final AVChatType avChatType, final AVChatControllerCallback<AVChatData> callback) {
-
+    public void doCalling(String account, final AVChatType avChatType,
+                          final AVChatControllerCallback<AVChatData> callback) {
         AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(context));
         AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
         AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
-
         if (mVideoCapturer == null) {
             mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer(true);
             AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
         }
-
         if (avChatType == AVChatType.VIDEO) {
             AVChatManager.getInstance().enableVideo();
             AVChatManager.getInstance().startVideoPreview();
         }
-
         AVChatNotifyOption notifyOption = new AVChatNotifyOption();
         notifyOption.extendMessage = "extra_data";
         // 默认forceKeepCalling为true，开发者如果不需要离线持续呼叫功能可以将forceKeepCalling设为false
         // notifyOption.forceKeepCalling = false;
         AVChatManager.getInstance().call2(account, avChatType, notifyOption, new AVChatCallback<AVChatData>() {
+
             @Override
             public void onSuccess(AVChatData data) {
                 avChatData = data;
@@ -132,7 +136,6 @@ public class AVChatController {
             @Override
             public void onFailed(int code) {
                 LogUtil.d(TAG, "avChat call failed code->" + code);
-
                 if (code == ResponseCode.RES_FORBIDDEN) {
                     Toast.makeText(context, R.string.avchat_no_permission, Toast.LENGTH_SHORT).show();
                 } else {
@@ -152,10 +155,14 @@ public class AVChatController {
     }
 
     public void receive(final AVChatType avChatType, final AVChatControllerCallback<Void> callback) {
-
-        AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(context));
-        AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
-        AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
+        // protect set parameter
+        try {
+            AVChatManager.getInstance().enableRtc(AVPrivatizationConfig.getServerAddresses(context));
+            AVChatManager.getInstance().setParameters(avChatConfigs.getAvChatParameters());
+            AVChatManager.getInstance().setParameter(AVChatParameters.KEY_VIDEO_FRAME_FILTER, true);
+        } catch (Throwable e) {
+            LogUtil.e(TAG, "set parameter error" + e);
+        }
         if (mVideoCapturer == null) {
             mVideoCapturer = AVChatVideoCapturerFactory.createCameraCapturer(true);
             AVChatManager.getInstance().setupVideoCapturer(mVideoCapturer);
@@ -164,14 +171,12 @@ public class AVChatController {
             AVChatManager.getInstance().enableVideo();
             AVChatManager.getInstance().startVideoPreview();
         }
-
         AVChatManager.getInstance().accept2(avChatData.getChatId(), new AVChatCallback<Void>() {
+
             @Override
             public void onSuccess(Void aVoid) {
                 LogUtil.i(TAG, "accept success");
-
                 isCallEstablish.set(true);
-
                 callback.onSuccess(aVoid);
             }
 
@@ -183,16 +188,16 @@ public class AVChatController {
                     Toast.makeText(context, "建立连接失败", Toast.LENGTH_SHORT).show();
                 }
                 LogUtil.e(TAG, "accept onFailed->" + code);
-                handleAcceptFailed(avChatType == AVChatType.VIDEO ?
-                        CallStateEnum.VIDEO_CONNECTING : CallStateEnum.AUDIO);
+                handleAcceptFailed(
+                        avChatType == AVChatType.VIDEO ? CallStateEnum.VIDEO_CONNECTING : CallStateEnum.AUDIO);
                 callback.onFailed(code, "");
             }
 
             @Override
             public void onException(Throwable exception) {
                 LogUtil.d(TAG, "accept exception->" + exception);
-                handleAcceptFailed(avChatType == AVChatType.VIDEO ?
-                        CallStateEnum.VIDEO_CONNECTING : CallStateEnum.AUDIO);
+                handleAcceptFailed(
+                        avChatType == AVChatType.VIDEO ? CallStateEnum.VIDEO_CONNECTING : CallStateEnum.AUDIO);
                 callback.onFailed(-1, exception.toString());
             }
         });
@@ -212,81 +217,87 @@ public class AVChatController {
     /**
      * ********************* 音视频切换 ***********************
      */
-
     // 发送视频切换为音频命令
     public void switchVideoToAudio(final AVSwitchListener avSwitchListener) {
-        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(), AVChatControlCommand.SWITCH_VIDEO_TO_AUDIO, new AVChatCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LogUtil.d(TAG, "videoSwitchAudio onSuccess");
-                //关闭视频
-                AVChatManager.getInstance().stopVideoPreview();
-                AVChatManager.getInstance().disableVideo();
+        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(),
+                                                       AVChatControlCommand.SWITCH_VIDEO_TO_AUDIO,
+                                                       new AVChatCallback<Void>() {
 
-                // 界面布局切换。
-                avSwitchListener.onVideoToAudio();
-            }
+                                                           @Override
+                                                           public void onSuccess(Void aVoid) {
+                                                               LogUtil.d(TAG, "videoSwitchAudio onSuccess");
+                                                               //关闭视频
+                                                               AVChatManager.getInstance().stopVideoPreview();
+                                                               AVChatManager.getInstance().disableVideo();
+                                                               // 界面布局切换。
+                                                               avSwitchListener.onVideoToAudio();
+                                                           }
 
-            @Override
-            public void onFailed(int code) {
-                LogUtil.d(TAG, "videoSwitchAudio onFailed");
-            }
+                                                           @Override
+                                                           public void onFailed(int code) {
+                                                               LogUtil.d(TAG, "videoSwitchAudio onFailed");
+                                                           }
 
-            @Override
-            public void onException(Throwable exception) {
-                LogUtil.d(TAG, "videoSwitchAudio onException");
-            }
-        });
+                                                           @Override
+                                                           public void onException(Throwable exception) {
+                                                               LogUtil.d(TAG, "videoSwitchAudio onException");
+                                                           }
+                                                       });
     }
 
     // 发送音频切换为视频命令
     public void switchAudioToVideo(final AVSwitchListener avSwitchListener) {
-        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(), AVChatControlCommand.SWITCH_AUDIO_TO_VIDEO, new AVChatCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LogUtil.d(TAG, "requestSwitchToVideo onSuccess");
-                avSwitchListener.onAudioToVideo();
-            }
+        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(),
+                                                       AVChatControlCommand.SWITCH_AUDIO_TO_VIDEO,
+                                                       new AVChatCallback<Void>() {
 
-            @Override
-            public void onFailed(int code) {
-                LogUtil.d(TAG, "requestSwitchToVideo onFailed" + code);
-            }
+                                                           @Override
+                                                           public void onSuccess(Void aVoid) {
+                                                               LogUtil.d(TAG, "requestSwitchToVideo onSuccess");
+                                                               avSwitchListener.onAudioToVideo();
+                                                           }
 
-            @Override
-            public void onException(Throwable exception) {
-                LogUtil.d(TAG, "requestSwitchToVideo onException" + exception);
-            }
-        });
+                                                           @Override
+                                                           public void onFailed(int code) {
+                                                               LogUtil.d(TAG, "requestSwitchToVideo onFailed" + code);
+                                                           }
+
+                                                           @Override
+                                                           public void onException(Throwable exception) {
+                                                               LogUtil.d(TAG, "requestSwitchToVideo onException" +
+                                                                              exception);
+                                                           }
+                                                       });
     }
 
     // 发送同意从音频切换为视频的命令
     public void receiveAudioToVideo(final AVSwitchListener avSwitchListener) {
-        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(), AVChatControlCommand.SWITCH_AUDIO_TO_VIDEO_AGREE, new AVChatCallback<Void>() {
-            @Override
-            public void onSuccess(Void aVoid) {
-                LogUtil.d(TAG, "receiveAudioToVideo onSuccess");
+        AVChatManager.getInstance().sendControlCommand(avChatData.getChatId(),
+                                                       AVChatControlCommand.SWITCH_AUDIO_TO_VIDEO_AGREE,
+                                                       new AVChatCallback<Void>() {
 
-                avSwitchListener.onReceiveAudioToVideoAgree();
-            }
+                                                           @Override
+                                                           public void onSuccess(Void aVoid) {
+                                                               LogUtil.d(TAG, "receiveAudioToVideo onSuccess");
+                                                               avSwitchListener.onReceiveAudioToVideoAgree();
+                                                           }
 
-            @Override
-            public void onFailed(int code) {
-                LogUtil.d(TAG, "receiveAudioToVideo onFailed");
-            }
+                                                           @Override
+                                                           public void onFailed(int code) {
+                                                               LogUtil.d(TAG, "receiveAudioToVideo onFailed");
+                                                           }
 
-            @Override
-            public void onException(Throwable exception) {
-                LogUtil.d(TAG, "receiveAudioToVideo onException");
-            }
-        });
+                                                           @Override
+                                                           public void onException(Throwable exception) {
+                                                               LogUtil.d(TAG, "receiveAudioToVideo onException");
+                                                           }
+                                                       });
     }
 
 
     /**
      * ********************* 其他设置 **************************
      */
-
     // 录制暂停和开始
     public void toggleRecord(int type, final String receiverId, final RecordCallback callback) {
         if (isRecording) {
@@ -323,30 +334,34 @@ public class AVChatController {
                 selectDialog.addItem("对方音视频", false);
             }
             selectDialog.addPositiveButton("开始录制", MultiSelectDialog.NO_TEXT_COLOR, MultiSelectDialog.NO_TEXT_SIZE,
-                    new View.OnClickListener() {
-                        @Override
-                        public void onClick(View view) {
-                            isRecording = true;
-                            callback.onRecordUpdate(isRecording);
-                            List<Pair<String, Boolean>> selectDialogList = selectDialog.getItemTextList();
-                            if (selectDialogList.size() == 3) {
-                                if (selectDialogList.get(0).second) {
-                                    AVChatManager.getInstance().startAudioRecording();
-                                }
-                                if (selectDialogList.get(1).second) {
-                                    AVChatManager.getInstance().startAVRecording(AVChatKit.getAccount());
-                                }
-                                if (selectDialogList.get(2).second) {
-                                    AVChatManager.getInstance().startAVRecording(receiverId);
-                                }
-                            }
-                            recordList.clear();
-                            recordList.addAll(selectDialogList);
-                            selectDialog.dismiss();
-                        }
-                    });
+                                           new View.OnClickListener() {
+
+                                               @Override
+                                               public void onClick(View view) {
+                                                   isRecording = true;
+                                                   callback.onRecordUpdate(isRecording);
+                                                   List<Pair<String, Boolean>> selectDialogList = selectDialog
+                                                           .getItemTextList();
+                                                   if (selectDialogList.size() == 3) {
+                                                       if (selectDialogList.get(0).second) {
+                                                           AVChatManager.getInstance().startAudioRecording();
+                                                       }
+                                                       if (selectDialogList.get(1).second) {
+                                                           AVChatManager.getInstance().startAVRecording(
+                                                                   AVChatKit.getAccount());
+                                                       }
+                                                       if (selectDialogList.get(2).second) {
+                                                           AVChatManager.getInstance().startAVRecording(receiverId);
+                                                       }
+                                                   }
+                                                   recordList.clear();
+                                                   recordList.addAll(selectDialogList);
+                                                   selectDialog.dismiss();
+                                               }
+                                           });
             selectDialog.addNegativeButton(context.getString(R.string.cancel), MultiSelectDialog.NO_TEXT_COLOR,
-                    MultiSelectDialog.NO_TEXT_SIZE, new View.OnClickListener() {
+                                           MultiSelectDialog.NO_TEXT_SIZE, new View.OnClickListener() {
+
                         @Override
                         public void onClick(View view) {
                             selectDialog.dismiss();
@@ -374,9 +389,10 @@ public class AVChatController {
         if (destroyRTC) {
             return;
         }
-        if ((type == AVChatExitCode.HANGUP || type == AVChatExitCode.PEER_NO_RESPONSE
-                || type == AVChatExitCode.CANCEL || type == AVChatExitCode.REJECT) && avChatData != null) {
+        if ((type == AVChatExitCode.HANGUP || type == AVChatExitCode.PEER_NO_RESPONSE ||
+             type == AVChatExitCode.CANCEL || type == AVChatExitCode.REJECT) && avChatData != null) {
             AVChatManager.getInstance().hangUp2(avChatData.getChatId(), new AVChatCallback<Void>() {
+
                 @Override
                 public void onSuccess(Void aVoid) {
                 }

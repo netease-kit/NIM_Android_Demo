@@ -4,8 +4,8 @@ import android.animation.ObjectAnimator;
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -15,9 +15,9 @@ import android.widget.TextView;
 import com.faceunity.FaceU;
 import com.faceunity.R;
 import com.faceunity.ui.adapter.EffectAndFilterSelectAdapter;
+import com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar;
 import com.faceunity.utils.ScreenUtil;
 
-import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
 
 /**

@@ -772,7 +772,16 @@ public class AdvancedTeamInfoActivity extends UI implements TAdapterDelegate, Te
 
         @Override
         public void onUpdateTeamMember(List<TeamMember> m) {
-            for (TeamMember mm : m) {
+            List<TeamMember> filterList = new ArrayList<>();
+            for (TeamMember member : m) {
+                if (TextUtils.equals(member.getTid(), teamId)) {
+                    filterList.add(member);
+                }
+            }
+            if (filterList.isEmpty()) {
+                return;
+            }
+            for (TeamMember mm : filterList) {
                 for (TeamMember member : members) {
                     if (mm.getAccount().equals(member.getAccount())) {
                         members.set(members.indexOf(member), mm);
@@ -780,13 +789,19 @@ public class AdvancedTeamInfoActivity extends UI implements TAdapterDelegate, Te
                     }
                 }
             }
-            addTeamMembers(m, false);
+            addTeamMembers(filterList, false);
         }
 
         @Override
         public void onRemoveTeamMember(List<TeamMember> members) {
+            List<String> filter = new ArrayList<>();
             for (TeamMember member : members) {
-                removeMember(member.getAccount());
+                if (TextUtils.equals(member.getTid(), teamId)) {
+                    filter.add(member.getAccount());
+                }
+            }
+            if (filter.size() > 0) {
+                removeMembers(filter);
             }
         }
     };
@@ -1380,6 +1395,34 @@ public class AdvancedTeamInfoActivity extends UI implements TAdapterDelegate, Te
     }
 
     /**
+     * remove members
+     *
+     * @param accounts
+     */
+    private void removeMembers(List<String> accounts) {
+        if (accounts == null || accounts.size() == 0) {
+            return;
+        }
+        for (String account : accounts) {
+            memberAccounts.remove(account);
+            for (TeamMember m : members) {
+                if (m.getAccount().equals(account)) {
+                    members.remove(m);
+                    break;
+                }
+            }
+            for (TeamMemberItem item : dataSource) {
+                if (item.getAccount() != null && item.getAccount().equals(account)) {
+                    dataSource.remove(item);
+                    break;
+                }
+            }
+        }
+        memberCountText.setText(String.format("共%d人", members.size()));
+        adapter.notifyDataSetChanged();
+    }
+
+    /**
      * 移除群成员成功后，删除列表中的群成员
      *
      * @param account 被删除成员帐号
@@ -1395,13 +1438,13 @@ public class AdvancedTeamInfoActivity extends UI implements TAdapterDelegate, Te
                 break;
             }
         }
-        memberCountText.setText(String.format("共%d人", members.size()));
         for (TeamMemberItem item : dataSource) {
             if (item.getAccount() != null && item.getAccount().equals(account)) {
                 dataSource.remove(item);
                 break;
             }
         }
+        memberCountText.setText(String.format("共%d人", members.size()));
         adapter.notifyDataSetChanged();
     }
 

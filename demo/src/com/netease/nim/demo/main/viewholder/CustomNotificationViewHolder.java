@@ -31,13 +31,10 @@ public class CustomNotificationViewHolder extends TViewHolder {
 
     public void refresh(Object item) {
         notification = (CustomNotification) item;
-
         updateBackground();
-
         loadPortrait();
-
-        updateNickLabel(MessageHelper.getName(notification.getFromAccount(), notification.getSessionType()));
-
+        updateNickLabel(MessageHelper.getName(notification.getFromAccount(),
+                                              notification.getSessionType()));
         updateMsgLabel();
     }
 
@@ -53,6 +50,8 @@ public class CustomNotificationViewHolder extends TViewHolder {
             imgHead.loadBuddyAvatar(notification.getFromAccount());
         } else if (notification.getSessionType() == SessionTypeEnum.Team) {
             imgHead.setImageResource(R.drawable.nim_avatar_group);
+        } else if (notification.getSessionType() == SessionTypeEnum.SUPER_TEAM) {
+            imgHead.setImageResource(R.drawable.nim_avatar_group);
         }
     }
 
@@ -66,7 +65,6 @@ public class CustomNotificationViewHolder extends TViewHolder {
             content = jsonObj.getString("content");
         }
         lblMessage.setText(content);
-
         String timeString = TimeUtil.getTimeShowString(notification.getTime(), true);
         lblDatetime.setText(timeString);
     }
@@ -74,11 +72,9 @@ public class CustomNotificationViewHolder extends TViewHolder {
     protected void updateNickLabel(String nick) {
         int labelWidth = ScreenUtil.screenWidth;
         labelWidth -= ScreenUtil.dip2px(50 + 70); // 减去固定的头像和时间宽度
-
         if (labelWidth > 0) {
             lblNickname.setMaxWidth(labelWidth);
         }
-
         lblNickname.setText(nick);
     }
 
@@ -87,10 +83,10 @@ public class CustomNotificationViewHolder extends TViewHolder {
     }
 
     public void inflate() {
-        this.imgHead = (HeadImageView) view.findViewById(R.id.img_head);
-        this.lblNickname = (TextView) view.findViewById(R.id.tv_nick_name);
-        this.lblMessage = (TextView) view.findViewById(R.id.tv_message);
-        this.lblDatetime = (TextView) view.findViewById(R.id.tv_date_time);
+        this.imgHead = view.findViewById(R.id.img_head);
+        this.lblNickname = view.findViewById(R.id.tv_nick_name);
+        this.lblMessage = view.findViewById(R.id.tv_message);
+        this.lblDatetime = view.findViewById(R.id.tv_date_time);
         this.topLine = view.findViewById(R.id.top_line);
         this.bottomLine = view.findViewById(R.id.bottom_line);
     }

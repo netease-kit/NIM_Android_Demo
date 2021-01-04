@@ -51,6 +51,8 @@ public class CommonRecentViewHolder extends RecentViewHolder {
             }
 
             return digest;
+        } else if (recent.getSessionType() == SessionTypeEnum.Ysf) {
+            return recent.getContent();
         }
 
         return "[未知]";

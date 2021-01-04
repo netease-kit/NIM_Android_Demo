@@ -3,6 +3,7 @@ package com.netease.nim.uikit.api.wrapper;
 import android.text.TextUtils;
 
 import com.netease.nim.uikit.api.NimUIKit;
+import com.netease.nim.uikit.business.team.helper.SuperTeamHelper;
 import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
@@ -36,6 +37,8 @@ public class MessageRevokeTip {
                 revokeNick = TeamHelper.getTeamMemberDisplayNameYou(item.getSessionId(), item.getFromAccount());
             } else if (item.getSessionType() == SessionTypeEnum.P2P) {
                 revokeNick = item.getFromAccount().equals(NimUIKit.getAccount()) ? "你" : "对方";
+            } else if(item.getSessionType() == SessionTypeEnum.SUPER_TEAM){
+                revokeNick = SuperTeamHelper.getTeamMemberDisplayNameYou(item.getSessionId(), item.getFromAccount());
             }
             return revokeNick + "撤回了一条消息";
         }

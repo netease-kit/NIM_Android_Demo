@@ -101,13 +101,13 @@
         android:layout_above="@+id/face_u_control"
         android:layout_gravity="bottom">
         <!--effect select-->
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/effect_recycle_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom" />
         <!--filter select-->
-        <android.support.v7.widget.RecyclerView
+        <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/filter_recycle_view"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -222,7 +222,7 @@
             android:padding="@dimen/normal_space"
             android:visibility="gone">
 
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar
                 android:id="@+id/color_level_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -246,7 +246,7 @@
             android:padding="@dimen/normal_space"
             android:visibility="gone">
 
-            <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+            <com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar
                 android:id="@+id/red_level_seekbar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -350,7 +350,7 @@
                     android:textColor="@color/faceunityYellow"
                     android:textSize="17sp" />
 
-                <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                <com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar
                     android:id="@+id/face_shape_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -380,7 +380,7 @@
                     android:textColor="@color/faceunityYellow"
                     android:textSize="17sp" />
 
-                <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                <com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar
                     android:id="@+id/enlarge_eye_level_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -411,7 +411,7 @@
                     android:textColor="@color/faceunityYellow"
                     android:textSize="17sp" />
 
-                <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
+                <com.faceunity.ui.view.discrete.seek.bar.DiscreteSeekBar
                     android:id="@+id/cheekthin_level_seekbar"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"

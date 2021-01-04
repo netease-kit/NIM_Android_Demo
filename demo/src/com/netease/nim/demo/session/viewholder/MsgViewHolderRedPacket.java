@@ -26,12 +26,12 @@ public class MsgViewHolderRedPacket extends MsgViewHolderBase {
     }
 
     @Override
-    protected int getContentResId() {
+    public int getContentResId() {
         return R.layout.red_packet_item;
     }
 
     @Override
-    protected void inflateContentView() {
+    public void inflateContentView() {
         sendContentText = findViewById(R.id.tv_bri_mess_send);
         sendTitleText = findViewById(R.id.tv_bri_name_send);
         sendView = findViewById(R.id.bri_send);
@@ -41,7 +41,7 @@ public class MsgViewHolderRedPacket extends MsgViewHolderBase {
     }
 
     @Override
-    protected void bindContentView() {
+    public void bindContentView() {
         RedPacketAttachment attachment = (RedPacketAttachment) message.getAttachment();
 
         if (!isReceivedMessage()) {// 消息方向，自己发送的
@@ -68,7 +68,7 @@ public class MsgViewHolderRedPacket extends MsgViewHolderBase {
     }
 
     @Override
-    protected void onItemClick() {
+    public void onItemClick() {
         // 拆红包
         RedPacketAttachment attachment = (RedPacketAttachment) message.getAttachment();
 

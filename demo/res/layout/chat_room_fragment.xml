@@ -53,7 +53,7 @@
         android:layout_height="@dimen/pager_sliding_tab_strip_height"
         android:background="@color/white"/>
 
-    <android.support.v4.view.ViewPager
+    <androidx.viewpager.widget.ViewPager
         android:id="@+id/chat_room_viewpager"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>

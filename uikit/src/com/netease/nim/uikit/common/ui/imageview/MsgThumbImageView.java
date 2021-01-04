@@ -8,7 +8,6 @@ import android.graphics.PorterDuffXfermode;
 import android.graphics.drawable.Drawable;
 import android.text.TextUtils;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.RequestBuilder;
@@ -18,7 +17,9 @@ import com.netease.nim.uikit.common.util.media.ImageUtil;
 
 import java.io.File;
 
-public class MsgThumbImageView extends ImageView {
+import androidx.appcompat.widget.AppCompatImageView;
+
+public class MsgThumbImageView extends AppCompatImageView {
 
     public MsgThumbImageView(Context context) {
         super(context);
