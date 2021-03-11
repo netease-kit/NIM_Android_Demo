@@ -65,8 +65,6 @@ class NimSDKOptionConfig {
         options.useXLog = false;
         // 会话置顶是否漫游
         options.notifyStickTopSession = true;
-        // 设置数据库加密秘钥（替换为自己的秘钥），开启加密；如不需要加密，则去掉
-        options.databaseEncryptKey = "123456";
 
         return options;
     }
