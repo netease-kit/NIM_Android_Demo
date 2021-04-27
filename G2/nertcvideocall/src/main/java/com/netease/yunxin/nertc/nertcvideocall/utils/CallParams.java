@@ -19,5 +19,7 @@ public interface CallParams {
     String INVENT_USER_IDS = "invent_userIds";
     String TEAM_CHAT_GROUP_ID = "team_chat_group_id";
 
+    String CHANNEL_NAME_SEPARATOR = "|";
+
     String[] CallParamKeys = new String[]{INVENT_CALL_TYPE, INVENT_CHANNEL_TYPE, INVENT_CHANNEL_ID, INVENT_REQUEST_ID, INVENT_FROM_ACCOUNT_ID, INVENT_USER_IDS, TEAM_CHAT_GROUP_ID};
 }

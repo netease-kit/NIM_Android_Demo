@@ -15,12 +15,14 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.blankj.utilcode.constant.PermissionConstants;
+import com.blankj.utilcode.util.PermissionUtils;
 import com.blankj.utilcode.util.ToastUtils;
-import com.netease.lava.nertc.sdk.stats.NERtcNetworkQualityInfo;
-import com.netease.lava.nertc.sdk.video.NERtcVideoView;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -32,10 +34,14 @@ import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
 import com.netease.nimlib.sdk.avsignalling.model.MemberInfo;
+import com.netease.nimlib.sdk.util.Entry;
 import com.netease.yunxin.nertc.model.ProfileManager;
 import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.impl.NERTCVideoCallImpl;
+import com.netease.yunxin.nertc.nertcvideocall.model.impl.UIServiceManager;
+import com.netease.yunxin.nertc.nertcvideocall.utils.ALog;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 import com.netease.yunxin.nertc.ui.R;
 import com.netease.yunxin.nertc.ui.team.model.TeamG2Adapter;
@@ -46,12 +52,16 @@ import com.netease.yunxin.nertc.ui.team.utils.ScreenUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 
 import static com.netease.yunxin.nertc.ui.team.model.TeamG2Item.TYPE.TYPE_DATA;
 
+
+/**
+ * 一、新版item顺序:邀请者放第一个，如果自己是邀请者，列表展示邀请顺序；否则按进房间顺序从左到右、从上到下排列
+ *
+ */
 public class TeamG2Activity extends UI {
     // CONST
     private static final String TAG = "TeamAVChat";
@@ -104,6 +114,8 @@ public class TeamG2Activity extends UI {
     private String invitedRequestId;
     private String invitedAccid;
 
+    private final static int CONTACT_SELECTOR_REQUEST_CODE =1000;
+
     public static void startActivity(Context context, boolean receivedCall, String teamId, ArrayList<String> accounts, String teamName) {
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -120,7 +132,7 @@ public class TeamG2Activity extends UI {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i(TAG, "TeamAVChatActivity onCreate, savedInstanceState=" + savedInstanceState);
+        log( "TeamAVChatActivity onCreate, savedInstanceState=" + savedInstanceState);
         dismissKeyguard();
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.team_avchat_activity);
@@ -128,11 +140,29 @@ public class TeamG2Activity extends UI {
         onIntent();
         findLayouts();
         showViews();
+        PermissionUtils.permission(PermissionConstants.CAMERA, PermissionConstants.MICROPHONE)
+                .callback(new PermissionUtils.FullCallback() {
+                    @Override
+                    public void onGranted(@NonNull List<String> granted) {
+                        if (granted!=null&&!granted.isEmpty()){
+                            for (String s : granted) {
+                                 log("onGranted:"+s);
+                            }
+                        }
+                       startRtc();
+                    }
 
-        //TODO
-        // 音视频权限检查
-        // 启动音视频
-        startRtc();
+                    @Override
+                    public void onDenied(@NonNull List<String> deniedForever, @NonNull List<String> denied) {
+                        if (denied!=null&&!denied.isEmpty()){
+                            for (String s : denied) {
+                                log("onDenied:"+s);
+                            }
+                        }
+                        startRtc();
+                        ToastUtils.showShort("您拒绝了相关权限，可能无法正常使用，请前往设置页打开相机和录音权限！");
+                    }
+                }).request();
 
         NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(userStatusObserver, true);
     }
@@ -158,7 +188,7 @@ public class TeamG2Activity extends UI {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.i(TAG, "TeamAVChatActivity onDestroy");
+        log( "TeamAVChatActivity onDestroy");
 
         if (timer != null) {
             timer.cancel();
@@ -178,7 +208,7 @@ public class TeamG2Activity extends UI {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        Log.i(TAG, "TeamAVChatActivity onSaveInstanceState");
+        log( "TeamAVChatActivity onSaveInstanceState");
     }
 
     /**
@@ -210,14 +240,22 @@ public class TeamG2Activity extends UI {
         invitedRequestId = intent.getStringExtra(CallParams.INVENT_REQUEST_ID);
         invitedAccid = intent.getStringExtra(CallParams.INVENT_FROM_ACCOUNT_ID);
         groupId = intent.getStringExtra(CallParams.TEAM_CHAT_GROUP_ID);
-        Log.i(TAG, "onIntent teamId=" + teamId
-                + ", receivedCall=" + receivedCall + ", accounts=" + accounts.size() + ", teamName = " + teamName);
+        log( "onIntent teamId=" + teamId
+                + ", receivedCall=" + receivedCall
+                + ", accounts=" + accounts.size()
+                + ", teamName = " + teamName
+                +",invitedChannelId="+invitedChannelId
+                +",invitedRequestId="+invitedRequestId
+                +",invitedAccid="+invitedAccid
+                +",groupId="+groupId
+        );
     }
 
     private void findLayouts() {
         callLayout = findView(R.id.team_avchat_call_layout);
         surfaceLayout = findView(R.id.team_avchat_surface_layout);
         voiceMuteButton = findView(R.id.avchat_shield_user);
+
     }
 
     /**
@@ -293,20 +331,20 @@ public class TeamG2Activity extends UI {
                                 }
                             }
 
-                            Log.i(TAG, "join room success, chatId=" + chatId);
+                            log( "join room success, chatId=" + chatId);
                             chatId = channelFullInfo.getChannelId();
                             onJoinRoomSuccess();
                         } else {
                             int code = -1;
                             onJoinRoomFailed(ResponseCode.RES_ENONEXIST, null);
-                            Log.i(TAG, "join room failed, code=" + code);
+                            log("join room failed, code=" + code);
                         }
                     }
 
                     @Override
                     public void onJoinFail(String msg, int code) {
                         onJoinRoomFailed(ResponseCode.RES_ENONEXIST, null);
-                        Log.i(TAG, "join room failed, code=" + code + ", msg=" + msg);
+                        log("join room failed, code=" + code + ", msg=" + msg);
                     }
                 });
                 AVChatSoundPlayer.instance().stop();
@@ -350,7 +388,7 @@ public class TeamG2Activity extends UI {
 
     private void startRtc() {
         // rtc init
-        Log.i(TAG, "start rtc done");
+        log("start rtc done");
 
         // state observer
         if (nertcCallingDelegate != null) {
@@ -359,12 +397,11 @@ public class TeamG2Activity extends UI {
         nertcCallingDelegate = new NERTCCallingDelegate() {
             @Override
             public void onError(int errorCode, String errorMsg, boolean needFinish) {
+                log("startRtc onError->"+errorCode+",errorMsg:"+errorMsg+",needFinish:"+needFinish);
                 if (needFinish) {
                     ToastUtils.showLong(errorMsg + " errorCode:" + errorCode);
                     AVChatSoundPlayer.instance().stop();
                     finish();
-                } else {
-                    Log.i(TAG, errorMsg + " errorCode:" + errorCode);
                 }
             }
 
@@ -374,8 +411,8 @@ public class TeamG2Activity extends UI {
             }
 
             @Override
-            public void onUserEnter(long uid,String accId) {
-                onAVChatUserJoined(uid,accId);
+            public void onUserEnter(String accId) {
+                onAVChatUserJoined(accId);
             }
 
             @Override
@@ -415,17 +452,24 @@ public class TeamG2Activity extends UI {
             }
 
             @Override
-            public void onCameraAvailable(long userId, boolean isVideoAvailable) {
+            public void onCameraAvailable(String userId, boolean isVideoAvailable) {
 
             }
 
             @Override
-            public void onAudioAvailable(long userId, boolean isAudioAvailable) {
+            public void onAudioAvailable(String userId, boolean isAudioAvailable) {
 
             }
 
             @Override
-            public void onUserNetworkQuality(NERtcNetworkQualityInfo[] stats) {
+            public void onDisconnect(int reason) {
+                ToastUtils.showLong("onDisconnect reason:" + reason);
+                AVChatSoundPlayer.instance().stop();
+                finish();
+            }
+
+            @Override
+            public void onUserNetworkQuality(Entry<String, Integer>[] stats) {
 
             }
 
@@ -440,7 +484,7 @@ public class TeamG2Activity extends UI {
             }
         };
         NERTCVideoCall.sharedInstance().addDelegate(nertcCallingDelegate);
-        Log.i(TAG, "observe rtc state done");
+        log("observe rtc state done" );
 
         if (!receivedCall) {
             // join
@@ -455,31 +499,31 @@ public class TeamG2Activity extends UI {
                             }
                         }
 
-                        Log.i(TAG, "join room success, chatId=" + chatId);
+                        log("join room success, chatId=" + chatId );
                         chatId = channelFullInfo.getChannelId();
                         onJoinRoomSuccess();
                     } else {
                         int code = -1;
                         onJoinRoomFailed(code, null);
-                        Log.i(TAG, "join room failed, code=" + code);
+                        log("join room failed, code=" + code );
                     }
                 }
 
                 @Override
                 public void onJoinFail(String msg, int code) {
                     onJoinRoomFailed(code, null);
-                    Log.i(TAG, "join room failed, code=" + code + ", msg=" + msg);
+                    log("join room failed, code=" + code + ", msg=" + msg );
                 }
             });
         }
-        Log.i(TAG, "start join room");
+        log("start join room");
     }
 
     private void onJoinRoomSuccess() {
         startTimer();
         startLocalPreview();
         startTimerForCheckReceivedCall();
-        Log.i(TAG, "team onJoinRoomSuccess...");
+        log("team onJoinRoomSuccess...");
     }
 
     private void onJoinRoomFailed(int code, Throwable e) {
@@ -492,22 +536,32 @@ public class TeamG2Activity extends UI {
         finish();
     }
 
-    public void onAVChatUserJoined(long uid,String accId) {
+    public void onAVChatUserJoined(String accId) {
         int index = getItemIndex(accId);
+        if (index==-1){
+            //新加进来的人状态由占位改成视频流
+            for (int i = 0; i < data.size(); i++) {
+                TeamG2Item item = data.get(i);
+                if (item!=null&&item.account==null){
+                    index=i;
+                    item.type=TYPE_DATA;
+                    item.teamId=teamId;
+                    item.account=accId;
+                    item.state=TeamG2Item.STATE.STATE_PLAYING;
+                    item.videoLive=true;
+                    break;
+                }
+            }
+        }
         if (index >= 0) {
             TeamG2Item item = data.get(index);
-            NERtcVideoView surfaceView = adapter.getViewHolderSurfaceView(item);
-            if (surfaceView != null) {
-                item.state = TeamG2Item.STATE.STATE_PLAYING;
-                item.videoLive = true;
-                item.uid = uid;
-                adapter.notifyItemChanged(index);
-                NERTCVideoCall.sharedInstance().setupRemoteView(surfaceView, uid);
-            }
+            item.state = TeamG2Item.STATE.STATE_PLAYING;
+            item.videoLive = true;
+            adapter.notifyDataItemChanged(index);
         }
         updateAudioMuteButtonState();
 
-        Log.i(TAG, "on user joined, account=" + accId);
+        log("on user joined, account=" + accId);
     }
 
     public void onAVChatUserLeave(String account) {
@@ -520,7 +574,7 @@ public class TeamG2Activity extends UI {
         }
         updateAudioMuteButtonState();
 
-        Log.i(TAG, "on user leave, account=" + account);
+        log("on user leave, account=" + account);
     }
 
     public void onSignalingUserReject(String accountId){
@@ -533,18 +587,14 @@ public class TeamG2Activity extends UI {
         }
         updateAudioMuteButtonState();
 
-        Log.i(TAG, "on user reject, account=" + accountId);
+        log("on user reject, account=" + accountId);
     }
 
     private void startLocalPreview() {
         if (data.size() > 1 && data.get(0).account.equals(ProfileManager.getInstance().getUserModel().imAccid)) {
-            NERtcVideoView surfaceView = adapter.getViewHolderSurfaceView(data.get(0));
-            if (surfaceView != null) {
-                NERTCVideoCall.sharedInstance().setupLocalView(surfaceView);
-                data.get(0).state = TeamG2Item.STATE.STATE_PLAYING;
-                data.get(0).videoLive = true;
-                adapter.notifyItemChanged(0);
-            }
+            data.get(0).state = TeamG2Item.STATE.STATE_PLAYING;
+            data.get(0).videoLive = true;
+            adapter.notifyItemChanged(0);
         }
     }
 
@@ -588,7 +638,7 @@ public class TeamG2Activity extends UI {
         }
 
         destroyRTC = true;
-        Log.i(TAG, "destroy rtc & leave room");
+        log("destroy rtc & leave room");
     }
 
     /**
@@ -622,14 +672,15 @@ public class TeamG2Activity extends UI {
         mainHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                int index = 0;
-                for (TeamG2Item item : data) {
-                    if (item.type == TYPE_DATA && item.state == TeamG2Item.STATE.STATE_WAITING) {
-                        item.state = TeamG2Item.STATE.STATE_END;
-                        adapter.notifyItemChanged(index);
-                    }
-                    index++;
-                }
+                //与IOS保持一致，去掉单人的超时逻辑
+//                int index = 0;
+//                for (TeamG2Item item : data) {
+//                    if (item.type == TYPE_DATA && item.state == TeamG2Item.STATE.STATE_WAITING) {
+//                        item.state = TeamG2Item.STATE.STATE_END;
+//                        adapter.notifyItemChanged(index,item);
+//                    }
+//                    index++;
+//                }
                 checkAllHangUp();
             }
         }, CHECK_RECEIVED_CALL_TIMEOUT);
@@ -669,6 +720,7 @@ public class TeamG2Activity extends UI {
         mainHandler.postDelayed(new Runnable() {
             @Override
             public void run() {
+                log("所有人都没接通,自动挂断");
                 hangup();
                 finish();
             }
@@ -683,6 +735,7 @@ public class TeamG2Activity extends UI {
         @Override
         public void onClick(View v) {
             int i = v.getId();
+            log(v+"");
             if (i == R.id.avchat_switch_camera) {// 切换前后摄像头
                 NERTCVideoCall.sharedInstance().switchCamera();
             } else if (i == R.id.avchat_enable_video) {// 视频
@@ -765,20 +818,43 @@ public class TeamG2Activity extends UI {
      */
 
     private void initRecyclerView() {
-        // 确认数据源,自己放在首位
+        // 确认数据源,发起邀请者放首位
         data = new ArrayList<>(accounts.size() + 1);
-        for (String account : accounts) {
-            if (TextUtils.equals(account, ProfileManager.getInstance().getUserModel().imAccid)) {
-                continue;
+        //房间发起者在第一位
+        if (receivedCall){
+            TeamG2Item invitedAccItem=null;
+            for (String account : accounts) {
+                 if (!TextUtils.isEmpty(invitedAccid)&&invitedAccid.equals(account)){
+                     invitedAccItem=new TeamG2Item(TYPE_DATA, teamId, account);
+                 }else {
+                     TeamG2Item item = new TeamG2Item(TYPE_DATA, teamId, account);
+                     item.isSelf=TextUtils.equals(account, ProfileManager.getInstance().getUserModel().imAccid);
+                     if (item.isSelf){
+                         item.state = TeamG2Item.STATE.STATE_PLAYING;
+                         item.videoLive=true;
+                     }
+                     data.add(item);
+                 }
             }
+            if (invitedAccItem!=null){
+                data.add(0,invitedAccItem);
+            }
+        }else {
+            // 自己是邀请者
+            for (String account : accounts) {
+                if (TextUtils.equals(account, ProfileManager.getInstance().getUserModel().imAccid)) {
+                    continue;
+                }
 
-            data.add(new TeamG2Item(TYPE_DATA, teamId, account));
+                data.add(new TeamG2Item(TYPE_DATA, teamId, account));
+            }
+            TeamG2Item selfItem = new TeamG2Item(TYPE_DATA, teamId, ProfileManager.getInstance().getUserModel().imAccid);
+            selfItem.state = TeamG2Item.STATE.STATE_PLAYING; // 自己直接采集摄像头画面
+            selfItem.isSelf = true;
+            data.add(0, selfItem);
         }
 
-        TeamG2Item selfItem = new TeamG2Item(TYPE_DATA, teamId, ProfileManager.getInstance().getUserModel().imAccid);
-        selfItem.state = TeamG2Item.STATE.STATE_PLAYING; // 自己直接采集摄像头画面
-        selfItem.isSelf = true;
-        data.add(0, selfItem);
+
 
         // 补充占位符
         int holderLength = MAX_SUPPORT_ROOM_USERS_COUNT - data.size();
@@ -820,6 +896,7 @@ public class TeamG2Activity extends UI {
      */
 
     private void showToast(String content) {
+        log(content);
         Toast.makeText(TeamG2Activity.this, content, Toast.LENGTH_SHORT).show();
     }
 
@@ -830,11 +907,23 @@ public class TeamG2Activity extends UI {
 
         @Override
         public void onEvent(StatusCode code) {
+            log(String.valueOf(code.getValue()));
             if (code.wontAutoLogin()) {
+                log("code.wontAutoLogin()");
                 AVChatSoundPlayer.instance().stop();
                 hangup();
                 finish();
             }
         }
     };
+
+
+
+    private void log(String msg){
+        if (TextUtils.isEmpty(msg)){
+            return;
+        }
+        ALog.i(TAG, msg);
+    }
+
 }

@@ -1,10 +1,8 @@
 package com.netease.yunxin.nertc.nertcvideocall.model;
 
-import com.netease.lava.nertc.sdk.stats.NERtcNetworkQualityInfo;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
-
-import java.util.Map;
+import com.netease.nimlib.sdk.util.Entry;
 
 public interface NERTCCallingDelegate {
 
@@ -27,9 +25,9 @@ public interface NERTCCallingDelegate {
     /**
      * 如果有用户同意进入通话频道，那么会收到此回调
      *
-     * @param uid 进入通话的用户
+     * @param accId 进入通话的用户
      */
-    void onUserEnter(long uid,String accId);
+    void onUserEnter(String accId);
 
 
     /**
@@ -78,7 +76,7 @@ public interface NERTCCallingDelegate {
      * @param userId           远端用户ID
      * @param isVideoAvailable true:远端用户打开摄像头  false:远端用户关闭摄像头
      */
-    void onCameraAvailable(long userId, boolean isVideoAvailable);
+    void onCameraAvailable(String userId, boolean isVideoAvailable);
 
     /**
      * 远端用户开启/关闭了麦克风
@@ -86,14 +84,21 @@ public interface NERTCCallingDelegate {
      * @param userId           远端用户ID
      * @param isAudioAvailable true:远端用户打开麦克风  false:远端用户关闭麦克风
      */
-    void onAudioAvailable(long userId, boolean isAudioAvailable);
+    void onAudioAvailable(String userId, boolean isAudioAvailable);
+
+    /**
+     * 音视频断开连接
+     *
+     * @param res 原因
+     */
+    void onDisconnect(int res);
 
     /**
      * 网络状态回调
      *
      * @param stats
      */
-    void onUserNetworkQuality(NERtcNetworkQualityInfo[] stats);
+    void onUserNetworkQuality(Entry<String, Integer>[] stats);
 
     /**
      * 通话状态改变

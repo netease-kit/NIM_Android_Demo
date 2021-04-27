@@ -26,7 +26,7 @@ public class TeamG2Item {
     public String teamId;
     public String account;
     public boolean isMute;//是否静音
-    public long uid;//rtc uid
+//    public long uid;//rtc uid
     public boolean isSelf;
 
     public TeamG2Item(int type, String teamId, String account) {

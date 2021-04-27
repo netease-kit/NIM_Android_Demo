@@ -26,6 +26,7 @@ import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
+import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.nimlib.sdk.msg.model.RecentSession;
 import com.netease.nimlib.sdk.msg.model.RecentSessionList;
@@ -347,6 +348,11 @@ public class RecentSessionActivity extends UI {
         @Override
         public void setExtension(Map<String, Object> extension) {
 
+        }
+
+        @Override
+        public boolean setLastMsg(IMMessage message) {
+            return false;
         }
     }
 }

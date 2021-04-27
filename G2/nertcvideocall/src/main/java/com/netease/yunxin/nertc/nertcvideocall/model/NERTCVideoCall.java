@@ -85,7 +85,7 @@ public abstract class NERTCVideoCall {
      * @param videoRender
      * @param uid
      */
-    public abstract void setupRemoteView(NERtcVideoView videoRender, long uid);
+    public abstract void setupRemoteView(NERtcVideoView videoRender, String uid);
 
     /**
      * 设置本端的视频接受播放器
@@ -100,7 +100,7 @@ public abstract class NERTCVideoCall {
      * @param mute   是否静音
      * @param userId 被静音的用户
      */
-    public abstract void setAudioMute(boolean mute, long userId);
+    public abstract void setAudioMute(boolean mute, String userId);
 
     /**
      * 视频通话中转音频 被操作方会收到{@link NERTCCallingDelegate#onCallTypeChange(ChannelType)} 的回调
@@ -131,12 +131,13 @@ public abstract class NERTCVideoCall {
      */
     public abstract void groupCall(ArrayList<String> callUserIds, String groupId, String selfUserId, ChannelType type, JoinChannelCallBack joinChannelCallBack);
 
+
     /**
      * 当您作为被邀请方收到 {@link NERTCCallingDelegate#onInvited } 的回调时，可以调用该函数接听来电
      *
-     * @param invitedParam 邀请信息
-     * @param selfAccId 自己的accid
-     * @param joinChannelCallBack  加入channel的回调
+     * @param invitedParam        邀请信息
+     * @param selfAccId           自己的accid
+     * @param joinChannelCallBack 加入channel的回调
      */
     public abstract void accept(InviteParamBuilder invitedParam, String selfAccId, JoinChannelCallBack joinChannelCallBack);
 
@@ -167,7 +168,7 @@ public abstract class NERTCVideoCall {
 
     /**
      * 您可以调用该函数开启摄像头，并渲染在指定的TXCloudVideoView中
-     * 处于通话中的用户会收到 {@link NERTCCallingDelegate#onCameraAvailable(long, boolean)} 回调
+     * 处于通话中的用户会收到 {@link NERTCCallingDelegate#onCameraAvailable(String, boolean)} 回调
      *
      * @param enable 是否开启摄像头
      */

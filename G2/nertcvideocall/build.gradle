@@ -1,5 +1,10 @@
 apply plugin: 'com.android.library'
 
+def propertiesFile = new File(project.rootDir, "gradle.properties")
+Properties config = new Properties()
+config.load(propertiesFile.newInputStream())
+def version = config.getProperty('VERSION_NAME')
+
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
@@ -8,7 +13,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "1.0.0"
+        versionName version
 
         consumerProguardFiles "consumer-rules.pro"
     }

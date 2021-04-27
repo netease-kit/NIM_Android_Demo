@@ -1,7 +1,5 @@
 package com.netease.yunxin.nertc.ui.team.model;
 
-import android.view.View;
-
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.netease.lava.nertc.sdk.video.NERtcVideoView;
@@ -56,7 +54,7 @@ public class TeamG2Adapter extends BaseMultiItemFetchLoadAdapter<TeamG2Item, Bas
             TeamG2Item itemStep = item;
             item.isMute = !item.isMute;
             if (onItemMuteChangeListener != null) {
-                onItemMuteChangeListener.onMuteChange(item.uid, item.isMute);
+                onItemMuteChangeListener.onMuteChange(item.account, item.isMute);
             }
             notifyItemChanged(position, itemStep);
         });
@@ -88,6 +86,6 @@ public class TeamG2Adapter extends BaseMultiItemFetchLoadAdapter<TeamG2Item, Bas
     }
 
     public interface RemoteUserMuteChangeListener {
-        void onMuteChange(long uid, boolean isMute);
+        void onMuteChange(String uid, boolean isMute);
     }
 }
