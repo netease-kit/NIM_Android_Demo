@@ -18,6 +18,7 @@ import com.netease.nimlib.sdk.team.TeamService;
 import com.netease.nimlib.sdk.team.model.TeamMember;
 import com.netease.nimlib.sdk.uinfo.UserService;
 import com.netease.nimlib.sdk.uinfo.model.UserInfo;
+import com.netease.yunxin.nertc.model.ProfileManager;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 import com.netease.yunxin.nertc.ui.R;
 import com.netease.yunxin.nertc.ui.team.recyclerview.adapter.BaseMultiItemFetchLoadAdapter;
@@ -64,6 +65,9 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
     }
 
     protected void refresh(final TeamG2Item data) {
+        if (data==null){
+            return;
+        }
         TeamMember teamMember = NIMClient.getService(TeamService.class).queryTeamMemberBlock(data.teamId, data.account);
         if (teamMember != null) {
             String name = TextUtils.isEmpty(teamMember.getTeamNick()) ? teamMember.getAccount() : teamMember.getTeamNick();
@@ -90,6 +94,12 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
             } else {
                 ivMute.setVisibility(View.VISIBLE);
                 ivMute.setSelected(data.isMute);
+            }
+            if (data.account.equals(ProfileManager.getInstance().getUserModel().imAccid)){
+                //自己
+                NERTCVideoCall.sharedInstance().setupLocalView(surfaceView);
+            }else {
+                NERTCVideoCall.sharedInstance().setupRemoteView(surfaceView,data.account);
             }
         } else if (data.state == TeamG2Item.STATE.STATE_END || data.state == TeamG2Item.STATE.STATE_HANGUP) {
             // 未接听/挂断

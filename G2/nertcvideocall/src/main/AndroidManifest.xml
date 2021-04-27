@@ -2,12 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.netease.yunxin.nertc.nertcvideocall">
 
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
 
-        <service
-            android:name=".service.CallService"
-            android:enabled="true"
-            android:exported="false" />
 
         <activity
             android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingHuaweiPushActivity"

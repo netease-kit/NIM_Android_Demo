@@ -56,9 +56,9 @@ ext {
     minSdkVersion = 19
     targetSdkVersion = 30
 
-    nertcSdk = "com.netease.yunxin:nertc:3.7.1"
+    nertcSdk = "com.netease.yunxin:nertc:4.0.3"
 
-    nimVersion = '8.1.5'
+    nimVersion = '8.3.1'
     imSdk = "com.netease.nimlib:basesdk:$nimVersion"
     avsignallingSdk = "com.netease.nimlib:avsignalling:$nimVersion"
     imPushSdk = "com.netease.nimlib:push:$nimVersion"

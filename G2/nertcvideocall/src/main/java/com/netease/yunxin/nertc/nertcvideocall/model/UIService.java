@@ -1,6 +1,9 @@
 package com.netease.yunxin.nertc.nertcvideocall.model;
 
 import android.app.Activity;
+import android.content.Context;
+
+import java.util.List;
 
 public interface UIService {
     Class<? extends Activity> getOneToOneAudioChat();
@@ -12,4 +15,7 @@ public interface UIService {
     int getNotificationIcon();
 
     int getNotificationSmallIcon();
+
+    void startContactSelector(Context context, String teamId, List<String> excludeUserList, int requestCode);
+
 }

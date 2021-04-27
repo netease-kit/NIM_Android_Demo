@@ -87,6 +87,7 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 主界面
@@ -215,6 +216,11 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                             @Override
                             public int getNotificationSmallIcon() {
                                 return R.drawable.ic_logo;
+                            }
+
+                            @Override
+                            public void startContactSelector(Context context, String teamId, List<String> excludeUserList, int requestCode) {
+
                             }
                         }, ProfileManager.getInstance()));
 

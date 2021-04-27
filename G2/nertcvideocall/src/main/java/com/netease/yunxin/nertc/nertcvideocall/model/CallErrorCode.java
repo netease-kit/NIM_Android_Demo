@@ -28,4 +28,14 @@ public interface CallErrorCode {
      * 请求token失败
      */
     int LOAD_TOKEN_ERROR = 2021;
+
+    /**
+     * UID 和 accid 对于错误
+     */
+    int UID_ACCID_ERROR = 2031;
+
+    /**
+     * 使用错误
+     */
+    int COMMON_ERROR = -1;
 }
