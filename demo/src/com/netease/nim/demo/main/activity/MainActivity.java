@@ -20,12 +20,14 @@ import androidx.viewpager.widget.ViewPager;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
+import com.netease.nim.demo.BuildConfig;
 import com.netease.nim.demo.NimApplication;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
+import com.netease.nim.demo.filter.ContactSelfFilter;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.login.LogoutHelper;
 import com.netease.nim.demo.main.adapter.MainTabPagerAdapter;
@@ -39,6 +41,7 @@ import com.netease.nim.demo.team.TeamCreateHelper;
 import com.netease.nim.demo.team.activity.AdvancedTeamSearchActivity;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.model.main.LoginSyncDataStatusObserver;
+import com.netease.nim.uikit.business.contact.core.item.ContactIdFilter;
 import com.netease.nim.uikit.business.contact.selector.activity.ContactSelectActivity;
 import com.netease.nim.uikit.business.team.helper.TeamHelper;
 import com.netease.nim.uikit.common.ToastHelper;
@@ -220,8 +223,20 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 
                             @Override
                             public void startContactSelector(Context context, String teamId, List<String> excludeUserList, int requestCode) {
-
+                                ContactSelectActivity.Option option = new ContactSelectActivity.Option();
+                                option.type = ContactSelectActivity.ContactSelectType.TEAM_MEMBER;
+                                option.teamId = teamId;
+                                option.maxSelectNum = 8 - (excludeUserList == null ? 0 : excludeUserList.size());
+                                option.maxSelectNumVisible = true;
+                                option.title = NimUIKit.getContext().getString(com.netease.nim.uikit.R.string.invite_member);
+                                option.maxSelectedTip = NimUIKit.getContext().getString(R.string.reach_capacity);
+                                option.itemFilter=new ContactSelfFilter();
+                                if (excludeUserList!=null&&!excludeUserList.isEmpty()){
+                                    option.itemDisableFilter=new ContactIdFilter(excludeUserList);
+                                }
+                                NimUIKit.startContactSelector(context, option, requestCode);
                             }
+
                         }, ProfileManager.getInstance()));
 
                         NERTCVideoCall.sharedInstance().login(imAccount, imToken, new RequestCallback<LoginInfo>() {
@@ -240,6 +255,11 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 
                             }
                         });
+
+                        /**
+                         * 超时设置，在初始化的时候设置有效
+                         */
+                        NERTCVideoCall.sharedInstance().setTimeOut(30 * 1000);
 
                         //注册获取token的服务
                         //在线上环境中，token的获取需要放到您的应用服务端完成，然后由服务器通过安全通道把token传递给客户端
@@ -409,13 +429,13 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 
     private void observerSyncDataComplete() {
         boolean syncCompleted = LoginSyncDataStatusObserver.getInstance()
-                                                           .observeSyncDataCompletedEvent(
-                                                                   (Observer<Void>) v -> DialogMaker
-                                                                           .dismissProgressDialog());
+                .observeSyncDataCompletedEvent(
+                        (Observer<Void>) v -> DialogMaker
+                                .dismissProgressDialog());
         //如果数据没有同步完成，弹个进度Dialog
         if (!syncCompleted) {
             DialogMaker.showProgressDialog(MainActivity.this, getString(R.string.prepare_data))
-                       .setCanceledOnTouchOutside(false);
+                    .setCanceledOnTouchOutside(false);
         }
     }
 
@@ -474,10 +494,10 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
     Observer<CustomNotification> customNotificationObserver = (Observer<CustomNotification>) notification -> {
         // 处理自定义通知消息
         LogUtil.i("demo", "receive custom notification: " + notification.getContent() + " from :" +
-                          notification.getSessionId() + "/" + notification.getSessionType() +
-                          "unread=" + (notification.getConfig() == null ? "" : notification.getConfig().enableUnreadCount +  " " + "push=" +
-                          notification.getConfig().enablePush + " nick=" +
-                          notification.getConfig().enablePushNick));
+                notification.getSessionId() + "/" + notification.getSessionType() +
+                "unread=" + (notification.getConfig() == null ? "" : notification.getConfig().enableUnreadCount +  " " + "push=" +
+                notification.getConfig().enablePush + " nick=" +
+                notification.getConfig().enablePushNick));
         try {
             JSONObject obj = JSONObject.parseObject(notification.getContent());
             if (obj != null && obj.getIntValue("id") == 2) {
@@ -503,7 +523,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
      */
     private void requestSystemMessageUnreadCount() {
         int unread = NIMClient.getService(SystemMessageService.class)
-                              .querySystemMessageUnreadCountBlock();
+                .querySystemMessageUnreadCountBlock();
         SystemMessageUnreadManager.getInstance().setSysMsgUnreadCount(unread);
         ReminderManager.getInstance().updateContactUnreadNum(unread);
     }
@@ -517,7 +537,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
             if (id instanceof RecentContact) {
                 RecentContact r = (RecentContact) id;
                 NIMClient.getService(MsgService.class).clearUnreadCount(r.getContactId(),
-                                                                        r.getSessionType());
+                        r.getSessionType());
                 return;
             }
             if (id instanceof String) {
@@ -525,7 +545,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                     NIMClient.getService(MsgService.class).clearAllUnreadCount();
                 } else if (((String) id).contentEquals("1")) {
                     NIMClient.getService(SystemMessageService.class)
-                             .resetSystemMessageUnreadCount();
+                            .resetSystemMessageUnreadCount();
                 }
             }
         });
@@ -534,7 +554,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
     private void requestBasicPermission() {
         MPermission.printMPermissionResult(true, this, BASIC_PERMISSIONS);
         MPermission.with(MainActivity.this).setRequestCode(BASIC_PERMISSION_REQUEST_CODE)
-                   .permissions(BASIC_PERMISSIONS).request();
+                .permissions(BASIC_PERMISSIONS).request();
     }
 
     private void onLogout() {
@@ -590,14 +610,14 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                 break;
             case R.id.create_normal_team:
                 ContactSelectActivity.Option option = TeamHelper.getCreateContactSelectOption(null,
-                                                                                              50);
+                        50);
                 NimUIKit.startContactSelector(MainActivity.this, option, REQUEST_CODE_NORMAL);
                 break;
             case R.id.create_regular_team:
                 ContactSelectActivity.Option advancedOption = TeamHelper
                         .getCreateContactSelectOption(null, 50);
                 NimUIKit.startContactSelector(MainActivity.this, advancedOption,
-                                              REQUEST_CODE_ADVANCED);
+                        REQUEST_CODE_ADVANCED);
                 break;
             case R.id.search_advanced_team:
                 AdvancedTeamSearchActivity.start(MainActivity.this);
@@ -619,6 +639,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 
     @Override
     protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
         setIntent(intent);
         parseIntent();
     }

@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -38,10 +37,13 @@ import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
 import com.netease.nimlib.sdk.avsignalling.model.MemberInfo;
+import com.netease.nimlib.sdk.msg.MsgService;
+import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.nos.NosService;
 import com.netease.nimlib.sdk.uinfo.UserService;
 import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 import com.netease.nimlib.sdk.util.Entry;
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.model.ProfileManager;
 import com.netease.yunxin.nertc.model.UserModel;
 import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
@@ -66,6 +68,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
     private NERtcVideoView localVideoView;
     private NERtcVideoView remoteVideoView;
+    private NERtcVideoView preLocalVideoView;
     private TextView tvRemoteVideoClose;
     private ImageView ivSwitch;
     private ImageView ivUserIcon;
@@ -81,6 +84,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     private ImageView ivReject;
     private ImageView ivChangeType;
     private RelativeLayout rlyTopUserInfo;
+    private View tvAcceptTip;
 
     private UserModel callOutUser;//呼出用户
     private boolean callReceived;
@@ -94,8 +98,6 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
     private static final int DELAY_TIME = 0;//延时
 
-    private String peerAccid;
-    //    private long peerUid;
     private String inviterNickname;
     /**
      * 呼叫类型 AUDIO(1),
@@ -103,15 +105,16 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
      */
     private int callType;
 
-    private NERTCCallingDelegate nertcCallingDelegate = new NERTCCallingDelegate() {
+    private final NERTCCallingDelegate nertcCallingDelegate = new NERTCCallingDelegate() {
         @Override
         public void onError(int errorCode, String errorMsg, boolean needFinish) {
             if (needFinish) {
-                ToastUtils.showLong(errorMsg + " errorCode:" + errorCode);
+                ToastUtils.showLong(errorMsg);
+                ALog.i(LOG_TAG,errorMsg + " errorCode:" + errorCode);
                 AVChatSoundPlayer.instance().stop();
                 finish();
             } else {
-                Log.i(LOG_TAG, errorMsg + " errorCode:" + errorCode);
+                ALog.i(LOG_TAG, errorMsg + " errorCode:" + errorCode);
             }
         }
 
@@ -123,20 +126,18 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
         @Override
         public void onUserEnter(String accId) {
-            llyCancel.setVisibility(View.GONE);
-            llyDialogOperation.setVisibility(View.VISIBLE);
-            rlyTopUserInfo.setVisibility(View.GONE);
-            llyBingCall.setVisibility(View.GONE);
-            if (callType == ChannelType.VIDEO.getValue()) {
-                setupLocalVideo();
-            } else if (callType == ChannelType.AUDIO.getValue()) {
+            AVChatSoundPlayer.instance().stop();
+            if (callType == ChannelType.AUDIO.getValue()){
+                llyCancel.setVisibility(View.GONE);
+                llyDialogOperation.setVisibility(View.VISIBLE);
+                rlyTopUserInfo.setVisibility(View.GONE);
+                llyBingCall.setVisibility(View.GONE);
+                ivSwitch.setVisibility(View.GONE);
                 setupLocalAudio();
             }
-            AVChatSoundPlayer.instance().stop();
 
-            peerAccid = accId;
-//            peerUid = uid;
-            Log.i(LOG_TAG, String.format("onUserEnter accId:%s", accId));
+
+            ALog.i(LOG_TAG, String.format("onUserEnter accId:%s", accId));
         }
 
         @Override
@@ -146,18 +147,14 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
         @Override
         public void onUserLeave(String accountId) {
-            Log.i(LOG_TAG, "onUserLeave:" + accountId);
-            if (TextUtils.equals(accountId, peerAccid)) {
-                onCallEnd(accountId, "对方已经离开");
-            }
+            ALog.i(LOG_TAG, "onUserLeave:" + accountId);
+            onCallEnd(accountId, "对方已经离开");
         }
 
         @Override
         public void onUserDisconnect(String userId) {
-            Log.i(LOG_TAG, "onUserDisconnect:" + userId);
-            if (TextUtils.equals(userId, peerAccid)) {
-                onCallEnd(userId, "对方已经离开");
-            }
+            ALog.i(LOG_TAG, "onUserDisconnect:" + userId);
+            onCallEnd(userId, "对方已经离开");
         }
 
         private void onCallEnd(String userId, String tip) {
@@ -230,7 +227,8 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
         @Override
         public void onDisconnect(int reason) {
-            ToastUtils.showLong("onDisconnect reason: " + reason);
+            ToastUtils.showLong("rtc channel disconnected.");
+            ALog.i(LOG_TAG,"onDisconnect reason:" + reason);
             AVChatSoundPlayer.instance().stop();
             finish();
         }
@@ -250,14 +248,12 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             }
 
             for (Entry<String, Integer> networkQualityInfo : stats) {
-                if (TextUtils.equals(networkQualityInfo.key, peerAccid)) {
-                    if (networkQualityInfo.value >= 4) {
-                        Toast.makeText(NERTCVideoCallActivity.this,
-                                "对方网络质量差",
-                                Toast.LENGTH_SHORT).show();
-                    } else if (networkQualityInfo.value == 0) {
-                        Log.e(LOG_TAG, "network is unKnow");
-                    }
+                if (networkQualityInfo.value >= 4) {
+                    Toast.makeText(NERTCVideoCallActivity.this,
+                            "对方网络质量差",
+                            Toast.LENGTH_SHORT).show();
+                } else if (networkQualityInfo.value == 0) {
+                    ALog.e(LOG_TAG, "network is unKnow");
                 }
             }
         }
@@ -266,7 +262,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         public void onCallTypeChange(ChannelType type) {
             callType = type.getValue();
             setDialogViewAsType(callType);
-            setViewAsType(callType);
+            setViewAsType(callType,false);
         }
 
         @Override
@@ -282,7 +278,41 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
                 finish();
             }, DELAY_TIME);
         }
+
+        @Override
+        public void onFirstVideoFrameDecoded(String userId, int width, int height) {
+            ivSwitch.setVisibility(View.VISIBLE);
+            llyCancel.setVisibility(View.GONE);
+            llyDialogOperation.setVisibility(View.VISIBLE);
+            rlyTopUserInfo.setVisibility(View.GONE);
+            llyBingCall.setVisibility(View.GONE);
+            tvAcceptTip.setVisibility(View.GONE);
+            if (callType == ChannelType.VIDEO.getValue()) {
+                if (!callReceived){
+                    destroyPreviewVideo();
+                }
+                setupLocalVideo();
+            }
+        }
     };
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        //设置chattingAccount 可以不显示其他人的消息通知，免打扰
+        NIMClient.getService(MsgService.class).setChattingAccount(MsgService.MSG_CHATTING_ACCOUNT_ALL, SessionTypeEnum.None);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        //恢复消息通知
+        NIMClient.getService(MsgService.class).setChattingAccount(MsgService.MSG_CHATTING_ACCOUNT_NONE, SessionTypeEnum.None);
+        // isFinish  产生在生命周期之前，判断此次焦点丢失是因为切到后台还是被关闭
+        if (isFinishing()){
+            hangUpAndFinish();
+        }
+    }
 
     private Handler handler = new Handler();
 
@@ -346,9 +376,8 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     }
 
     private void initData() {
-        setViewAsType(callType);
+        setViewAsType(callType,true);
         nertcVideoCall = NERTCVideoCall.sharedInstance();
-        nertcVideoCall.setTimeOut(30 * 1000);
         nertcVideoCall.addDelegate(nertcCallingDelegate);
         ivChangeType.setOnClickListener(v -> {
             nertcVideoCall.switchCallType(ChannelType.AUDIO, new RequestCallback<Void>() {
@@ -356,7 +385,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
                 public void onSuccess(Void param) {
                     callType = ChannelType.AUDIO.getValue();
                     setDialogViewAsType(callType);
-                    setViewAsType(callType);
+                    setViewAsType(callType,false);
                 }
 
                 @Override
@@ -377,9 +406,9 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             isMute = !isMute;
             nertcVideoCall.muteLocalAudio(isMute);
             if (isMute) {
-                Glide.with(NERTCVideoCallActivity.this).load(R.drawable.voice_off).into(ivMute);
+                Glide.with(getApplicationContext()).load(R.drawable.voice_off).into(ivMute);
             } else {
-                Glide.with(NERTCVideoCallActivity.this).load(R.drawable.voice_on).into(ivMute);
+                Glide.with(getApplicationContext()).load(R.drawable.voice_on).into(ivMute);
             }
         });
 
@@ -391,9 +420,9 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             isCamOff = !isCamOff;
             nertcVideoCall.enableLocalVideo(!isCamOff);
             if (isCamOff) {
-                Glide.with(NERTCVideoCallActivity.this).load(R.drawable.cam_off).into(ivVideo);
+                Glide.with(getApplicationContext()).load(R.drawable.cam_off).into(ivVideo);
             } else {
-                Glide.with(NERTCVideoCallActivity.this).load(R.drawable.cam_on).into(ivVideo);
+                Glide.with(getApplicationContext()).load(R.drawable.cam_on).into(ivVideo);
             }
         });
         if (!callReceived && callOutUser != null) {
@@ -421,13 +450,13 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
                     @Override
                     public void onException(Throwable throwable) {
-                        Log.e("NERTCVideoCallActivity", "cancel Failed", throwable);
+                        ALog.e("NERTCVideoCallActivity", "cancel Failed", throwable);
                         AVChatSoundPlayer.instance().stop();
                         finish();
                     }
                 });
             });
-            Glide.with(this).load(callOutUser.avatar).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
+            Glide.with(getApplicationContext()).load(callOutUser.avatar).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
         } else if (!TextUtils.isEmpty(inventRequestId) && !TextUtils.isEmpty(inventFromAccountId) && !TextUtils.isEmpty(inventChannelId)) {
             llyCancel.setVisibility(View.GONE);
             llyBingCall.setVisibility(View.VISIBLE);
@@ -449,13 +478,20 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
                     }
                 }).request();
+
+        if (!callReceived && callType == ChannelType.VIDEO.getValue()) {
+            setupPreviewVideo();
+        }
     }
 
-    private void setViewAsType(int type) {
+    private void setViewAsType(int type,boolean init) {
         int viewVisible = type == ChannelType.VIDEO.getValue() ? View.VISIBLE : View.GONE;
         ivVideo.setVisibility(viewVisible);
-        ivSwitch.setVisibility(viewVisible);
-        remoteVideoView.setVisibility(viewVisible);
+        if(!init) {
+            remoteVideoView.setVisibility(viewVisible);
+            ivSwitch.setVisibility(viewVisible);
+            tvRemoteVideoClose.setVisibility(viewVisible);
+        }
         ivChangeType.setVisibility(viewVisible);
     }
 
@@ -511,12 +547,12 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailed(int i) {
-                    Log.e(LOG_TAG, "reject failed error code = " + i);
+                    ALog.e(LOG_TAG, "reject failed error code = " + i);
 
                     if (i == ResponseCode.RES_ETIMEOUT) {
                         ToastUtils.showShort("Reject timeout");
                     } else {
-                        Log.e(LOG_TAG,"Reject failed:" + i);
+                        ALog.e(LOG_TAG,"Reject failed:" + i);
                         if (i == ResponseCode.RES_CHANNEL_NOT_EXISTS || i == ResponseCode.RES_INVITE_NOT_EXISTS ||
                                 i == ResponseCode.RES_INVITE_HAS_REJECT  || i == ResponseCode.RES_PEER_NIM_OFFLINE ||
                         i == ResponseCode.RES_PEER_PUSH_OFFLINE) {
@@ -527,7 +563,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
                 @Override
                 public void onException(Throwable throwable) {
-                    Log.e(LOG_TAG, "reject failed onException", throwable);
+                    ALog.e(LOG_TAG, "reject failed onException", throwable);
                     finishOnFailed();
                 }
             });
@@ -550,17 +586,17 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
                 NIMClient.getService(NosService.class).getOriginUrlFromShortUrl(userInfo.getAvatar()).setCallback(new RequestCallback<String>() {
                     @Override
                     public void onSuccess(String param) {
-                        Glide.with(NERTCVideoCallActivity.this).load(param).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
+                        Glide.with(getApplicationContext()).load(param).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
                     }
 
                     @Override
                     public void onFailed(int code) {
-                        Glide.with(NERTCVideoCallActivity.this).load(userInfo.getAvatar()).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
+                        Glide.with(getApplicationContext()).load(userInfo.getAvatar()).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
                     }
 
                     @Override
                     public void onException(Throwable exception) {
-                        Glide.with(NERTCVideoCallActivity.this).load(userInfo.getAvatar()).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
+                        Glide.with(getApplicationContext()).load(userInfo.getAvatar()).apply(RequestOptions.bitmapTransform(new RoundedCorners(5))).into(ivUserIcon);
                     }
                 });
             }
@@ -582,6 +618,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     private void initView() {
         localVideoView = findViewById(R.id.local_video_view);
         remoteVideoView = findViewById(R.id.remote_video_view);
+        preLocalVideoView = findViewById(R.id.preview_local_view);
         ivSwitch = findViewById(R.id.iv_camera_switch);
         ivUserIcon = findViewById(R.id.iv_call_user);
         tvCallUser = findViewById(R.id.tv_call_user);
@@ -593,10 +630,22 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         ivAccept = findViewById(R.id.iv_accept);
         ivReject = findViewById(R.id.iv_reject);
         llyBingCall = findViewById(R.id.lly_invited_operation);
+        tvAcceptTip = findViewById(R.id.tv_accept_tip);
         llyDialogOperation = findViewById(R.id.lly_dialog_operation);
         rlyTopUserInfo = findViewById(R.id.rly_top_user_info);
         tvRemoteVideoClose = findViewById(R.id.tv_remote_video_close);
         ivChangeType = findViewById(R.id.iv_type_change);
+    }
+
+    private void setupPreviewVideo(){
+        preLocalVideoView.setVisibility(View.VISIBLE);
+        NERtc.getInstance().setupLocalVideoCanvas(preLocalVideoView);
+        NERtc.getInstance().startVideoPreview();
+    }
+
+    private void destroyPreviewVideo(){
+        preLocalVideoView.setVisibility(View.GONE);
+        preLocalVideoView.release();
     }
 
     /**
@@ -620,11 +669,9 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             @Override
             public void onJoinChannel(ChannelFullInfo channelFullInfo) {
                 resetUid(channelFullInfo, selfUserId);
-
-                llyCancel.setVisibility(View.GONE);
-                llyDialogOperation.setVisibility(View.VISIBLE);
-                rlyTopUserInfo.setVisibility(View.GONE);
-                llyBingCall.setVisibility(View.GONE);
+                if (callType == ChannelType.VIDEO.getValue()){
+                    tvAcceptTip.setVisibility(View.VISIBLE);
+                }
             }
 
             @Override
@@ -634,7 +681,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
                     // 超时后直接关闭当前页面
                     handler.post(() -> finishOnFailed());
                 } else {
-                    Log.e(LOG_TAG,"Accept normal failed:" + code);
+                    ALog.e(LOG_TAG,"Accept normal failed:" + code);
                     if (code == ResponseCode.RES_CHANNEL_NOT_EXISTS || code == ResponseCode.RES_INVITE_NOT_EXISTS ||
                             code == ResponseCode.RES_INVITE_HAS_REJECT || code == ResponseCode.RES_PEER_NIM_OFFLINE ||
                             code == ResponseCode.RES_PEER_PUSH_OFFLINE) {
@@ -656,6 +703,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
      * @param uid 远程用户Id
      */
     private void setupRemoteVideo(String uid) {
+        remoteVideoView.setVisibility(View.VISIBLE);
         remoteVideoView.setScalingType(NERtcConstants.VideoScalingType.SCALE_ASPECT_FIT);
         nertcVideoCall.setupRemoteView(remoteVideoView, uid);
     }
@@ -672,7 +720,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         confirmDialog.setMessage("是否结束通话？");
         confirmDialog.setPositiveButton("是",
                 (dialog, which) -> {
-                    hangUpAndFinish();
+                    finish();
                 });
         confirmDialog.setNegativeButton("否",
                 (dialog, which) -> {
@@ -682,22 +730,22 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     }
 
     private void hangUpAndFinish() {
-        AVChatSoundPlayer.instance().stop();
+        AVChatSoundPlayer.instance().stop(AVChatSoundPlayer.RingerTypeEnum.RING);
         handler.postDelayed(this::finish, DELAY_TIME);
         nertcVideoCall.hangup(new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
-                Log.e(LOG_TAG, "hangup success");
+                ALog.e(LOG_TAG, "hangup success");
             }
 
             @Override
             public void onFailed(int i) {
-                Log.e(LOG_TAG, "error when hangup code = " + i);
+                ALog.e(LOG_TAG, "error when hangup code = " + i);
             }
 
             @Override
             public void onException(Throwable throwable) {
-                Log.e(LOG_TAG, "onException when hangup", throwable);
+                ALog.e(LOG_TAG, "onException when hangup", throwable);
             }
         });
     }
@@ -707,17 +755,17 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             NERTCVideoCall.sharedInstance().leave(new RequestCallback<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
-                    Log.e(LOG_TAG, "finishOnFailed leave onSuccess");
+                    ALog.e(LOG_TAG, "finishOnFailed leave onSuccess");
                 }
 
                 @Override
                 public void onFailed(int i) {
-                    Log.e(LOG_TAG, "finishOnFailed leave onFailed code = " + i);
+                    ALog.e(LOG_TAG, "finishOnFailed leave onFailed code = " + i);
                 }
 
                 @Override
                 public void onException(Throwable throwable) {
-                    Log.e(LOG_TAG, "finishOnFailed leave onException", throwable);
+                    ALog.e(LOG_TAG, "finishOnFailed leave onException", throwable);
                 }
             });
         } catch (Exception e) {

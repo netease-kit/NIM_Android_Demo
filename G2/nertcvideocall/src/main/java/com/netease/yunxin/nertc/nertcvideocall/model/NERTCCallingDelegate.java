@@ -111,4 +111,14 @@ public interface NERTCCallingDelegate {
      * 呼叫超时
      */
     void timeOut();
+
+    /**
+     * 已解码远端首帧回调
+     *
+     * @param userId 远端用户id
+     * @param width 首帧视频宽，单位为 px。
+     * @param height 首帧视频高，单位为 px。
+     */
+    void onFirstVideoFrameDecoded(String userId, int width, int height);
+
 }

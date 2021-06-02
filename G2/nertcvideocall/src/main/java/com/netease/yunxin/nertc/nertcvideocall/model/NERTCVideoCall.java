@@ -8,6 +8,7 @@ import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.avsignalling.builder.InviteParamBuilder;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.yunxin.nertc.nertcvideocall.model.impl.NERTCVideoCallImpl;
+import com.netease.yunxin.nertc.nertcvideocall.model.impl.state.CallState;
 
 import java.util.ArrayList;
 
@@ -34,6 +35,10 @@ public abstract class NERTCVideoCall {
 
     }
 
+    /**
+     * 获取当前组件的通话状态{@link CallState}
+     */
+    public abstract int getCurrentState();
     /**
      * 初始化，需要且仅能调用一次
      *
@@ -131,6 +136,15 @@ public abstract class NERTCVideoCall {
      */
     public abstract void groupCall(ArrayList<String> callUserIds, String groupId, String selfUserId, ChannelType type, JoinChannelCallBack joinChannelCallBack);
 
+    /**
+     * 多人通话，通话过程中邀请其他人加入
+     *
+     * @param callUserIds         被邀请方
+     * @param groupId             群Id
+     * @param selfUserId
+     * @param joinChannelCallBack channel 回调
+     */
+    public abstract void groupInvite(ArrayList<String> callUserIds, ArrayList<String> totalUserIds, String groupId, String selfUserId, JoinChannelCallBack joinChannelCallBack);
 
     /**
      * 当您作为被邀请方收到 {@link NERTCCallingDelegate#onInvited } 的回调时，可以调用该函数接听来电
@@ -191,5 +205,5 @@ public abstract class NERTCVideoCall {
      *
      * @param timeOut 超时市场，最长两分钟，单位ms
      */
-    public abstract void setTimeOut(int timeOut);
+    public abstract void setTimeOut(long timeOut);
 }

@@ -6,7 +6,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,6 +16,7 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.ui.team.utils.ReflectionUtil;
 
 import java.util.ArrayList;
@@ -40,7 +40,7 @@ public abstract class UI extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        Log.i(TAG, "activity: " + getClass().getSimpleName() + " onCreate()");
+        ALog.i(TAG, "activity: " + getClass().getSimpleName() + " onCreate()");
     }
 
     @Override
@@ -53,7 +53,7 @@ public abstract class UI extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        Log.i(TAG, "activity: " + getClass().getSimpleName() + " onDestroy()");
+        ALog.i(TAG, "activity: " + getClass().getSimpleName() + " onDestroy()");
         destroyed = true;
     }
 

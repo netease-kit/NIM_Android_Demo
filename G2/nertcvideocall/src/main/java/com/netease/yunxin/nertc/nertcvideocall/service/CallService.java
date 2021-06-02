@@ -133,6 +133,11 @@ public class CallService {
 
         }
 
+        @Override
+        public void onFirstVideoFrameDecoded(String userId, int width, int height) {
+
+        }
+
     };
 
     private CallService(Context context){

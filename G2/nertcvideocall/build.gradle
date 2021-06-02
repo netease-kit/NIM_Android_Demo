@@ -1,4 +1,6 @@
 apply plugin: 'com.android.library'
+apply from:'utils.gradle'
+
 
 def propertiesFile = new File(project.rootDir, "gradle.properties")
 Properties config = new Properties()
@@ -28,20 +30,22 @@ android {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
     }
+    defaultConfig{
+        buildConfigField "String", "GIT_COMMIT_HASH", "\"${getGitCommit()}\""
+        buildConfigField "String", "FROM", "\"${getFrom}\""
+    }
 }
 
 dependencies {
     api 'com.netease.yunxin:report:2.0.3'
 
-    compileOnly fileTree(dir: 'libs-push', include: ['*.jar', '*.aar'])
-
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.recyclerview:recyclerview:1.1.0'
     implementation 'com.blankj:utilcodex:1.29.0'
+    implementation 'com.netease.yunxin.kit:alog:1.0.0'
 
     implementation rootProject.ext.imSdk
     implementation rootProject.ext.avsignallingSdk
-    implementation rootProject.ext.imPushSdk
     api rootProject.ext.nertcSdk
 
     compileOnly 'com.huawei.hms:push:4.0.4.301'

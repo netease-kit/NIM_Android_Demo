@@ -190,4 +190,14 @@ public class NERTCInternalDelegateManager implements NERTCCallingDelegate {
             }
         }
     }
+
+    @Override
+    public void onFirstVideoFrameDecoded(String userId, int width, int height) {
+        for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
+            NERTCCallingDelegate listener = reference.get();
+            if (listener != null) {
+                listener.onFirstVideoFrameDecoded(userId, width, height);
+            }
+        }
+    }
 }

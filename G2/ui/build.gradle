@@ -37,12 +37,12 @@ dependencies {
     implementation("androidx.recyclerview:recyclerview:${RECYCLER_VIEW_X_VERSION}")
     implementation("com.google.android.material:material:${MATERIAL_GOOGLE_VERSION}")
     implementation("androidx.constraintlayout:constraintlayout:${CONSTRAINT_X_VERSION}")
+    implementation 'com.netease.yunxin.kit:alog:1.0.0'
 
     implementation project(':G2:nertcvideocall')
 
     implementation 'com.squareup.picasso:picasso:2.71828'
     implementation 'com.blankj:utilcodex:1.29.0'
-
     implementation rootProject.ext.imSdk
     implementation rootProject.ext.avsignallingSdk
 }

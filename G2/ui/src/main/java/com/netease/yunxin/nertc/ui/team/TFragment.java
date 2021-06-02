@@ -4,9 +4,10 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
-import android.util.Log;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+
+import com.netease.yunxin.kit.alog.ALog;
 
 import androidx.fragment.app.Fragment;
 
@@ -34,7 +35,7 @@ public abstract class TFragment extends Fragment {
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        Log.i(TAG, "fragment: " + getClass().getSimpleName() + " onActivityCreated()");
+        ALog.i(TAG, "fragment: " + getClass().getSimpleName() + " onActivityCreated()");
 
         destroyed = false;
     }
@@ -42,7 +43,7 @@ public abstract class TFragment extends Fragment {
     public void onDestroy() {
         super.onDestroy();
 
-        Log.i(TAG, "fragment: " + getClass().getSimpleName() + " onDestroy()");
+        ALog.i(TAG, "fragment: " + getClass().getSimpleName() + " onDestroy()");
 
         destroyed = true;
     }

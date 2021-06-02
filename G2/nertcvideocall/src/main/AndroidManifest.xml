@@ -5,40 +5,6 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <application>
 
-
-        <activity
-            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingHuaweiPushActivity"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-
-                <data
-                    android:host="com.netease.nimlib.avsignalling.push"
-                    android:path="/huawei"
-                    android:scheme="pushscheme" />
-            </intent-filter>
-        </activity>
-
-        <service
-            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingHuaweiPushMessageService"
-            android:exported="false">
-            <intent-filter>
-                <action android:name="com.netease.nimlib.mixpush.hw.action.MESSAGING_EVENT" />
-            </intent-filter>
-        </service>
-
-        <activity
-            android:name="com.netease.yunxin.nertc.nertcvideocall.push.SignallingOppoPushActivity"
-            android:theme="@android:style/Theme.NoDisplay">
-            <intent-filter>
-                <action android:name="com.oppo.codelabpush.intent.action.test" />
-                <category android:name="android.intent.category.DEFAULT" />
-            </intent-filter>
-        </activity>
-
         <receiver android:name=".service.NotificationBroadcastReceiver">
             <intent-filter>
                 <action android:name="notification_cancelled" />

@@ -2,12 +2,21 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     xmlns:tools="http://schemas.android.com/tools">
 
     <com.netease.lava.nertc.sdk.video.NERtcVideoView
         android:id="@+id/remote_video_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:layout_centerInParent="true"/>
+
+    <com.netease.lava.nertc.sdk.video.NERtcVideoView
+        android:id="@+id/preview_local_view"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
         android:layout_centerInParent="true"/>
 
     <RelativeLayout
@@ -59,6 +68,7 @@
         android:id="@+id/iv_camera_switch"
         android:layout_width="40dp"
         android:layout_height="40dp"
+        android:visibility="gone"
         android:layout_margin="15dp"
         android:src="@drawable/cam_switch" />
 
@@ -109,6 +119,18 @@
             android:layout_gravity="center_vertical"
             android:src="@drawable/hangup" />
     </LinearLayout>
+
+    <TextView
+        android:id="@+id/tv_accept_tip"
+        android:layout_width="wrap_content"
+        android:text="正在接通中..."
+        android:layout_above="@id/lly_invited_operation"
+        android:layout_centerHorizontal="true"
+        android:textSize="14dp"
+        android:textColor="@color/white"
+        android:visibility="gone"
+        android:layout_marginBottom="20dp"
+        android:layout_height="wrap_content"/>
 
     <LinearLayout
         android:id="@+id/lly_invited_operation"
