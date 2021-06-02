@@ -95,7 +95,7 @@ public class TeamG2ItemViewHolder extends TeamAVChatItemViewHolderBase<TeamG2Ite
                 ivMute.setVisibility(View.VISIBLE);
                 ivMute.setSelected(data.isMute);
             }
-            if (data.account.equals(ProfileManager.getInstance().getUserModel().imAccid)){
+            if (data.account.equals(ProfileManager.getInstance().getUserModel().imAccid) && data.videoLive){
                 //自己
                 NERTCVideoCall.sharedInstance().setupLocalView(surfaceView);
             }else {

@@ -1,6 +1,9 @@
 package com.netease.yunxin.nertc.nertcvideocall.utils;
 
 
+import com.netease.yunxin.kit.alog.ALog;
+import com.netease.yunxin.kit.alog.ParameterMap;
+
 /**
  * Created by luc on 4/12/21.
  */
@@ -44,7 +47,6 @@ public final class VersionUtils {
                 .append("version1", version1)
                 .append("version2", version2)
                 .append("result", comparisonResult)
-                .toValue()
         );
         return comparisonResult;
     }

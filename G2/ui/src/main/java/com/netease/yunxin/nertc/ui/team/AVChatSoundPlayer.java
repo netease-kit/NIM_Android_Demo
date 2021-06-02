@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.media.AudioManager;
 import android.media.SoundPool;
-import android.util.Log;
 
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 import com.netease.yunxin.nertc.ui.R;
 
@@ -57,7 +57,7 @@ public class AVChatSoundPlayer {
     }
 
     public synchronized void play(RingerTypeEnum type) {
-        Log.d(TAG, "play type->" + type.name());
+        ALog.d(TAG, "play type->" + type.name());
         this.ringerTypeEnum = type;
         int ringId = 0;
         switch (type) {
@@ -89,8 +89,19 @@ public class AVChatSoundPlayer {
 
     }
 
+    public void stop(RingerTypeEnum typeEnum) {
+        if (typeEnum == null){
+            return;
+        }
+        ALog.d(TAG, "stop, type is "+ typeEnum.name());
+        if (typeEnum != ringerTypeEnum) {
+            return;
+        }
+        stop();
+    }
+
     public void stop() {
-        Log.d(TAG, "stop");
+        ALog.d(TAG, "stop");
         if (soundPool != null) {
             if (streamId != 0) {
                 soundPool.stop(streamId);

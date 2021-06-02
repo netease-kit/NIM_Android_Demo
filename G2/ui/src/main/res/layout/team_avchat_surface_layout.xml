@@ -20,6 +20,13 @@
             android:text="视频通话"
             android:textSize="16dp" />
 
+        <ImageView
+            android:layout_alignParentRight="true"
+            android:id="@+id/iv_invite"
+            android:layout_width="60dp"
+            android:layout_height="match_parent"
+            android:scaleType="centerInside"
+            android:src="@drawable/team_avchat_icon_add" />
     </RelativeLayout>
 
     <androidx.recyclerview.widget.RecyclerView

@@ -2,7 +2,6 @@ package com.netease.yunxin.nertc.ui.team.recyclerview.adapter;
 
 import android.animation.Animator;
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.LayoutParams;
 import androidx.recyclerview.widget.StaggeredGridLayoutManager;
 
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.ui.team.recyclerview.animation.AlphaInAnimation;
 import com.netease.yunxin.nertc.ui.team.recyclerview.animation.BaseAnimation;
 import com.netease.yunxin.nertc.ui.team.recyclerview.animation.ScaleInAnimation;
@@ -214,7 +214,7 @@ public abstract class BaseFetchLoadAdapter<T, K extends BaseViewHolder> extends 
             return; // 都还没有数据，不自动触发加载，等外部塞入数据后再加载
         }
 
-        Log.d(TAG, "auto fetch, pos=" + position);
+        ALog.d(TAG, "auto fetch, pos=" + position);
 
         mFetchMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mFetching) {
@@ -358,7 +358,7 @@ public abstract class BaseFetchLoadAdapter<T, K extends BaseViewHolder> extends 
             return; // 都还没有数据，不自动触发加载，等外部塞入数据后再加载
         }
 
-        Log.d(TAG, "auto load, pos=" + position);
+        ALog.d(TAG, "auto load, pos=" + position);
         mLoadMoreView.setLoadMoreStatus(LoadMoreView.STATUS_LOADING);
         if (!mLoading) {
             mLoading = true;
@@ -634,16 +634,16 @@ public abstract class BaseFetchLoadAdapter<T, K extends BaseViewHolder> extends 
         autoRequestLoadMoreData(position);
         int fetchMoreCount = getFetchMoreViewCount();
         if (position < fetchMoreCount) {
-            Log.d(TAG, "FETCH pos=" + position);
+            ALog.d(TAG, "FETCH pos=" + position);
             return FETCHING_VIEW;
         } else {
             int adjPosition = position - fetchMoreCount;
             int adapterCount = mData.size();
             if (adjPosition < adapterCount) {
-                Log.d(TAG, "DATA pos=" + position);
+                ALog.d(TAG, "DATA pos=" + position);
                 return getDefItemViewType(adjPosition);
             } else {
-                Log.d(TAG, "LOAD pos=" + position);
+                ALog.d(TAG, "LOAD pos=" + position);
                 return LOADING_VIEW;
             }
         }

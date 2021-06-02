@@ -10,7 +10,7 @@ import static com.netease.yunxin.nertc.nertcvideocall.utils.CallParams.CHANNEL_N
 public class CustomInfo {
 
     /**
-     * 呼叫类型{@link CallParams}
+     * 呼叫类型{@link com.netease.yunxin.nertc.nertcvideocall.utils.CallParams}
      */
     public int callType;
 

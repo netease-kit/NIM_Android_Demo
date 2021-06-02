@@ -3,8 +3,8 @@ package com.netease.yunxin.nertc.ui.team.utils;
 import android.content.Context;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
-import android.util.Log;
 
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 
 import java.lang.reflect.Field;
@@ -64,7 +64,7 @@ public class ScreenUtil {
         ydpi = dm.ydpi;
         densityDpi = dm.densityDpi;
 
-        Log.d(TAG, "screenWidth=" + screenWidth + " screenHeight=" + screenHeight + " density=" + density);
+        ALog.d(TAG, "screenWidth=" + screenWidth + " screenHeight=" + screenHeight + " density=" + density);
     }
 
     public static int getDisplayWidth() {
@@ -97,7 +97,7 @@ public class ScreenUtil {
         densityDpi = dm.densityDpi;
         statusbarheight = getStatusBarHeight(context);
         navbarheight = getNavBarHeight(context);
-        Log.d(TAG, "screenWidth=" + screenWidth + " screenHeight=" + screenHeight + " density=" + density);
+        ALog.d(TAG, "screenWidth=" + screenWidth + " screenHeight=" + screenHeight + " density=" + density);
     }
 
     public static int getStatusBarHeight(Context context) {

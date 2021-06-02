@@ -73,9 +73,6 @@ android {
             assets.srcDirs = ['assets']
             jniLibs.srcDirs = ['libs']
         }
-
-        common.java.srcDir('common')
-        sf.java.srcDir('sf')
     }
 
     lintOptions {
@@ -94,6 +91,8 @@ android {
         exclude 'META-INF/NOTICE.txt'
         doNotStrip '*/mips/*.so'
         doNotStrip '*/mips64/*.so'
+        pickFirst 'lib/arm64-v8a/libc++_shared.so'
+        pickFirst 'lib/armeabi-v7a/libc++_shared.so'
     }
 
     aaptOptions {
@@ -101,16 +100,6 @@ android {
         useNewCruncher = false
     }
 
-    flavorDimensions "rc"
-    productFlavors {
-        common {
-            dimension "rc"
-        }
-
-        sf {
-            dimension "rc"
-        }
-    }
 
     compileOptions {
         sourceCompatibility rootProject.ext.appSourceCompatibility

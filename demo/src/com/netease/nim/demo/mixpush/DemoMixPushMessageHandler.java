@@ -14,7 +14,7 @@ import com.netease.nimlib.sdk.mixpush.MixPushMessageHandler;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-import com.netease.yunxin.nertc.nertcvideocall.push.SignalingPushHandler;
+
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -28,16 +28,12 @@ public class DemoMixPushMessageHandler implements MixPushMessageHandler {
     public static final String PAYLOAD_SESSION_ID = "sessionID";
     public static final String PAYLOAD_SESSION_TYPE = "sessionType";
 
-    private MixPushMessageHandler mixPushMessageHandler = new SignalingPushHandler();
 
     // 对于华为推送，这个方法并不能保证一定会回调
     @Override
     public boolean onNotificationClicked(Context context, Map<String, String> payload) {
         LogUtil.i(DemoMixPushMessageHandler.class.getSimpleName(), "rev pushMessage payload " + payload);
 
-        if (mixPushMessageHandler.onNotificationClicked(context, payload)) {
-            return true;
-        }
 
         String sessionId = payload.get(PAYLOAD_SESSION_ID);
         String type = payload.get(PAYLOAD_SESSION_TYPE);
