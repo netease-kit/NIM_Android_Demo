@@ -15,6 +15,7 @@ import com.netease.nimlib.app.AppForegroundWatcherCompat;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.util.Entry;
+import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.nertcvideocall.bean.CustomInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
@@ -51,6 +52,7 @@ public class CallService {
 
         @Override
         public void onInvited(InvitedEvent invitedEvent) {
+            ALog.d("NERTCVideoCallImpl","onInvited!");
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q && AppForegroundWatcherCompat.isBackground()) {
                 buildIncomingCallingNotification(invitedEvent);
                 notificationManager.notify(INCOMING_CALL_NOTIFY_ID, incomingCallNotification);
@@ -59,6 +61,7 @@ public class CallService {
                 Intent intent = initIntent(invitedEvent);
                 if (intent != null) {
                     mContext.startActivity(intent);
+                    ALog.d("NERTCVideoCallImpl","start new call In!");
                 }
             }
 

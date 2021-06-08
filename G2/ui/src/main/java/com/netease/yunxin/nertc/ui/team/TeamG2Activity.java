@@ -476,7 +476,7 @@ public class TeamG2Activity extends UI {
 
             @Override
             public void onAudioAvailable(String userId, boolean isAudioAvailable) {
-                updateUserAudioState(userId,isAudioAvailable);
+
             }
 
             @Override
@@ -578,7 +578,7 @@ public class TeamG2Activity extends UI {
                     item.type=TYPE_DATA;
                     item.teamId=teamId;
                     item.account=accId;
-                    item.state=TeamG2Item.STATE.STATE_PLAYING;
+                    item.state= TeamG2Item.STATE.STATE_PLAYING;
                     item.videoLive=true;
                     break;
                 }
@@ -647,15 +647,6 @@ public class TeamG2Activity extends UI {
         if (index >= 0) {
             TeamG2Item item = data.get(index);
             item.videoLive = enable;
-            adapter.notifyItemChanged(index);
-        }
-    }
-
-    private void updateUserAudioState(String userId, boolean enable){
-        int index = getItemIndex(userId);
-        if (index >= 0) {
-            TeamG2Item item = data.get(index);
-            item.isMute = !enable;
             adapter.notifyItemChanged(index);
         }
     }

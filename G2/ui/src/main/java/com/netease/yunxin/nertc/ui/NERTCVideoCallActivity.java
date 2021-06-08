@@ -2,6 +2,7 @@ package com.netease.yunxin.nertc.ui;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
@@ -99,6 +100,8 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     private static final int DELAY_TIME = 0;//延时
 
     private String inviterNickname;
+
+    private String currentChannelId;
     /**
      * 呼叫类型 AUDIO(1),
      * VIDEO(2),
@@ -352,6 +355,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         callType = getIntent().getIntExtra(CallParams.INVENT_CHANNEL_TYPE, ChannelType.VIDEO.getValue());
         callOutUser = (UserModel) getIntent().getSerializableExtra(CALL_OUT_USER);
         callReceived = getIntent().getBooleanExtra(CallParams.INVENT_CALL_RECEIVED, false);
+        this.currentChannelId = inventChannelId;
     }
 
     /**
@@ -421,8 +425,10 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             nertcVideoCall.enableLocalVideo(!isCamOff);
             if (isCamOff) {
                 Glide.with(getApplicationContext()).load(R.drawable.cam_off).into(ivVideo);
+                localVideoView.setBackgroundColor(Color.BLACK);
             } else {
                 Glide.with(getApplicationContext()).load(R.drawable.cam_on).into(ivVideo);
+                localVideoView.setBackgroundColor(Color.TRANSPARENT);
             }
         });
         if (!callReceived && callOutUser != null) {
@@ -502,6 +508,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         nertcVideoCall.call(callOutUser.imAccid, selfUserId, type, new JoinChannelCallBack() {
             @Override
             public void onJoinChannel(ChannelFullInfo channelFullInfo) {
+                NERTCVideoCallActivity.this.currentChannelId =  channelFullInfo.getChannelBaseInfo().getChannelId();
                 resetUid(channelFullInfo, selfUserId);
             }
 
@@ -730,9 +737,11 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     }
 
     private void hangUpAndFinish() {
+        ALog.d(LOG_TAG,"hangupAndFinish.");
         AVChatSoundPlayer.instance().stop(AVChatSoundPlayer.RingerTypeEnum.RING);
-        handler.postDelayed(this::finish, DELAY_TIME);
-        nertcVideoCall.hangup(new RequestCallback<Void>() {
+        AVChatSoundPlayer.instance().stop(AVChatSoundPlayer.RingerTypeEnum.CONNECTING);
+        handler.post(this::finish);
+        nertcVideoCall.hangup(currentChannelId, new RequestCallback<Void>() {
             @Override
             public void onSuccess(Void aVoid) {
                 ALog.e(LOG_TAG, "hangup success");

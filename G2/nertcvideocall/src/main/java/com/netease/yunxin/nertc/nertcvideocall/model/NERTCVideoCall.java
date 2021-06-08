@@ -165,8 +165,10 @@ public abstract class NERTCVideoCall {
     /**
      * 当您处于通话中，可以调用该函数结束通话（离开房间并关闭房间）
      * 通话发起者拥有此权限，并可以授权给接受者是否拥有此权限
+     *
+     * @param channelId 如果为 null 则关闭当前通话，如果为实际值则关闭对应通话，如果值和当前通话不一致则不做关闭处理
      */
-    public abstract void hangup(RequestCallback<Void> callback);
+    public abstract void hangup(String channelId, RequestCallback<Void> callback);
 
     /**
      * 通话过程中离开房间，并不关闭房间
