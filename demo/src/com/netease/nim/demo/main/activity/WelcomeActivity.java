@@ -16,7 +16,6 @@ import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
-import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.mixpush.MixPushService;
@@ -72,7 +71,6 @@ public class WelcomeActivity extends UI {
         super.onNewIntent(intent);
 
         LogUtil.i("G2", "onNewIntent...");
-        NimLog.d("G2", String.format("onNewIntent INVENT_NOTIFICATION_FLAG:%s", intent.hasExtra(CallParams.INVENT_NOTIFICATION_FLAG)));
 
         if (getIntent().hasExtra(CallParams.INVENT_NOTIFICATION_FLAG) && getIntent().getBooleanExtra(CallParams.INVENT_NOTIFICATION_FLAG, false)) {
             // 通过G2推送消息进入WelcomeActivity，如果Intent还没有被消费，onNewIntent时不要setIntent
@@ -159,11 +157,6 @@ public class WelcomeActivity extends UI {
             // 已经登录过了，处理过来的请求
             Intent intent = getIntent();
             if (intent != null) {
-                NimLog.d("G2", String.format("onIntent INVENT_NOTIFICATION_FLAG:%s", intent.hasExtra(CallParams.INVENT_NOTIFICATION_FLAG)));
-                if (intent.hasExtra(CallParams.INVENT_NOTIFICATION_FLAG) && intent.getBooleanExtra(CallParams.INVENT_NOTIFICATION_FLAG, false)) {
-                    parseG2Intent(intent);
-                    return;
-                }
                 if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
                     parseNotifyIntent(intent);
                     return;
@@ -198,23 +191,6 @@ public class WelcomeActivity extends UI {
         } else {
             showMainActivity(new Intent().putExtra(NimIntent.EXTRA_NOTIFY_CONTENT, messages.get(0)));
         }
-    }
-
-    private void parseG2Intent(Intent intent) {
-        Intent mainIntent = new Intent();
-        mainIntent.setClass(this, MainActivity.class);
-        mainIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-
-        Bundle extraIntent = intent.getBundleExtra(CallParams.INVENT_NOTIFICATION_EXTRA);
-        mainIntent.putExtra(CallParams.INVENT_NOTIFICATION_EXTRA, extraIntent);
-        mainIntent.putExtra(CallParams.INVENT_NOTIFICATION_FLAG, true);
-
-        startActivity(mainIntent);
-
-        intent.removeExtra(CallParams.INVENT_NOTIFICATION_FLAG);
-        intent.removeExtra(CallParams.INVENT_NOTIFICATION_EXTRA);
-
-        finish();
     }
 
     private void parseFCMNotifyIntent(String payloadString) {

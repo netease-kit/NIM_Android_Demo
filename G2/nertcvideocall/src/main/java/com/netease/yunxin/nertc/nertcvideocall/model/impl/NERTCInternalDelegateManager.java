@@ -1,8 +1,13 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.nertcvideocall.model.impl;
 
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
-import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.util.Entry;
+import com.netease.yunxin.nertc.nertcvideocall.bean.InvitedInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 
 import java.lang.ref.WeakReference;
@@ -50,11 +55,11 @@ public class NERTCInternalDelegateManager implements NERTCCallingDelegate {
     }
 
     @Override
-    public void onInvited(InvitedEvent invitedEvent) {
+    public void onInvited(InvitedInfo invitedInfo) {
         for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
             NERTCCallingDelegate listener = reference.get();
             if (listener != null) {
-                listener.onInvited(invitedEvent);
+                listener.onInvited(invitedInfo);
             }
         }
     }
@@ -137,6 +142,36 @@ public class NERTCInternalDelegateManager implements NERTCCallingDelegate {
             NERTCCallingDelegate listener = reference.get();
             if (listener != null) {
                 listener.onCameraAvailable(userId, isVideoAvailable);
+            }
+        }
+    }
+
+    @Override
+    public void onVideoMuted(String userId, boolean isMuted) {
+        for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
+            NERTCCallingDelegate listener = reference.get();
+            if (listener != null) {
+                listener.onVideoMuted(userId, isMuted);
+            }
+        }
+    }
+
+    @Override
+    public void onAudioMuted(String userId, boolean isMuted) {
+        for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
+            NERTCCallingDelegate listener = reference.get();
+            if (listener != null) {
+                listener.onAudioMuted(userId, isMuted);
+            }
+        }
+    }
+
+    @Override
+    public void onJoinChannel(String accId, long uid, String channelName, long rtcChannelId) {
+        for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
+            NERTCCallingDelegate listener = reference.get();
+            if (listener != null) {
+                listener.onJoinChannel(accId, uid, channelName, rtcChannelId);
             }
         }
     }

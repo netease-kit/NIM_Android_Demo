@@ -9,14 +9,10 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.TextUtils;
-import android.util.Base64;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
-
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -27,7 +23,7 @@ import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.contact.activity.AddFriendActivity;
-import com.netease.nim.demo.filter.ContactSelfFilter;
+import com.netease.nim.demo.contact.filter.ContactSelfFilter;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.login.LogoutHelper;
 import com.netease.nim.demo.main.adapter.MainTabPagerAdapter;
@@ -61,7 +57,6 @@ import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.StatusCode;
 import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.auth.LoginInfo;
-import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
@@ -72,16 +67,12 @@ import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
 import com.netease.yunxin.nertc.model.ProfileManager;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
-import com.netease.yunxin.nertc.nertcvideocall.model.TokenService;
 import com.netease.yunxin.nertc.nertcvideocall.model.UIService;
 import com.netease.yunxin.nertc.nertcvideocall.model.VideoCallOptions;
-import com.netease.yunxin.nertc.nertcvideocall.model.impl.UIServiceManager;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 import com.netease.yunxin.nertc.ui.NERTCVideoCallActivity;
 import com.netease.yunxin.nertc.ui.team.TeamG2Activity;
 import com.qiyukf.unicorn.ysfkit.unicorn.api.Unicorn;
-
-import org.json.JSONArray;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -91,6 +82,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
 
 /**
  * 主界面
@@ -300,60 +294,9 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                                 new Handler(getMainLooper()).post(() -> {
                                     //fixme 此处因为demo可以走非安全模式所以返回null，线上环境请在此处走 onFailed 逻辑
                                     callback.onSuccess(null);
-//                                    callback.onFailed(-1);
                                 });
                             }).start();
                         });
-
-                        Intent intent = getIntent();
-                        NimLog.d(TAG, String.format("onNotificationClicked INVENT_NOTIFICATION_FLAG:%s", intent.hasExtra(CallParams.INVENT_NOTIFICATION_FLAG)));
-                        if (intent.hasExtra(CallParams.INVENT_NOTIFICATION_FLAG) && intent.getBooleanExtra(CallParams.INVENT_NOTIFICATION_FLAG, false)) {
-                            Bundle extraIntent = intent.getBundleExtra(CallParams.INVENT_NOTIFICATION_EXTRA);
-                            intent.removeExtra(CallParams.INVENT_NOTIFICATION_FLAG);
-                            intent.removeExtra(CallParams.INVENT_NOTIFICATION_EXTRA);
-
-                            Intent avChatIntent = new Intent();
-                            for (String key : CallParams.CallParamKeys) {
-                                avChatIntent.putExtra(key, extraIntent.getString(key));
-                            }
-
-                            String callType = extraIntent.getString(CallParams.INVENT_CALL_TYPE);
-                            String channelType = extraIntent.getString(CallParams.INVENT_CHANNEL_TYPE);
-                            NimLog.d(TAG, String.format("onNotificationClicked callType:%s channelType:%s", callType, channelType));
-
-                            if (TextUtils.equals(String.valueOf(CallParams.CallType.TEAM), callType)) {
-                                avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getGroupVideoChat());
-
-                                try {
-                                    String userIdsBase64 = extraIntent.getString(CallParams.INVENT_USER_IDS);
-                                    String userIdsJson = new String(Base64.decode(userIdsBase64, Base64.DEFAULT));
-                                    JSONArray jsonArray = new JSONArray(userIdsJson);
-
-                                    ArrayList<String> userIds = new ArrayList<>();
-                                    for (int i = 0; i < jsonArray.length(); i++) {
-                                        String userId = jsonArray.getString(i);
-                                        userIds.add(userId);
-                                    }
-
-                                    String fromAccountId = extraIntent.getString(CallParams.INVENT_FROM_ACCOUNT_ID);
-                                    userIds.add(fromAccountId);
-
-                                    avChatIntent.putExtra(CallParams.INVENT_USER_IDS, userIds);
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                    NimLog.e(TAG, "onNotificationClicked Exception:" + e);
-                                }
-                            } else {
-                                if (TextUtils.equals(String.valueOf(ChannelType.AUDIO.getValue()), channelType)) {
-                                    avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneAudioChat());
-                                } else {
-                                    avChatIntent.setClass(MainActivity.this, UIServiceManager.getInstance().getUiService().getOneToOneVideoChat());
-                                }
-                            }
-
-                            avChatIntent.putExtra(CallParams.INVENT_CALL_RECEIVED, true);
-                            startActivity(avChatIntent);
-                        }
                     } catch (PackageManager.NameNotFoundException e) {
                         e.printStackTrace();
                     }

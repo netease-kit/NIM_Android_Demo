@@ -1,9 +1,11 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.nertcvideocall.model.impl;
 
 
-/**
- * Created by luc on 4/28/21.
- */
 interface RtcActionParamKeys {
 
     String KEY_REASON = "reason";

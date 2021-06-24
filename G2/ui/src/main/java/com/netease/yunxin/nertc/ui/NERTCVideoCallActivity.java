@@ -35,7 +35,6 @@ import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.avsignalling.builder.InviteParamBuilder;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
-import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
 import com.netease.nimlib.sdk.avsignalling.model.MemberInfo;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -47,11 +46,15 @@ import com.netease.nimlib.sdk.util.Entry;
 import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.model.ProfileManager;
 import com.netease.yunxin.nertc.model.UserModel;
+import com.netease.yunxin.nertc.nertcvideocall.bean.InvitedInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 import com.netease.yunxin.nertc.ui.team.AVChatSoundPlayer;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -122,7 +125,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onInvited(InvitedEvent invitedEvent) {
+        public void onInvited(InvitedInfo invitedEvent) {
 
         }
 
@@ -205,8 +208,12 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
         @Override
         public void onCameraAvailable(String userId, boolean isVideoAvailable) {
+        }
+
+        @Override
+        public void onVideoMuted(String userId, boolean isMuted) {
             if (callType == ChannelType.VIDEO.getValue() && !ProfileManager.getInstance().isCurrentUser(userId)) {
-                if (isVideoAvailable) {
+                if (!isMuted) {
                     rlyTopUserInfo.setVisibility(View.GONE);
                     remoteVideoView.setVisibility(View.VISIBLE);
                     tvRemoteVideoClose.setVisibility(View.GONE);
@@ -216,7 +223,16 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
                     tvRemoteVideoClose.setVisibility(View.VISIBLE);
                 }
             }
+        }
 
+        @Override
+        public void onAudioMuted(String userId, boolean isMuted) {
+
+        }
+
+        @Override
+        public void onJoinChannel(String accId, long uid, String channelName, long rtcChannelId) {
+            ALog.d(LOG_TAG, "onJoinChannel==> accid:" + accId + ",uid:" + uid + ",channelName:" + channelName + ",rtcChannelId:" + rtcChannelId);
         }
 
         @Override
@@ -289,6 +305,8 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
             llyDialogOperation.setVisibility(View.VISIBLE);
             rlyTopUserInfo.setVisibility(View.GONE);
             llyBingCall.setVisibility(View.GONE);
+            remoteVideoView.setVisibility(View.VISIBLE);
+            setupRemoteVideo(userId);
             tvAcceptTip.setVisibility(View.GONE);
             if (callType == ChannelType.VIDEO.getValue()) {
                 if (!callReceived){
@@ -422,7 +440,7 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
 
         ivVideo.setOnClickListener(view -> {
             isCamOff = !isCamOff;
-            nertcVideoCall.enableLocalVideo(!isCamOff);
+            nertcVideoCall.muteLocalVideo(isCamOff);
             if (isCamOff) {
                 Glide.with(getApplicationContext()).load(R.drawable.cam_off).into(ivVideo);
                 localVideoView.setBackgroundColor(Color.BLACK);
@@ -505,7 +523,14 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
         AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.CONNECTING);
         String selfUserId = ProfileManager.getInstance().getUserModel().imAccid;
         ChannelType type = ChannelType.retrieveType(callType);
-        nertcVideoCall.call(callOutUser.imAccid, selfUserId, type, new JoinChannelCallBack() {
+        JSONObject object = new JSONObject();
+        try {
+            object.putOpt("key", "call");
+            object.putOpt("value", "testValue");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        nertcVideoCall.call(callOutUser.imAccid, selfUserId, type, object.toString(),new JoinChannelCallBack() {
             @Override
             public void onJoinChannel(ChannelFullInfo channelFullInfo) {
                 NERTCVideoCallActivity.this.currentChannelId =  channelFullInfo.getChannelBaseInfo().getChannelId();

@@ -21,7 +21,7 @@ public class TeamG2Item {
 
     public int type; // 类型：0 加号；1 正常surface
     public int state; // 当前状态：0 等待 1 正在播放 2 未接通 3 已挂断
-    public boolean videoLive; // 是否正在视频
+    public boolean videoLive = true; // 是否正在视频
     public int volume; // 音频音量
     public String teamId;
     public String account;
@@ -34,7 +34,7 @@ public class TeamG2Item {
         this.teamId = teamId;
         this.account = account;
         this.state = STATE.STATE_WAITING;
-        this.videoLive = false;
+        this.videoLive = true;
         this.volume = 0;
     }
 
