@@ -30,7 +30,6 @@ import com.netease.nimlib.sdk.StatusCode;
 import com.netease.nimlib.sdk.auth.AuthServiceObserver;
 import com.netease.nimlib.sdk.avsignalling.builder.InviteParamBuilder;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
-import com.netease.nimlib.sdk.avsignalling.event.InvitedEvent;
 import com.netease.nimlib.sdk.avsignalling.model.ChannelFullInfo;
 import com.netease.nimlib.sdk.avsignalling.model.MemberInfo;
 import com.netease.nimlib.sdk.msg.MsgService;
@@ -38,6 +37,7 @@ import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.util.Entry;
 import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.nertc.model.ProfileManager;
+import com.netease.yunxin.nertc.nertcvideocall.bean.InvitedInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
@@ -50,6 +50,9 @@ import com.netease.yunxin.nertc.ui.team.model.TeamG2Adapter;
 import com.netease.yunxin.nertc.ui.team.model.TeamG2Item;
 import com.netease.yunxin.nertc.ui.team.recyclerview.decoration.SpacingDecoration;
 import com.netease.yunxin.nertc.ui.team.utils.ScreenUtil;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -424,7 +427,7 @@ public class TeamG2Activity extends UI {
             }
 
             @Override
-            public void onInvited(InvitedEvent invitedEvent) {
+            public void onInvited(InvitedInfo invitedEvent) {
 
             }
 
@@ -471,7 +474,21 @@ public class TeamG2Activity extends UI {
 
             @Override
             public void onCameraAvailable(String userId, boolean isVideoAvailable) {
-                updateUserVideoState(userId,isVideoAvailable);
+            }
+
+            @Override
+            public void onVideoMuted(String userId, boolean isMuted) {
+                updateUserVideoState(userId,!isMuted);
+            }
+
+            @Override
+            public void onAudioMuted(String userId, boolean isMuted) {
+
+            }
+
+            @Override
+            public void onJoinChannel(String accId, long uid, String channelName, long rtcChannelId) {
+                ALog.d("TeamG2Activity", "onJoinChannel==> accid:" + accId + ",uid:" + uid + ",channelName:" + channelName + ",rtcChannelId:" + rtcChannelId);
             }
 
             @Override
@@ -511,8 +528,16 @@ public class TeamG2Activity extends UI {
         log("observe rtc state done" );
 
         if (!receivedCall) {
+            JSONObject object = new JSONObject();
+            try {
+                object.putOpt("key","groupCall");
+                object.putOpt("value","testValue");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
             // join
-            NERTCVideoCall.sharedInstance().groupCall(accounts, groupId, ProfileManager.getInstance().getUserModel().imAccid, ChannelType.VIDEO, new JoinChannelCallBack() {
+            NERTCVideoCall.sharedInstance().groupCall(accounts, groupId, ProfileManager.getInstance().getUserModel().imAccid, ChannelType.VIDEO,object.toString(), new JoinChannelCallBack() {
                 @Override
                 public void onJoinChannel(ChannelFullInfo channelFullInfo) {
                     if (channelFullInfo != null && !TextUtils.isEmpty(channelFullInfo.getChannelId())) {
@@ -578,7 +603,7 @@ public class TeamG2Activity extends UI {
                     item.type=TYPE_DATA;
                     item.teamId=teamId;
                     item.account=accId;
-                    item.state= TeamG2Item.STATE.STATE_PLAYING;
+                    item.state=TeamG2Item.STATE.STATE_PLAYING;
                     item.videoLive=true;
                     break;
                 }
@@ -781,7 +806,7 @@ public class TeamG2Activity extends UI {
                 NERTCVideoCall.sharedInstance().switchCamera();
             } else if (i == R.id.avchat_enable_video) {// 视频
                 videoMute = !videoMute;
-                NERTCVideoCall.sharedInstance().enableLocalVideo(!videoMute);
+                NERTCVideoCall.sharedInstance().muteLocalVideo(videoMute);
                 v.setBackgroundResource(videoMute ? R.drawable.t_avchat_camera_mute_selector : R.drawable.t_avchat_camera_selector);
                 updateSelfItemVideoState(!videoMute);
             } else if (i == R.id.avchat_enable_audio) {// 麦克风开关
@@ -986,7 +1011,15 @@ public class TeamG2Activity extends UI {
                         }
                     }
                 }
-                NERTCVideoCallImpl.sharedInstance().groupInvite(selectedAccounts, accounts, teamId, ProfileManager.getInstance().getUserModel().imAccid, new JoinChannelCallBack() {
+
+                JSONObject object = new JSONObject();
+                try {
+                    object.putOpt("key","groupInvite");
+                    object.putOpt("value","testValue");
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                NERTCVideoCallImpl.sharedInstance().groupInvite(selectedAccounts, accounts, teamId, ProfileManager.getInstance().getUserModel().imAccid,object.toString(), new JoinChannelCallBack() {
                     @Override
                     public void onJoinChannel(ChannelFullInfo channelFullInfo) {
                         if (channelFullInfo != null) {

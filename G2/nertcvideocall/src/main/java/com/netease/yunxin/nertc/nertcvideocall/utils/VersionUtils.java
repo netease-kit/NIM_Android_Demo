@@ -1,12 +1,14 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.nertcvideocall.utils;
 
 
 import com.netease.yunxin.kit.alog.ALog;
 import com.netease.yunxin.kit.alog.ParameterMap;
 
-/**
- * Created by luc on 4/12/21.
- */
 public final class VersionUtils {
 
     /**

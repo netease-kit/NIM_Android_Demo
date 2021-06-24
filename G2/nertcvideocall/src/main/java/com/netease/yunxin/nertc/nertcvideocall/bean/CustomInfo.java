@@ -1,6 +1,12 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.nertcvideocall.bean;
 
 
+import com.google.gson.annotations.SerializedName;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 
 import java.util.ArrayList;
@@ -10,7 +16,7 @@ import static com.netease.yunxin.nertc.nertcvideocall.utils.CallParams.CHANNEL_N
 public class CustomInfo {
 
     /**
-     * 呼叫类型{@link CallParams.CallType}
+     * 呼叫类型{@link CallParams}
      */
     public int callType;
 
@@ -23,7 +29,7 @@ public class CustomInfo {
     /**
      * 群呼Id
      */
-    public String groupID;
+    public String groupId;
 
     /**
      * 用于加入音视频房间
@@ -35,16 +41,23 @@ public class CustomInfo {
      */
     public String version;
 
-    public CustomInfo(int callType, ArrayList<String> callUserList, String groupID,String channelId,String uid,String version) {
+    /**
+     * 用户自定义信息字段
+     */
+    @SerializedName("_attachment")
+    public String extraInfo;
+
+    public CustomInfo(int callType, ArrayList<String> callUserList, String groupId, String channelId, String uid, String version, String extraInfo) {
         this.callType = callType;
         this.callUserList = callUserList;
-        this.groupID = groupID;
+        this.groupId = groupId;
         this.channelName = channelId
                 + CHANNEL_NAME_SEPARATOR
                 + callType
                 + CHANNEL_NAME_SEPARATOR
-                + (callType == CallParams.CallType.P2P ? uid : groupID);
+                + (callType == CallParams.CallType.P2P ? uid : groupId);
         this.version = version;
+        this.extraInfo = extraInfo;
     }
 
     public CustomInfo(String version){
