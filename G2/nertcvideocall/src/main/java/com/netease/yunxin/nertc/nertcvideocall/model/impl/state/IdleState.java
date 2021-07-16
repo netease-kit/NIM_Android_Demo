@@ -25,7 +25,7 @@ public class IdleState extends CallState {
 
     @Override
     public void callOut() {
-        videoCall.setCurrentState(videoCall.getCalloutState());
+        videoCall.setCurrentState(videoCall.getCallOutState());
     }
 
     @Override

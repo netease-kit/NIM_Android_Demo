@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.model;
 
 import android.text.TextUtils;
@@ -10,6 +15,7 @@ import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.auth.AuthService;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.uinfo.UserService;
+import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.UserInfoInitCallBack;
 
 public final class ProfileManager implements UserInfoInitCallBack {
@@ -130,10 +136,16 @@ public final class ProfileManager implements UserInfoInitCallBack {
 
     @Override
     public void onUserLoginToIm(String imAccId, String imToken) {
+        NimUserInfo userInfo = NIMClient.getService(UserService.class).getUserInfo(imAccId);
         UserModel userModel = new UserModel();
         userModel.imAccid = imAccId;
         userModel.imToken = imToken;
-        userModel.nickname = NIMClient.getService(UserService.class).getUserInfo(imAccId).getName();
+        if (userInfo != null) {
+            userModel.nickname = userInfo.getName();
+        } else {
+            userModel.nickname = imAccId;
+        }
+
         setUserModel(userModel);
     }
 }

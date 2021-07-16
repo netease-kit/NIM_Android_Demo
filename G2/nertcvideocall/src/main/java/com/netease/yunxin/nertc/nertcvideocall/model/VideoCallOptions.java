@@ -6,22 +6,33 @@
 package com.netease.yunxin.nertc.nertcvideocall.model;
 
 import com.netease.lava.nertc.sdk.NERtcOption;
+import com.netease.nimlib.sdk.RequestCallback;
 
-import org.jetbrains.annotations.NotNull;
+import androidx.annotation.NonNull;
+
 
 /**
  * 初始化options
  */
 public class VideoCallOptions {
     //rtc Option
-    private NERtcOption rtcOption;
+    public final NERtcOption rtcOption;
 
     //UI 注入
-    private UIService uiService;
+    public final UIService uiService;
 
-    private UserInfoInitCallBack userInfoInitCallBack;
+    public final UserInfoInitCallBack userInfoInitCallBack;
 
-    public VideoCallOptions(NERtcOption rtcOption, @NotNull UIService uiService, UserInfoInitCallBack userInfoInitCallBack) {
+    /**
+     * VideoCallOptions 构造函数
+     *
+     * @param rtcOption            NERtc sdk 初始化配置详细参考 {@link NERtcOption}
+     * @param uiService            用户呼叫/被叫时展示的页面设置入口
+     * @param userInfoInitCallBack 通过组件进行登录 IM sdk 时传入，登录成功回调。
+     *                             也可以设置为 null，依赖
+     *                             {@link NERTCVideoCall#login(String, String, RequestCallback)}接口的回调。
+     */
+    public VideoCallOptions(NERtcOption rtcOption, @NonNull UIService uiService, UserInfoInitCallBack userInfoInitCallBack) {
         this.rtcOption = rtcOption;
         this.uiService = uiService;
         this.userInfoInitCallBack = userInfoInitCallBack;
@@ -30,7 +41,6 @@ public class VideoCallOptions {
     public NERtcOption getRtcOption() {
         return rtcOption;
     }
-
 
     public UIService getUiService() {
         return uiService;

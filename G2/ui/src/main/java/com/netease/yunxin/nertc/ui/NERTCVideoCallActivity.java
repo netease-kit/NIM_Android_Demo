@@ -1,3 +1,8 @@
+/*
+ * Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+ * Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+ */
+
 package com.netease.yunxin.nertc.ui;
 
 import android.content.Context;
@@ -50,6 +55,7 @@ import com.netease.yunxin.nertc.nertcvideocall.bean.InvitedInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.JoinChannelCallBack;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
+import com.netease.yunxin.nertc.nertcvideocall.model.impl.state.CallState;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 import com.netease.yunxin.nertc.ui.team.AVChatSoundPlayer;
 
@@ -563,6 +569,13 @@ public class NERTCVideoCallActivity extends AppCompatActivity {
     }
 
     private void callIn() {
+        int state = NERTCVideoCall.sharedInstance().getCurrentState();
+        if (state == CallState.STATE_IDLE){
+            ALog.d(LOG_TAG, "state is idle and finish page.");
+            hangUpAndFinish();
+            return;
+        }
+
         AVChatSoundPlayer.instance().play(AVChatSoundPlayer.RingerTypeEnum.RING);
         InviteParamBuilder invitedParam = new InviteParamBuilder(inventChannelId, inventFromAccountId, inventRequestId);
         ivAccept.setOnClickListener(view -> {
