@@ -1,3 +1,8 @@
+<!--
+  ~ Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+  ~ Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+  -->
+
 <resources>
     <string name="login_btn_login">登录</string>
 

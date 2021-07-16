@@ -16,7 +16,6 @@ import android.view.MenuItem;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.netease.nim.demo.BuildConfig;
 import com.netease.nim.demo.NimApplication;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
@@ -157,14 +156,14 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
         setToolBar(R.id.toolbar, R.string.app_name, R.drawable.actionbar_dark_logo);
         setTitle(R.string.app_name);
         isFirstIn = true;
+        // 初始化G2组件
+        initG2();
         //不保留后台活动，从厂商推送进聊天页面，会无法退出聊天页面
         if (savedInstanceState == null && parseIntent()) {
             return;
         }
         init();
 
-        // 初始化G2组件
-        initG2();
     }
 
     private void initG2() {

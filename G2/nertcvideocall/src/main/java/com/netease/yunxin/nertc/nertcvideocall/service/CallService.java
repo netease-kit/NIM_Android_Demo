@@ -58,6 +58,7 @@ public class CallService {
             if (needFinish) {
                 cancelNotification();
             }
+            bgInvitedInfo = null;
         }
 
         @Override

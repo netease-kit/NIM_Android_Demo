@@ -11,15 +11,15 @@ import com.netease.yunxin.nertc.nertcvideocall.bean.InvitedInfo;
 import com.netease.yunxin.nertc.nertcvideocall.model.NERTCCallingDelegate;
 
 import java.lang.ref.WeakReference;
-import java.util.Iterator;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
- * 收拢说有的Delegate
+ * 收拢所有 Delegate
+ *
  */
 public class NERTCInternalDelegateManager implements NERTCCallingDelegate {
 
-    private CopyOnWriteArrayList<WeakReference<NERTCCallingDelegate>> mWeakReferenceList;
+    private final CopyOnWriteArrayList<WeakReference<NERTCCallingDelegate>> mWeakReferenceList;
 
     public NERTCInternalDelegateManager() {
         mWeakReferenceList = new CopyOnWriteArrayList<>();
@@ -31,13 +31,11 @@ public class NERTCInternalDelegateManager implements NERTCCallingDelegate {
     }
 
     public boolean isEmpty() {
-        return mWeakReferenceList == null || mWeakReferenceList.isEmpty();
+        return mWeakReferenceList.isEmpty();
     }
 
     public void removeDelegate(NERTCCallingDelegate listener) {
-        Iterator iterator = mWeakReferenceList.iterator();
-        while (iterator.hasNext()) {
-            WeakReference<NERTCCallingDelegate> reference = (WeakReference<NERTCCallingDelegate>) iterator.next();
+        for (WeakReference<NERTCCallingDelegate> reference : mWeakReferenceList) {
             if (reference != null && reference.get() == listener) {
                 mWeakReferenceList.remove(reference);
             }
