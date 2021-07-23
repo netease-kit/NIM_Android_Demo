@@ -1548,7 +1548,7 @@ public class NERTCVideoCallImpl extends NERTCVideoCall {
     private void hangupInner(String channelId, RequestCallback<Void> callback) {
         ALog.d(LOG_TAG, "hangup, channelId is " + channelId);
         if (channelId != null && !channelId.equals(imChannelId)) {
-            delegateManager.onError(CallErrorCode.STATUS_ERROR, "hangup status error,current channelId is" + imChannelId + ", handle channelId is " + channelId, false);
+            delegateManager.onError(CallErrorCode.STATUS_ERROR, "hangup status error,current channelId is " + imChannelId + ", handle channelId is " + channelId, false);
             return;
         }
         if (currentState.getStatus() == CallState.STATE_IDLE) {
@@ -1571,7 +1571,7 @@ public class NERTCVideoCallImpl extends NERTCVideoCall {
             rejectInner(paramBuilder, true, wrapperCallBack(imChannelId, callback));
         } else if (callback != null) {
             if (!TextUtils.isEmpty(imChannelId)) {
-                closeIMChannel(imChannelId, null);
+                closeIMChannel(imChannelId, callback);
             } else {
                 callback.onFailed(-1);
             }
@@ -2155,7 +2155,9 @@ public class NERTCVideoCallImpl extends NERTCVideoCall {
             if (itemBaseInfo == null) {
                 continue;
             }
-            if (itemEvent.getEventType() == handlingEventType && TextUtils.equals(channelId, itemBaseInfo.getChannelId())) {
+            if (handlingEventType != SignallingEventType.JOIN
+                    && itemEvent.getEventType() == handlingEventType
+                    && TextUtils.equals(channelId, itemBaseInfo.getChannelId())) {
                 result = true;
                 break;
             }
