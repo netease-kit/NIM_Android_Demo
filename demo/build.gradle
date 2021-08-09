@@ -110,6 +110,10 @@ android {
     dataBinding {
         enabled = true
     }
+
+    configurations {
+        compile.exclude module: 'nrtc'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'
@@ -153,6 +157,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:retrofit:2.8.1'
     implementation 'com.squareup.retrofit2:converter-gson:2.8.1'
     implementation "com.squareup.okhttp3:logging-interceptor:3.14.7"
+    implementation 'com.netease.yunxin:meetinglib:1.10.0'
 
     debugImplementation 'com.squareup.leakcanary:leakcanary-android:1.6.3'
     debugImplementation 'com.squareup.leakcanary:leakcanary-support-fragment:1.6.3'

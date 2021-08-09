@@ -11,6 +11,9 @@ import androidx.multidex.MultiDex;
 
 import com.heytap.msp.push.HeytapPushManager;
 import com.huawei.hms.support.common.ActivityMgr;
+import com.netease.meetinglib.sdk.NEMeetingError;
+import com.netease.meetinglib.sdk.NEMeetingSDK;
+import com.netease.meetinglib.sdk.NEMeetingSDKConfig;
 import com.netease.nim.demo.chatroom.ChatRoomSessionHelper;
 import com.netease.nim.demo.common.util.crash.AppCrashHandler;
 import com.netease.nim.demo.config.preference.Preferences;
@@ -69,6 +72,8 @@ public class NimApplication extends Application {
 //            LeakCanary.install(this);
         }
         DemoCache.setContext(this);
+        // 会议初始化
+        initMeeting();
 
         // 4.6.0 开始，第三方推送配置入口改为 SDKOption#mixPushConfig，旧版配置方式依旧支持。
         SDKOptions sdkOptions = NimSDKOptionConfig.getSDKOptions(this);
@@ -102,6 +107,7 @@ public class NimApplication extends Application {
             NIMInitManager.getInstance().init(true);
             // 初始化rts模块
             initRTSKit();
+
         }
         //初始化融合 SDK 中的七鱼业务关业务
         initMixSdk();
@@ -109,6 +115,19 @@ public class NimApplication extends Application {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
             WebView.setDataDirectorySuffix(Process.myPid() + "");
         }
+    }
+
+    private void initMeeting(){
+        NEMeetingSDKConfig config = new NEMeetingSDKConfig();
+        config.appKey = "your meeting key";
+        config.appName = "your app name";
+        NEMeetingSDK.getInstance().initialize(this, config, (resultCode, resultMsg, resultData) -> {
+            if (resultCode == NEMeetingError.ERROR_CODE_SUCCESS) {
+                //TODO when initialize success
+            } else {
+                //TODO when initialize fail
+            }
+        });
     }
 
     private void initMixSdk() {
