@@ -21,6 +21,7 @@ import com.netease.lava.nertc.sdk.NERtc;
 import com.netease.lava.nertc.sdk.NERtcCallback;
 import com.netease.lava.nertc.sdk.NERtcConstants;
 import com.netease.lava.nertc.sdk.NERtcEx;
+import com.netease.lava.nertc.sdk.NERtcOption;
 import com.netease.lava.nertc.sdk.NERtcParameters;
 import com.netease.lava.nertc.sdk.stats.NERtcNetworkQualityInfo;
 import com.netease.lava.nertc.sdk.stats.NERtcStatsObserver;
@@ -736,20 +737,29 @@ public class NERTCVideoCallImpl extends NERTCVideoCall {
 
         //设置一个默认的videoConfig
         NERtcVideoConfig videoConfig = new NERtcVideoConfig();
-        videoConfig.videoProfile = NERtcConstants.VideoProfile.HD720P;
-        // 默认帧率：15,分辨率：540x960，音频scenario：语音，音频profile：kNERtcAudioProfileStandardExtend
+        // 帧率：15
         videoConfig.frameRate = NERtcEncodeConfig.NERtcVideoFrameRate.FRAME_RATE_FPS_15;
-        videoConfig.width = 960;
-        videoConfig.height = 540;
-        neRtc.setAudioProfile(NERtcConstants.AudioProfile.STANDARD_EXTEND, NERtcConstants.AudioScenario.SPEECH);
+        // 用户修改分辨率不要使用 profile，应该使用width/height修改，两种方式都存在时，profile 方式失效。
+        // 分辨率：360*640（注意此处需要设置宽大于高不用考虑具体角度旋转）
+        videoConfig.width = 640;
+        videoConfig.height = 360;
         neRtc.setLocalVideoConfig(videoConfig);
+        // 音频设置 standard + speech
+        neRtc.setAudioProfile(NERtcConstants.AudioProfile.STANDARD, NERtcConstants.AudioScenario.SPEECH);
+        // 设置 channel profile
+        neRtc.setChannelProfile(NERtcConstants.RTCChannelProfile.COMMUNICATION);
         // 设置不进行自动订阅音频
         NERtcParameters parameters = new NERtcParameters();
         parameters.set(KEY_AUTO_SUBSCRIBE_AUDIO, false);
         neRtc.setParameters(parameters);
 
         try {
-            neRtc.init(context, appKey, rtcCallback, option.getRtcOption());
+            NERtcOption rtcOption = option.getRtcOption();
+            if (rtcOption == null) {
+                rtcOption = new NERtcOption();
+                rtcOption.logLevel = NERtcConstants.LogLevel.WARNING;
+            }
+            neRtc.init(context, appKey, rtcCallback, rtcOption);
         } catch (Exception e) {
             e.printStackTrace();
             ToastUtils.showShort("SDK初始化失败");
