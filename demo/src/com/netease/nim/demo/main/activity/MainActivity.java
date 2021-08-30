@@ -13,10 +13,16 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.Toast;
+
+import androidx.annotation.NonNull;
+import androidx.viewpager.widget.ViewPager;
 
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
-import com.netease.nim.demo.NimApplication;
+import com.netease.lava.nertc.sdk.NERtcOption;
+import com.netease.nim.demo.DemoCache;
+import com.netease.nim.demo.NimSDKOptionConfig;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.common.ui.viewpager.FadeInOutPageTransformer;
 import com.netease.nim.demo.common.ui.viewpager.PagerSlidingTabStrip;
@@ -53,9 +59,6 @@ import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimIntent;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
-import com.netease.nimlib.sdk.StatusCode;
-import com.netease.nimlib.sdk.auth.AuthServiceObserver;
-import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.SystemMessageObserver;
@@ -64,13 +67,13 @@ import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.CustomNotification;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
-import com.netease.yunxin.nertc.model.ProfileManager;
-import com.netease.yunxin.nertc.nertcvideocall.model.NERTCVideoCall;
-import com.netease.yunxin.nertc.nertcvideocall.model.UIService;
-import com.netease.yunxin.nertc.nertcvideocall.model.VideoCallOptions;
 import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
-import com.netease.yunxin.nertc.ui.NERTCVideoCallActivity;
-import com.netease.yunxin.nertc.ui.team.TeamG2Activity;
+import com.netease.yunxin.nertc.ui.CallKitNotificationConfig;
+import com.netease.yunxin.nertc.ui.CallKitUI;
+import com.netease.yunxin.nertc.ui.CallKitUIOptions;
+import com.netease.yunxin.nertc.ui.base.ResultInfo;
+import com.netease.yunxin.nertc.ui.base.ResultObserver;
+import com.netease.yunxin.nertc.ui.base.TransHelper;
 import com.qiyukf.unicorn.ysfkit.unicorn.api.Unicorn;
 
 import java.io.BufferedInputStream;
@@ -82,8 +85,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import androidx.annotation.NonNull;
-import androidx.viewpager.widget.ViewPager;
 
 /**
  * 主界面
@@ -157,151 +158,164 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
         setTitle(R.string.app_name);
         isFirstIn = true;
         // 初始化G2组件
-        initG2();
+        //MMCTS-26507  VIP云信-聚聊-P1-即时通讯demo（呼叫组件）-三星S6海外版弹不出接听界面
+        initG2CallKit();
         //不保留后台活动，从厂商推送进聊天页面，会无法退出聊天页面
         if (savedInstanceState == null && parseIntent()) {
             return;
         }
         init();
-
     }
 
-    private void initG2() {
-        NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(new Observer<StatusCode>() {
-            @Override
-            public void onEvent(StatusCode statusCode) {
-                if (statusCode == StatusCode.LOGINED) {
-                    NIMClient.getService(AuthServiceObserver.class).observeOnlineStatus(this, false);
+    /**
+     * G2 版本呼叫组件初始化
+     */
+    private void initG2CallKit() {
+        String appKey = getRtcAppKey();
+        if (TextUtils.isEmpty(appKey)) {
+            Toast.makeText(this, "NERtc appKey is null. can't init callkit.", Toast.LENGTH_LONG).show();
+            return;
+        }
 
-                    // TODO G2 用户根据实际配置方式获取
-                    LoginInfo loginInfo = NimApplication.getLoginInfo();
-                    if (loginInfo == null) {
-                        return;
-                    }
+        CallKitUIOptions options = new CallKitUIOptions.Builder()
+                // 音视频通话 sdk appKey，用于通话中使用
+                .rtcAppKey(appKey)
+                // 当前用户 accId
+                .currentUserAccId(DemoCache.getAccount())
+                // 通话接听成功的超时时间单位 毫秒，默认30s
+                .timeOutMillisecond(30 * 1000L)
+                // 当系统版本为 Android Q及以上时，若应用在后台系统限制不直接展示页面
+                // 而是展示 notification，通过点击 notification 跳转呼叫页面
+                // 此处为 notification 相关配置，如图标，提示语等。
+                .notificationConfigFetcher(invitedInfo -> new CallKitNotificationConfig(R.drawable.ic_logo))
+                // 收到被叫时若 app 在后台，在恢复到前台时是否自动唤起被叫页面，默认为 true
+                .resumeBGInvitation(true)
+                // 请求 rtc token 服务，若非安全模式则不需设置
+                .rtcTokenService((uid, callback) -> requestRtcToken(appKey, uid, callback))
+                // 群组通话通话中邀请用户时，配置获取邀请的用户的列表
+                .contactSelector((context, teamId, accounts, observer) -> {
+                    doFetchInviteAccountList(teamId, accounts, observer);
+                    return null;
+                })
+                // 设置初始化 rtc sdk 相关配置，按照所需进行配置
+                .rtcSdkOption(new NERtcOption())
+                // 设置日志路径
+                .logRootPath(NimSDKOptionConfig.getSDKOptions(this).sdkStorageRootPath)
+                .build();
+        // 若重复初始化会销毁之前的初始化实例，重新初始化
+        CallKitUI.init(getApplicationContext(), options);
+    }
 
-                    String imAccount = loginInfo.getAccount();
-                    String imToken = loginInfo.getToken();
+    /**
+     * 获取 rtc AppKey
+     */
+    private String getRtcAppKey() {
+        ApplicationInfo appInfo = null;
+        try {
+            appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (appInfo == null) {
+            return null;
+        }
+        return appInfo.metaData.getString("com.netease.nim.appKey");
+    }
 
-                    ApplicationInfo appInfo = null;
-                    try {
-                        // TODO G2 用户根据实际配置方式获取
-                        appInfo = getPackageManager().getApplicationInfo(getPackageName(), PackageManager.GET_META_DATA);
-                        String appKey = appInfo.metaData.getString("com.netease.nim.appKey");
+    private static final int REQUEST_ID = 1001;
 
-                        NERTCVideoCall.sharedInstance().setupAppKey(getApplicationContext(), appKey, new VideoCallOptions(null, new UIService() {
-                            @Override
-                            public Class getOneToOneAudioChat() {
-                                return NERTCVideoCallActivity.class;
-                            }
+    /**
+     * 获取群组通话中途邀请其他用户的用户列表
+     *
+     * @param teamId          群组id
+     * @param excludeUserList 已经在通话中的用户 accId 列表
+     * @param observer        结果通知
+     */
+    private void doFetchInviteAccountList(String teamId, List<String> excludeUserList, ResultObserver<List<String>> observer) {
+        ContactSelectActivity.Option option = new ContactSelectActivity.Option();
+        option.type = ContactSelectActivity.ContactSelectType.TEAM_MEMBER;
+        option.teamId = teamId;
+        option.maxSelectNum = 8 - (excludeUserList == null ? 0 : excludeUserList.size());
+        option.maxSelectNumVisible = true;
+        option.title = NimUIKit.getContext().getString(com.netease.nim.uikit.R.string.invite_member);
+        option.maxSelectedTip = NimUIKit.getContext().getString(R.string.reach_capacity);
+        option.itemFilter = new ContactSelfFilter();
+        if (excludeUserList != null && !excludeUserList.isEmpty()) {
+            option.itemDisableFilter = new ContactIdFilter(excludeUserList);
+        }
 
-                            @Override
-                            public Class getOneToOneVideoChat() {
-                                return NERTCVideoCallActivity.class;
-                            }
-
-                            @Override
-                            public Class getGroupVideoChat() {
-                                return TeamG2Activity.class;
-                            }
-
-                            @Override
-                            public int getNotificationIcon() {
-                                return R.drawable.ic_logo;
-                            }
-
-                            @Override
-                            public int getNotificationSmallIcon() {
-                                return R.drawable.ic_logo;
-                            }
-
-                            @Override
-                            public void startContactSelector(Context context, String teamId, List<String> excludeUserList, int requestCode) {
-                                ContactSelectActivity.Option option = new ContactSelectActivity.Option();
-                                option.type = ContactSelectActivity.ContactSelectType.TEAM_MEMBER;
-                                option.teamId = teamId;
-                                option.maxSelectNum = 8 - (excludeUserList == null ? 0 : excludeUserList.size());
-                                option.maxSelectNumVisible = true;
-                                option.title = NimUIKit.getContext().getString(com.netease.nim.uikit.R.string.invite_member);
-                                option.maxSelectedTip = NimUIKit.getContext().getString(R.string.reach_capacity);
-                                option.itemFilter=new ContactSelfFilter();
-                                if (excludeUserList!=null&&!excludeUserList.isEmpty()){
-                                    option.itemDisableFilter=new ContactIdFilter(excludeUserList);
-                                }
-                                NimUIKit.startContactSelector(context, option, requestCode);
-                            }
-
-                        }, ProfileManager.getInstance()));
-
-                        NERTCVideoCall.sharedInstance().login(imAccount, imToken, new RequestCallback<LoginInfo>() {
-                            @Override
-                            public void onSuccess(LoginInfo param) {
-
-                            }
-
-                            @Override
-                            public void onFailed(int code) {
-
-                            }
-
-                            @Override
-                            public void onException(Throwable exception) {
-
-                            }
-                        });
-
-                        /**
-                         * 超时设置，在初始化的时候设置有效
-                         */
-                        NERTCVideoCall.sharedInstance().setTimeOut(30 * 1000);
-
-                        //注册获取token的服务
-                        //在线上环境中，token的获取需要放到您的应用服务端完成，然后由服务器通过安全通道把token传递给客户端
-                        //Demo中使用的URL仅仅是demoserver，不要在您的应用中使用
-                        //详细请参考: http://dev.netease.im/docs?doc=server
-                        NERTCVideoCall.sharedInstance().setTokenService((uid, callback) -> {
-                            String demoServer = "https://nrtc.netease.im/demo/getChecksum.action";
-                            new Thread(() -> {
-                                try {
-                                    String queryString = demoServer + "?uid=" +
-                                            uid + "&appkey=" + appKey;
-                                    URL requestedUrl = new URL(queryString);
-                                    HttpURLConnection connection = (HttpURLConnection) requestedUrl.openConnection();
-                                    connection.setRequestMethod("POST");
-                                    connection.setConnectTimeout(6000);
-                                    connection.setReadTimeout(6000);
-                                    if (connection.getResponseCode() == 200) {
-                                        String result = readFully(connection.getInputStream());
-                                        Log.d("Demo", result);
-                                        if (!TextUtils.isEmpty(result)) {
-                                            org.json.JSONObject object = new org.json.JSONObject(result);
-                                            int code = object.getInt("code");
-                                            if (code == 200) {
-                                                String token = object.getString("checksum");
-                                                if (!TextUtils.isEmpty(token)) {
-                                                    new Handler(getMainLooper()).post(() -> {
-                                                        callback.onSuccess(token);
-                                                    });
-                                                    return;
-                                                }
-                                            }
-                                        }
-                                    }
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
-                                new Handler(getMainLooper()).post(() -> {
-                                    //fixme 此处因为demo可以走非安全模式所以返回null，线上环境请在此处走 onFailed 逻辑
-                                    callback.onSuccess(null);
-                                });
-                            }).start();
-                        });
-                    } catch (PackageManager.NameNotFoundException e) {
-                        e.printStackTrace();
-                    }
-                }
+        TransHelper.launchTask(this, REQUEST_ID, context1 -> {
+            NimUIKit.startContactSelector(context1, option, REQUEST_ID);
+            return null;
+        }, intentResultInfo -> {
+            if (observer == null) {
+                return null;
             }
-        }, true);
+            Intent intent = intentResultInfo.getValue();
+            if (intentResultInfo.getSuccess() && intent != null) {
+                observer.onResult(new ResultInfo<>(intent.getStringArrayListExtra("RESULT_DATA"), true));
+            } else {
+                observer.onResult(new ResultInfo<>(null,false,intentResultInfo.getMsg()));
+            }
+            return null;
+        });
+    }
+
+    /**
+     * 请求 rtc token 服务
+     *
+     * @param appKey   rtc 对应的 AppKey
+     * @param uid      用户加入 rtc 时的 id
+     * @param callback 请求回调通知
+     */
+    private void requestRtcToken(String appKey, long uid, RequestCallback<String> callback) {
+        //注册获取token的服务
+        //在线上环境中，token的获取需要放到您的应用服务端完成，然后由服务器通过安全通道把token传递给客户端
+        //Demo中使用的URL仅仅是demoserver，不要在您的应用中使用
+        //详细请参考: http://dev.netease.im/docs?doc=server
+        String demoServer = "https://nrtc.netease.im/demo/getChecksum.action";
+        new Thread(() -> {
+            try {
+                String queryString = demoServer + "?uid=" +
+                        uid + "&appkey=" + appKey;
+                URL requestedUrl = new URL(queryString);
+                HttpURLConnection connection = (HttpURLConnection) requestedUrl.openConnection();
+                connection.setRequestMethod("POST");
+                connection.setConnectTimeout(6000);
+                connection.setReadTimeout(6000);
+                if (connection.getResponseCode() != 200) {
+                    callback.onFailed(connection.getResponseCode());
+                    return;
+                }
+                String result = readFully(connection.getInputStream());
+                Log.d("Demo", result);
+                if (TextUtils.isEmpty(result)) {
+                    callback.onFailed(-1);
+                    return;
+                }
+                org.json.JSONObject object = new org.json.JSONObject(result);
+                int code = object.getInt("code");
+                if (code != 200) {
+                    callback.onFailed(code);
+                }
+                String token = object.getString("checksum");
+                if (TextUtils.isEmpty(token)) {
+                    callback.onFailed(-1);
+                    return;
+                }
+                new Handler(getMainLooper()).post(() -> {
+                    callback.onSuccess(token);
+                });
+                return;
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            new Handler(getMainLooper()).post(() -> {
+                //fixme 此处因为demo可以走非安全模式所以返回null，线上环境请在此处走 onFailed 逻辑
+                callback.onSuccess(null);
+            });
+        }).start();
     }
 
     private String readFully(InputStream inputStream) throws IOException {
@@ -437,7 +451,7 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
         // 处理自定义通知消息
         LogUtil.i("demo", "receive custom notification: " + notification.getContent() + " from :" +
                 notification.getSessionId() + "/" + notification.getSessionType() +
-                "unread=" + (notification.getConfig() == null ? "" : notification.getConfig().enableUnreadCount +  " " + "push=" +
+                "unread=" + (notification.getConfig() == null ? "" : notification.getConfig().enableUnreadCount + " " + "push=" +
                 notification.getConfig().enablePush + " nick=" +
                 notification.getConfig().enablePushNick));
         try {

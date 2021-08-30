@@ -27,9 +27,9 @@ import java.io.IOException;
  * 云信sdk 自定义的SDK选项设置
  */
 
-class NimSDKOptionConfig {
+public class NimSDKOptionConfig {
 
-    static SDKOptions getSDKOptions(Context context) {
+    public static SDKOptions getSDKOptions(Context context) {
         SDKOptions options = new SDKOptions();
         // 如果将新消息通知提醒托管给SDK完成，需要添加以下配置。
         initStatusBarNotificationConfig(options);

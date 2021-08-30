@@ -1,18 +1,14 @@
 package com.netease.nim.demo.session.action;
 
 
+import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.uikit.business.session.actions.BaseAction;
 import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nimlib.sdk.NIMClient;
-import com.netease.nimlib.sdk.RequestCallback;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
-import com.netease.nimlib.sdk.nos.NosService;
-import com.netease.nimlib.sdk.uinfo.UserService;
-import com.netease.nimlib.sdk.uinfo.model.NimUserInfo;
-import com.netease.yunxin.nertc.model.UserModel;
-import com.netease.yunxin.nertc.ui.NERTCVideoCallActivity;
+import com.netease.yunxin.nertc.ui.CallKitUI;
+import com.netease.yunxin.nertc.ui.base.CallParam;
 
 /**
  * Created by hzxuwen on 2015/6/12.
@@ -38,39 +34,16 @@ public class AVChatAction extends BaseAction {
     /************************ 音视频通话 ***********************/
 
     public void startAudioVideoCall(ChannelType avChatType) {
-//        AVChatKit.outgoingCall(getActivity(), getAccount(), UserInfoHelper.getUserDisplayName(getAccount()), avChatType.getValue(), AVChatActivity.FROM_INTERNAL);
-
-        UserModel userModel = new UserModel();
-        userModel.imAccid = getAccount();
-        NimUserInfo userInfo = NIMClient.getService(UserService.class).getUserInfo(getAccount());
-        userModel.nickname = userInfo.getName();
-
-        NIMClient.getService(NosService.class).getOriginUrlFromShortUrl(userInfo.getAvatar()).setCallback(new RequestCallback<String>() {
-            @Override
-            public void onSuccess(String param) {
-                userModel.avatar = param;
-                startAudioVideoCall(avChatType, userModel);
-            }
-
-            @Override
-            public void onFailed(int code) {
-                userModel.avatar = userInfo.getAvatar();
-                startAudioVideoCall(avChatType, userModel);
-            }
-
-            @Override
-            public void onException(Throwable exception) {
-                userModel.avatar = userInfo.getAvatar();
-                startAudioVideoCall(avChatType, userModel);
-            }
-        });
+        startAudioVideoCall(avChatType,getAccount());
     }
 
-    public void startAudioVideoCall(ChannelType avChatType, UserModel userModel) {
-        if (avChatType == ChannelType.AUDIO) {
-            NERTCVideoCallActivity.startAudioCallOther(getActivity(), userModel);
-        } else {
-            NERTCVideoCallActivity.startCallOther(getActivity(), userModel);
-        }
+    public void startAudioVideoCall(ChannelType avChatType, String imAccId) {
+
+        CallParam param = CallParam
+                .createSingleCallParam(avChatType.getValue(),
+                        DemoCache.getAccount(),
+                        imAccId);
+
+        CallKitUI.startSingleCall(getActivity(),param);
     }
 }

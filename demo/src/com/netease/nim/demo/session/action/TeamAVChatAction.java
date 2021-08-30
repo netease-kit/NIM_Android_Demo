@@ -16,7 +16,8 @@ import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.avsignalling.constant.ChannelType;
 import com.netease.nimlib.sdk.team.model.TeamMember;
-import com.netease.yunxin.nertc.ui.team.TeamG2Activity;
+import com.netease.yunxin.nertc.ui.CallKitUI;
+import com.netease.yunxin.nertc.ui.base.CallParam;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -82,7 +83,8 @@ public class TeamAVChatAction extends AVChatAction {
             return;
         }
 
-        TeamG2Activity.startActivity(getActivity(), false, transaction.getTeamID(), accounts, "");
+        CallParam param = CallParam.createGroupCallParam(1, DemoCache.getAccount(), accounts, transaction.getTeamID());
+        CallKitUI.startGroupCall(getActivity(), param);
         transaction = null;
     }
 
