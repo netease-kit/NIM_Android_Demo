@@ -93,7 +93,8 @@
 
         <meta-data
             android:name="com.netease.nim.appKey"
-			android:value="45c6af3c98409b18a84451215d0bdd6e"/>
+            android:value="set_your_app_key_here"/>
+
 
         <uses-library
             android:name="com.google.android.maps"
@@ -240,12 +241,6 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="stateHidden|adjustResize"/>
-        <activity
-            android:name=".main.activity.AvchatListActivity"
-            android:configChanges="keyboardHidden|orientation"
-            android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="stateHidden"/>
         <activity
             android:name=".session.activity.MessageHistoryActivity"
             android:configChanges="keyboardHidden|orientation"
@@ -526,7 +521,7 @@
 
         </service>
 
-        <activity android:name="com.netease.nim.demo.main.activity.MixPushActivity"
+        <activity android:name=".main.activity.MixPushActivity"
             android:theme="@android:style/Theme.NoDisplay">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

@@ -14,6 +14,4 @@ public interface Extras {
    String PWD = "pwd";
 
    String ROOM_ID = "room_id";
-
-   String LINK = "link";
 }

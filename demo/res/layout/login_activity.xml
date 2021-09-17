@@ -44,13 +44,76 @@
 
 
             <LinearLayout
-                android:id="@+id/login_layout"
+                android:id="@+id/login_sms_code_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip"
                 android:layout_marginTop="74dp"
                 android:orientation="vertical"
+                android:visibility="visible"
+                tools:visibility="visible">
+
+                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                    android:id="@+id/edit_login_phone"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/edittext_white_normal"
+                    android:drawablePadding="15dp"
+                    android:hint="@string/login_hint_phone"
+                    android:inputType="number"
+                    android:paddingLeft="15dp"
+                    android:paddingRight="15dp"
+                    android:textColor="@color/white"
+                    android:textColorHint="@color/color_white_66ffffff"
+                    android:textCursorDrawable="@null"
+                    android:textSize="15sp" />
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:background="@color/transparent"
+                    android:layout_height="wrap_content">
+
+                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                        android:id="@+id/edit_login_sms_code"
+                        android:layout_width="match_parent"
+                        android:layout_toStartOf="@+id/fetch_login_sms_code"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_white_normal"
+                        android:drawablePadding="15dp"
+                        android:hint="@string/login_hint_sms_code"
+                        android:inputType="text"
+                        android:longClickable="false"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/fetch_login_sms_code"
+                        android:layout_width="100dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/color_blue_0888ff"
+                        android:text="@string/fetch_sms_code"
+                        android:gravity="center"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/g_white_btn_selector" />
+
+                </RelativeLayout>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/login_account_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_marginTop="74dp"
+                android:orientation="vertical"
+                android:visibility="gone"
                 tools:visibility="gone">
 
                 <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
@@ -83,21 +146,6 @@
                     android:textCursorDrawable="@null"
                     android:textSize="15sp" />
 
-                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                    android:id="@+id/edit_login_subtype"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/edittext_white_normal"
-                    android:drawablePadding="15dp"
-                    android:hint="@string/login_hint_subtype"
-                    android:inputType="textPassword"
-                    android:longClickable="false"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/color_white_66ffffff"
-                    android:textCursorDrawable="@null"
-                    android:textSize="15sp" />
             </LinearLayout>
 
             <LinearLayout
@@ -108,18 +156,16 @@
                 android:layout_marginRight="10dip"
                 android:layout_marginTop="74dp"
                 android:orientation="vertical"
-                android:visibility="gone"
-                tools:visibility="visible">
+                android:visibility="gone">
 
                 <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                    android:id="@+id/edit_register_account"
+                    android:id="@+id/edit_register_phone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@drawable/edittext_white_normal"
-                    android:digits="1234567890abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
                     android:drawablePadding="15dp"
-                    android:hint="@string/input_account"
-                    android:inputType="text"
+                    android:hint="@string/login_hint_phone"
+                    android:inputType="number"
                     android:paddingLeft="15dp"
                     android:paddingRight="15dp"
                     android:textColor="@color/white"
@@ -142,39 +188,71 @@
                     android:textCursorDrawable="@null"
                     android:textSize="15sp" />
 
-                <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
-                    android:id="@+id/edit_register_password"
+                <RelativeLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/edittext_white_normal"
-                    android:drawablePadding="15dp"
-                    android:hint="@string/login_hint_password"
-                    android:inputType="textPassword"
-                    android:longClickable="false"
-                    android:paddingLeft="15dp"
-                    android:paddingRight="15dp"
-                    android:textColor="@color/white"
-                    android:textColorHint="@color/color_white_66ffffff"
-                    android:textCursorDrawable="@null"
-                    android:textSize="15sp" />
+                    android:background="@color/transparent"
+                    android:layout_height="wrap_content">
+
+                    <com.netease.nim.uikit.common.ui.widget.ClearableEditTextWithIcon
+                        android:id="@+id/edit_register_sms_code"
+                        android:layout_width="match_parent"
+                        android:layout_toStartOf="@+id/fetch_register_sms_code"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/edittext_white_normal"
+                        android:drawablePadding="15dp"
+                        android:hint="@string/login_hint_sms_code"
+                        android:inputType="text"
+                        android:longClickable="false"
+                        android:paddingLeft="15dp"
+                        android:paddingRight="15dp"
+                        android:textColor="@color/white"
+                        android:textColorHint="@color/color_white_66ffffff"
+                        android:textCursorDrawable="@null"
+                        android:textSize="15sp" />
+
+                    <TextView
+                        android:id="@+id/fetch_register_sms_code"
+                        android:layout_width="100dp"
+                        android:layout_height="35dp"
+                        android:layout_centerVertical="true"
+                        android:textColor="@color/color_blue_0888ff"
+                        android:text="@string/fetch_sms_code"
+                        android:gravity="center"
+                        android:layout_alignParentEnd="true"
+                        android:background="@drawable/g_white_btn_selector" />
+
+                </RelativeLayout>
             </LinearLayout>
 
-            <TextView
-                android:id="@+id/register_login_tip"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="10dip"
-                android:padding="15dip"
-                android:text="@string/register"
-                android:textColor="@drawable/register_tip_selector"
-                android:textSize="15sp" />
-            <Button
-                android:id="@+id/btn_independent"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="独立聊天室"
-                />
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/register_login_tip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingStart="15dp"
+                    android:paddingBottom="15dp"
+                    android:paddingEnd="15dp"
+                    android:text="@string/register"
+                    android:textColor="@drawable/register_tip_selector"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/login_type_switch"
+                    android:layout_width="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:paddingStart="15dp"
+                    android:paddingBottom="15dp"
+                    android:paddingEnd="15dp"
+                    android:text="@string/login_by_accid"
+                    android:textColor="@drawable/register_tip_selector"
+                    android:textSize="15sp" />
+            </RelativeLayout>
         </LinearLayout>
     </ScrollView>
 </LinearLayout>

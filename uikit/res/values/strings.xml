@@ -277,7 +277,6 @@
     <string name="sure">确定</string>
     <string name="super_team_impl_by_self">超大群开发者按需实现</string>
     <string name="delete_chat_only_server">删除该聊天（仅服务器）</string>
-    <string name="delete_chat_only_local">删除该聊天（仅本地）</string>
     <string name="message_history">聊天记录</string>
     <string name="load_more">加载更多</string>
     <string name="no_more_session">没有更多会话了</string>

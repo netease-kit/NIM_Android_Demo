@@ -13,6 +13,7 @@ import com.netease.nim.uikit.business.recent.RecentContactsCallback;
 import com.netease.nim.uikit.business.recent.adapter.RecentContactAdapter;
 import com.netease.nim.uikit.business.session.emoji.MoonUtil;
 import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.framework.infra.Handlers;
 import com.netease.nim.uikit.common.ui.drop.DropFake;
 import com.netease.nim.uikit.common.ui.drop.DropManager;
@@ -22,7 +23,8 @@ import com.netease.nim.uikit.common.ui.recyclerview.holder.BaseViewHolder;
 import com.netease.nim.uikit.common.ui.recyclerview.holder.RecyclerViewHolder;
 import com.netease.nim.uikit.common.util.sys.ScreenUtil;
 import com.netease.nim.uikit.common.util.sys.TimeUtil;
-import com.netease.nim.uikit.impl.cache.StickTopCache;
+import com.netease.nimlib.sdk.NIMClient;
+import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.constant.MsgStatusEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.RecentContact;
@@ -134,7 +136,8 @@ public abstract class RecentViewHolder extends RecyclerViewHolder<BaseQuickAdapt
     private void updateBackground(BaseViewHolder holder, RecentContact recent, int position) {
         topLine.setVisibility(getAdapter().isFirstDataItem(position) ? View.GONE : View.VISIBLE);
         bottomLine.setVisibility(getAdapter().isLastDataItem(position) ? View.VISIBLE : View.GONE);
-        holder.getConvertView().setBackgroundResource(recent == null || StickTopCache.isStickTop(recent) ?
+        holder.getConvertView().setBackgroundResource(recent == null || NIMClient.getService(MsgService.class)
+                .isStickTopSession(recent.getContactId(), recent.getSessionType()) ?
                 R.drawable.nim_recent_contact_sticky_selecter : R.drawable.nim_touch_bg);
     }
 

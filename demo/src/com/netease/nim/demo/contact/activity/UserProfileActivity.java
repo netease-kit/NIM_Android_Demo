@@ -23,6 +23,7 @@ import com.netease.nim.uikit.api.model.SimpleCallback;
 import com.netease.nim.uikit.api.model.contact.ContactChangedObserver;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
+import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nim.uikit.common.activity.ToolBarOptions;
 import com.netease.nim.uikit.common.activity.UI;
@@ -34,7 +35,6 @@ import com.netease.nim.uikit.common.ui.imageview.HeadImageView;
 import com.netease.nim.uikit.common.ui.widget.SwitchButton;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nim.uikit.common.util.sys.NetworkUtil;
-import com.netease.nim.uikit.impl.cache.StickTopCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -323,7 +323,7 @@ public class UserProfileActivity extends UI {
             if (NIMClient.getService(FriendService.class).isMyFriend(account)) {
                 RecentContact recentContact = NIMClient.getService(MsgService.class).queryRecentContact(account,
                                                                                                         SessionTypeEnum.P2P);
-                boolean isSticky = StickTopCache.isStickTop(account, SessionTypeEnum.P2P);
+                boolean isSticky = NIMClient.getService(MsgService.class).isStickTopSession(account, SessionTypeEnum.P2P);
                 if (stickySwitch == null) {
                     stickySwitch = addToggleItemView(KEY_RECENT_STICKY, R.string.recent_sticky, isSticky);
                 } else {
@@ -487,7 +487,6 @@ public class UserProfileActivity extends UI {
                 @Override
                 public void onResult(int code, StickTopSessionInfo result, Throwable exception) {
                     if (ResponseCode.RES_SUCCESS == code) {
-                        StickTopCache.recordStickTop(result, true);
                         msgService.updateRecentAndNotify(recent);
                     }
                 }
@@ -499,7 +498,6 @@ public class UserProfileActivity extends UI {
                 @Override
                 public void onResult(int code, Void result, Throwable exception) {
                     if (ResponseCode.RES_SUCCESS == code && recentContactFromDB != null) {
-                        StickTopCache.recordStickTop(account, SessionTypeEnum.P2P, false);
                         msgService.updateRecentAndNotify(recentContactFromDB);
                     }
                 }

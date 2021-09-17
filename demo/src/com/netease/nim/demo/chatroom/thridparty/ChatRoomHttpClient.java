@@ -51,8 +51,6 @@ public class ChatRoomHttpClient {
     // result
     private static final String RESULT_KEY_RES = "res";
 
-    private static final String RESULT_KEY_ERROR_MSG = "errmsg";
-
     private static final String RESULT_KEY_MSG = "msg";
 
     private static final String RESULT_KEY_TOTAL = "total";
@@ -151,11 +149,6 @@ public class ChatRoomHttpClient {
                                     room.getIntValue(RESULT_KEY_ONLINE_USER_COUNT));
                             roomInfoList.add(roomInfo);
                         }
-                        // reply
-                        callback.onSuccess(roomInfoList);
-                    } else {
-                        String errMsg = res.getString(RESULT_KEY_ERROR_MSG);
-                        callback.onFailed(resCode, errMsg);
                     }
                     // reply
                     callback.onSuccess(roomInfoList);

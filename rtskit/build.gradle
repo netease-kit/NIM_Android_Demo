@@ -31,5 +31,6 @@ dependencies {
     annotationProcessor 'com.github.bumptech.glide:compiler:4.9.0'
     compileOnly 'jp.wasabeef:glide-transformations:3.0.1'
 
-
+    api rootProject.ext.imSdk
+    api rootProject.ext.rtsSdk
 }

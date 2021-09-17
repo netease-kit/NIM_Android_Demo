@@ -25,7 +25,7 @@ public class ChatRoomIndependentActivity extends UI {
         context.startActivity(intent);
     }
 
-    private EditText appKeyET, accountET, pwdET, linkET;
+    private EditText appKeyET, accountET, pwdET;
 
     private String lastAppKey, lastAccount, lastPwd;
 
@@ -41,7 +41,7 @@ public class ChatRoomIndependentActivity extends UI {
         appKeyET = findView(R.id.independent);
         accountET = findView(R.id.account);
         pwdET = findView(R.id.pwd);
-        linkET = findView(R.id.link);
+        appKeyET.setText("a24e6c8a956a128bd50bdffe69b405ff");
     }
 
     private void setViewsListener() {
@@ -54,7 +54,6 @@ public class ChatRoomIndependentActivity extends UI {
             }
             String value = accountET.getText().toString();
             String password = pwdET.getText().toString();
-            String link = linkET.getText().toString();
             if (TextUtils.equals(appKey, lastAppKey) && TextUtils.equals(lastAccount, value) &&
                 TextUtils.equals(lastPwd, password)) {
                 return;
@@ -71,7 +70,6 @@ public class ChatRoomIndependentActivity extends UI {
             args.putString(Extras.ACCOUNT, value);
             password = MD5.getStringMD5(password);
             args.putString(Extras.PWD, password);
-            args.putString(Extras.LINK, link);
             fragment.setArguments(args);
             switchContent(fragment);
         });

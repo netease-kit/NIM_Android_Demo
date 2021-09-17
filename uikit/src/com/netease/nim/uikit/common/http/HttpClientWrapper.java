@@ -31,29 +31,11 @@ public class HttpClientWrapper {
         public int code;
         public Throwable e;
         public T obj;
-        public String gmt;
 
         public HttpResult() {
             this.code = 0;
             e = null;
             obj = null;
-            gmt = "";
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public Throwable getE() {
-            return e;
-        }
-
-        public T getObj() {
-            return obj;
-        }
-
-        public String getGmt() {
-            return gmt;
         }
     }
 
@@ -71,22 +53,16 @@ public class HttpClientWrapper {
     }
 
     public static HttpResult<String> get(final String urlStr, final Map<String, String> headers) {
-        return get(urlStr, headers, null);
-    }
-
-    public static HttpResult<String> get(final String urlStr, final Map<String, String> headers, final Integer timeout) {
         LogUtil.d(TAG, "http get url=" + urlStr);
         HttpResult<String> result = new HttpResult<>();
 
         HttpURLConnection urlConnection = null;
         try {
             // conn
-            urlConnection = buildGet(urlStr, headers, timeout);
+            urlConnection = buildGet(urlStr, headers);
 
             // request
             int resCode = result.code = urlConnection.getResponseCode(); // 开始连接并发送数据
-
-            result.gmt = urlConnection.getHeaderField("Date");
 
             // response
             if (resCode == RES_CODE_SUCCESS) {
@@ -140,12 +116,12 @@ public class HttpClientWrapper {
         return result;
     }
 
-    private static HttpURLConnection buildGet(String urlStr, final Map<String, String> headers, final Integer timeout) throws IOException {
+    private static HttpURLConnection buildGet(String urlStr, final Map<String, String> headers) throws IOException {
         URL url = new URL(urlStr); // URLEncoder.encode(param, "UTF-8")
 
         // conn
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        configUrlConnection(urlConnection, timeout);
+        configUrlConnection(urlConnection);
         urlConnection.setRequestMethod(HTTP_GET);
 
         // headers
@@ -159,7 +135,7 @@ public class HttpClientWrapper {
 
         // conn
         HttpURLConnection urlConnection = (HttpURLConnection) url.openConnection();
-        configUrlConnection(urlConnection, null);
+        configUrlConnection(urlConnection);
         urlConnection.setRequestMethod(HTTP_POST);
         urlConnection.setDoOutput(true);
         urlConnection.setDoInput(true);
@@ -199,14 +175,9 @@ public class HttpClientWrapper {
         return urlConnection;
     }
 
-    private static void configUrlConnection(HttpURLConnection urlConnection, Integer timeout) {
-        if (timeout == null) {
-            urlConnection.setReadTimeout(TIMEOUT);
-            urlConnection.setConnectTimeout(TIMEOUT);
-        } else {
-            urlConnection.setReadTimeout(timeout);
-            urlConnection.setConnectTimeout(timeout);
-        }
+    private static void configUrlConnection(HttpURLConnection urlConnection) {
+        urlConnection.setReadTimeout(TIMEOUT);
+        urlConnection.setConnectTimeout(TIMEOUT);
         urlConnection.setUseCaches(false);
     }
 

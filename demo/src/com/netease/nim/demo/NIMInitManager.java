@@ -11,7 +11,6 @@ import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.NimStrings;
 import com.netease.nimlib.sdk.Observer;
-import com.netease.nimlib.sdk.avchat.model.AVChatAttachment;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.model.BroadcastMessage;
@@ -108,8 +107,6 @@ public class NIMInitManager {
                             return true;
                         }
                     }
-                } else if (message.getAttachment() instanceof AVChatAttachment) {
-                    return false;// 是否过滤音视频消息
                 }
             }
             return false;

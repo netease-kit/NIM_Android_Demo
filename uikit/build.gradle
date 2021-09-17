@@ -58,4 +58,14 @@ dependencies {
 
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     //api 'jp.co.cyberagent.android.gpuimage:gpuimage-library:1.4.1' // if you want to use the Glide GPU Filters
+
+    api rootProject.ext.imSdk
+    api rootProject.ext.avsignallingSdk
+    api rootProject.ext.imPushSdk
+    api rootProject.ext.luceneSdk
+    api rootProject.ext.chatroomSdk
+    api rootProject.ext.rtsSdk
+    api rootProject.ext.superteamSdk
+    api rootProject.ext.ysfSdk
+    api rootProject.ext.ysfkitSdk
 }

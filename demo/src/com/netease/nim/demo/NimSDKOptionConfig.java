@@ -27,9 +27,9 @@ import java.io.IOException;
  * 云信sdk 自定义的SDK选项设置
  */
 
-class NimSDKOptionConfig {
+public class NimSDKOptionConfig {
 
-    static SDKOptions getSDKOptions(Context context) {
+    public static SDKOptions getSDKOptions(Context context) {
         SDKOptions options = new SDKOptions();
         // 如果将新消息通知提醒托管给SDK完成，需要添加以下配置。
         initStatusBarNotificationConfig(options);
@@ -184,10 +184,12 @@ class NimSDKOptionConfig {
         // 第三方推送配置
         MixPushConfig config = new MixPushConfig();
         // 小米推送
+//        config.xmAppId = "2882303761517521532";
+//        config.xmAppKey = "5541752152532";
+//        config.xmCertificateName = "DEMO_MI_PUSH";
         config.xmAppId = "2882303761517502883";
         config.xmAppKey = "5671750254883";
         config.xmCertificateName = "DEMO_MI_PUSH";
-
 
         // 华为推送
         config.hwAppId = "101420927";

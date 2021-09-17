@@ -1,7 +1,8 @@
 package com.netease.nim.uikit.api.wrapper;
 
+import android.util.Log;
+
 import com.netease.nim.uikit.business.session.helper.MessageHelper;
-import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.msg.constant.RevokeType;
 import com.netease.nimlib.sdk.msg.model.RevokeMsgNotification;
@@ -18,9 +19,7 @@ public class NimMessageRevokeObserver implements Observer<RevokeMsgNotification>
         if (notification == null || notification.getMessage() == null) {
             return;
         }
-        NimLog.i(TAG, String.format("notification type=%s, postscript=%s, attach=%s, callbackExt=%s",
-                notification.getNotificationType(), notification.getCustomInfo(), notification.getAttach(),
-                notification.getCallbackExt()));
+        Log.i(TAG, String.format("notification type=%s, postscript=%s", notification.getNotificationType(), notification.getCustomInfo()));
         if (notification.getRevokeType() == RevokeType.P2P_ONE_WAY_DELETE_MSG ||
             notification.getRevokeType() == RevokeType.TEAM_ONE_WAY_DELETE_MSG) {
             return;

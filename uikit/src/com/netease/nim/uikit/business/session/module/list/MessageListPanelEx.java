@@ -7,6 +7,7 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Handler;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.Pair;
 import android.view.View;
 import android.widget.ImageView;
@@ -69,7 +70,6 @@ import com.netease.nimlib.sdk.robot.model.RobotAttachment;
 import com.netease.nimlib.sdk.robot.model.RobotMsgType;
 import com.netease.nimlib.sdk.team.constant.TeamMemberType;
 import com.netease.nimlib.sdk.team.model.TeamMember;
-import com.netease.nimlib.session.MessageReceiptHelper;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -428,9 +428,7 @@ public class MessageListPanelEx {
             }
             IMMessage message = notification.getMessage();
             // 获取通知类型： 1表示是离线，2表示是漫游 ，默认 0
-            NimLog.i(TAG, String.format("notification type=%s, postscript=%s, attach=%s, callbackExt=%s",
-                    notification.getNotificationType(), notification.getCustomInfo(), notification.getAttach(),
-                    notification.getCallbackExt()));
+            Log.i(TAG, String.format("notification type=%s, postscript=%s", notification.getNotificationType(), notification.getCustomInfo()));
 
             if (!container.account.equals(message.getSessionId())) {
                 return;
@@ -523,8 +521,34 @@ public class MessageListPanelEx {
 
     private void onMessageStatusChange(IMMessage message) {
         int index = getItemIndex(message.getUuid());
-        if (index >= 0 && index < items.size()) {
-//            IMMessage item = items.get(index);
+        if (index < 0) {
+            if (message.getDirect() == MsgDirectionEnum.Out) {
+                insertMessageIfInRange(message);
+            }
+        } else if (index >= 0 && index < items.size()) {
+            updateMessageIfInRange(message, index);
+        }
+    }
+
+    private void insertMessageIfInRange(IMMessage message) {
+        boolean insert = items.size() == 0 || message.getTime() > items.get(0).getTime();
+        if (insert) {
+            int index = 0;
+            for (index = 0; index < items.size(); index++) {
+                IMMessage item = items.get(index);
+                if (message.getTime() < item.getTime()) {
+                    break;
+                }
+            }
+            items.add(index, message);
+
+            adapter.updateShowTimeItem(items, false, true);
+            refreshViewHolderByIndex(index);
+        }
+    }
+
+    private void updateMessageIfInRange(IMMessage message, int index) {
+        //            IMMessage item = items.get(index);
 //            item.setStatus(message.getStatus());
 //            item.setAttachStatus(message.getAttachStatus());
 //            // 处理语音、音视频通话
@@ -532,13 +556,12 @@ public class MessageListPanelEx {
 //                item.setAttachment(message.getAttachment()); // 附件可能更新了
 //            }
 //
-            items.set(index, message);
+        items.set(index, message);
 //            // resend的的情况，可能时间已经变化了，这里要重新检查是否要显示时间
-            List<IMMessage> msgList = new ArrayList<>(1);
-            msgList.add(message);
-            adapter.updateShowTimeItem(msgList, false, true);
-            refreshViewHolderByIndex(index);
-        }
+        List<IMMessage> msgList = new ArrayList<>(1);
+        msgList.add(message);
+        adapter.updateShowTimeItem(msgList, false, true);
+        refreshViewHolderByIndex(index);
     }
 
     private void onAttachmentProgressChange(AttachmentProgress progress) {
@@ -1233,24 +1256,12 @@ public class MessageListPanelEx {
     }
 
     private void updateReceipt(final List<IMMessage> messages) {
-        boolean find = false;
-        boolean update = false;
-
         for (int i = messages.size() - 1; i >= 0; i--) {
             if (receiveReceiptCheck(messages.get(i))) {
-                find = true;
-                update = !TextUtils.equals(adapter.getUuid(), messages.get(i).getUuid());
-                if (!update) {
-                    NimLog.e(TAG, String.format("receiveReceiptCheck uuid is the same:%s %s %s", messages.get(i).getUuid(), messages.get(i).getContent(), messages.get(i).getAttachStr()));
-                }
-
                 adapter.setUuid(messages.get(i).getUuid());
                 break;
             }
         }
-
-        long timeTag = MessageReceiptHelper.getReceivedReceiptTime(container.account);
-        NimLog.e(TAG, String.format("updateReceipt find:%s update:%s size:%s timeTag:%s", find, update, messages.size(), timeTag));
     }
 
     private boolean receiveReceiptCheck(final IMMessage msg) {

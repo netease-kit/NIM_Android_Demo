@@ -11,9 +11,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
@@ -43,6 +40,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 /**
  * 聊天室在线人数fragment
@@ -134,11 +134,10 @@ public class OnlinePeopleFragment extends TFragment {
         recyclerView.setAdapter(adapter);
     }
 
-    private boolean updateCache(List<ChatRoomMember> members) {
+    private void updateCache(List<ChatRoomMember> members) {
         if (members == null || members.isEmpty()) {
-            return false;
+            return;
         }
-        boolean hasNewMember = false;
         for (ChatRoomMember member : members) {
             if (member.getMemberType() == MemberType.GUEST) {
                 enterTime = member.getEnterTime();
@@ -147,15 +146,11 @@ public class OnlinePeopleFragment extends TFragment {
             }
             if (memberCache.containsKey(member.getAccount())) {
                 items.remove(memberCache.get(member.getAccount()));
-                items.add(member);
-                continue;
             }
             memberCache.put(member.getAccount(), member);
             items.add(member);
-            hasNewMember = true;
         }
         Collections.sort(items, comp);
-        return hasNewMember;
     }
 
     private void refreshData() {
@@ -193,10 +188,9 @@ public class OnlinePeopleFragment extends TFragment {
                     if (success) {
                         if (result == null || result.isEmpty()) {
                             adapter.loadMoreEnd(true); // 没有更多数据了
-                        } else if (updateCache(result)){
-                            adapter.loadMoreComplete(); // 加载成功
                         } else {
-                            adapter.loadMoreEnd(true); // 没有更多数据了
+                            updateCache(result);
+                            adapter.loadMoreComplete(); // 加载成功
                         }
                     } else {
                         adapter.loadMoreFail(); // 加载失败

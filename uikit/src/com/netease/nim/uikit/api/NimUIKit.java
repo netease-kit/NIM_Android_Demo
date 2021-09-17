@@ -321,8 +321,7 @@ public class NimUIKit {
      * @return 必须登录成功后才有值
      */
     public static String getAccount() {
-        String account = NimUIKitImpl.getAccount();
-        return account == null ? "" : account;
+        return NimUIKitImpl.getAccount();
     }
 
     /**

@@ -7,8 +7,6 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
-import com.netease.nim.avchatkit.activity.AVChatActivity;
-import com.netease.nim.avchatkit.constant.AVChatExtras;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.common.util.sys.SysInfoUtil;
@@ -16,7 +14,6 @@ import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.login.LoginActivity;
 import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.uikit.api.NimUIKit;
-import com.netease.nim.uikit.common.CommonUtil;
 import com.netease.nim.uikit.common.activity.UI;
 import com.netease.nim.uikit.common.util.log.LogUtil;
 import com.netease.nimlib.sdk.NIMClient;
@@ -25,9 +22,7 @@ import com.netease.nimlib.sdk.mixpush.MixPushService;
 import com.netease.nimlib.sdk.msg.MessageBuilder;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
+import com.netease.yunxin.nertc.nertcvideocall.utils.CallParams;
 
 import java.util.ArrayList;
 import java.util.Map;
@@ -56,6 +51,8 @@ public class WelcomeActivity extends UI {
             setIntent(new Intent()); // 从堆栈恢复，不再重复解析之前的intent
         }
 
+        LogUtil.i("G2", "onCreate... firstEnter:" + firstEnter);
+
         if (!firstEnter) {
             onIntent(); // APP进程还在，Activity被重新调度起来
         } else {
@@ -73,11 +70,19 @@ public class WelcomeActivity extends UI {
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
 
-        /*
-         * 如果Activity在，不会走到onCreate，而是onNewIntent，这时候需要setIntent
-         * 场景：点击通知栏跳转到此，会收到Intent
-         */
-        setIntent(intent);
+        LogUtil.i("G2", "onNewIntent...");
+
+        if (getIntent().hasExtra(CallParams.INVENT_NOTIFICATION_FLAG) && getIntent().getBooleanExtra(CallParams.INVENT_NOTIFICATION_FLAG, false)) {
+            // 通过G2推送消息进入WelcomeActivity，如果Intent还没有被消费，onNewIntent时不要setIntent
+            // 某些机型（VIVO X50 Pro）点击通知栏时会调起两次WelcomeActivity，一次通过push流程进入，带push内容；一次直接调起，不带push内容
+        } else {
+            /*
+             * 如果Activity在，不会走到onCreate，而是onNewIntent，这时候需要setIntent
+             * 场景：点击通知栏跳转到此，会收到Intent
+             */
+            setIntent(intent);
+        }
+
         if (!customSplash) {
             onIntent();
         }
@@ -87,11 +92,15 @@ public class WelcomeActivity extends UI {
     protected void onResume() {
         super.onResume();
 
+        LogUtil.i("G2", "onResume... firstEnter:" + firstEnter + " customSplash:" + customSplash);
+
         if (firstEnter) {
             firstEnter = false;
             Runnable runnable = new Runnable() {
                 @Override
                 public void run() {
+                    LogUtil.i("G2", "onResume... isInitComplete:" + NimUIKit.isInitComplete());
+
                     if (!NimUIKit.isInitComplete()) {
                         LogUtil.i(TAG, "wait for uikit cache!");
                         new Handler().postDelayed(this, 100);
@@ -136,6 +145,7 @@ public class WelcomeActivity extends UI {
     // 处理收到的Intent
     private void onIntent() {
         LogUtil.i(TAG, "onIntent...");
+        LogUtil.i("G2", "onIntent...");
 
         if (TextUtils.isEmpty(DemoCache.getAccount())) {
             // 判断当前app是否正在运行
@@ -147,13 +157,11 @@ public class WelcomeActivity extends UI {
             // 已经登录过了，处理过来的请求
             Intent intent = getIntent();
             if (intent != null) {
-                if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT) || intent.hasExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT)) {
+                if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
                     parseNotifyIntent(intent);
                     return;
                 } else if (NIMClient.getService(MixPushService.class).isFCMIntent(intent)) {
                     parseFCMNotifyIntent(NIMClient.getService(MixPushService.class).parseFCMPayload(intent));
-                } else if (intent.hasExtra(AVChatExtras.EXTRA_FROM_NOTIFICATION) || intent.hasExtra(AVChatActivity.INTENT_ACTION_AVCHAT)) {
-                    parseNormalIntent(intent);
                 }
             }
 
@@ -177,34 +185,11 @@ public class WelcomeActivity extends UI {
     }
 
     private void parseNotifyIntent(Intent intent) {
-        IMMessage msg = null;
-        ArrayList<IMMessage> msgListExtra = null;
-        try {
-            if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_CONTENT)) {
-                msgListExtra = (ArrayList<IMMessage>) intent.getSerializableExtra(NimIntent.EXTRA_NOTIFY_CONTENT);
-                msg = (CommonUtil.isEmpty(msgListExtra) || msgListExtra.size() > 1) ? null : msgListExtra.get(0);
-            } else if (intent.hasExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT)) {
-                String sessionInfoExtra = intent.getStringExtra(NimIntent.EXTRA_NOTIFY_SESSION_CONTENT);
-                JSONArray arr = new JSONArray(sessionInfoExtra);
-                if (arr.length() > 0 && arr.length() < 2) {
-                    JSONObject firstObj = arr.optJSONObject(0);
-                    String uuid = firstObj.optString("uuid");
-                    String sessionId = firstObj.optString("sessionId");
-                    SessionTypeEnum sessionType = SessionTypeEnum.typeOfValue(firstObj.optInt("sessionType"));
-                    long time = firstObj.optLong("time");
-                    msg = MessageBuilder.createEmptyMessage(sessionId, sessionType, time);
-//                    List<String> uuidList = new ArrayList<>();
-//                    uuidList.add(uuid);
-//                    List<IMMessage> msgList = NIMClient.getService(MsgService.class).queryMessageListByUuidBlock(uuidList);
-//                    msg = CommonUtil.isEmpty(msgList) ? null : msgList.get(0);
-                }
-            }
-        } catch (Throwable ignore) {
-        }
-        if (msg == null) {
+        ArrayList<IMMessage> messages = (ArrayList<IMMessage>) intent.getSerializableExtra(NimIntent.EXTRA_NOTIFY_CONTENT);
+        if (messages == null || messages.size() > 1) {
             showMainActivity(null);
         } else {
-            showMainActivity(new Intent().putExtra(NimIntent.EXTRA_NOTIFY_CONTENT, msg));
+            showMainActivity(new Intent().putExtra(NimIntent.EXTRA_NOTIFY_CONTENT, messages.get(0)));
         }
     }
 

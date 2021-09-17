@@ -30,9 +30,6 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomStatusChangeData;
 import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomData;
 import com.netease.nimlib.sdk.chatroom.model.EnterChatRoomResultData;
 
-import java.util.Collections;
-import java.util.Random;
-
 /**
  * 聊天室
  * Created by hzxuwen on 2015/12/14.
@@ -46,7 +43,7 @@ public class ChatRoomActivity extends UI {
      */
     private String roomId;
 
-    private String appKey, account, pwd, link;
+    private String appKey, account, pwd;
 
     private int mode = EnterMode.NORMAL;
 
@@ -64,7 +61,7 @@ public class ChatRoomActivity extends UI {
     private AbortableFuture<EnterChatRoomResultData> enterRequest;
 
     public static void start(Context context, String roomId, int mode, String appKey,
-                             String account, String pwd, String link) {
+                             String account, String pwd) {
         Intent intent = new Intent();
         intent.setClass(context, ChatRoomActivity.class);
         intent.putExtra(Extras.ROOM_ID, roomId);
@@ -72,7 +69,6 @@ public class ChatRoomActivity extends UI {
         intent.putExtra(Extras.APP_KEY, appKey);
         intent.putExtra(Extras.ACCOUNT, account);
         intent.putExtra(Extras.PWD, pwd);
-        intent.putExtra(Extras.LINK, link);
         intent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         context.startActivity(intent);
     }
@@ -104,7 +100,6 @@ public class ChatRoomActivity extends UI {
                 return false;
             }
         }
-        link = getIntent().getStringExtra(Extras.LINK);
         return true;
     }
 
@@ -143,14 +138,11 @@ public class ChatRoomActivity extends UI {
         if (mode == EnterMode.INDEPENDENT) {
             data.setAppKey(appKey);
             data.setIndependentMode((roomId, account) -> {
-                if (TextUtils.isEmpty(link)) {
-                    ChatRoomHttpClient client = ChatRoomHttpClient.getInstance();
-                    return client.fetchChatRoomAddress(roomId, appKey, account);
-                }
-                return Collections.singletonList(link);
+                ChatRoomHttpClient client = ChatRoomHttpClient.getInstance();
+                return client.fetchChatRoomAddress(roomId, appKey, account);
             }, account, pwd);
             if (TextUtils.isEmpty(account)) {
-                data.setNick(String.format("soduku%s", new Random().nextInt(100)));
+                data.setNick("soduku");
                 data.setAvatar(
                         "https://nim.nosdn.127.net/MTAxMTAxMA==/bmltYV8yNDM0MzQ4OV8xNTMyMDUzNzM3ODkzXzJlNGQ3ZjA5LWI2MjgtNDNiNy1hZTIwLTBhYTgzMjZhYzBjZQ==?thumbnail=540x540&imageView&tostatic=0");
             }
@@ -230,7 +222,8 @@ public class ChatRoomActivity extends UI {
                 }
                 // 登录成功后，断网重连交给云信SDK，如果重连失败，可以查询具体失败的原因
                 if (hasEnterSuccess) {
-                    int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(roomId);
+                    int code = NIMClient.getService(ChatRoomService.class).getEnterErrorCode(
+                            roomId);
                     ToastHelper.showToast(ChatRoomActivity.this, "getEnterErrorCode=" + code);
                     LogUtil.d(TAG, "chat room enter error code:" + code);
                 }
@@ -252,12 +245,13 @@ public class ChatRoomActivity extends UI {
     };
 
     private void initChatRoomFragment() {
-        fragment = (ChatRoomFragment) getSupportFragmentManager().findFragmentById(R.id.chat_rooms_fragment);
+        fragment = (ChatRoomFragment) getSupportFragmentManager().findFragmentById(
+                R.id.chat_rooms_fragment);
         if (fragment != null) {
             fragment.updateView();
         } else {
             // 如果Fragment还未Create完成，延迟初始化
-            getHandler().postDelayed(this::initChatRoomFragment, 50);
+            getHandler().postDelayed(() -> initChatRoomFragment(), 50);
         }
     }
 
@@ -268,7 +262,7 @@ public class ChatRoomActivity extends UI {
             messageFragment.init(roomId);
         } else {
             // 如果Fragment还未Create完成，延迟初始化
-            getHandler().postDelayed(this::initMessageFragment, 50);
+            getHandler().postDelayed(() -> initMessageFragment(), 50);
         }
     }
 

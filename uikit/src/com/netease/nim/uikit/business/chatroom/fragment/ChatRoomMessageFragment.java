@@ -20,7 +20,6 @@ import com.netease.nim.uikit.business.session.actions.BaseAction;
 import com.netease.nim.uikit.business.session.module.Container;
 import com.netease.nim.uikit.business.session.module.ModuleProxy;
 import com.netease.nim.uikit.common.fragment.TFragment;
-import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
 import com.netease.nim.uikit.impl.NimUIKitImpl;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
@@ -29,7 +28,6 @@ import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.chatroom.ChatRoomMessageBuilder;
 import com.netease.nimlib.sdk.chatroom.ChatRoomService;
 import com.netease.nimlib.sdk.chatroom.ChatRoomServiceObserver;
-import com.netease.nimlib.sdk.chatroom.model.CdnRequestData;
 import com.netease.nimlib.sdk.chatroom.model.ChatRoomMessage;
 import com.netease.nimlib.sdk.msg.constant.MsgTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
@@ -160,7 +158,6 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
 
     private void registerObservers(boolean register) {
         NIMClient.getService(ChatRoomServiceObserver.class).observeReceiveMessage(incomingChatRoomMsg, register);
-        NIMClient.getService(ChatRoomServiceObserver.class).observeCdnRequestData(cdnReqData, register);
     }
 
     Observer<List<ChatRoomMessage>> incomingChatRoomMsg = new Observer<List<ChatRoomMessage>>() {
@@ -173,18 +170,6 @@ public class ChatRoomMessageFragment extends TFragment implements ModuleProxy {
             messageListPanel.onIncomingMessage(messages);
         }
     };
-
-    Observer<CdnRequestData> cdnReqData = new Observer<CdnRequestData>() {
-        @Override
-        public void onEvent(CdnRequestData data) {
-            if (data == null) {
-                return;
-            }
-            NimLog.i("@CJL/cdn req data", String.format("reaDate=%s, failFinal=%s", data.getUrlReqData(), data.getFailFinal()));
-        }
-    };
-
-
 
     /************************** Module proxy ***************************/
 

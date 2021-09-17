@@ -6,9 +6,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
-
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.chatroom.activity.ChatRoomActivity;
 import com.netease.nim.demo.chatroom.activity.ChatRoomIndependentActivity;
@@ -27,6 +24,9 @@ import com.netease.nimlib.sdk.chatroom.model.ChatRoomInfo;
 
 import java.util.List;
 
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 /**
  * 直播间列表fragment
  * <p>
@@ -44,7 +44,7 @@ public class ChatRoomListFragment extends TFragment {
 
     private int mode = EnterMode.NORMAL;
 
-    private String appKey, account, pwd, link;
+    private String appKey, account, pwd;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -69,7 +69,6 @@ public class ChatRoomListFragment extends TFragment {
         appKey = arguments.getString(Extras.APP_KEY);
         account = arguments.getString(Extras.ACCOUNT);
         pwd = arguments.getString(Extras.PWD);
-        link = arguments.getString(Extras.LINK);
     }
 
     private void setViewsListener() {
@@ -120,7 +119,7 @@ public class ChatRoomListFragment extends TFragment {
             @Override
             public void onItemClick(ChatRoomListAdapter adapter, View view, int position) {
                 ChatRoomInfo room = adapter.getItem(position);
-                ChatRoomActivity.start(getActivity(), room.getRoomId(), mode, appKey, account, pwd, link);
+                ChatRoomActivity.start(getActivity(), room.getRoomId(), mode, appKey, account, pwd);
             }
         });
     }
@@ -141,7 +140,7 @@ public class ChatRoomListFragment extends TFragment {
                                          if (getActivity() != null) {
                                              ToastHelper.showToast(getActivity(),
                                                                    "fetch chat room list failed, code=" +
-                                                                   code + ", errorMsg=" + errorMsg);
+                                                                   code);
                                          }
                                      }
                                  });

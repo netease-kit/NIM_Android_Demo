@@ -11,19 +11,13 @@ import androidx.multidex.MultiDex;
 
 import com.heytap.msp.push.HeytapPushManager;
 import com.huawei.hms.support.common.ActivityMgr;
-import com.netease.nim.avchatkit.AVChatKit;
-import com.netease.nim.avchatkit.config.AVChatOptions;
-import com.netease.nim.avchatkit.model.ITeamDataProvider;
-import com.netease.nim.avchatkit.model.IUserInfoProvider;
 import com.netease.nim.demo.chatroom.ChatRoomSessionHelper;
-import com.netease.nim.demo.common.util.LogHelper;
 import com.netease.nim.demo.common.util.crash.AppCrashHandler;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
 import com.netease.nim.demo.contact.ContactHelper;
 import com.netease.nim.demo.event.DemoOnlineStateContentProvider;
 import com.netease.nim.demo.main.activity.MainActivity;
-import com.netease.nim.demo.main.activity.WelcomeActivity;
 import com.netease.nim.demo.mixpush.DemoMixPushMessageHandler;
 import com.netease.nim.demo.mixpush.DemoPushContentProvider;
 import com.netease.nim.demo.redpacket.NIMRedPacketClient;
@@ -37,14 +31,11 @@ import com.netease.nim.rtskit.api.config.RTSOptions;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.UIKitOptions;
 import com.netease.nim.uikit.business.contact.core.query.PinYin;
-import com.netease.nim.uikit.business.team.helper.TeamHelper;
-import com.netease.nim.uikit.business.uinfo.UserInfoHelper;
 import com.netease.nim.uikit.common.ToastHelper;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.SDKOptions;
 import com.netease.nimlib.sdk.auth.LoginInfo;
 import com.netease.nimlib.sdk.mixpush.NIMPushClient;
-import com.netease.nimlib.sdk.uinfo.model.UserInfo;
 import com.netease.nimlib.sdk.util.NIMUtil;
 import com.qiyukf.unicorn.ysfkit.unicorn.api.OnBotEventListener;
 import com.qiyukf.unicorn.ysfkit.unicorn.api.QuickEntry;
@@ -109,11 +100,8 @@ public class NimApplication extends Application {
 //            NIMClient.toggleRevokeMessageNotification(false);
             // 云信sdk相关业务初始化
             NIMInitManager.getInstance().init(true);
-            // 初始化音视频模块
-            initAVChatKit();
             // 初始化rts模块
             initRTSKit();
-
         }
         //初始化融合 SDK 中的七鱼业务关业务
         initMixSdk();
@@ -163,7 +151,7 @@ public class NimApplication extends Application {
         return options;
     }
 
-    private LoginInfo getLoginInfo() {
+    public static LoginInfo getLoginInfo() {
         String account = Preferences.getUserAccount();
         String token = Preferences.getUserToken();
 
@@ -202,46 +190,6 @@ public class NimApplication extends Application {
         // 设置app图片/音频/日志等缓存目录
         options.appCacheDir = NimSDKOptionConfig.getAppCacheDir(this) + "/app";
         return options;
-    }
-
-    private void initAVChatKit() {
-        AVChatOptions avChatOptions = new AVChatOptions() {
-            @Override
-            public void logout(Context context) {
-                MainActivity.logout(context, true);
-            }
-        };
-        avChatOptions.entranceActivity = WelcomeActivity.class;
-        avChatOptions.notificationIconRes = R.drawable.ic_stat_notify_msg;
-        com.netease.nim.avchatkit.ActivityMgr.INST.init(this);
-        AVChatKit.init(avChatOptions);
-
-        // 初始化日志系统
-        LogHelper.init();
-        // 设置用户相关资料提供者
-        AVChatKit.setUserInfoProvider(new IUserInfoProvider() {
-            @Override
-            public UserInfo getUserInfo(String account) {
-                return NimUIKit.getUserInfoProvider().getUserInfo(account);
-            }
-
-            @Override
-            public String getUserDisplayName(String account) {
-                return UserInfoHelper.getUserDisplayName(account);
-            }
-        });
-        // 设置群组数据提供者
-        AVChatKit.setTeamDataProvider(new ITeamDataProvider() {
-            @Override
-            public String getDisplayNameWithoutMe(String teamId, String account) {
-                return TeamHelper.getDisplayNameWithoutMe(teamId, account);
-            }
-
-            @Override
-            public String getTeamMemberDisplayName(String teamId, String account) {
-                return TeamHelper.getTeamMemberDisplayName(teamId, account);
-            }
-        });
     }
 
     private void initRTSKit() {

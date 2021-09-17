@@ -4,9 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.text.TextUtils;
 
-import androidx.annotation.NonNull;
-
-import com.netease.nim.uikit.common.util.collection.CollectionUtil;
 import com.netease.nimlib.push.net.lbs.IPVersion;
 import com.netease.nimlib.push.packet.asymmetric.AsymmetricType;
 import com.netease.nimlib.push.packet.symmetry.SymmetryType;
@@ -15,6 +12,8 @@ import com.netease.nimlib.sdk.ServerAddresses;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import androidx.annotation.NonNull;
 
 /**
  * 网易云信私有化配置项
@@ -50,10 +49,6 @@ public class DemoPrivatizationConfig {
     private static final String KEY_NOS_ACCELERATE = "nos_accelerate";
 
     private static final String KEY_NOS_ACCELERATE_HOST = "nos_accelerate_host";
-
-    private static final String KEY_NOS_ACCELERATE_HOST_LIST  = "nos_accelerate_host_list";
-
-    private static final String KEY_NOS_CDN_ENABLE = "nos_cdn_enable";
 
     /// SERVER
     private static final String KEY_NT_SERVER = "nt_server";
@@ -197,8 +192,6 @@ public class DemoPrivatizationConfig {
         addresses.nosSupportHttps = jsonObject.optBoolean(KEY_HTTPS_ENABLED, false);
         addresses.nosDownloadUrlFormat = jsonObject.optString(KEY_NOS_DOWNLOADER);
         addresses.nosDownload = jsonObject.optString(KEY_NOS_ACCELERATE_HOST);
-        addresses.nosDownloadSet = CollectionUtil.createStringSetFromJSONArray(jsonObject.optJSONArray(KEY_NOS_ACCELERATE_HOST_LIST));
-        addresses.nosCdnEnable = jsonObject.optBoolean(KEY_NOS_CDN_ENABLE);
         addresses.nosAccess = jsonObject.optString(KEY_NOS_ACCELERATE);
         addresses.ntServerAddress = jsonObject.optString(KEY_NT_SERVER);
         addresses.dedicatedClusteFlag = jsonObject.optInt(KEY_DEDICATED_CLUSTE_FLAG);

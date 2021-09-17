@@ -14,17 +14,21 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnKeyListener;
+import android.widget.EditText;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
 
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.DemoPrivatizationConfig;
 import com.netease.nim.demo.R;
-import com.netease.nim.demo.chatroom.activity.ChatRoomIndependentActivity;
 import com.netease.nim.demo.config.preference.Preferences;
 import com.netease.nim.demo.config.preference.UserPreferences;
-import com.netease.nim.demo.contact.ContactHttpClient;
 import com.netease.nim.demo.main.activity.MainActivity;
 import com.netease.nim.demo.main.activity.PrivatizationConfigActivity;
+import com.netease.nim.demo.network.DemoAuthService;
+import com.netease.nim.demo.network.NetResponse;
+import com.netease.nim.demo.network.UserData;
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.wrapper.NimToolBarOptions;
 import com.netease.nim.uikit.common.ToastHelper;
@@ -62,36 +66,64 @@ public class LoginActivity extends UI implements OnKeyListener {
 
     private static final String KICK_OUT = "KICK_OUT";
     private static final String KICK_OUT_DESC = "KICK_OUT_DESC";
+    /**
+     * 验证码登录
+     */
+    private static final int TYPE_LOGIN_SMS_CODE = 1;
+    /**
+     * 账号密码登录
+     */
+    private static final int TYPE_LOGIN_ACCOUNT_ID = 2;
+    /**
+     * 注册新账号
+     */
+    private static final int TYPE_REGISTER = 3;
 
     private final int BASIC_PERMISSION_REQUEST_CODE = 110;
 
     private TextView rightTopBtn;  // ActionBar完成按钮
 
-    private TextView leftTopBtn;
+    private TextView loginTypeSwitchBtn; // 登录方式验证码/账号密码登录切换按钮
 
-    private TextView switchModeBtn;  // 注册/登录切换按钮
+    private ClearableEditTextWithIcon loginPhoneEdit;
+    private ClearableEditTextWithIcon loginSmsCodeEdit;
+    private TextView loginSmsCodeTv;
 
     private ClearableEditTextWithIcon loginAccountEdit;
-
     private ClearableEditTextWithIcon loginPasswordEdit;
 
-    private ClearableEditTextWithIcon loginSubtypeEdit;
-
-    private ClearableEditTextWithIcon registerAccountEdit;
-
+    private ClearableEditTextWithIcon registerPhoneEdit;
     private ClearableEditTextWithIcon registerNickNameEdit;
+    private ClearableEditTextWithIcon registerSmsCodeEdit;
+    private TextView registerSmsCodeTv;
 
-    private ClearableEditTextWithIcon registerPasswordEdit;
-
-    private View loginLayout;
-
+    private View loginSmsCodeLayout;
+    private View loginAccountLayout;
     private View registerLayout;
+    private View registerBtn;
 
     private AbortableFuture<LoginInfo> loginRequest;
 
-    private boolean registerMode = false; // 注册模式
-
-    private boolean registerPanelInited = false; // 注册面板是否初始化
+    private int currentType = TYPE_LOGIN_SMS_CODE;
+    private final LoginCountDownTimer timer = new LoginCountDownTimer(60000, 1000,
+            new LoginCountDownTimer.TickListener() {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    registerSmsCodeTv.setEnabled(false);
+                    loginSmsCodeTv.setEnabled(false);
+                    String tip = getString(R.string.refetch_sms_code_later, String.valueOf(millisUntilFinished / 1000));
+                    loginSmsCodeTv.setText(tip);
+                    registerSmsCodeTv.setText(tip);
+                }
+            }, new Runnable() {
+        @Override
+        public void run() {
+            registerSmsCodeTv.setText(R.string.fetch_sms_code);
+            registerSmsCodeTv.setEnabled(true);
+            loginSmsCodeTv.setText(R.string.fetch_sms_code);
+            loginSmsCodeTv.setEnabled(true);
+        }
+    });
 
     public static void start(Context context) {
         start(context, false, "");
@@ -129,6 +161,7 @@ public class LoginActivity extends UI implements OnKeyListener {
         initLeftTopBtn();
         setupLoginPanel();
         setupRegisterPanel();
+        switchMode(TYPE_LOGIN_SMS_CODE);
     }
 
     /**
@@ -139,12 +172,12 @@ public class LoginActivity extends UI implements OnKeyListener {
 
     private void requestBasicPermission() {
         MPermission.with(LoginActivity.this).setRequestCode(BASIC_PERMISSION_REQUEST_CODE)
-                   .permissions(BASIC_PERMISSIONS).request();
+                .permissions(BASIC_PERMISSIONS).request();
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, String[] permissions,
-                                           int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         MPermission.onRequestPermissionsResult(this, requestCode, permissions, grantResults);
     }
 
@@ -191,73 +224,149 @@ public class LoginActivity extends UI implements OnKeyListener {
                 break;
         }
         EasyAlertDialogHelper.showOneButtonDiolag(LoginActivity.this,
-                                                  getString(R.string.kickout_notify),
-                                                  String.format(getString(R.string.kickout_content),
-                                                                client + customType), getString(R.string.ok),
-                                                  true, null);
-
+                getString(R.string.kickout_notify),
+                String.format(getString(R.string.kickout_content),
+                        client + customType), getString(R.string.ok),
+                true, null);
     }
 
     /**
      * ActionBar 右上角按钮
      */
     private void initLeftTopBtn() {
-        leftTopBtn = addRegisterLeftTopBtn(this, R.string.login_privatization_config_str);
-        leftTopBtn.setOnClickListener(v -> {
-            startActivity(new Intent(this, PrivatizationConfigActivity.class));
-        });
+        TextView leftTopBtn = addRegisterLeftTopBtn(this, R.string.login_privatization_config_str);
+        leftTopBtn.setOnClickListener(v -> startActivity(new Intent(this, PrivatizationConfigActivity.class)));
     }
 
     /**
      * ActionBar 右上角按钮
      */
     private void initRightTopBtn() {
-        rightTopBtn = addRegisterRightTopBtn(this, R.string.login);
+        rightTopBtn = addRegisterRightTopBtn(this, R.string.done);
         rightTopBtn.setOnClickListener(v -> {
-            if (registerMode) {
-                register();
-            } else {
-                //fakeLoginTest(); // 假登录代码示例
-                login();
+            if (currentType == TYPE_LOGIN_ACCOUNT_ID) {
+                String account = getText(loginAccountEdit);
+                String password = getText(loginPasswordEdit);
+                doIMLogin(account, tokenFromPassword(password));
+                return;
+            }
+            String phone = "";
+            String smsCode = "";
+
+            if (currentType == TYPE_REGISTER) {
+                phone = getText(registerPhoneEdit);
+                smsCode = getText(registerSmsCodeEdit);
+            } else if (currentType == TYPE_LOGIN_SMS_CODE) {
+                phone = getText(loginPhoneEdit);
+                smsCode = getText(loginSmsCodeEdit);
+            }
+            if (TextUtils.isEmpty(phone) || TextUtils.isEmpty(smsCode)) {
+                ToastHelper.showToast(LoginActivity.this, "请填入正确信息");
+                return;
+            }
+            if (phone.length() != 11) {
+                ToastHelper.showToast(LoginActivity.this, "手机号格式不正确");
+                return;
             }
 
-        });
+            if (!NetworkUtil.isNetAvailable(LoginActivity.this)) {
+                ToastHelper.showToast(LoginActivity.this, R.string.network_is_not_available);
+                return;
+            }
 
-        findViewById(R.id.btn_independent).setOnClickListener(v -> ChatRoomIndependentActivity.start(LoginActivity.this));
+            if (currentType == TYPE_REGISTER) {
+                String nickName = getText(registerNickNameEdit);
+                if (TextUtils.isEmpty(nickName)) {
+                    ToastHelper.showToast(LoginActivity.this, "请填入用户昵称");
+                    return;
+                }
+                DemoAuthService.registerBySmsCode(phone, smsCode, nickName, this::handleUserResponse);
+            } else if (currentType == TYPE_LOGIN_SMS_CODE) {
+                DemoAuthService.loginBySmsCode(phone, smsCode, this::handleUserResponse);
+            }
+        });
+    }
+
+    private void handleUserResponse(NetResponse<UserData> response) {
+        UserData data = response.getData();
+        if (response.isSuccessful() && data != null) {
+            doIMLogin(data.getAccId(), data.getToken());
+        } else {
+            ToastHelper.showToast(LoginActivity.this, response.getMsg());
+        }
     }
 
     /**
      * 登录面板
      */
     private void setupLoginPanel() {
+        loginAccountLayout = findView(R.id.login_account_layout);
         loginAccountEdit = findView(R.id.edit_login_account);
         loginPasswordEdit = findView(R.id.edit_login_password);
-        loginSubtypeEdit = findViewById(R.id.edit_login_subtype);
         loginAccountEdit.setIconResource(R.drawable.user_account_icon);
         loginPasswordEdit.setIconResource(R.drawable.user_pwd_lock_icon);
         loginAccountEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32)});
         loginPasswordEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32)});
-        loginSubtypeEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(32)});
         loginAccountEdit.addTextChangedListener(textWatcher);
         loginPasswordEdit.addTextChangedListener(textWatcher);
         loginPasswordEdit.setOnKeyListener(this);
-        String account = Preferences.getUserAccount();
-        loginAccountEdit.setText(account);
+
+        loginSmsCodeLayout = findView(R.id.login_sms_code_layout);
+        loginPhoneEdit = findView(R.id.edit_login_phone);
+        loginSmsCodeEdit = findView(R.id.edit_login_sms_code);
+        loginSmsCodeTv = findView(R.id.fetch_login_sms_code);
+        loginPhoneEdit.setIconResource(R.drawable.user_phone_icon);
+        loginSmsCodeEdit.setIconResource(R.drawable.user_pwd_lock_icon);
+        loginPhoneEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(11)});
+        loginSmsCodeEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+        loginPhoneEdit.addTextChangedListener(textWatcher);
+        loginSmsCodeEdit.addTextChangedListener(textWatcher);
+        loginSmsCodeEdit.setOnKeyListener(this);
+        loginSmsCodeTv.setOnClickListener(v -> doFetchSmsCode(loginPhoneEdit, v));
+
+        loginTypeSwitchBtn = findView(R.id.login_type_switch);
+        loginTypeSwitchBtn.setOnClickListener(v -> {
+            if (currentType == TYPE_LOGIN_SMS_CODE) {
+                switchMode(TYPE_LOGIN_ACCOUNT_ID);
+            } else {
+                switchMode(TYPE_LOGIN_SMS_CODE);
+            }
+        });
     }
 
     /**
      * 注册面板
      */
     private void setupRegisterPanel() {
-        loginLayout = findView(R.id.login_layout);
         registerLayout = findView(R.id.register_layout);
-        switchModeBtn = findView(R.id.register_login_tip);
-        switchModeBtn.setVisibility(
+
+        registerPhoneEdit = findView(R.id.edit_register_phone);
+        registerNickNameEdit = findView(R.id.edit_register_nickname);
+        registerSmsCodeEdit = findView(R.id.edit_register_sms_code);
+        registerSmsCodeTv = findView(R.id.fetch_register_sms_code);
+
+        registerPhoneEdit.setIconResource(R.drawable.user_phone_icon);
+        registerNickNameEdit.setIconResource(R.drawable.nick_name_icon);
+        registerSmsCodeEdit.setIconResource(R.drawable.user_pwd_lock_icon);
+
+        registerPhoneEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(11)});
+        registerNickNameEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+        registerSmsCodeEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+
+        registerPhoneEdit.addTextChangedListener(textWatcher);
+        registerNickNameEdit.addTextChangedListener(textWatcher);
+        registerSmsCodeEdit.addTextChangedListener(textWatcher);
+
+        registerSmsCodeTv.setOnClickListener(v -> doFetchSmsCode(registerPhoneEdit, v));
+
+        // 注册按钮
+        registerBtn = findView(R.id.register_login_tip);
+        registerBtn.setVisibility(
                 DemoPrivatizationConfig.isPrivateDisable(this) ? View.VISIBLE : View.GONE);
-        switchModeBtn.setOnClickListener(v -> switchMode());
+        registerBtn.setOnClickListener(v -> switchMode(TYPE_REGISTER));
     }
 
-    private TextWatcher textWatcher = new TextWatcher() {
+    private final TextWatcher textWatcher = new TextWatcher() {
 
         @Override
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {
@@ -269,86 +378,70 @@ public class LoginActivity extends UI implements OnKeyListener {
 
         @Override
         public void afterTextChanged(Editable s) {
-            if (registerMode) {
-                return;
+            boolean isEnable = false;
+
+            if (currentType == TYPE_REGISTER) {
+                isEnable = isNotEmptyText(registerPhoneEdit)
+                        && isNotEmptyText(registerSmsCodeEdit);
+            } else if (currentType == TYPE_LOGIN_SMS_CODE) {
+                isEnable = isNotEmptyText(loginSmsCodeEdit)
+                        && isNotEmptyText(loginPhoneEdit);
+            } else if (currentType == TYPE_LOGIN_ACCOUNT_ID) {
+                isEnable = isNotEmptyText(loginAccountEdit)
+                        && isNotEmptyText(loginPasswordEdit);
             }
-            // 登录模式  ，更新右上角按钮状态
-            boolean isEnable = loginAccountEdit.getText().length() > 0 &&
-                               loginPasswordEdit.getText().length() > 0;
-            updateRightTopBtn(rightTopBtn, isEnable);
+
+            enableView(rightTopBtn, isEnable);
         }
     };
-
-    private void updateRightTopBtn(TextView rightTopBtn, boolean isEnable) {
-        rightTopBtn.setText(R.string.done);
-        rightTopBtn.setBackgroundResource(R.drawable.g_white_btn_selector);
-        rightTopBtn.setEnabled(isEnable);
-        rightTopBtn.setTextColor(getResources().getColor(R.color.color_blue_0888ff));
-        rightTopBtn.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
-    }
 
     /**
      * ***************************************** 登录 **************************************
      */
-    private void login() {
+    private void doIMLogin(String account, String token) {
         DialogMaker.showProgressDialog(this, null, getString(R.string.logining), true, dialog -> {
             if (loginRequest != null) {
                 loginRequest.abort();
                 onLoginDone();
             }
         }).setCanceledOnTouchOutside(false);
-        // 云信只提供消息通道，并不包含用户资料逻辑。开发者需要在管理后台或通过服务器接口将用户帐号和token同步到云信服务器。
-        // 在这里直接使用同步到云信服务器的帐号和token登录。
-        // 这里为了简便起见，demo就直接使用了密码的md5作为token。
-        // 如果开发者直接使用这个demo，只更改appkey，然后就登入自己的账户体系的话，需要传入同步到云信服务器的token，而不是用户密码。
-        final String account = loginAccountEdit.getEditableText().toString().toLowerCase();
-        final String token = tokenFromPassword(loginPasswordEdit.getEditableText().toString());
-        int subtype = 0;
-        try {
-            Editable editable = loginSubtypeEdit.getEditableText();
-            if (editable != null && editable.length() > 0) {
-                subtype = Integer.parseInt(editable.toString());
-            }
-        } catch (Throwable e) {
-            e.printStackTrace();
-        }
 
         // 登录
-        loginRequest = NimUIKit.login(new LoginInfo(account, token, null, subtype),
-                                      new RequestCallback<LoginInfo>() {
+        loginRequest = NimUIKit.login(new LoginInfo(account, token),
+                new RequestCallback<LoginInfo>() {
 
-                                          @Override
-                                          public void onSuccess(LoginInfo param) {
-                                              LogUtil.i(TAG, "login success");
-                                              onLoginDone();
-                                              DemoCache.setAccount(account);
-                                              saveLoginInfo(account, token);
-                                              // 初始化消息提醒配置
-                                              initNotificationConfig();
-                                              // 进入主界面
-                                              MainActivity.start(LoginActivity.this, null);
-                                              finish();
-                                          }
+                    @Override
+                    public void onSuccess(LoginInfo param) {
+                        LogUtil.i(TAG, "login success");
+                        onLoginDone();
+                        DemoCache.setAccount(account);
+                        saveLoginInfo(account, token);
+                        // 初始化消息提醒配置
+                        initNotificationConfig();
+                        // 进入主界面
+                        MainActivity.start(LoginActivity.this, null);
+                        finish();
+                    }
 
-                                          @Override
-                                          public void onFailed(int code) {
-                                              onLoginDone();
-                                              if (code == 302 || code == 404) {
-                                                  ToastHelper.showToast(LoginActivity.this,
-                                                                        R.string.login_failed);
-                                              } else {
-                                                  ToastHelper.showToast(LoginActivity.this,
-                                                                        "登录失败: " + code);
-                                              }
-                                          }
+                    @Override
+                    public void onFailed(int code) {
+                        onLoginDone();
+                        if (code == 302 || code == 404) {
+                            ToastHelper.showToast(LoginActivity.this,
+                                    R.string.login_failed);
+                        } else {
+                            ToastHelper.showToast(LoginActivity.this,
+                                    "登录失败: " + code);
+                        }
+                    }
 
-                                          @Override
-                                          public void onException(Throwable exception) {
-                                              ToastHelper.showToast(LoginActivity.this,
-                                                                    R.string.login_exception);
-                                              onLoginDone();
-                                          }
-                                      });
+                    @Override
+                    public void onException(Throwable exception) {
+                        ToastHelper.showToast(LoginActivity.this,
+                                R.string.login_exception);
+                        onLoginDone();
+                    }
+                });
     }
 
     private void initNotificationConfig() {
@@ -398,109 +491,46 @@ public class LoginActivity extends UI implements OnKeyListener {
     }
 
     /**
-     * ***************************************** 注册 **************************************
-     */
-    private void register() {
-        if (!registerMode || !registerPanelInited) {
-            return;
-        }
-        if (!checkRegisterContentValid()) {
-            return;
-        }
-        if (!NetworkUtil.isNetAvailable(LoginActivity.this)) {
-            ToastHelper.showToast(LoginActivity.this, R.string.network_is_not_available);
-            return;
-        }
-        DialogMaker.showProgressDialog(this, getString(R.string.registering), false);
-        // 注册流程
-        final String account = registerAccountEdit.getText().toString();
-        final String nickName = registerNickNameEdit.getText().toString();
-        final String password = registerPasswordEdit.getText().toString();
-        ContactHttpClient.getInstance().register(account, nickName, password,
-                                                 new ContactHttpClient.ContactHttpCallback<Void>() {
-
-                                                     @Override
-                                                     public void onSuccess(Void aVoid) {
-                                                         ToastHelper.showToast(LoginActivity.this,
-                                                                               R.string.register_success);
-                                                         switchMode();  // 切换回登录
-                                                         loginAccountEdit.setText(account);
-                                                         loginPasswordEdit.setText(password);
-                                                         registerAccountEdit.setText("");
-                                                         registerNickNameEdit.setText("");
-                                                         registerPasswordEdit.setText("");
-                                                         DialogMaker.dismissProgressDialog();
-                                                     }
-
-                                                     @Override
-                                                     public void onFailed(int code,
-                                                                          String errorMsg) {
-                                                         ToastHelper.showToast(LoginActivity.this,
-                                                                               getString(
-                                                                                       R.string.register_failed,
-                                                                                       String.valueOf(
-                                                                                               code),
-                                                                                       errorMsg));
-                                                         DialogMaker.dismissProgressDialog();
-                                                     }
-                                                 });
-    }
-
-    private boolean checkRegisterContentValid() {
-        if (!registerMode || !registerPanelInited) {
-            return false;
-        }
-        // 帐号检查
-        String account = registerAccountEdit.getText().toString().trim();
-        if (account.length() <= 0 || account.length() > 20) {
-            ToastHelper.showToast(this, R.string.register_account_tip);
-            return false;
-        }
-        // 昵称检查
-        String nick = registerNickNameEdit.getText().toString().trim();
-        if (nick.length() <= 0 || nick.length() > 10) {
-            ToastHelper.showToast(this, R.string.register_nick_name_tip);
-            return false;
-        }
-        // 密码检查
-        String password = registerPasswordEdit.getText().toString().trim();
-        if (password.length() < 6 || password.length() > 20) {
-            ToastHelper.showToast(this, R.string.register_password_tip);
-            return false;
-        }
-        return true;
-    }
-
-    /**
      * ***************************************** 注册/登录切换 **************************************
      */
-    private void switchMode() {
-        registerMode = !registerMode;
-        if (registerMode && !registerPanelInited) {
-            registerAccountEdit = findView(R.id.edit_register_account);
-            registerNickNameEdit = findView(R.id.edit_register_nickname);
-            registerPasswordEdit = findView(R.id.edit_register_password);
-            registerAccountEdit.setIconResource(R.drawable.user_account_icon);
-            registerNickNameEdit.setIconResource(R.drawable.nick_name_icon);
-            registerPasswordEdit.setIconResource(R.drawable.user_pwd_lock_icon);
-            registerAccountEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
-            registerNickNameEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-            registerPasswordEdit.setFilters(new InputFilter[]{new InputFilter.LengthFilter(20)});
-            registerAccountEdit.addTextChangedListener(textWatcher);
-            registerNickNameEdit.addTextChangedListener(textWatcher);
-            registerPasswordEdit.addTextChangedListener(textWatcher);
-            registerPanelInited = true;
+    private void switchMode(int type) {
+        if (currentType == type) {
+            return;
         }
-        setTitle(registerMode ? R.string.register : R.string.login);
-        loginLayout.setVisibility(registerMode ? View.GONE : View.VISIBLE);
-        registerLayout.setVisibility(registerMode ? View.VISIBLE : View.GONE);
-        switchModeBtn.setText(registerMode ? R.string.login_has_account : R.string.register);
-        if (registerMode) {
-            rightTopBtn.setEnabled(true);
-        } else {
-            boolean isEnable = loginAccountEdit.getText().length() > 0 &&
-                               loginPasswordEdit.getText().length() > 0;
+        currentType = type;
+
+        if (type == TYPE_LOGIN_SMS_CODE) {
+            loginAccountLayout.setVisibility(View.GONE);
+            loginSmsCodeLayout.setVisibility(View.VISIBLE);
+            registerLayout.setVisibility(View.GONE);
+            registerBtn.setVisibility(View.VISIBLE);
+            loginTypeSwitchBtn.setText(R.string.login_by_accid);
+            copyFromEditText(loginPhoneEdit, registerPhoneEdit);
+            copyFromEditText(loginSmsCodeEdit, registerSmsCodeEdit);
+
+            setTitle(R.string.login);
+        } else if (type == TYPE_LOGIN_ACCOUNT_ID) {
+            loginAccountLayout.setVisibility(View.VISIBLE);
+            loginSmsCodeLayout.setVisibility(View.GONE);
+            registerLayout.setVisibility(View.GONE);
+            registerBtn.setVisibility(View.VISIBLE);
+            loginTypeSwitchBtn.setText(R.string.login_by_sms_code);
+            boolean isEnable = isNotEmptyText(loginAccountEdit) &&
+                    isNotEmptyText(loginPasswordEdit);
             rightTopBtn.setEnabled(isEnable);
+
+            setTitle(R.string.login);
+        } else if (type == TYPE_REGISTER) {
+            loginAccountLayout.setVisibility(View.GONE);
+            loginSmsCodeLayout.setVisibility(View.GONE);
+            registerLayout.setVisibility(View.VISIBLE);
+            registerBtn.setVisibility(View.GONE);
+            loginTypeSwitchBtn.setText(R.string.login_by_sms_code);
+            copyFromEditText(registerPhoneEdit, loginPhoneEdit);
+            copyFromEditText(registerSmsCodeEdit, loginSmsCodeEdit);
+
+            rightTopBtn.setEnabled(true);
+            setTitle(R.string.register);
         }
     }
 
@@ -508,9 +538,14 @@ public class LoginActivity extends UI implements OnKeyListener {
         String text = activity.getResources().getString(strResId);
         TextView textView = findView(R.id.action_bar_right_clickable_textview);
         textView.setText(text);
-        textView.setBackgroundResource(R.drawable.register_right_top_btn_selector);
+        textView.setBackgroundResource(R.drawable.g_white_btn_selector);
+        textView.setTextColor(getResources().getColor(R.color.color_blue_0888ff));
         textView.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
         return textView;
+    }
+
+    private void enableView(View view, boolean isEnable) {
+        view.setEnabled(isEnable);
     }
 
     public TextView addRegisterLeftTopBtn(UI activity, int strResId) {
@@ -520,6 +555,52 @@ public class LoginActivity extends UI implements OnKeyListener {
         textView.setBackgroundResource(R.drawable.register_right_top_btn_selector);
         textView.setPadding(ScreenUtil.dip2px(10), 0, ScreenUtil.dip2px(10), 0);
         return textView;
+    }
+
+    private void doFetchSmsCode(EditText editText, View clickView) {
+        String phone = getText(editText);
+        if (TextUtils.isEmpty(phone) || phone.length() != 11) {
+            ToastHelper.showToast(LoginActivity.this, "手机号格式不正确");
+            return;
+        }
+        if (!NetworkUtil.isNetAvailable(LoginActivity.this)) {
+            ToastHelper.showToast(LoginActivity.this, R.string.network_is_not_available);
+            return;
+        }
+        clickView.setEnabled(false);
+        timer.start();
+        DemoAuthService.fetchSmsCode(phone, response -> {
+            String result;
+            if (response.isSuccessful()) {
+                result = "成功";
+            } else {
+                result = "失败：" + response.getMsg();
+                timer.stop();
+            }
+            ToastHelper.showToast(LoginActivity.this, "发送验证码" + result);
+        });
+    }
+
+    private void copyFromEditText(EditText destEdit, EditText sourceEdit) {
+        String phone = getText(sourceEdit);
+        if (!TextUtils.isEmpty(phone)) {
+            destEdit.setText(phone);
+        }
+    }
+
+    private boolean isNotEmptyText(EditText editText) {
+        return !TextUtils.isEmpty(getText(editText));
+    }
+
+    private String getText(EditText editText) {
+        if (editText == null) {
+            return "";
+        }
+        Editable editable = editText.getText();
+        if (editable == null) {
+            return "";
+        }
+        return editable.toString().trim();
     }
 
     /**

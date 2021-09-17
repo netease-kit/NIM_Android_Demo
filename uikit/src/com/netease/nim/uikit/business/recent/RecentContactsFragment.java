@@ -26,7 +26,6 @@ import com.netease.nim.uikit.common.ui.drop.DropCover;
 import com.netease.nim.uikit.common.ui.drop.DropManager;
 import com.netease.nim.uikit.common.ui.recyclerview.listener.SimpleClickListener;
 import com.netease.nim.uikit.impl.NimUIKitImpl;
-import com.netease.nim.uikit.impl.cache.StickTopCache;
 import com.netease.nimlib.sdk.NIMClient;
 import com.netease.nimlib.sdk.Observer;
 import com.netease.nimlib.sdk.RequestCallback;
@@ -36,7 +35,6 @@ import com.netease.nimlib.sdk.lifecycle.SdkLifecycleObserver;
 import com.netease.nimlib.sdk.msg.MsgService;
 import com.netease.nimlib.sdk.msg.MsgServiceObserve;
 import com.netease.nimlib.sdk.msg.attachment.MsgAttachment;
-import com.netease.nimlib.sdk.msg.constant.DeleteTypeEnum;
 import com.netease.nimlib.sdk.msg.constant.SessionTypeEnum;
 import com.netease.nimlib.sdk.msg.model.IMMessage;
 import com.netease.nimlib.sdk.msg.model.QueryDirectionEnum;
@@ -223,65 +221,25 @@ public class RecentContactsFragment extends TFragment {
         final MsgService msgService = NIMClient.getService(MsgService.class);
         final String sessionId = recent == null ? null : recent.getContactId();
         final SessionTypeEnum sessionType = recent == null ? null : recent.getSessionType();
-        final RequestCallback<Void> deleteRecentCallback = new RequestCallback<Void>() {
-
-            @Override
-            public void onSuccess(Void param) {
-                ToastHelper.showToast(getActivity(), "delete success");
-            }
-
-            @Override
-            public void onFailed(int code) {
-                ToastHelper.showToast(getActivity(),
-                        "delete failed, code:" + code);
-            }
-
-            @Override
-            public void onException(Throwable exception) {
-                ToastHelper.showToast(getActivity(),
-                        "delete error, e:" + exception);
-            }
-        };
 
         CustomAlertDialog alertDialog = new CustomAlertDialog(getActivity());
-        alertDialog.setTitle(UserInfoHelper.getUserTitleName(sessionId, sessionType));
-        // 删除本地会话，清除本地消息并删漫游
+        alertDialog.setTitle(UserInfoHelper.getUserTitleName(recent.getContactId(), recent.getSessionType()));
         String title = getString(R.string.main_msg_list_delete_chatting);
         alertDialog.addItem(title, () -> {
             // 删除会话，删除后，消息历史被一起删除
-            msgService.deleteRecentContact(sessionId, sessionType, DeleteTypeEnum.LOCAL_AND_REMOTE, true)
-                    .setCallback(deleteRecentCallback);
+            msgService.deleteRecentContact(recent);
             msgService.clearChattingHistory(sessionId, sessionType);
             adapter.remove(position);
             postRunnable(() -> refreshMessages(true));
         });
-
-        // 删漫游
-        title = getString(R.string.delete_chat_only_server);
-        alertDialog.addItem(title, () -> {
-            msgService.deleteRecentContact(sessionId, sessionType, DeleteTypeEnum.REMOTE, false)
-                    .setCallback(deleteRecentCallback);
-        });
-
-        // 删除本地会话，并清除本地消息
-        title = getString(R.string.delete_chat_only_local);
-        alertDialog.addItem(title, () -> {
-            msgService.deleteRecentContact(sessionId, sessionType, DeleteTypeEnum.LOCAL, true)
-                    .setCallback(deleteRecentCallback);
-            msgService.clearChattingHistory(sessionId, sessionType);
-            adapter.remove(position);
-            postRunnable(() -> refreshMessages(true));
-        });
-
-        title = (StickTopCache.isStickTop(sessionId, sessionType) ? getString(
+        title = (msgService.isStickTopSession(sessionId, sessionType) ? getString(
                 R.string.main_msg_list_clear_sticky_on_top) : getString(R.string.main_msg_list_sticky_on_top));
         alertDialog.addItem(title, () -> {
-            if (StickTopCache.isStickTop(sessionId, sessionType)) {
+            if (msgService.isStickTopSession(sessionId, sessionType)) {
                 msgService.removeStickTopSession(sessionId, sessionType, "").setCallback(new RequestCallbackWrapper<Void>() {
                     @Override
                     public void onResult(int code, Void result, Throwable exception) {
                         if (ResponseCode.RES_SUCCESS == code) {
-                            StickTopCache.recordStickTop(sessionId, sessionType, false);
                             refreshMessages(false);
                         }
                     }
@@ -291,13 +249,33 @@ public class RecentContactsFragment extends TFragment {
                     @Override
                     public void onResult(int code, StickTopSessionInfo result, Throwable exception) {
                         if (ResponseCode.RES_SUCCESS == code) {
-                            StickTopCache.recordStickTop(result, true);
                             refreshMessages(false);
                         }
                     }
                 });
             }
         });
+        String itemText = getString(R.string.delete_chat_only_server);
+        alertDialog.addItem(itemText, () -> NIMClient.getService(MsgService.class)
+                                                     .deleteRoamingRecentContact(recent.getContactId(),
+                                                                                 recent.getSessionType())
+                                                     .setCallback(new RequestCallback<Void>() {
+
+                                                         @Override
+                                                         public void onSuccess(Void param) {
+                                                             ToastHelper.showToast(getActivity(), "delete success");
+                                                         }
+
+                                                         @Override
+                                                         public void onFailed(int code) {
+                                                             ToastHelper.showToast(getActivity(),
+                                                                                   "delete failed, code:" + code);
+                                                         }
+
+                                                         @Override
+                                                         public void onException(Throwable exception) {
+                                                         }
+                                                     }));
         alertDialog.show();
     }
 
@@ -393,8 +371,8 @@ public class RecentContactsFragment extends TFragment {
 
     private static Comparator<RecentContact> comp = (recent1, recent2) -> {
         // 先比较置顶tag
-        boolean isStickTop1 = StickTopCache.isStickTop(recent1);
-        boolean isStickTop2 = StickTopCache.isStickTop(recent2);
+        boolean isStickTop1 = NIMClient.getService(MsgService.class).isStickTopSession(recent1.getContactId(), recent1.getSessionType());
+        boolean isStickTop2 = NIMClient.getService(MsgService.class).isStickTopSession(recent2.getContactId(), recent2.getSessionType());
         if (isStickTop1 ^ isStickTop2) {
             return isStickTop1 ? -1 : 1;
         } else {
@@ -437,9 +415,10 @@ public class RecentContactsFragment extends TFragment {
 
     private void registerStickTopObserver(boolean register) {
         MsgServiceObserve msgObserver = NIMClient.getService(MsgServiceObserve.class);
-        msgObserver.observeAddStickTopSession(addStickTopSessionObserver, register);
-        msgObserver.observeRemoveStickTopSession(removeStickTopSessionObserver, register);
-        msgObserver.observeSyncStickTopSession(syncStickTopSessionObserver, register);
+        msgObserver.observeAddStickTopSession(stickTopSessionChangeObserve, register);
+        msgObserver.observeRemoveStickTopSession(stickTopSessionChangeObserve, register);
+        msgObserver.observeUpdateStickTopSession(stickTopSessionChangeObserve, register);
+        msgObserver.observeSyncStickTopSession(syncStickTopSessionObserve, register);
     }
 
     private void registerDropCompletedListener(boolean register) {
@@ -599,25 +578,13 @@ public class RecentContactsFragment extends TFragment {
         }
     };
 
-    private final Observer<List<StickTopSessionInfo>> syncStickTopSessionObserver = infoList -> {
-        StickTopCache.recordStickTop(infoList, true);
-        refreshMessages(false);
-    };
-    private final Observer<StickTopSessionInfo> addStickTopSessionObserver = info -> {
-        StickTopCache.recordStickTop(info, true);
-        refreshMessages(false);
-    };
-    private final Observer<StickTopSessionInfo> removeStickTopSessionObserver = info -> {
-        StickTopCache.recordStickTop(info, false);
-        refreshMessages(false);
-    };
+    private Observer<List<StickTopSessionInfo>> syncStickTopSessionObserve = (Observer<List<StickTopSessionInfo>>) stickTopSessionInfos -> refreshMessages(false);
+
+    private Observer<StickTopSessionInfo> stickTopSessionChangeObserve = (Observer<StickTopSessionInfo>) stickTopSessionInfo -> refreshMessages(false);
 
     private int getItemIndex(String uuid) {
         for (int i = 0; i < items.size(); i++) {
             RecentContact item = items.get(i);
-            if (item == null) {
-                continue;
-            }
             if (TextUtils.equals(item.getRecentMessageId(), uuid)) {
                 return i;
             }
@@ -628,9 +595,6 @@ public class RecentContactsFragment extends TFragment {
     private int getItemIndex(String sessionId, SessionTypeEnum sessionType) {
         for (int i = 0; i < items.size(); i++) {
             RecentContact item = items.get(i);
-            if (item == null) {
-                continue;
-            }
             if (TextUtils.equals(item.getContactId(), sessionId) && item.getSessionType() == sessionType) {
                 return i;
             }

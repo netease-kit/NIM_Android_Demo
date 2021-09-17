@@ -1,7 +1,6 @@
 package com.netease.nim.uikit.business.session.helper;
 
 import android.text.TextUtils;
-import android.util.Pair;
 
 import com.netease.nim.uikit.api.NimUIKit;
 import com.netease.nim.uikit.api.wrapper.MessageRevokeTip;
@@ -51,10 +50,6 @@ public class MessageHelper {
 
     // 消息撤回
     public void onRevokeMessage(IMMessage item, String revokeAccount) {
-        onRevokeMessage(item, revokeAccount, null, null);
-    }
-
-    public void onRevokeMessage(IMMessage item, String revokeAccount, String attach, String callbackExt) {
         if (item == null) {
             return;
         }
@@ -64,16 +59,6 @@ public class MessageHelper {
         CustomMessageConfig config = new CustomMessageConfig();
         config.enableUnreadCount = false;
         message.setConfig(config);
-        if (!TextUtils.isEmpty(attach) || !TextUtils.isEmpty(callbackExt)) {
-            Map<String, Object> localExt = new HashMap<>();
-            if (!TextUtils.isEmpty(attach)) {
-                localExt.put("attach", attach);
-            }
-            if (!TextUtils.isEmpty(callbackExt)) {
-                localExt.put("callbackExt", callbackExt);
-            }
-            message.setLocalExtension(localExt);
-        }
         NIMClient.getService(MsgService.class).saveMessageToLocalEx(message, true, item.getTime());
     }
 
@@ -253,67 +238,5 @@ public class MessageHelper {
             set.add(msg.getUuid());
         }
         return set;
-    }
-
-    /**
-     * 将会话类型和会话ID组成的字符串拆解为Pair
-     * 如果会话类型部分解析不出来，返回null；如果会话ID解析不出来，返回""
-     *
-     * @param idStr 分为p2p/team/superTeam，格式分别是：p2p|accid、team|tid、super_team|tid
-     * @return 拆解结果，first: 会话类型; second: 会话ID
-     */
-    public static Pair<SessionTypeEnum, String> parseSessionKey(String idStr) {
-        if (TextUtils.isEmpty(idStr)) {
-            return new Pair<>(null, "");
-        }
-        String[] sessionIdArr = idStr.split("\\|");
-        if (sessionIdArr.length < 2){
-            //不能为None否则可能成为加载更多项，而且因为不在最后而不稳定
-            return new Pair<>(null, "");
-        }
-        SessionTypeEnum type = null;
-        switch (sessionIdArr[0]) {
-            case "team":
-                type = SessionTypeEnum.Team;
-                break;
-            case "super_team":
-                type = SessionTypeEnum.SUPER_TEAM;
-                break;
-            case "p2p":
-                type = SessionTypeEnum.P2P;
-                break;
-            default:
-                break;
-        }
-        return new Pair<>(type, sessionIdArr[1]);
-    }
-
-    /**
-     * 将会话类型和会话ID组合成具有唯一性的会话ID字符串
-     *
-     * @param sessionType 会话类型，可以填P2P/Team/SUPER_TEAM，否则返回""
-     * @param sessionId 会话ID，如果为空，返回""
-     * @return 拆解结果，first: 会话类型; second: 会话ID
-     */
-    public static String combineSessionKey(SessionTypeEnum sessionType, String sessionId) {
-        if (sessionType == null || TextUtils.isEmpty(sessionId)) {
-            return "";
-        }
-        String typeStr;
-        switch (sessionType) {
-            case P2P:
-                typeStr = "p2p";
-                break;
-            case Team:
-                typeStr = "team";
-                break;
-            case SUPER_TEAM:
-                typeStr = "super_team";
-                break;
-            default:
-                return "";
-        }
-
-        return typeStr + "|" + sessionId;
     }
 }

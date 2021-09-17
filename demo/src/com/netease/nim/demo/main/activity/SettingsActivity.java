@@ -2,13 +2,11 @@ package com.netease.nim.demo.main.activity;
 
 import android.app.Activity;
 import android.content.Intent;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ListView;
 
-import com.netease.nim.avchatkit.AVChatKit;
 import com.netease.nim.demo.DemoCache;
 import com.netease.nim.demo.R;
 import com.netease.nim.demo.config.preference.UserPreferences;
@@ -31,7 +29,6 @@ import com.netease.nimlib.sdk.RequestCallbackWrapper;
 import com.netease.nimlib.sdk.ResponseCode;
 import com.netease.nimlib.sdk.StatusBarNotificationConfig;
 import com.netease.nimlib.sdk.auth.AuthService;
-import com.netease.nimlib.sdk.avchat.AVChatNetDetector;
 import com.netease.nimlib.sdk.lucene.LuceneService;
 import com.netease.nimlib.sdk.misc.DirCacheFileType;
 import com.netease.nimlib.sdk.misc.MiscService;
@@ -230,14 +227,7 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
         items.add(new SettingTemplate(TAG_SPEAKER, getString(R.string.msg_speaker),
                                       SettingType.TYPE_TOGGLE, NimUIKit.isEarPhoneModeEnable()));
         items.add(SettingTemplate.makeSeperator());
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
-            items.add(new SettingTemplate(TAG_NRTC_SETTINGS, getString(R.string.nrtc_settings)));
-            items.add(SettingTemplate.addLine());
-            items.add(new SettingTemplate(TAG_NRTC_NET_DETECT, "音视频通话网络探测"));
-            items.add(SettingTemplate.addLine());
-            items.add(new SettingTemplate(AVCHAT_QUERY, "音视频通话记录"));
-            items.add(SettingTemplate.makeSeperator());
-        }
+
         items.add(new SettingTemplate(TAG_MSG_IGNORE, "过滤通知", SettingType.TYPE_TOGGLE,
                                       UserPreferences.getMsgIgnore()));
         items.add(SettingTemplate.makeSeperator());
@@ -311,12 +301,6 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
             case TAG_CLEAR_SDK_CACHE:
                 clearSDKDirCache();
                 break;
-            case TAG_NRTC_SETTINGS:
-                AVChatKit.startAVChatSettings(SettingsActivity.this);
-                break;
-            case TAG_NRTC_NET_DETECT:
-                netDetectForNrtc();
-                break;
             case TAG_JS_BRIDGE:
                 startActivity(new Intent(SettingsActivity.this, JsBridgeActivity.class));
                 break;
@@ -328,9 +312,6 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                 break;
             case TAG_MSG_MIGRATION:
                 startActivity(new Intent(this, MsgMigrationActivity.class));
-                break;
-            case AVCHAT_QUERY:
-                AvchatListActivity.start(SettingsActivity.this);
                 break;
             default:
                 break;
@@ -373,17 +354,6 @@ public class SettingsActivity extends UI implements SettingsAdapter.SwitchChange
                     }
                 });
     }
-
-    private void netDetectForNrtc() {
-        AVChatNetDetector.startNetDetect((id, code, loss, rttMax, rttMin, rttAvg, mdev, info) -> {
-            String msg =
-                    code == 200 ? ("loss:" + loss + ", rtt min/avg/max/mdev = " + rttMin + "/" +
-                                   rttAvg + "/" + rttMax + "/" + mdev + " ms") : ("error:" +
-                                                                                  code);
-            ToastHelper.showToast(SettingsActivity.this, msg);
-        });
-    }
-
 
     private boolean getIsShowPushNoDetail() {
         StatusBarNotificationConfig localConfig = UserPreferences.getStatusConfig();

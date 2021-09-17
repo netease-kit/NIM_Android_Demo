@@ -8,8 +8,6 @@ import android.os.StatFs;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.netease.nim.uikit.common.util.log.sdk.wrapper.NimLog;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -177,9 +175,7 @@ public class ExternalStorage {
     public boolean isSdkStorageReady() {
         String externalRoot = Environment.getExternalStorageDirectory().getAbsolutePath();
         if (this.sdkStorageRoot.startsWith(externalRoot)) {
-            boolean mounted = Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
-            NimLog.i(TAG, "isSdkStorageReady mounted:" + mounted);
-            return mounted;
+            return Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED);
         } else {
             return true;
         }
