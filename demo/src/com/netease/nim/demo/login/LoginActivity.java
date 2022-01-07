@@ -470,11 +470,7 @@ public class LoginActivity extends UI implements OnKeyListener {
     //DEMO中使用 username 作为 NIM 的account ，md5(password) 作为 token
     //开发者需要根据自己的实际情况配置自身用户系统和 NIM 用户系统的关系
     private String tokenFromPassword(String password) {
-        String appKey = readAppKey(this);
-        boolean isDemo = "45c6af3c98409b18a84451215d0bdd6e".equals(appKey) ||
-                         "fe416640c8e8a72734219e1847ad2547".equals(appKey) ||
-                         "a24e6c8a956a128bd50bdffe69b405ff".equals(appKey);
-        return isDemo ? MD5.getStringMD5(password) : password;
+        return password;
     }
 
     private static String readAppKey(Context context) {
