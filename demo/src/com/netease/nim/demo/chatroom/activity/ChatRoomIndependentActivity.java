@@ -41,7 +41,7 @@ public class ChatRoomIndependentActivity extends UI {
         appKeyET = findView(R.id.independent);
         accountET = findView(R.id.account);
         pwdET = findView(R.id.pwd);
-        appKeyET.setText("");
+        appKeyET.setText("appkey");
     }
 
     private void setViewsListener() {
