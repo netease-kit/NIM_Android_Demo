@@ -184,21 +184,18 @@ public class NimSDKOptionConfig {
         // 第三方推送配置
         MixPushConfig config = new MixPushConfig();
         // 小米推送
-//        config.xmAppId = "2882303761517521532";
-//        config.xmAppKey = "5541752152532";
-//        config.xmCertificateName = "DEMO_MI_PUSH";
-        config.xmAppId = "2882303761517502883";
-        config.xmAppKey = "5671750254883";
+        config.xmAppId = "小米AppId";
+        config.xmAppKey = "小米AppKey";
         config.xmCertificateName = "DEMO_MI_PUSH";
 
         // 华为推送
-        config.hwAppId = "101420927";
+        config.hwAppId = "华为AppId";
         config.hwCertificateName = "DEMO_HW_PUSH";
 
 
         // 魅族推送
-        config.mzAppId = "111710";
-        config.mzAppKey = "282bdd3a37ec4f898f47c5bbbf9d2369";
+        config.mzAppId = "魅族AppId";
+        config.mzAppKey = "魅族AppKey";
         config.mzCertificateName = "DEMO_MZ_PUSH";
 
         // fcm 推送，适用于海外用户，不使用fcm请不要配置
@@ -209,9 +206,9 @@ public class NimSDKOptionConfig {
         config.vivoCertificateName = "DEMO_VIVO_PUSH";
 
         // oppo推送
-        config.oppoAppId = "3477155";
-        config.oppoAppKey = "6clw0ue1oZ8cCOogKg488o0os";
-        config.oppoAppSercet = "e163705Bd018bABb3e2362C440A94673";
+        config.oppoAppId = "oppo AppId";
+        config.oppoAppKey = "oppo AppKey";
+        config.oppoAppSercet = "oppo AppSercet";
         config.oppoCertificateName = "DEMO_OPPO_PUSH";
         return config;
     }
