@@ -190,8 +190,22 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
                 .notificationConfigFetcher(invitedInfo -> new CallKitNotificationConfig(R.drawable.ic_logo))
                 // 收到被叫时若 app 在后台，在恢复到前台时是否自动唤起被叫页面，默认为 true
                 .resumeBGInvitation(true)
-                // 请求 rtc token 服务，若非安全模式则不需设置
-                .rtcTokenService((uid, callback) -> requestRtcToken(appKey, uid, callback))
+                // 请求 rtc token 服务，若非安全模式不需设置，安全模式按照官网实现 token 服务通过如下接口设置回组件
+//                .rtcTokenService((uid, callback) -> new TokenService(){
+//
+//                    @Override
+//                    public void getToken(long uid, RequestCallback<String> callback) {
+//                        //获取token
+//                        Result result = network.requestToken(uid);
+//                        if (result.success) {
+//                            callback.onSuccess(result.token);
+//                        } else if (result.exception != null) {
+//                            callback.onException(result.exception);
+//                        } else {
+//                            callback.onFailed(result.code);
+//                        }
+//                    }
+//                })
                 // 群组通话通话中邀请用户时，配置获取邀请的用户的列表
                 .contactSelector((context, teamId, accounts, observer) -> {
                     doFetchInviteAccountList(teamId, accounts, observer);
@@ -259,63 +273,6 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
             }
             return null;
         });
-    }
-
-    /**
-     * 请求 rtc token 服务
-     *
-     * @param appKey   rtc 对应的 AppKey
-     * @param uid      用户加入 rtc 时的 id
-     * @param callback 请求回调通知
-     */
-    private void requestRtcToken(String appKey, long uid, RequestCallback<String> callback) {
-        //注册获取token的服务
-        //在线上环境中，token的获取需要放到您的应用服务端完成，然后由服务器通过安全通道把token传递给客户端
-        //Demo中使用的URL仅仅是demoserver，不要在您的应用中使用
-        //详细请参考: http://dev.netease.im/docs?doc=server
-        String demoServer = "https://nrtc.netease.im/demo/getChecksum.action";
-        new Thread(() -> {
-            try {
-                String queryString = demoServer + "?uid=" +
-                        uid + "&appkey=" + appKey;
-                URL requestedUrl = new URL(queryString);
-                HttpURLConnection connection = (HttpURLConnection) requestedUrl.openConnection();
-                connection.setRequestMethod("POST");
-                connection.setConnectTimeout(6000);
-                connection.setReadTimeout(6000);
-                if (connection.getResponseCode() != 200) {
-                    callback.onFailed(connection.getResponseCode());
-                    return;
-                }
-                String result = readFully(connection.getInputStream());
-                Log.d("Demo", result);
-                if (TextUtils.isEmpty(result)) {
-                    callback.onFailed(-1);
-                    return;
-                }
-                org.json.JSONObject object = new org.json.JSONObject(result);
-                int code = object.getInt("code");
-                if (code != 200) {
-                    callback.onFailed(code);
-                }
-                String token = object.getString("checksum");
-                if (TextUtils.isEmpty(token)) {
-                    callback.onFailed(-1);
-                    return;
-                }
-                new Handler(getMainLooper()).post(() -> {
-                    callback.onSuccess(token);
-                });
-                return;
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            new Handler(getMainLooper()).post(() -> {
-                //fixme 此处因为demo可以走非安全模式所以返回null，线上环境请在此处走 onFailed 逻辑
-                callback.onSuccess(null);
-            });
-        }).start();
     }
 
     private String readFully(InputStream inputStream) throws IOException {
