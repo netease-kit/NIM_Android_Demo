@@ -48,7 +48,7 @@ android {
 //            minifyEnabled true
 //            proguardFiles getDefaultProguardFile("proguard-android.txt"), 'proguard.cfg'
             signingConfig signingConfigs.debug
-            manifestPlaceholders = [AMAP_KEY: "09fd4efd3e28e9bf1f449ecec7d34bfe"]
+            manifestPlaceholders = [AMAP_KEY: "your amap key"]
             ext.enableCrashlytics = false
         }
 
@@ -58,7 +58,7 @@ android {
             zipAlignEnabled true
             proguardFiles getDefaultProguardFile("proguard-android.txt"), 'proguard.cfg'
             signingConfig signingConfigs.release
-            manifestPlaceholders = [AMAP_KEY: "ee20324fba1c7f4ad7a4a207e7f08e8d"]
+            manifestPlaceholders = [AMAP_KEY: "your amap key"]
             ext.enableCrashlytics = true
         }
     }
