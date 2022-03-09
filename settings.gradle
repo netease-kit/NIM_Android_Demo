@@ -1,5 +1,3 @@
-include ':rtskit'
-include ':faceunity'
-include ':uikit'
-include 'jrmfRpWalletlib'
-include ':demo'
+include ':contactkit-ui'
+include ':qchatkit-ui'
+include ':app'
