@@ -10,7 +10,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 31
         versionCode 1
-        versionName "1.0"
+        versionName "1.0.0"
         multiDexEnabled = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -33,27 +33,24 @@ android {
 
 dependencies {
 
-    implementation rootProject.ext.multidex
-    implementation rootProject.ext.appcompat
-    implementation rootProject.ext.material
+    implementation 'androidx.multidex:multidex:2.0.1'
+    implementation 'androidx.appcompat:appcompat:1.4.1'
+    implementation 'com.google.android.material:material:1.5.0'
 
-    testImplementation rootProject.ext.junit
-    androidTestImplementation rootProject.ext.extJunit
-    androidTestImplementation rootProject.ext.espressoCore
+    testImplementation 'junit:junit:4.13.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
+    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
 
-    implementation rootProject.ext.recyclerView
-    implementation rootProject.ext.glideSdk
-    implementation rootProject.ext.glideCompiler
+    implementation 'androidx.recyclerview:recyclerview:1.2.1'
+    implementation 'com.github.bumptech.glide:glide:4.12.0'
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.7.2'
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
 
-    implementation rootProject.ext.yunxinCommon
-    implementation rootProject.ext.yunxinCommonUI
-    implementation rootProject.ext.yunxinContactKit
-    implementation rootProject.ext.yunxinContactKitUI
-    implementation rootProject.ext.yunxinQChatKit
-    implementation rootProject.ext.yunxinQChatKitUI
-    implementation rootProject.ext.yunxinLogin
-    implementation rootProject.ext.yunxinCore
-    implementation rootProject.ext.yunxinCoreIm
-    implementation rootProject.ext.yunxinAlog
+    implementation 'com.netease.yunxin.kit.contact:contactkit-ui:1.0.0-beta01'
+    implementation 'com.netease.yunxin.kit.qchat:qchatkit-ui:1.0.0-beta01'
+    implementation 'com.netease.yunxin.kit.auth:auth-yunxin-login:1.0.0-beta02'
 
 }
