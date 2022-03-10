@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?><!--
+  ~ Copyright (c) 2021 NetEase, Inc.  All rights reserved.
+  ~ Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/color_e9eff5"
+    tools:context=".main.mine.UserInfoActivity">
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="48dp"
+        android:gravity="center"
+        android:text="@string/user_info_title"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="SpUsage" />
+
+    <ImageView
+        android:id="@+id/ivBack"
+        android:layout_width="26dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="20dp"
+        android:src="@drawable/ic_arrow_left"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
+        android:background="@drawable/white_round_bg"
+        app:layout_constraintBottom_toBottomOf="@id/tvNameTip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvAvatarTip" />
+
+    <TextView
+        android:id="@+id/tvAvatarTip"
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginTop="22dp"
+        android:gravity="center"
+        android:text="@string/user_info_avatar"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        tools:ignore="SpUsage" />
+
+    <com.netease.yunxin.kit.common.ui.widgets.ContactAvatarView
+        android:id="@+id/cavAvatar"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:layout_marginEnd="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvAvatarTip"
+        app:layout_constraintEnd_toStartOf="@id/ivRightArrow"
+        app:layout_constraintTop_toTopOf="@id/tvAvatarTip" />
+
+    <ImageView
+        android:id="@+id/ivRightArrow"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="36dp"
+        android:src="@drawable/ic_frame_mine_right_arrow"
+        app:layout_constraintBottom_toBottomOf="@id/tvAvatarTip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvAvatarTip" />
+
+    <View
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginStart="36dp"
+        android:layout_marginEnd="20dp"
+        android:background="@color/color_f5f8fc"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAvatarTip" />
+
+    <TextView
+        android:id="@+id/tvNameTip"
+        android:layout_width="wrap_content"
+        android:layout_height="46dp"
+        android:layout_marginStart="36dp"
+        android:gravity="center"
+        android:text="@string/user_info_nickname"
+        android:textColor="@color/color_333333"
+        android:textSize="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tvAvatarTip"
+        tools:ignore="SpUsage" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="0dp"
+        android:layout_height="46dp"
+        android:layout_marginEnd="12dp"
+        android:gravity="end|center_vertical"
+        android:singleLine="true"
+        app:layout_constraintStart_toEndOf="@id/tvNameTip"
+        android:textColor="@color/color_a6adb6"
+        android:textSize="12dp"
+        app:layout_constraintBottom_toBottomOf="@id/tvNameTip"
+        app:layout_constraintEnd_toStartOf="@id/ivRightArrow1"
+        app:layout_constraintTop_toTopOf="@id/tvNameTip"
+        tools:ignore="SpUsage" />
+
+    <ImageView
+        android:id="@+id/ivRightArrow1"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginEnd="36dp"
+        android:src="@drawable/ic_frame_mine_right_arrow"
+        app:layout_constraintBottom_toBottomOf="@id/tvNameTip"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/tvNameTip" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
