@@ -87,25 +87,25 @@
     </div>
     <div style="width:30%;text-align:center;">
         <p><b>邀请好友加入服务器</b></p>
-        <img style="width:50%" src="image/邀请好友进服务器.gif" alt="image" />
+        <img style="width:30%" src="image/邀请好友进服务器.gif" alt="image" />
     </div>
     <div style="width:30%;text-align:center;">
         <p><b>创建身份组</b></p>
-        <img style="width:50%" src="image/创建身份组.gif" alt="image" />
+        <img style="width:30%" src="image/创建身份组.gif" alt="image" />
     </div>
 </div>
 <div style="display:flex;width:100%;justify-content:space-between;background-color:#F0F0F0;">
     <div style="width:30%; text-align:center;">
         <p><b>身份组权限设置</b></p>
-        <img style="width:50%" src="image/身份组权限设置.gif" alt="image" />
+        <img style="width:30%" src="image/身份组权限设置.gif" alt="image" />
     </div>
     <div style="width:30%; text-align:center;">
         <p><b>发送消息</b></p>
-        <img style="width:50%" src="image/发送消息.gif" alt="image" />
+        <img style="width:30%" src="image/发送消息.gif" alt="image" />
     </div>
     <div style="width:30%; text-align:center;">
         <p><b>设置频道权限</b></p>
-        <img style="width:50%" src="image/频道权限.gif" alt="image" />
+        <img style="width:30%" src="image/频道权限.gif" alt="image" />
     </div>
 </div>
 
