@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  ~ Copyright (c) 2022 NetEase, Inc.  All rights reserved.
+  ~ Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+  -->
+
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="@dimen/page_title_bar_height">
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/image_head_width_height"
+        android:layout_marginLeft="@dimen/page_margin_left_right"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints">
+
+        <ImageView
+            android:id="@+id/title_bar_head_img"
+            android:layout_width="@dimen/image_head_width_height"
+            android:layout_height="@dimen/image_head_width_height"
+            android:layout_marginLeft="@dimen/page_margin_left_right"
+            android:layout_marginRight="@dimen/page_margin_left_right"
+            android:scaleType="centerInside"
+            android:src="@mipmap/ic_title_bar_yunxin"
+            tools:ignore="MissingConstraints" />
+
+        <TextView
+            android:id="@+id/title_bar_title_tv"
+            android:layout_width="wrap_content"
+            android:layout_height="@dimen/image_head_width_height"
+            android:textSize="@dimen/page_title_size"
+            android:textStyle="bold"
+            tools:ignore="MissingConstraints" />
+    </LinearLayout>
+
+
+    <ImageView
+        android:id="@+id/title_bar_search_img"
+        android:layout_width="@dimen/image_operate_width_height"
+        android:layout_height="@dimen/image_operate_width_height"
+        android:layout_marginLeft="@dimen/page_margin_left_right"
+        android:layout_marginRight="@dimen/image_operate_margin"
+        android:src="@mipmap/ic_title_bar_search"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/title_bar_more_img"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+    <ImageView
+        android:id="@+id/title_bar_more_img"
+        android:layout_width="@dimen/image_operate_width_height"
+        android:layout_height="@dimen/image_operate_width_height"
+        android:layout_marginLeft="@dimen/page_margin_left_right"
+        android:layout_marginRight="@dimen/page_margin_left_right"
+        android:src="@mipmap/ic_title_bar_more"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:ignore="MissingConstraints" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

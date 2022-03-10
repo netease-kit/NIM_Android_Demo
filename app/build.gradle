@@ -11,8 +11,12 @@ android {
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
-
+        multiDexEnabled = true
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+    }
+
+    buildFeatures {
+        viewBinding = true
     }
 
     buildTypes {
@@ -29,9 +33,27 @@ android {
 
 dependencies {
 
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation rootProject.ext.multidex
+    implementation rootProject.ext.appcompat
+    implementation rootProject.ext.material
+
+    testImplementation rootProject.ext.junit
+    androidTestImplementation rootProject.ext.extJunit
+    androidTestImplementation rootProject.ext.espressoCore
+
+    implementation rootProject.ext.recyclerView
+    implementation rootProject.ext.glideSdk
+    implementation rootProject.ext.glideCompiler
+
+    implementation rootProject.ext.yunxinCommon
+    implementation rootProject.ext.yunxinCommonUI
+    implementation rootProject.ext.yunxinContactKit
+    implementation rootProject.ext.yunxinContactKitUI
+    implementation rootProject.ext.yunxinQChatKit
+    implementation rootProject.ext.yunxinQChatKitUI
+    implementation rootProject.ext.yunxinLogin
+    implementation rootProject.ext.yunxinCore
+    implementation rootProject.ext.yunxinCoreIm
+    implementation rootProject.ext.yunxinAlog
+
 }

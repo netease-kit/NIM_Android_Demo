@@ -1,3 +1,19 @@
+<!--
+  ~ Copyright (c) 2022 NetEase, Inc.  All rights reserved.
+  ~ Use of this source code is governed by a MIT license that can be found in the LICENSE file.
+  -->
+
 <resources>
-    <string name="app_name">app</string>
+    <string name="app_name">圈组Demo</string>
+
+    <string name="tab_session_tab_text">消息</string>
+    <string name="tab_contact_tab_text">通讯录</string>
+    <string name="tab_qchat_tab_text">圈组</string>
+    <string name="tab_live_tab_text">直播</string>
+    <string name="tab_mine_tab_text">我</string>
+    <string name="tab_mine_logout">退出登录</string>
+    <string name="tab_mine_account">账号:%s</string>
+    <string name="user_info_avatar">头像</string>
+    <string name="user_info_nickname">昵称</string>
+    <string name="user_info_title">个人信息</string>
 </resources>

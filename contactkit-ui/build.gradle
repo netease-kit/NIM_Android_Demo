@@ -13,6 +13,10 @@ android {
         consumerProguardFiles "consumer-rules.pro"
     }
 
+    buildFeatures {
+        viewBinding = true
+    }
+
     buildTypes {
         release {
             minifyEnabled false
@@ -26,14 +30,21 @@ android {
 }
 
 dependencies {
+    implementation(fileTree(dir:'libs', include:['*.jar']))
 
-    implementation 'androidx.appcompat:appcompat:1.4.1'
-    implementation 'com.google.android.material:material:1.5.0'
-    testImplementation 'junit:junit:4.13.2'
-    androidTestImplementation 'androidx.test.ext:junit:1.1.3'
-    androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
+    implementation rootProject.ext.appcompat
+    implementation rootProject.ext.material
 
-    implementation 'androidx.recyclerview:recyclerView:1.2.1'
-    implementation 'com.github.bumptech.glide:glid:4.12.0'
-    implementation 'com.github.bumptech.glide:compiler:4.12.0'
+    testImplementation rootProject.ext.junit
+    androidTestImplementation rootProject.ext.extJunit
+    androidTestImplementation rootProject.ext.espressoCore
+
+    implementation rootProject.ext.recyclerView
+    implementation rootProject.ext.glideSdk
+    implementation rootProject.ext.glideCompiler
+
+    implementation rootProject.ext.yunxinContactKit
+    implementation rootProject.ext.yunxinCommon
+    implementation rootProject.ext.yunxinCommonUI
+
 }
