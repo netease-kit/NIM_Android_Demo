@@ -80,34 +80,33 @@
 
 以下为部分 Demo 已实现功能的动图展示。
 
-以下为部分 Demo 已实现功能的动图展示。
-
 <div style="display:flex;width:100%;justify-content:space-between;background-color:#F0F0F0;">
     <div style="width:30%; text-align:center;">
         <p><b>创建圈组服务器</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/432fff60b1f20e78730b60f70f6dd110/创建服务器.gif" alt="image" />
+        <img style="width:100%" src="image/创建服务器.gif" alt="image" />
     </div>
     <div style="width:30%;text-align:center;">
         <p><b>邀请好友加入服务器</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/102c57f4154aa710950dbce71a20cefc/邀请好友进服务器.gif" alt="image" />
+        <img style="width:100%" src="image/邀请好友进服务器.gif" alt="image" />
     </div>
     <div style="width:30%;text-align:center;">
         <p><b>创建身份组</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/58f0adecc0e6a60bfc35e702d3be3ab5/创建身份组.gif" alt="image" />
+        <img style="width:100%" src="image/创建身份组.gif" alt="image" />
     </div>
 </div>
 <div style="display:flex;width:100%;justify-content:space-between;background-color:#F0F0F0;">
     <div style="width:30%; text-align:center;">
         <p><b>身份组权限设置</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/302ad7d0ef3c18237d0d81ce623ed582/身份组权限设置.gif" alt="image" />
+        <img style="width:100%" src="image/身份组权限设置.gif" alt="image" />
     </div>
     <div style="width:30%; text-align:center;">
         <p><b>发送消息</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/9dfb66e3724b81e870cad28b4cbaec61/发送消息.gif" alt="image" />
+        <img style="width:100%" src="image/发送消息.gif" alt="image" />
     </div>
     <div style="width:30%; text-align:center;">
         <p><b>设置频道权限</b></p>
-        <img style="width:100%" src="https://yx-web-nosdn.netease.im/common/366754f1ee521c054395bce90a41a322/频道权限.gif" alt="image" />
+        <img style="width:100%" src="image/频道权限.gif" alt="image" />
+    </div>
 </div>
 
 
