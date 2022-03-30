@@ -424,9 +424,7 @@ public class SessionHelper {
     private static SessionCustomization getTeamCustomization(String tid) {
         if (normalTeamCustomization == null) {
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
-            final TeamAVChatAction avChatAction = new TeamAVChatAction(ChannelType.VIDEO);
             ArrayList<BaseAction> actions = new ArrayList<>();
-            actions.add(avChatAction);
             actions.add(new GuessAction());
             actions.add(new FileAction());
             if (NIMRedPacketClient.isEnable()) {
@@ -443,12 +441,10 @@ public class SessionHelper {
 
                 @Override
                 public void onSelectedAccountsResult(ArrayList<String> selectedAccounts) {
-                    avChatAction.onSelectedAccountsResult(selectedAccounts);
                 }
 
                 @Override
                 public void onSelectedAccountFail() {
-                    avChatAction.onSelectedAccountFail();
                 }
             };
             normalTeamCustomization = new SessionTeamCustomization(listener) {
@@ -467,9 +463,7 @@ public class SessionHelper {
         }
         if (advancedTeamCustomization == null) {
             // 定制加号点开后可以包含的操作， 默认已经有图片，视频等消息了
-            final TeamAVChatAction avChatAction = new TeamAVChatAction(ChannelType.VIDEO);
             ArrayList<BaseAction> actions = new ArrayList<>();
-            actions.add(avChatAction);
             actions.add(new GuessAction());
             actions.add(new FileAction());
             actions.add(new AckMessageAction());
@@ -488,12 +482,10 @@ public class SessionHelper {
 
                 @Override
                 public void onSelectedAccountsResult(ArrayList<String> selectedAccounts) {
-                    avChatAction.onSelectedAccountsResult(selectedAccounts);
                 }
 
                 @Override
                 public void onSelectedAccountFail() {
-                    avChatAction.onSelectedAccountFail();
                 }
             };
             advancedTeamCustomization = new SessionTeamCustomization(listener) {

@@ -206,11 +206,6 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
 //                        }
 //                    }
 //                })
-                // 群组通话通话中邀请用户时，配置获取邀请的用户的列表
-                .contactSelector((context, teamId, accounts, observer) -> {
-                    doFetchInviteAccountList(teamId, accounts, observer);
-                    return null;
-                })
                 // 设置初始化 rtc sdk 相关配置，按照所需进行配置
                 .rtcSdkOption(new NERtcOption())
                 // 设置日志路径
@@ -234,71 +229,6 @@ public class MainActivity extends UI implements ViewPager.OnPageChangeListener,
             return null;
         }
         return appInfo.metaData.getString("com.netease.nim.appKey");
-    }
-
-    private static final int REQUEST_ID = 1001;
-
-    /**
-     * 获取群组通话中途邀请其他用户的用户列表
-     *
-     * @param teamId          群组id
-     * @param excludeUserList 已经在通话中的用户 accId 列表
-     * @param observer        结果通知
-     */
-    private void doFetchInviteAccountList(String teamId, List<String> excludeUserList, ResultObserver<List<String>> observer) {
-        ContactSelectActivity.Option option = new ContactSelectActivity.Option();
-        option.type = ContactSelectActivity.ContactSelectType.TEAM_MEMBER;
-        option.teamId = teamId;
-        option.maxSelectNum = 8 - (excludeUserList == null ? 0 : excludeUserList.size());
-        option.maxSelectNumVisible = true;
-        option.title = NimUIKit.getContext().getString(com.netease.nim.uikit.R.string.invite_member);
-        option.maxSelectedTip = NimUIKit.getContext().getString(R.string.reach_capacity);
-        option.itemFilter = new ContactSelfFilter();
-        if (excludeUserList != null && !excludeUserList.isEmpty()) {
-            option.itemDisableFilter = new ContactIdFilter(excludeUserList);
-        }
-
-        TransHelper.launchTask(this, REQUEST_ID, context1 -> {
-            NimUIKit.startContactSelector(context1, option, REQUEST_ID);
-            return null;
-        }, intentResultInfo -> {
-            if (observer == null) {
-                return null;
-            }
-            Intent intent = intentResultInfo.getValue();
-            if (intentResultInfo.getSuccess() && intent != null) {
-                observer.onResult(new ResultInfo<>(intent.getStringArrayListExtra("RESULT_DATA"), true));
-            } else {
-                observer.onResult(new ResultInfo<>(null,false,intentResultInfo.getMsg()));
-            }
-            return null;
-        });
-    }
-
-    private String readFully(InputStream inputStream) throws IOException {
-
-        if (inputStream == null) {
-            return "";
-        }
-
-        ByteArrayOutputStream byteArrayOutputStream;
-
-        BufferedInputStream bufferedInputStream = new BufferedInputStream(inputStream);
-        try {
-            byteArrayOutputStream = new ByteArrayOutputStream();
-
-            final byte[] buffer = new byte[1024];
-            int available;
-
-            while ((available = bufferedInputStream.read(buffer)) >= 0) {
-                byteArrayOutputStream.write(buffer, 0, available);
-            }
-
-            return byteArrayOutputStream.toString();
-
-        } finally {
-            bufferedInputStream.close();
-        }
     }
 
     private void init() {
